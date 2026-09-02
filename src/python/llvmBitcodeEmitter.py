@@ -41,6 +41,32 @@ RUST_EDITION = os.environ.get("ASSURE_RUST_EDITION", "2021")
 # bitcode here exists to be compared against C, not to be run.
 RUST_OVERFLOW_CHECKS = "-C overflow-checks=off"
 
+# mem2reg on BOTH sides before the Symbolizer sees the bitcode.
+#
+# clang at -O0 spills every parameter and local into a stack slot and reloads it
+# before each use; rustc keeps parameters in SSA. A store to a symbolic address
+# (p->buf[p->pos] = 0) can therefore resolve into the C function's *own* stack
+# slot holding `p`; the reloaded `p` is then a corrupted symbolic pointer and
+# every field written through it ends as an update-list read that no Rust tree
+# can match. Measured on libcsv 2026-09-01: csv_fini/*(field_4) and
+# csv_parse field_0/1/4 all score 1000 on exactly that path (testcase/stackalias
+# is the 3-line reproduction; its mem2reg/ variant scores 0.0).
+#
+# clang marks -O0 functions `optnone`, which turns mem2reg into a no-op, so the
+# attribute is suppressed at compile time. rustc emits no optnone. Promoting
+# only non-escaping allocas does not change program semantics on any legal
+# input. Opt-in: ASSURE_MEM2REG=1 (measured on libcsv csv_parse+csv_fini 2026-09-02:
+# fixes the two stack-slot 1000s but exposes a `!x` polarity shape difference and
+# Rust-only callee-body trees, net 13/18 -> 9/18; see runs/mem2reg-parse-fini).
+MEM2REG = os.environ.get("ASSURE_MEM2REG", "0") == "1"
+
+def _mem2reg(bcPath, logger):
+    r = subprocess.run("opt -passes=mem2reg " + bcPath + " -o " + bcPath, shell=True, text=True,
+                       stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+    if r.returncode != 0:
+        logger.warn("mem2reg failed for %s (bitcode left as compiled): %s", bcPath, (r.stderr or "")[-300:])
+    return r.returncode == 0
+
 def remove_no_mangle_main(filename):
     with open(filename, 'r') as file:
         lines = file.readlines()
@@ -335,6 +361,8 @@ def emitLLVMBitcodes(individualFuncPath, logger):
             stem = os.path.basename(filename)[:-3] if filename.endswith(".rs") else os.path.basename(filename)
             with open(os.path.join(errDir, stem + ".txt"), "w") as ef:
                 ef.write(result.stderr)
+        if result.returncode == 0 and MEM2REG:
+            _mem2reg(filename + ".bc", logger)
         # Disassemble it (let's generate both to avoid any errors in bc -> ll conversion)
 
         disassemble_cmd = "llvm-dis " + filename + ".bc"
@@ -353,10 +381,14 @@ def emitLLVMBitcodes(individualFuncPath, logger):
         remove_static_and_inline_from_file(filename)
         remove_specific_line(filename)
         special_handle(filename)
-        emitBitcodeCmd = "clang -c -femit-all-decls -emit-llvm -o " + filename + ".bc " + filename
+        emitBitcodeCmd = ("clang -c -femit-all-decls -emit-llvm"
+                          + (" -Xclang -disable-O0-optnone" if MEM2REG else "")
+                          + " -o " + filename + ".bc " + filename)
         logger.debug("Running command %s", emitBitcodeCmd)
 
         result = subprocess.run(emitBitcodeCmd, shell=True, text=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        if result.returncode == 0 and MEM2REG:
+            _mem2reg(filename + ".bc", logger)
 
         disassemble_cmd = "llvm-dis " + filename + ".bc"
         subprocess.run(disassemble_cmd, shell=True, text=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
