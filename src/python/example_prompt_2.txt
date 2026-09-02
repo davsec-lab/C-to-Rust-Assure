@@ -1,0 +1,236 @@
+Translate C to Rust. If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function. Also DO NOT reply with anything other than the Rust code. No English words needed. Please try to use idiomatic Rust.
+
+typedef long int __time_t;
+typedef long int __syscall_slong_t;
+typedef long unsigned int size_t;
+struct timespec
+{
+__time_t tv_sec;
+__syscall_slong_t tv_nsec;
+};
+typedef long int __fd_mask;
+typedef struct
+{
+__fd_mask __fds_bits[1024 / (8 * (int) sizeof (__fd_mask))];
+} fd_set;
+union pthread_attr_t
+{
+char __size[56];
+long int __align;
+};
+struct _IO_FILE;
+struct _IO_FILE;
+struct _IO_FILE;
+struct _IO_marker;
+struct _IO_codecvt;
+struct _IO_wide_data;
+
+
+ int
+csv_increase_buffer(struct csv_parser *p)
+{
+if (p == ((void*)0)) return 0;
+if (p->realloc_func == ((void*)0)) return 0;
+size_t to_add = p->blk_size;
+void *vp;
+if ( p->entry_size >= (18446744073709551615UL) - to_add )
+to_add = (18446744073709551615UL) - p->entry_size;
+if (!to_add) {
+p->status = 3;
+return -1;
+}
+while ((vp = p->realloc_func(p->entry_buf, p->entry_size + to_add)) == ((void*)0)) {
+to_add /= 2;
+if (!to_add) {
+  p->status = 2;
+  return -1;
+}
+}
+p->entry_buf = vp;
+p->entry_size += to_add;
+return 0;
+}
+
+
+Please use the following Rust translations of struct definitions enclosed in /* Rust struct definitions ... */. Please do not include the original struct translation in your response. 
+/*
+/* Rust struct definitions
+struct CsvParser {
+    pub pstate: i32,
+    pub quoted: i32,
+    pub spaces: usize,
+    pub entry_buf: Vec<u8>,
+    pub entry_pos: usize,
+    pub entry_size: usize,
+    pub status: i32,
+    pub options: u8,
+    pub quote_char: u8,
+    pub delim_char: u8,
+    pub is_space: Option<fn(u8) -> i32>,
+    pub is_term: Option<fn(u8) -> i32>,
+    pub blk_size: usize,
+    pub free_func: Option<fn(*mut u8)>,
+}
+*/*/
+
+*/
+
+Please use the following previously translated Rust functions, included in /*// and //*/ for context. Please DO NOT include these already translated functions in your response.
+/*// 
+struct CsvParser {
+    pub pstate: i32,
+    pub quoted: i32,
+    pub spaces: usize,
+    pub entry_buf: Vec<u8>,
+    pub entry_pos: usize,
+    pub entry_size: usize,
+    pub status: i32,
+    pub options: u8,
+    pub quote_char: u8,
+    pub delim_char: u8,
+    pub is_space: Option<fn(u8) -> i32>,
+    pub is_term: Option<fn(u8) -> i32>,
+    pub blk_size: usize,
+    pub free_func: Option<fn(*mut u8)>,
+}
+
+pub fn csv_set_blk_size(p: Option<&mut CsvParser>, size: usize) {
+    if let Some(parser) = p {
+        parser.blk_size = size;
+    }
+}
+use std::ffi::c_void;
+
+pub fn csv_fini(
+    p: Option<&mut CsvParser>,
+    cb1: Option<fn(*mut c_void, usize, *mut c_void)>,
+    cb2: Option<fn(i32, *mut c_void)>,
+    data: *mut c_void,
+) -> i32 {
+    if let Some(parser) = p {
+        let mut quoted = parser.quoted;
+        let mut pstate = parser.pstate;
+        let mut spaces = parser.spaces;
+        let mut entry_pos = parser.entry_pos;
+
+        if pstate == 2 && quoted != 0 && (parser.options & 1 != 0) && (parser.options & 4 != 0) {
+            parser.status = 1;
+            return -1;
+        }
+
+        match pstate {
+            3 => {
+                parser.entry_pos = parser.entry_pos.saturating_sub(parser.spaces + 1);
+                entry_pos = parser.entry_pos;
+                // fall through to case 1/2
+                if quoted == 0 {
+                    entry_pos = entry_pos.saturating_sub(spaces);
+                }
+                if (parser.options & 8) != 0 {
+                    if entry_pos < parser.entry_buf.len() {
+                        parser.entry_buf[entry_pos] = 0;
+                    } else if entry_pos == parser.entry_buf.len() {
+                        parser.entry_buf.push(0);
+                    }
+                }
+                if let Some(cb1_fn) = cb1 {
+                    if (parser.options & 16) != 0 && quoted == 0 && entry_pos == 0 {
+                        cb1_fn(std::ptr::null_mut(), entry_pos, data);
+                    } else {
+                        cb1_fn(parser.entry_buf.as_mut_ptr() as *mut c_void, entry_pos, data);
+                    }
+                }
+                pstate = 1;
+                entry_pos = 0;
+                quoted = 0;
+                spaces = 0;
+
+                if let Some(cb2_fn) = cb2 {
+                    cb2_fn(-1, data);
+                }
+                pstate = 0;
+                entry_pos = 0;
+                quoted = 0;
+                spaces = 0;
+            }
+            1 | 2 => {
+                if quoted == 0 {
+                    entry_pos = entry_pos.saturating_sub(spaces);
+                }
+                if (parser.options & 8) != 0 {
+                    if entry_pos < parser.entry_buf.len() {
+                        parser.entry_buf[entry_pos] = 0;
+                    } else if entry_pos == parser.entry_buf.len() {
+                        parser.entry_buf.push(0);
+                    }
+                }
+                if let Some(cb1_fn) = cb1 {
+                    if (parser.options & 16) != 0 && quoted == 0 && entry_pos == 0 {
+                        cb1_fn(std::ptr::null_mut(), entry_pos, data);
+                    } else {
+                        cb1_fn(parser.entry_buf.as_mut_ptr() as *mut c_void, entry_pos, data);
+                    }
+                }
+                pstate = 1;
+                entry_pos = 0;
+                quoted = 0;
+                spaces = 0;
+
+                if let Some(cb2_fn) = cb2 {
+                    cb2_fn(-1, data);
+                }
+                pstate = 0;
+                entry_pos = 0;
+                quoted = 0;
+                spaces = 0;
+            }
+            0 => {}
+            _ => {}
+        }
+
+        parser.spaces = 0;
+        parser.quoted = 0;
+        parser.entry_pos = 0;
+        parser.status = 0;
+        parser.pstate = 0;
+        0
+    } else {
+        -1
+    }
+}
+pub fn csv_init(p: *mut CsvParser, options: u8) -> i32 {
+    if p.is_null() {
+        return -1;
+    }
+    unsafe {
+        let parser = &mut *p;
+        parser.entry_buf = Vec::new();
+        parser.pstate = 0;
+        parser.quoted = 0;
+        parser.spaces = 0;
+        parser.entry_pos = 0;
+        parser.entry_size = 0;
+        parser.status = 0;
+        parser.options = options;
+        parser.quote_char = 0x22;
+        parser.delim_char = 0x2c;
+        parser.is_space = None;
+        parser.is_term = None;
+        parser.blk_size = 128;
+        parser.free_func = Some(|ptr| {
+            use std::alloc::{dealloc, Layout};
+            unsafe {
+                // Without knowing the original allocation size, we assume blk_size as the layout.
+                // This is a simplification and may need adjustment in a real-world scenario.
+                let layout = Layout::from_size_align(128, 8).unwrap();
+                dealloc(ptr, layout)
+            }
+        });
+    }
+    0
+}
+pub fn csv_set_realloc_func(p: Option<&mut CsvParser>, f: Option<fn(*mut u8, usize) -> *mut u8>) {
+    if let (Some(parser), Some(func)) = (p, f) {
+        parser.realloc_func = Some(func);
+    }
+}/*//

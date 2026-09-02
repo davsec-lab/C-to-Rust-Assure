@@ -1,0 +1,35 @@
+Function: Tokens -> Full-Fits-Request : Full-Fits-Response: Function-Fits-Request: Function-Fits-Response: Decls-Fit-Request: Decls-Fit-Response 
+csv_set_blk_size: 274 -> True : True: True: True: True: True 
+csv_fini: 297 -> True : True: True: True: True: True 
+csv_init: 323 -> True : True: True: True: True: True 
+csv_set_realloc_func: 281 -> True : True: True: True: True: True 
+csv_increase_buffer: 260 -> True : True: True: True: True: True 
+csv_strerror: 206 -> True : True: True: True: True: True 
+csv_get_quote: 318 -> True : True: True: True: True: True 
+csv_get_delim: 319 -> True : True: True: True: True: True 
+__bswap_32: 8 -> True : True: True: True: True: True 
+csv_write: 213 -> True : True: True: True: True: True 
+csv_free: 269 -> True : True: True: True: True: True 
+csv_error: 316 -> True : True: True: True: True: True 
+csv_set_free_func: 277 -> True : True: True: True: True: True 
+__uint16_identity: 9 -> True : True: True: True: True: True 
+csv_get_buffer_size: 273 -> True : True: True: True: True: True 
+__bswap_16: 9 -> True : True: True: True: True: True 
+csv_fwrite2: 215 -> True : True: True: True: True: True 
+csv_set_space_func: 278 -> True : True: True: True: True: True 
+csv_set_term_func: 278 -> True : True: True: True: True: True 
+csv_parse: 352 -> True : True: True: True: True: True 
+csv_fwrite: 210 -> True : True: True: True: True: True 
+__bswap_64: 9 -> True : True: True: True: True: True 
+csv_get_opts: 271 -> True : True: True: True: True: True 
+csv_set_delim: 275 -> True : True: True: True: True: True 
+__uint64_identity: 9 -> True : True: True: True: True: True 
+csv_set_quote: 274 -> True : True: True: True: True: True 
+__uint32_identity: 8 -> True : True: True: True: True: True 
+csv_set_opts: 274 -> True : True: True: True: True: True 
+csv_write2: 190 -> True : True: True: True: True: True 
+Summary:
+Total function: 29
+Full function + decls -> 29 fits in request limit, 29 fits in response limit
+Function only -> 29 fits in request limit, 29 fits in response limit
+Decls only -> 29 fits in request limit, 29 fits in response limit

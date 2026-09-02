@@ -1,0 +1,9 @@
+[submodule "tools/typedefextractor"]
+	path = tools/typedefextractor
+	url = git@github.com:davsec-lab/typedefextractor.git
+[submodule "tools/rustify-klee"]
+	path = tools/rustify-klee
+	url = git@github.com:davsec-lab/rustify-klee.git
+[submodule "src/Symbolizer/json"]
+	path = src/Symbolizer/json
+	url = https://github.com/nlohmann/json.git

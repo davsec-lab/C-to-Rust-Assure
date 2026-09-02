@@ -1,0 +1,20 @@
+def f(x, y):
+    isnum(print(x)) && isbool(y)
+
+
+input is e and output is t -| c
+I -| e : t -| c
+
+
+unification and substituion
+f (x, y) -| : f(x, y) : ('T1, 'T2 -> 'T3), x : 'T1, y : 'T2 -| ['T1 = 'T5, 'T4 = 'T5, 'T6 = 'T2, 'T3 = Bool]
+    && -| (Bool, Bool -> Bool) -| ['T1 = 'T5, 'T4 = 'T5, 'T6 = 'T2]
+        isnum(print(x)) : ('T4 -> Bool) -| ['T1 = 'T5, 'T4 = 'T5]
+            print(x) :  ('T5 -> 'T5) -| ['T1 = 'T5]
+        isbool(y) : ('T6 -> Bool) -| ['T6 = 'T2]
+
+solve constriant:
+['T1 = 'T5, 'T4 = 'T5, 'T6 = 'T2, 'T3 = Bool]
+
+f(x,y) : ['T5, 'T6 -> Bool]
+

@@ -1,0 +1,53 @@
+Translate the following C code to Rust, please try to use idiomatic Rust. Please use the following Rust struct.
+
+pub struct CsvParser {
+    /// Parser state
+    pub pstate: i32,
+    /// Is the current field a quoted field?
+    pub quoted: bool,
+    /// Number of continuous spaces after a quote or in a non-quoted field
+    pub spaces: usize,
+    /// Entry buffer: we use a Vec<u8> so that pushing bytes and ensuring a terminating 0 is easy.
+    /// The "entry position" is effectively the current length of the vector.
+    pub entry: Vec<u8>,
+    /// Operation status
+    pub status: i32,
+    /// Options flag value
+    pub options: u8,
+    /// Quote character
+    pub quote_char: u8,
+    /// Delimiter character
+    pub delim_char: u8,
+    /// Function for determining whether a byte is a space.
+    /// If set, a given byte is a space when this function returns true.
+    pub is_space: Option<Box<dyn Fn(u8) -> bool>>,
+    /// Function for determining whether a byte is a line terminator.
+    pub is_term: Option<Box<dyn Fn(u8) -> bool>>,
+    /// Block size used for buffer reallocation.
+    pub blk_size: usize,
+}
+
+static int
+csv_increase_buffer(struct csv_parser *p)
+{
+if (p == ((void*)0)) return 0;
+if (p->realloc_func == ((void*)0)) return 0;
+size_t to_add = p->blk_size;
+void *vp;
+if ( p->entry_size >= (18446744073709551615UL) - to_add )
+to_add = (18446744073709551615UL) - p->entry_size;
+if (!to_add) {
+p->status = 3;
+return -1;
+}
+while ((vp = p->realloc_func(p->entry_buf, p->entry_size + to_add)) == ((void*)0)) {
+to_add /= 2;
+if (!to_add) {
+  p->status = 2;
+  return -1;
+}
+}
+p->entry_buf = vp;
+p->entry_size += to_add;
+return 0;
+}

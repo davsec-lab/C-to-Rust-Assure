@@ -1,0 +1,31 @@
+{
+    "srcLang": "c",
+    "dstLang": "rust",
+    "trainingFile": "/home/hamed/rust/rustify/src/python/training",
+    "srcFolder": "/home/hamed/rust/rustify/src/python/inputs",
+    "llvm-pass-cmd": "/home/hamed/rust/rustify/src/c++/llvm-pass/run-pass.sh {} {} {} {} {}",
+    "llvm-log-path": "/home/hamed/rust/rustify/src/c++/llvm-pass/logs-{}",
+    "simple-api-path": "/home/hamed/rust/rustify/src/python/llvm-pass-outputs/{}-simple.apis",
+    "complex-api-path": "/home/hamed/rust/rustify/src/python/llvm-pass-outputs/{}-complex.apis",
+    "export-func-path": "/home/hamed/rust/rustify/src/python/outputs/{}.apis",
+    "inputs": [
+        {
+            "libcsv": {
+                "bitcodepath": "/home/hamed/library-debloating/libsrccodes/libcsv/.libs/libcsv.so.3.0.3.0.0.preopt.bc",
+                "binarypath": "/home/hamed/library-debloating/libsrccodes/lib-bins/libcsv.so"
+            },
+            "libssl": {
+
+            }
+        }
+    ],
+    "translators": [
+        {
+            "openai": {
+                "engine.bak": "text-davinci-002",
+                "engine": "code-davinci-002",
+                "apikeypath": "/home/hamed/rust/rustify/src/python/openai.key"
+            }
+        }
+    ]
+}

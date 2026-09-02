@@ -1,0 +1,168 @@
+#!/bin/bash
+# run_eval —— run one full eval round, producing runs/<id>/ (DESIGN.md §7).
+#
+# The evidence is **not distilled**: raw artifacts are exported as-is to
+# runs/<id>/raw/. The scoring chain (summary.csv / metrics.json) is separate —
+# that is the input L0 uses to update the frontier; it is the scoreboard, not
+# evidence. Distillation was removed 2026-08-27 (STATUS.md §5.18) along with
+# assemble_run.py's funcs/ pack and the classify_failures attribution.
+#
+#   ./run_eval [-c config.yaml] [-s CODEBASE] [--full] [-i RUN_ID]
+#
+# Pipeline:
+#   translationValidator.py            frontend translation (the only place that reads the prompt)
+#   → checkBackendContract.py          contract check (if unmet, don't waste a KLEE round)
+#   → performSymbolExecution.py        differential symbolic execution
+#   → safety_report.py                 R_std + CROWN
+#   → raw export + score
+#   → runs/<id>/
+#
+# ⚠ Duration: fast (default) ~40 minutes; --full 5+ hours.
+#
+# ⚠ Two hard-coded items the outer layer must not change (DESIGN.md §3.2 hard constraints):
+#   1. --translator-mode (changing it outright breaks the backend's filename-based target-function matching)
+#   2. ASSURE_KLEE_MAX_TIME_* (shrinking it from the outer layer indirectly changes what the metrics mean)
+set -uo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONFIG="$ROOT/config.yaml"
+CODEBASE=""
+RUN_ID=""
+MODE="fast"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -c|--config)   CONFIG="$2"; shift 2 ;;
+    -s|--src)      CODEBASE="$2"; shift 2 ;;
+    -i|--run-id)   RUN_ID="$2"; shift 2 ;;
+    --full)        MODE="full"; shift ;;
+    --fast)        MODE="fast"; shift ;;
+    --smoke)       MODE="smoke"; shift ;;
+    -h|--help)     sed -n '2,25p' "$0"; exit 0 ;;
+    *) echo "unknown argument: $1" >&2; exit 2 ;;
+  esac
+done
+
+source "$ROOT/env.sh" >/dev/null 2>&1
+export OPENAI_API_KEY="${OPENAI_API_KEY:-${OPENAI_KEY:-}}"
+
+# ── read config.yaml (agent-tunable knobs; minimal parsing, no pyyaml) ────
+cfgGet() { grep -E "^[[:space:]]*$1[[:space:]]*:" "$CONFIG" 2>/dev/null \
+             | head -1 | sed 's/.*:[[:space:]]*//; s/[[:space:]]*#.*//; s/"//g' ; }
+LLM_MODE="$(cfgGet llm_mode)";              LLM_MODE="${LLM_MODE:-gpt-5-mini}"
+COMPILATION_RETRIES="$(cfgGet compilation_retries)"
+STRUCT_RETRIES="$(cfgGet struct_retries)"
+[ -z "$CODEBASE" ] && CODEBASE="$(cfgGet codebase)"
+CODEBASE="${CODEBASE:-./inputs-complex/libcsv}"
+
+# Knobs are injected into the inner layer via environment variables (see gpt_translation/config.py)
+[ -n "$COMPILATION_RETRIES" ] && export ASSURE_COMPILATION_RETRIES="$COMPILATION_RETRIES"
+[ -n "$STRUCT_RETRIES" ]      && export ASSURE_STRUCT_RETRIES="$STRUCT_RETRIES"
+
+# ── KLEE time caps: immutable, never read from config ─────────────────────
+if [ "$MODE" = "full" ]; then
+  unset ASSURE_KLEE_MAX_TIME_C ASSURE_KLEE_MAX_TIME_RUST   # back to 7200/10800
+elif [ "$MODE" = "smoke" ]; then
+  export ASSURE_KLEE_MAX_TIME_C=60 ASSURE_KLEE_MAX_TIME_RUST=60
+else
+  export ASSURE_KLEE_MAX_TIME_C=600 ASSURE_KLEE_MAX_TIME_RUST=600
+fi
+
+STAMP="$(date +%Y%m%d_%H-%M-%S)"
+RUN_ID="${RUN_ID:-run_${STAMP}}"
+RUNS_DIR="$ROOT/runs"; OUT="$RUNS_DIR/$RUN_ID"
+mkdir -p "$OUT"
+LOG="$OUT/run_eval.log"
+
+say() { echo "[$(date +%H:%M:%S)] $*" | tee -a "$LOG"; }
+fail() { say "❌ $*"; echo "FAILED: $*" > "$OUT/STATUS"; exit 1; }
+
+cd "$ROOT/src/python"
+say "run_eval start  id=$RUN_ID mode=$MODE model=$LLM_MODE codebase=$CODEBASE"
+say "  KLEE max-time: C=${ASSURE_KLEE_MAX_TIME_C:-default 7200} Rust=${ASSURE_KLEE_MAX_TIME_RUST:-default 10800}"
+
+# ── 1. frontend ───────────────────────────────────────────────────────────
+say "[1/5] frontend translation ..."
+python3 translationValidator.py --src="$CODEBASE" \
+    --translator-mode=struct-fn-replay --llm-mode="$LLM_MODE" \
+    --dir-prefix="$RUN_ID" >> "$OUT/frontend.log" 2>&1
+[ $? -ne 0 ] && say "  WARN: frontend exited non-zero (continuing; partial output may exist)"
+
+FE="$(ls -dt "$CODEBASE"/individual-funcs_${RUN_ID}_* 2>/dev/null | head -1)"
+[ -z "$FE" ] && fail "frontend produced no individual-funcs dir, see $OUT/frontend.log"
+say "  output: $(basename "$FE")  .i=$(ls "$FE"/*.i 2>/dev/null|wc -l) .rs=$(ls "$FE"/*.rs 2>/dev/null|wc -l)"
+
+# ── 1.5 split the merge → self-contained per-function .rs (DESIGN.md §4.7, T13) ──
+say "[1.5/5] splitting merged_funcs.rs ..."
+python3 split_merged.py "$FE" 2>&1 | tee -a "$LOG"
+
+# ── 2. contract check (placed before KLEE, saves 20+ minutes) ─────────────
+say "[2/5] backend contract check ..."
+python3 checkBackendContract.py "$FE" 2>&1 | tee -a "$LOG"
+[ ${PIPESTATUS[0]} -ne 0 ] && fail "contract violated; backend would fail, aborting"
+
+# ── 3. backend ────────────────────────────────────────────────────────────
+say "[3/5] differential symbolic execution (slowest step) ..."
+python3 performSymbolExecution.py --src="$FE" >> "$OUT/backend.log" 2>&1
+BE="$(ls -dt ../Symbolizer/perform_general_execution_* 2>/dev/null | head -1)"
+[ -z "$BE" ] || [ ! -f "$BE/result.csv" ] && fail "backend produced no result.csv, see $OUT/backend.log"
+say "  output: $(basename "$BE")"
+
+# ── 4. safety (2026-08-26: aligned to perfassure_result methodology) ──────
+# All three metrics come from ONE analysis of merged_funcs.rs (paper method):
+#   CROWN buffer-template → unsafe_usage / unsafe_ptrs; std_type_rate → R_std.
+# No per-function runs — T13 self-contained files carry dependency closures,
+# so per-function analysis double-counts shared callees.
+say "[4/5] safety analysis (CROWN + std_type_rate on merged) ..."
+MERGED="$FE/split_artifacts/merged_funcs.rs.block"
+[ -f "$MERGED" ] || MERGED="$FE/merged_funcs.rs"
+python3 safety_report.py "$MERGED" -o "$OUT" >> "$OUT/safety.log" 2>&1 \
+  || say "  WARN: safety_report failed; the three safety metrics will be empty"
+
+# ── 5. raw export (no distillation) + scoring ─────────────────────────────
+# The container is --rm and destroyed on exit; skip the export here and the raw artifacts are gone.
+say "[5/5] exporting raw evidence (undistilled) + scoring ..."
+RAW="$OUT/raw"; mkdir -p "$RAW"
+
+# 5a. frontend artifacts as-is: per-function .i / .rs / merged_funcs.rs
+cp -r "$FE" "$RAW/frontend"
+
+# 5b. the full translation log — includes each request's complete prompt and LLM
+#     response, and every rustc retry round.
+#     This is the part the distilled version loses hardest (META_HARNESS.md §4.5 trade-off 2).
+#     ⚠ Look inside $FE first: since T13 the frontend writes the log into the
+#     individual-funcs directory; temp_log/ holds stale logs COPY'd in from the
+#     image, and picking by mtime grabs the wrong one (smoke run observed:
+#     fetched a 2026-08-19 libcsv log. The mainline run_eval is hit the same way).
+CBNAME="$(basename "$CODEBASE")"
+VLOG="$(ls -t "$FE"/*validator*.log 2>/dev/null | head -1)"
+[ -z "$VLOG" ] && VLOG="$(ls -t temp_log/${CBNAME}_validator*.log 2>/dev/null | head -1)"
+[ -z "$VLOG" ] && VLOG="$(ls -t temp_log/*_validator*.log 2>/dev/null | head -1)"
+[ -n "$VLOG" ] && say "  validator log: $VLOG"
+[ -n "$VLOG" ] && cp "$VLOG" "$RAW/validator.log"
+
+# 5c. backend artifacts as-is: per-function KLEE logs, symbol-tree .dot files,
+#     the raw edit_distance table, result.csv, testcase/ — all kept. Two items
+#     with no incremental information are excluded by default
+#     (size rationale in the table in META_HARNESS.md §4.5):
+#       klee_ir_files/  ~384MB/round, instrumented IR after linking in the stdlib
+#       *.png           bitmap renders of the very same graphs as the .dot files
+#     If you really need the IR: ASSURE_RAW_KEEP_IR=1.
+EXCLUDES=(--exclude='*.png')
+[ "${ASSURE_RAW_KEEP_IR:-0}" = "1" ] || EXCLUDES+=(--exclude=klee_ir_files)
+mkdir -p "$RAW/backend"
+tar -C "$BE" "${EXCLUDES[@]}" -cf - . | tar -C "$RAW/backend" -xf -
+say "  raw/ size: $(du -sh "$RAW" | cut -f1)"
+
+# 5d. the scoring chain: score.py only accepts assemble_run.py's summary.csv,
+#     and metrics.json is the input L0 uses to update the frontier.
+#     raw.txt is deleted separately — it is just a pointer to raw paths inside the
+#     container; the raw/ itself sits right next to it, so keeping it is misleading.
+python3 assemble_run.py --backend "$BE" --frontend "$FE" \
+    ${VLOG:+--validator-log "$VLOG"} \
+    -o "$OUT" 2>&1 | tee -a "$LOG"
+python3 score.py "$OUT" 2>&1 | tee -a "$LOG"
+rm -f "$OUT/raw.txt"
+
+echo "OK" > "$OUT/STATUS"
+say "run_eval done -> $OUT"

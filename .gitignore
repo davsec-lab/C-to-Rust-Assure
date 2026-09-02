@@ -1,0 +1,41 @@
+.DS_Store
+.idea/
+.vscode/
+src/.DS_Store
+src/python/myenv/
+DESIGN_TODO.md
+EVAL_DATA.md
+ICSE_Transpilation_as_lifting
+ASPLOS_2026_C2Rust_semantic_similarity
+ASE2026_PerfAware
+.claude
+perfassure_result
+src/python/inputs-complex/libcsv/metadata.csv
+src/python/inputs-complex/c2rust/metadata.csv
+src/python/inputs-complex/url.h/
+src/python/inputs-complex/libbmp_write/file/
+src/python/inputs-complex/pageRank/com-lj.ungraph.txt
+results/
+# ── added after the consolidation (assure) ──────────────────────
+# LLVM pass build artifacts
+src/Symbolizer/build/
+src/AnchorNodesExtractor/build/
+# backend symbolic-execution run artifacts (one timestamped dir per run: KLEE IR / logs / graphs)
+src/Symbolizer/perform_general_execution_*/
+src/Symbolizer/libcsv_*/
+src/Symbolizer/libbmp_*/
+src/Symbolizer/optipng_*/
+src/Symbolizer/url_parser_*/
+src/Symbolizer/u8c_*/
+src/Symbolizer/libopenaptx_*/
+# frontend per-run output directories
+src/python/inputs-complex/**/individual-funcs_*/
+# eval run artifacts. The outer layer bind-mounts the host's runs/ to
+# /work/assure/runs, so without this the container's own clean-tree self-check
+# sees `?? runs/` and refuses to start (SOURCE_CANDIDATE.md §3).
+runs/
+
+# frontend logs
+src/python/temp_log/
+src/python/*.log
+src/python/all_logs/

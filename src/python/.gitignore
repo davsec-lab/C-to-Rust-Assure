@@ -1,0 +1,7 @@
+*.log
+*.key
+inputs/
+outputs/
+library-so.paths
+__pycache__/
+*.bc

@@ -1,0 +1,11 @@
+# Knobs the outer agent may change (DESIGN.md §4 "Extract the knobs scattered in code into config.yaml")
+#
+# Anything not here is immutable; changing it has no effect:
+#   translator_mode        hard-coded cf-struct-replay (changing it breaks the backend outright)
+#   KLEE max-time          controlled by run_eval's --fast/--full, part of the metric definition
+#   scoring script score.py  metric definitions, root-owned
+
+llm_mode: gpt-5-mini          # inner translation model
+codebase: ./inputs-complex/libcsv
+compilation_retries: 5        # max times rustc errors are fed back to the LLM
+struct_retries: 5             # struct remediation retry count

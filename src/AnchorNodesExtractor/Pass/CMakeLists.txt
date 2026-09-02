@@ -1,0 +1,1 @@
+add_library(AnchorNodesExtractorPass MODULE AnchorNodesExtractorPass.cpp)
