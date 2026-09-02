@@ -12,7 +12,10 @@ set -euo pipefail
 
 TAG="assure-dev:1.0"
 STAGE="${TMPDIR:-/tmp}/assure-rustup-stage"
-HOST_HOME="/home/gabe"
+# Absolute paths are replicated into the image (see the Dockerfile header: the venv
+# shebangs are baked to $HOST_HOME/venv/bin/python3). Override only if you rebuilt
+# the whole toolchain under a different home -- see docker/TOOLCHAIN.md.
+HOST_HOME="${HOST_HOME:-/home/gabe}"
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 while [[ $# -gt 0 ]]; do

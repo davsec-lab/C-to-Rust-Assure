@@ -7,3 +7,6 @@
 [submodule "src/Symbolizer/json"]
 	path = src/Symbolizer/json
 	url = https://github.com/nlohmann/json.git
+[submodule "tools/crown"]
+	path = tools/crown
+	url = git@github.com:GabeBai/fork-crown.git
