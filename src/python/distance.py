@@ -223,6 +223,16 @@ def compare_graph_optimize_edit_distance(G1,
                       c_directory_name=c_directory_name,
                       rust_directory_name=rust_directory_name,
                       only_consider_struct=only_consider_struct)
+    # optimize_graph_edit_distance yields successive upper bounds and the loop
+    # below keeps only the first one, which is the cost of the first complete
+    # edit path the search happens to find. That path follows node numbering,
+    # so two byte-identical dot files score 0 while two isomorphic trees whose
+    # ids differ (e.g. after canonicalize_graph rewrote one side) can score 16
+    # or 30. Isomorphism is exact and cheap on trees of this size, so settle
+    # the equal case before falling back to the approximation.
+    if len(G1) == len(G2) and nx.is_isomorphic(G1, G2, node_match=matcher):
+        print("ged = 0.0 (isomorphic)")
+        return 0.0
     ged_generator = nx.optimize_graph_edit_distance(G1, G2, node_match=matcher)  #
     ged = 0
     count = 0
@@ -235,10 +245,102 @@ def compare_graph_optimize_edit_distance(G1,
             break
     return ged
 
+def _kids(G, n):
+    """Successors in operand order. KqueryGrapher numbers nodes with one global
+    counter and creates an operator node before visiting its operands, so for
+    Select/Eq/... the operand order is the node-id order."""
+    return sorted(G.successors(n), key=lambda x: int(x))
+
+
+def _is_not(G, n):
+    """KLEE has no Not: `!c` prints as `(Eq false c)`. Return the negated child, or None."""
+    if G.nodes[n].get("label") != "Eq":
+        return None
+    k = _kids(G, n)
+    if len(k) != 2:
+        return None
+    if G.nodes[k[0]].get("label") == "false":
+        return k[1]
+    if G.nodes[k[1]].get("label") == "false":
+        return k[0]
+    return None
+
+
+def canonicalize_graph(G):
+    """Semantics-preserving rewrites so that equivalent expressions get the same
+    shape on both sides. Today's comparator only compares trees of equal node
+    count and ignores operand order, so a two-node difference in how a boolean
+    is spelled is enough to make an argument score 1000 without any comparison.
+
+    Measured on libcsv csv_fini (mem2reg run, 2026-09-02): C's `if (!quoted)`
+    lowers to `icmp ne` + inverted branch and KLEE prints the Select condition as
+    `(Eq false (Eq 0 quoted))`; the Rust `if quoted == 0` gives `(Eq 0 quoted)`
+    with the arms swapped. 31 nodes vs 29, never compared, field_3 and
+    arg_value_3 both 1000.
+
+    Rules (applied to fixpoint):
+      1. Select(Not c, a, b)  ->  Select(c, b, a)
+      2. Not(Not x)           ->  x
+    The arm swap in rule 1 is bookkept by renumbering the two arm subtrees so
+    the operand-order invariant (cond < true < false by id) still holds.
+    """
+    changed = True
+    while changed:
+        changed = False
+        for n in list(G.nodes):
+            if n not in G:
+                continue
+            lbl = G.nodes[n].get("label")
+            # rule 2: Eq false (Eq false x) -> x, spliced into every parent
+            if lbl == "Eq":
+                inner = _is_not(G, n)
+                if inner is not None and _is_not(G, inner) is not None:
+                    x = _is_not(G, inner)
+                    for p in list(G.predecessors(n)):
+                        G.add_edge(p, x)
+                    dead = [c for c in G.successors(n) if c != inner] + \
+                           [c for c in G.successors(inner) if c != x] + [n, inner]
+                    G.remove_nodes_from(dead)
+                    changed = True
+                    break
+            # rule 1: Select(Not c, a, b) -> Select(c, b, a)
+            if lbl == "Select":
+                k = _kids(G, n)
+                if len(k) != 3:
+                    continue
+                cond, t, f = k
+                c = _is_not(G, cond)
+                if c is None:
+                    continue
+                falsenode = [x for x in G.successors(cond) if x != c][0]
+                G.remove_edge(n, cond)
+                if G.in_degree(cond) == 0:
+                    G.remove_node(cond)
+                    if G.in_degree(falsenode) == 0:
+                        G.remove_node(falsenode)
+                G.add_edge(n, c)
+                # swap the arms by swapping the ids of their roots' subtrees
+                _swap_subtree_ids(G, t, f)
+                changed = True
+                break
+    return G
+
+
+def _swap_subtree_ids(G, a, b):
+    """Exchange the node ids of the subtrees rooted at a and b so that whichever
+    was the false arm now sorts as the true arm. Only the root ids need to
+    swap for _kids() to see the new order."""
+    tmp = "__swap_tmp__"
+    nx.relabel_nodes(G, {a: tmp}, copy=False)
+    nx.relabel_nodes(G, {b: a}, copy=False)
+    nx.relabel_nodes(G, {tmp: b}, copy=False)
+
+
 def load_graph_from_dot(file_path):
     try:
         G = nx.nx_agraph.read_dot(file_path)
         print(f"Loaded graph from {file_path}")
+        canonicalize_graph(G)
         return G
     except Exception as e:
         print(f"Error loading graph from {file_path}: {e}")
