@@ -2,7 +2,7 @@
 
 This file records defects that are **confirmed but not fixed for now**.
 
-All three are **inherited from the original RustAssure implementation**, not introduced by the PerfAssure frontend integration — each was
+L1–L3 are **inherited from the original RustAssure implementation**, not introduced by the PerfAssure frontend integration — each was
 reproduced by running RustAssure's own golden output
 (`inputs-complex/libcsv/archive/individual-funcs_gpt-4o_2024-09-17_20-51-53__complete`)
 on the `assure` backend, and that regression round had **zero per-argument differences across the 83 lines** of `best_edit_distances.csv`
@@ -153,6 +153,90 @@ but the downstream `count_edit_distance` does not distinguish it from a genuine 
 In `count_edit_distance`, separate `"Rust Empty!"` out as `klee_no_output`,
 exclude it from the `edit_distance` denominator, and make numerator and denominator share the same domain. Only then would
 `edit_distance_0_rate` truly measure the semantic-equivalence rate rather than mixing in KLEE executability.
+
+---
+
+## L4. The Comparator Ignores Operand Order, and `Select`/`Not` Canonicalization Widens That Blind Spot by One Bug Class
+
+Recorded: 2026-09-02 (distance.py `49a4073`)
+
+### Symptom
+
+`distance.py` compares two expression trees with `nx.is_isomorphic` and
+`nx.optimize_graph_edit_distance` over **unlabeled edges**. Both treat a node's
+children as a set, so for any non-commutative operator the operand order is
+invisible:
+
+```
+Select(c, a, b)   ==   Select(c, b, a)
+Sub(a, b)         ==   Sub(b, a)
+Ult(a, b)         ==   Ult(b, a)
+```
+
+A translation that swaps the two arms of a conditional, or the two operands of
+a subtraction, scores `0.0`.
+
+### How `49a4073` interacts with it
+
+C's `if (!quoted) entry_pos -= spaces;` lowers to `icmp ne` + an inverted
+branch, and KLEE (which has no `Not`) prints the condition as
+`(Eq false (Eq 0 quoted))`. Rust's `if quoted == 0 { .. }` prints as
+`(Eq 0 quoted)` with the arms swapped. Same meaning, two extra nodes on the C
+side; the comparator only compares trees of equal node count, so csv_fini
+`*(field_3)` and `arg_value_3` scored `1000` without ever being compared
+(mem2reg run, 2026-09-02).
+
+`canonicalize_graph` now rewrites `Select(Not c, a, b) -> Select(c, b, a)` and
+`Not(Not x) -> x` on both sides before comparing. Each rewrite is an identity;
+it does not merge trees of different meaning. But together with the unordered
+comparison it changes which bug class is caught, as the table shows for the
+csv_fini line above (C = `Select(¬(q==0), ep, ep−sp)`, 31 nodes):
+
+| Rust translation | tree | before 49a4073 | after 49a4073 |
+|---|---|---|---|
+| correct: `if q == 0 { ep -= sp }` | `Select(q==0, ep−sp, ep)`, 29 nodes | 31 ≠ 29, never compared → **1000 (false alarm)** | C rewritten to `Select(q==0, ep−sp, ep)` → isomorphic → **0.0** |
+| wrong: arms not swapped | `Select(q==0, ep, ep−sp)`, 29 nodes | 31 ≠ 29 → **1000 (right, by accident)** | differs from the rewritten C only in arm order, which is invisible → **0.0 (miss)** |
+
+The "right, by accident" cell was never a detection: the correct and the wrong
+translation received the same `1000`, and if the C source had been written
+`if (quoted == 0)` instead of `if (!quoted)`, both sides would have had 29
+nodes and the wrong translation would have scored `0.0` before the change as
+well. Whether the bug was caught depended on how the C author spelled the
+condition, not on the translation.
+
+### Scope of Impact
+
+Every operator whose operands are not interchangeable: `Select`, `Sub`,
+`UDiv/SDiv/URem/SRem`, `Shl/LShr/AShr`, `Ult/Ule/Ugt/Uge/Slt/Sle/Sgt/Sge`,
+`Concat`. Commutative operators (`Add`, `Mul`, `And`, `Or`, `Xor`, `Eq`) are
+not affected — KLEE only guarantees constants-first ordering for them, so their
+operand order legitimately differs between sides and must stay unordered.
+
+Measured on libcsv: no argument in the baseline run changes under `49a4073`
+(71 rows identical), and the only trees that carry a `Select` at all are the
+ones produced after `mem2reg` (`ASSURE_MEM2REG=1`, off by default). The
+exposure is therefore currently confined to that experimental path.
+
+### Suggested Fix (not implemented for now)
+
+Make operand order visible to the matcher for non-commutative operators only:
+
+1. In `load_graph_from_dot`, after canonicalization, attach `pos = 0, 1, 2`
+   to the out-edges of every non-commutative node, in child-id order
+   (KqueryGrapher numbers nodes with one global counter and creates an
+   operator node before visiting its operands, so id order is operand order —
+   `_kids()` already relies on this).
+2. Pass `edge_match=lambda e1, e2: e1.get("pos") == e2.get("pos")` to both
+   `is_isomorphic` and `optimize_graph_edit_distance`. Edges without `pos`
+   (commutative parents, `update_list` edges, which already carry
+   `offset`/`value` labels) compare equal.
+
+With that in place the canonicalization is exact: the rewritten C
+`Select(q==0, ep−sp, ep)` is isomorphic to the correct translation and not to
+the arm-swapped one, independently of how the C condition was spelled.
+Validate the same way as `49a4073`: rerun `distance.py` on the exported
+`graph_output` of `runs/ovf-off-baseline-baseline-libcsv` (expect 71 rows
+unchanged) and `runs/mem2reg-parse-fini` (expect csv_fini 8/8 to hold).
 
 ---
 
