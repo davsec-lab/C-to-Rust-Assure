@@ -236,7 +236,7 @@ With that in place the canonicalization is exact: the rewritten C
 the arm-swapped one, independently of how the C condition was spelled.
 Validate the same way as `49a4073`: rerun `distance.py` on the exported
 `graph_output` of `runs/ovf-off-baseline-baseline-libcsv` (expect 71 rows
-unchanged) and `runs/mem2reg-parse-fini` (expect csv_fini 8/8 to hold).
+unchanged) and `runs/libcsv-mem2reg` (mem2reg on both sides; expect csv_fini 8/8 and the 65/71 total to hold).
 
 ---
 

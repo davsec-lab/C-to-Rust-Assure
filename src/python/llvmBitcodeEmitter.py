@@ -55,10 +55,15 @@ RUST_OVERFLOW_CHECKS = "-C overflow-checks=off"
 # clang marks -O0 functions `optnone`, which turns mem2reg into a no-op, so the
 # attribute is suppressed at compile time. rustc emits no optnone. Promoting
 # only non-escaping allocas does not change program semantics on any legal
-# input. Opt-in: ASSURE_MEM2REG=1 (measured on libcsv csv_parse+csv_fini 2026-09-02:
-# fixes the two stack-slot 1000s but exposes a `!x` polarity shape difference and
-# Rust-only callee-body trees, net 13/18 -> 9/18; see runs/mem2reg-parse-fini).
-MEM2REG = os.environ.get("ASSURE_MEM2REG", "0") == "1"
+# input. Default on since 2026-09-02; ASSURE_MEM2REG=0 turns it off.
+# Measured on full libcsv (image 74b4260, distance.py 49a4073, KLEE 600 s/side):
+# 67/71 without -> 65/71 with. The two stack-slot 1000s (csv_fini field_4,
+# csv_parse field_0) go to 0; the three that move the other way are all on
+# timer-bound functions where C now explores faster (csv_parse completed paths
+# 276 -> 713) and reaches one more constant / one more aliased-write tree than
+# Rust does in the same wall-clock budget. Kept on because the fixes are real
+# measurement defects and the losses are exploration-depth noise.
+MEM2REG = os.environ.get("ASSURE_MEM2REG", "1") == "1"
 
 def _mem2reg(bcPath, logger):
     r = subprocess.run("opt -passes=mem2reg " + bcPath + " -o " + bcPath, shell=True, text=True,
