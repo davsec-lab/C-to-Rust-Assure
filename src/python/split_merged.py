@@ -25,6 +25,7 @@ already dumped the failure scene as <fn>.rs, and this script does not touch it.
 """
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -96,6 +97,218 @@ def dedupe_top_level(lines):
     return "\n".join(out)
 
 
+# ---------------------------------------------------------------------------
+# Call-closure symmetry (see main()).
+#
+# The C unit and the Rust unit that KLEE compares must contain the same set of
+# function *definitions*, otherwise the two symbolic executions are exploring
+# different programs. They currently do not:
+#
+#   raw/frontend/csv_parse.i   ->  "static int csv_increase_buffer(struct csv_parser *p);"
+#                                  i.e. an LLVM `declare` — no body.
+#   raw/frontend/csv_parse.rs  ->  "pub unsafe extern \"C\" fn csv_increase_buffer(...) { .. }"
+#                                  i.e. the full body, spliced in by the closure below.
+#
+# The C `.i` carries forward declarations for callees (buildDependencyForward-
+# Declarations); this script splices in their bodies on the Rust side. On
+# libcsv that asymmetry is measurable: the Rust csv_parse walks into
+# csv_increase_buffer's `while (vp = realloc_func(...)) == NULL` loop through a
+# symbolic function pointer and completes 398 paths against the C side's 732,
+# losing the deep tree buckets for entry_buf and `data` outright (two 1000s)
+# and one bucket each on entry_pos and ret_value.
+#
+# Fix: keep the closure (the definitions must be *visible* or the file does not
+# compile) but replace each non-target body with a forwarding call to an
+# undefined `extern` — the exact Rust analogue of C's `declare`. Call sites,
+# ABI, safety and visibility of the original item are untouched, so nothing
+# upstream has to change.
+ASSURE_OPAQUE_CALLEES = os.environ.get("ASSURE_OPAQUE_CALLEES", "1") not in ("0", "", "false")
+
+_FN_START_RE = re.compile(
+    r"(?m)^(?P<head>(?:pub(?:\([^)]*\))?\s+)?(?:default\s+)?(?:const\s+)?"
+    r"(?:async\s+)?(?:unsafe\s+)?(?:extern\s+\"[^\"]*\"\s+)?fn\s+"
+    r"(?P<name>[A-Za-z_]\w*))"
+)
+
+
+def _skip_to_matching(text, i, opener, closer):
+    """Index just past the delimiter matching text[i] == opener. -1 if unbalanced.
+
+    Steps over string / char / raw-string literals and comments so a brace in
+    "}" or in a doc comment does not close the block early.
+    """
+    depth = 0
+    n = len(text)
+    while i < n:
+        c = text[i]
+        if c == "/" and i + 1 < n and text[i + 1] == "/":
+            j = text.find("\n", i)
+            i = n if j == -1 else j + 1
+            continue
+        if c == "/" and i + 1 < n and text[i + 1] == "*":
+            j = text.find("*/", i + 2)
+            i = n if j == -1 else j + 2
+            continue
+        if c == "r" and i + 1 < n and text[i + 1] in "#\"":
+            k = i + 1
+            hashes = 0
+            while k < n and text[k] == "#":
+                hashes += 1
+                k += 1
+            if k < n and text[k] == '"':
+                term = '"' + "#" * hashes
+                j = text.find(term, k + 1)
+                i = n if j == -1 else j + len(term)
+                continue
+        if c == '"':
+            i += 1
+            while i < n:
+                if text[i] == "\\":
+                    i += 2
+                    continue
+                if text[i] == '"':
+                    i += 1
+                    break
+                i += 1
+            continue
+        if c == "'":
+            # Lifetime ('a) or char literal. A char literal is at most 4 chars
+            # before the closing quote; a lifetime has no closing quote.
+            j = i + 1
+            if j < n and text[j] == "\\":
+                j += 2
+            elif j < n:
+                j += 1
+            if j < n and text[j] == "'":
+                i = j + 1
+                continue
+            i += 1
+            continue
+        if c == opener:
+            depth += 1
+        elif c == closer:
+            depth -= 1
+            if depth == 0:
+                return i + 1
+        i += 1
+    return -1
+
+
+def _split_top_level(text, sep=","):
+    """Split on `sep` at nesting depth 0 of () [] <> — for a parameter list."""
+    out, buf, depth = [], [], 0
+    i, n = 0, len(text)
+    while i < n:
+        c = text[i]
+        if c in "([<":
+            depth += 1
+        elif c in ")]>":
+            # `->` is not a closing angle bracket.
+            if not (c == ">" and i and text[i - 1] == "-"):
+                depth -= 1
+        if c == sep and depth == 0:
+            out.append("".join(buf))
+            buf = []
+        else:
+            buf.append(c)
+        i += 1
+    if "".join(buf).strip():
+        out.append("".join(buf))
+    return [x.strip() for x in out if x.strip()]
+
+
+def _parse_params(paramText):
+    """[(declText, argName)] for a parameter list, or None if unsupported.
+
+    Unsupported = a non-trivial pattern (`self`, tuple/struct destructuring),
+    which cannot appear in an `extern` block declaration.
+    """
+    params = []
+    for idx, raw in enumerate(_split_top_level(paramText)):
+        if raw.startswith("#["):
+            return None
+        if raw in ("self", "&self", "&mut self") or raw.startswith("self:"):
+            return None
+        head, sep, ty = raw.partition(":")
+        if not sep:
+            return None
+        pat = head.strip()
+        while pat.startswith("mut ") or pat.startswith("ref "):
+            pat = pat.split(" ", 1)[1].strip()
+        if pat == "_":
+            pat = "__a%d" % idx
+        if not re.fullmatch(r"[A-Za-z_]\w*", pat):
+            return None
+        params.append(("%s: %s" % (pat, ty.strip()), pat))
+    return params
+
+
+def opaque_ize_block(text, keepNames=()):
+    """Replace the body of every top-level fn in `text` (except `keepNames`)
+    with a call to an undefined extern of the same signature.
+
+    Returns the rewritten text. Any construct the small parser does not
+    understand (generics, `where`, `impl Trait`, non-ident patterns) is left
+    exactly as it was — worst case a block stays as expensive as before, never
+    broken.
+    """
+    if not ASSURE_OPAQUE_CALLEES or not text:
+        return text
+    out = []
+    pos = 0
+    for m in _FN_START_RE.finditer(text):
+        if m.start() < pos:
+            continue
+        name = m.group("name")
+        i = m.end()
+        # generic parameter list -> give up on this fn
+        j = i
+        while j < len(text) and text[j].isspace():
+            j += 1
+        if j < len(text) and text[j] == "<":
+            continue
+        if j >= len(text) or text[j] != "(":
+            continue
+        paramEnd = _skip_to_matching(text, j, "(", ")")
+        if paramEnd == -1:
+            continue
+        paramText = text[j + 1:paramEnd - 1]
+        braceRel = text.find("{", paramEnd)
+        if braceRel == -1:
+            continue
+        between = text[paramEnd:braceRel]
+        if "where" in between or "impl " in between:
+            continue
+        bodyEnd = _skip_to_matching(text, braceRel, "{", "}")
+        if bodyEnd == -1:
+            continue
+        params = _parse_params(paramText)
+        if params is None or name in keepNames:
+            continue
+        ret = between.strip()
+        if ret.startswith("->"):
+            ret = ret[2:].strip()
+        elif ret:
+            continue
+        if ret in ("!", "impl", ""):
+            retClause = "" if ret == "" else None
+            if retClause is None:
+                continue
+        else:
+            retClause = " -> %s" % ret
+        shim = "__assure_opaque_%s" % name
+        decl = 'extern "C" {\n    fn %s(%s)%s;\n}\n' % (
+            shim, ", ".join(p[0] for p in params), retClause)
+        call = "{\n    unsafe { %s(%s) }\n}" % (shim, ", ".join(p[1] for p in params))
+        out.append(text[pos:m.start()])
+        out.append(decl)
+        out.append(text[m.start():braceRel])
+        out.append(call)
+        pos = bodyEnd
+    out.append(text[pos:])
+    return "".join(out)
+
+
 def closure_blocks(fn, manifest):
     """fn's dependency closure, mapped to a set of block names (an SCC group is pulled in whole automatically)."""
     blockOf, deps = manifest["block_of"], manifest["deps"]
@@ -163,7 +376,7 @@ def main():
 
     topo = manifest["topo_sccs"]          # block names, callees first
     funcs = sorted(os.path.splitext(f)[0] for f in os.listdir(d) if f.endswith(".i"))
-    stats = {"split": 0, "fallback_merge": 0, "merge_failed": 0}
+    stats = {"split": 0, "fallback_merge": 0, "merge_failed": 0, "opaque_reverted": 0}
 
     for fn in funcs:
         if manifest["block_of"].get(fn) is None or blockText(manifest["block_of"][fn]) is None:
@@ -172,12 +385,38 @@ def main():
             print(f"[split] {fn}: failed at merge stage; keeping the frontend failure dump")
             continue
         need = closure_blocks(fn, manifest)
-        parts = [structs] + [blockText(b) for b in topo if b in need]
-        content = dedupe_top_level(("\n".join(p for p in parts if p)).splitlines())
+        own = manifest["block_of"][fn]
+        blocks = [(b, blockText(b)) for b in topo if b in need]
+
+        def assemble(opaque):
+            # `own` holds the function under test (and, for an SCC, the whole
+            # mutually-recursive group) — always keep it whole. Every other
+            # block in the closure is a callee, which the paired .i carries as
+            # a forward declaration only.
+            parts = [structs] + [
+                (opaque_ize_block(t, keepNames=set(own.split("@"))) if (opaque and b != own) else t)
+                for b, t in blocks
+            ]
+            return dedupe_top_level(("\n".join(p for p in parts if p)).splitlines())
+
         out = os.path.join(d, f"{fn}.rs")
         with open(out, "w") as f:
-            f.write(content)
+            f.write(assemble(opaque=True))
         ok, err = rustc_ok(out)
+        if not ok and ASSURE_OPAQUE_CALLEES and len(blocks) > 1:
+            # The opaque rewrite is best-effort; if it did not survive rustc,
+            # fall back to the previous behaviour (full callee bodies) BEFORE
+            # resorting to the whole merge, so this change can never cost a
+            # function its per-function pairing.
+            with open(out, "w") as f:
+                f.write(assemble(opaque=False))
+            ok2, err2 = rustc_ok(out)
+            if ok2:
+                print(f"[split] {fn}: opaque-callee rewrite rejected by rustc, kept full bodies")
+                ok, err = True, ""
+                stats["opaque_reverted"] += 1
+            else:
+                err = err2
         if ok:
             stats["split"] += 1
         else:
@@ -219,7 +458,8 @@ def main():
                 os.rename(os.path.join(root, f), os.path.join(root, f + ".block"))
 
     print(f"[split] done: closure-split {stats['split']} / whole-merge fallback {stats['fallback_merge']}"
-          f" / merge-stage failures {stats['merge_failed']}  ({len(funcs)} functions total)")
+          f" / merge-stage failures {stats['merge_failed']}"
+          f" / opaque-callee reverts {stats['opaque_reverted']}  ({len(funcs)} functions total)")
     return 0
 
 
