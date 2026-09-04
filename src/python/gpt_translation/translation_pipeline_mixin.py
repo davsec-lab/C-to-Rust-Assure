@@ -36,6 +36,7 @@ from type_registry import TranslationMode, TypeKind
 
 from gpt_translation._call_kind_helper import callKindContext as _callKindContext
 from gpt_translation.byte_buffer_classifier import _TAG_CORE as _BYTE_BUFFER_TAG
+from gpt_translation.behaviour_contract import C_SEMANTIC_FIDELITY_CONTRACT
 from gpt_translation.config import (
     COMPILATION_RETRIES,
     MAX_THREADS,
@@ -66,6 +67,12 @@ _FILE_IO_RE = re.compile(
 
 class TranslationPipelineMixin:
 
+    def _semanticFidelityContract(self):
+        """The behaviour-preservation contract appended to the C -> Rust
+        function prompts (single-function and SCC)."""
+        return C_SEMANTIC_FIDELITY_CONTRACT
+
+    STAGE_STATE_FILENAME = "stage_state.json"
 
 
 
@@ -544,7 +551,7 @@ class TranslationPipelineMixin:
         # this, LLM-emitted decls accumulate in ``previouslyTranslatedFunctions``
         # and ``merged_funcs.{cpp,rs}`` and go stale when a later stage rewrites
         # a callee's signature, producing the same-name-different-signature
-        # link error we saw on an earlier pass cjson_new ``parse_value``.
+        # link error we saw on cjson_new ``parse_value``.
         return self._stripDependencyForwardDeclarations(cleaned, dependencyFunctionNames)
 
     @staticmethod
@@ -691,7 +698,7 @@ class TranslationPipelineMixin:
         linger with their original (often pointer) signatures while the
         actual definitions get rewritten to use references / smart
         pointers / etc. — producing same-name-different-signature pairs
-        in the merged output (an earlier pass of cjson_new ``parse_value``).
+        in the merged output (cjson_new ``parse_value``).
 
         With correct topological order, dependency definitions are
         already emitted earlier in ``merged_funcs.cpp`` / ``.rs``, so no
@@ -1144,7 +1151,7 @@ class TranslationPipelineMixin:
             # translate. Calling the LLM with an empty input section in the
             # type-batch prompt risks hallucinated content (observed: sonnet
             # emitted `pub struct internal_hooks { default_allocate, ... }`
-            # from an empty input during a perf retry, cascade-failing
+            # from an empty input during the Rust pass perf retry, cascade-failing
             # every function compile). Their rustCode stays as it was (= "")
             # which is the correct "still removed" state.
             batchNodes = [
@@ -1454,6 +1461,7 @@ class TranslationPipelineMixin:
             + "If the source code does not have a called function defined, please do NOT add a dummy definition. "
             + "Translate ONLY the provided functions.\n"
             + "Please use standard library functions if a C function has been implemented by the target standard library.\n"
+            + self._semanticFidelityContract()
             + 'For the final code result, please respond with "Final result code" is :\n'
         )
 
@@ -1636,7 +1644,9 @@ class TranslationPipelineMixin:
         return result
 
     def compileWithFeedback(self, funcName, funcDepsObj, contextStructs, dependencyTranslate=False):
-        prompt = "Translate " + self.srcLang + " to " + self.dstLang + ". If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function." + "\n Please use standard library function if a C function has been implemented by Rust standard library" + "\n For the final code result, please response with \"Final result code\" is : \n"
+        prompt = "Translate " + self.srcLang + " to " + self.dstLang + ". If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function." + "\n Please use standard library function if a C function has been implemented by Rust standard library"
+        prompt = prompt + self._semanticFidelityContract()
+        prompt = prompt + "\n For the final code result, please response with \"Final result code\" is : \n"
         callbackContract = self._buildCallbackContractSection(funcDepsObj)
         if callbackContract:
             prompt = prompt + callbackContract
@@ -1952,6 +1962,17 @@ class TranslationPipelineMixin:
             compileErrorInformation = "The compile error information : " + errorStr + "\n"
 
             compilefix = "If the compile error is caused by missing dependency such as no member named, please fix try to generate code with the missing dependency \n"
+            # A compile-error rewrite is the most common place where the
+            # behaviour contract silently gets dropped: the model is now
+            # optimising for "make rustc happy", not for fidelity. Restate
+            # the rules that a rustc-driven rewrite actually tends to break.
+            compilefix = compilefix + (
+                "While fixing the error, keep the translation behaviourally identical to the C: "
+                "do not change a variable's C type (an `int` flag stays `i32`, never `bool`), "
+                "do not hoist a call out of the branch that guards it, "
+                "do not move statements into or out of a conditional, and "
+                "do not add null/bounds/overflow checks or early returns the C does not have.\n"
+            )
             otherInformation = "\n For the final code result, please response with \"Final result code\" is : \n"
             # Preserve perf-retry context across compile-fix iterations so the
             # model does not forget WHY it is being retried (perf regression),
@@ -2101,12 +2122,16 @@ class TranslationPipelineMixin:
         if updateFuncMapAfterCheck and funcMap is not None:
             self.updateFuncMap(funcMap)
 
-        # 1. Correctness gate (independent of perf): a checksum mismatch means
-        #    the output is wrong; keep it and surface the failure via the False
-        #    return — there is nothing sensible to revert to.
+        # 1. Correctness gate (independent of perf): if this stage produced wrong
+        #    output (checksum mismatch), discard it. No retry — retry only fixes perf.
+        #
+        # Exception: the Rust pass emits Rust while every prior stage emits C++.
+        # Reverting the Rust pass to its predecessor would replace Rust output with
+        # C++ output, which is never the user's intent — keep the the Rust pass
+        # result regardless and surface the failure via the False return.
         if correctnessCheckPassed is False:
             self.logger.warning(
-                "[Correctness failed] : %s expected=%s got=%s",
+                "[Stage discarded] : %s reason=correctness expected=%s got=%s",
                 label, expectedChecksum, currentChecksum,
             )
             return False
