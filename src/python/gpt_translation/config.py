@@ -33,6 +33,11 @@ CARGO_LIBC_REQUIREMENT = _os.environ.get("ASSURE_CARGO_LIBC_REQ", "=0.2.149")
 # the change.
 COMPILATION_RETRIES = int(_os.environ.get("ASSURE_COMPILATION_RETRIES", "5"))
 STRUCT_RETRIES = int(_os.environ.get("ASSURE_STRUCT_RETRIES", "5"))
+
+# Number of divergence-review rounds run against an already-compiling Rust
+# function before it is accepted (see _reviewTranslationForDivergence).
+# 0 disables the pass entirely.
+DIVERGENCE_REVIEW_ROUNDS = int(_os.environ.get("ASSURE_DIVERGENCE_REVIEW_ROUNDS", "1"))
 MAX_THREADS = 40
 
 # Performance regression retry defaults (CLI overridable in translationValidator.py).

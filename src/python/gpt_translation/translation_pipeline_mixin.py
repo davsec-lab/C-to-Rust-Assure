@@ -38,6 +38,7 @@ from gpt_translation._call_kind_helper import callKindContext as _callKindContex
 from gpt_translation.byte_buffer_classifier import _TAG_CORE as _BYTE_BUFFER_TAG
 from gpt_translation.config import (
     COMPILATION_RETRIES,
+    DIVERGENCE_REVIEW_ROUNDS,
     MAX_THREADS,
     PERF_DEGRADE_THRESHOLD_PCT,
     PERF_DEGRADE_THRESHOLD_PCT_PER_STAGE,
@@ -1729,6 +1730,121 @@ class TranslationPipelineMixin:
                                                                                                                                               funcSrc)
         return (successFlag, result)
 
+    # Divergence classes the reviewer is asked to look for. Each one is a
+    # concrete failure taken from the libcsv baseline (runs/libcsv-mem2reg),
+    # where csv_parse compiled cleanly, read correctly, and still disagreed
+    # with the C on 5 of its 10 symbolic argument trees.
+    DIVERGENCE_REVIEW_CHECKLIST = """
+A. A C integer was given a different Rust type. A C `int` used as a flag must
+   stay `i32`, not become `bool`: `int f = p->flag; ... p->flag = f;` round-trips
+   whatever was in the field, while `let f = p.flag != 0; ... p.flag = f as i32;`
+   rewrites every value except 0 and 1 into 1. Also check for silent widening,
+   narrowing, or sign changes on any parameter, local, field or return value.
+B. A subexpression was hoisted out of the branch that guards it. In
+   `if (a) {..} else if (f(c)) {..}` the C calls `f` only when `a` is false;
+   a `let fc = f(c);` above the chain calls it always. Check every `let` that
+   was introduced for a condition, and every `&&` / `||` / `?:` that must
+   short-circuit. The callees invoked on each path, and how many times, must
+   match the C exactly.
+C. A statement changed nesting depth. In `if (cb) cb(x); s1; s2;` the
+   statements `s1` and `s2` are unconditional and must NOT sit inside
+   `if let Some(f) = cb { ... }`. Preprocessed sources put a macro's call and
+   its state updates on one line, so re-read every line with several `;`.
+D. A check was added or dropped. Null checks, bounds checks, `Option`/`Result`
+   early returns, overflow guards, `checked_*`/`saturating_*`, `assert!` —
+   present in the Rust but not the C, or present in the C but not the Rust.
+E. Control flow changed shape: a loop's trip count, a `break`/`continue`
+   target, an early `return`, or a `switch` arm (including fallthrough and
+   `default`).
+F. Memory shape changed: a raw pointer parameter became a reference, slice,
+   `Vec` or `String`, or pointer arithmetic was replaced by indexing that
+   reads or writes different bytes.
+"""
+
+    def _reviewTranslationForDivergence(self, funcName, funcSrc, result, contextStructs,
+                                        translatedFuncs, translatedFuncsSignatures,
+                                        dependencyCodes=(), dependencyKeys=(),
+                                        dependencyFunctionNames=()):
+        """One self-review round over an already-compiling Rust translation.
+
+        The compile loop only ever asks "does rustc accept this?". Nothing in
+        the pipeline asks "does this do what the C did?", and the metric is a
+        symbolic-tree comparison — a translation that compiles, reads well and
+        quietly normalises a flag to 0/1 scores zero on that argument. This
+        pass shows the model its own output next to the C and asks for
+        divergences against a fixed checklist.
+
+        Contract: returns the replacement translation, or ``result`` unchanged.
+        A rewrite is accepted ONLY if it still compiles, so this can never turn
+        a compiling function into a non-compiling one (it cannot move
+        counts.arguments_of_compiled_funcs). Any exception is swallowed for the
+        same reason.
+        """
+        if self.dstLang != "Rust" or DIVERGENCE_REVIEW_ROUNDS <= 0:
+            return result
+        current = result
+        for roundIndex in range(DIVERGENCE_REVIEW_ROUNDS):
+            try:
+                request = (
+                    "You already translated the C function below to Rust, and it compiles.\n"
+                    "Do NOT judge style, safety or idiom. Your only question is whether the "
+                    "Rust is BEHAVIOURALLY IDENTICAL to the C: same values computed, same "
+                    "branches taken, same callees invoked the same number of times in the "
+                    "same order, same reads and writes to caller-visible memory.\n"
+                    "\nCheck each of these, in order:\n"
+                    + self.DIVERGENCE_REVIEW_CHECKLIST
+                    + "\nThe C source:\n" + funcSrc + "\n"
+                    + "\nYour Rust translation:\n" + self.cleanCode(current) + "\n"
+                    + "\nAvailable dependency function signatures:\n/*\n"
+                    + translatedFuncsSignatures + "*/\n"
+                    + "\nIf every check passes, reply with exactly NO DIVERGENCE and no code.\n"
+                    "Otherwise reply with the corrected translation of the SAME function(s), "
+                    "complete and self-contained, keeping the same signature(s) and the same "
+                    "names. Do not redefine the dependency structs or the dependency "
+                    "functions. Fix only what the checklist caught.\n"
+                    'For the final code result, please response with "Final result code" is : \n'
+                )
+                with _callKindContext(self, "divergence_review"):
+                    reviewed = self.chunkAndSend(funcName, request)
+            except Exception as exc:  # never let the review break a good translation
+                self.logger.warning("[DIVERGENCE REVIEW] %s: review call failed (%s), keeping translation",
+                                    funcName, exc)
+                return current
+
+            reviewed = self._sanitizeResultAgainstDependencies(
+                reviewed,
+                dependencyCodes,
+                dependencyKeys,
+                dependencyFunctionNames,
+            )
+            candidate = (reviewed or "").strip()
+            raw = getattr(self, "lastRawResponse", None) or candidate
+            # A real correction has to contain a function definition. Anything
+            # else — "NO DIVERGENCE", a prose explanation, an empty extraction
+            # — means keep what we have. Checking for `fn ` rather than
+            # trusting the verdict text keeps this correct whichever way
+            # extractTargetCode happened to slice the reply.
+            if "fn " not in candidate or self._isEmptyOrCommentOnly(candidate):
+                verdict = "clean" if "NO DIVERGENCE" in (raw or "").upper() else "no usable rewrite"
+                self.logger.info("[DIVERGENCE REVIEW] %s: %s after round %d",
+                                 funcName, verdict, roundIndex + 1)
+                return current
+            if self.cleanCode(candidate).strip() == self.cleanCode(current).strip():
+                self.logger.info("[DIVERGENCE REVIEW] %s: no change proposed", funcName)
+                return current
+            completeReviewed = self.cleanCode(contextStructs + "\n" + translatedFuncs + "\n" + candidate)
+            (reviewOk, reviewErr) = self.compile(completeReviewed)
+            if not reviewOk:
+                self.logger.info(
+                    "[DIVERGENCE REVIEW] %s: proposed fix does not compile, keeping the original (%s)",
+                    funcName, self.extractError(reviewErr)[:200],
+                )
+                return current
+            self.logger.info("[DIVERGENCE REVIEW] %s: accepted a behaviour fix on round %d",
+                             funcName, roundIndex + 1)
+            current = candidate
+        return current
+
     def compileAndRetryLoopforDepency(self,
                                       funcName,
                                       prompt,
@@ -1974,6 +2090,15 @@ class TranslationPipelineMixin:
             attempts = attempts + 1
         if attempts != 0:
             self.logger.debug("[COMPILE AND LINK] After %d retranslation attempts result, complete result: %s, %s", attempts, result, completeResult)
+
+        if successFlag:
+            # The compile loop above only established that rustc accepts this.
+            # Nothing has yet asked whether it still behaves like the C.
+            result = self._reviewTranslationForDivergence(
+                funcName, funcSrc, result, contextStructs,
+                translatedFuncs, translatedFuncsSignatures,
+                dependencyCodes, dependencyKeys, dependencyFunctionNames,
+            )
 
         return (successFlag, result)
 
