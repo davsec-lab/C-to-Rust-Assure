@@ -125,7 +125,7 @@ yes"""
         )
 
     def testExtractYesNoDecisionAfterFencedCodeBlock(self):
-        # The cjson_new Stage_3 / Stage_8+ failure pattern: model emits the
+        # The cjson_new an earlier pass / an earlier pass+ failure pattern: model emits the
         # proposed change in a ```cpp ... ``` fence and writes the decision
         # ("no") OUTSIDE the fence on its own line. The raw response is
         # what we want to feed to the parser — extractTargetCode would

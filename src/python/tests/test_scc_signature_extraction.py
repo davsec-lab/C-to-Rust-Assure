@@ -7,7 +7,7 @@ emitted
     [SCC] Could not extract signatures for ['parse_object', 'parse_value']
           in group ['parse_array', 'parse_object', 'parse_value']
 
-at every C++ stage of the cjson_new run (Stage_1 – Stage_9 in
+at every C++ stage of the cjson_new run (an earlier pass – an earlier pass in
 cjson_new_validator_2026-05-13_20-27-43.log).
 
 Root cause: ``find_target_cpp_function`` returns ``(name, node)`` and

@@ -219,7 +219,7 @@ class PerformanceMixin:
     # we err on the side of adding rather than gating.
     _MISSING_INCLUDE_RULES = (
         # <cstdint> — fixed-width integer typedefs. This is the rule
-        # whose absence stalled Stage_2 (run 14-48-49) and Stage_3
+        # whose absence stalled an earlier pass (run 14-48-49) and an earlier pass
         # (run 16-09-37) on the skiplist input.
         (r"\b(?:u?int(?:8|16|32|64)_t|(?:u|s)?int_least(?:8|16|32|64)_t|"
          r"(?:u|s)?int_fast(?:8|16|32|64)_t|uintptr_t|intptr_t|"
@@ -800,47 +800,17 @@ class PerformanceMixin:
     C_BASELINE_KEY = "baseline_c"
 
     def getPerformanceMetricsContext(self, performancePath):
-        stageDirName = os.path.basename(os.path.dirname(performancePath))
-        stageMatch = re.fullmatch(r"_Stage\.Stage_(\d+)", stageDirName)
 
-        if stageMatch:
-            stageIndex = int(stageMatch.group(1))
-            metricsRoot = os.path.dirname(os.path.dirname(performancePath))
-            currentKey = f"Stage_{stageIndex}"
-            metricsPath = os.path.join(metricsRoot, "performance_metrics.json")
-            # When --skip-stages omits stages, performance_metrics.json
-            # has gaps (e.g. Stage_5 / Stage_6 entries simply don't exist).
-            # Walk backwards from stageIndex-1 to find the most recent
-            # stage that ACTUALLY ran, so the perf gate compares against
-            # a real baseline instead of falling through to "no prev =
-            # silent pass". Discarded stages are kept in the walk: their
-            # average_elapsed_ms was rewritten to the predecessor's value
-            # by _markStageDiscardedInMetrics, so they propagate the
-            # effective baseline correctly. Fall back to baseline_c if
-            # no earlier Stage_N entry exists (Stage_1, or every prior
-            # stage was skipped).
-            previousKey = self.C_BASELINE_KEY
-            if stageIndex > 1:
-                try:
-                    metrics = self.loadPerformanceMetrics(metricsPath)
-                except Exception:
-                    metrics = {}
-                for candidateIndex in range(stageIndex - 1, 0, -1):
-                    candidateKey = f"Stage_{candidateIndex}"
-                    if candidateKey in metrics:
-                        previousKey = candidateKey
-                        break
-        else:
-            metricsRoot = os.path.dirname(performancePath)
-            currentKey = os.path.basename(performancePath)
-            previousKey = None
-            metricsPath = os.path.join(metricsRoot, "performance_metrics.json")
+        metricsRoot = os.path.dirname(performancePath)
+        currentKey = os.path.basename(performancePath)
+        previousKey = None
+        metricsPath = os.path.join(metricsRoot, "performance_metrics.json")
 
         return metricsPath, currentKey, previousKey
 
     def isPerformanceWithinStageThreshold(self, currentKey, previousKey, averageElapsedMs, metrics,
                                           thresholdPct=None, thresholdMs=None):
-        """Stage performance gate.
+        """Performance gate.
 
         If ``thresholdPct`` is provided (or attached as ``self.perfDegradeThresholdPct``),
         gate is ``current <= previous * (1 + thresholdPct/100)``. Otherwise falls back
@@ -934,8 +904,8 @@ class PerformanceMixin:
         self.logger.info("Recorded performance result %.3f ms at %s", averageElapsedMs, metricsPath)
         return performanceCheckPassed
 
-    def loadPreviousStageChecksum(self, performancePath):
-        """Return the prev stage's recorded checksum string, or None."""
+    def loadBaselineChecksum(self, performancePath):
+        """Return the previously recorded baseline checksum string, or None."""
         metricsPath, _, previousKey = self.getPerformanceMetricsContext(performancePath)
         if not previousKey:
             return None
@@ -1053,8 +1023,8 @@ class PerformanceMixin:
         # User-supplied relative paths in ``input_arguments`` (e.g.
         # ``../pokedex.json``) are written assuming cwd is the
         # ``individual-funcs_*/`` output dir. Various pipeline modes drop
-        # perf into a wrapper subdir (struct-fn-replay → ``temp/``, new-mode
-        # → ``_Stage.Stage_<n>/``) which silently changes how those paths
+        # perf into a wrapper subdir (struct-fn-replay → ``temp/``
+        # → ``wrapper dir) which silently changes how those paths
         # resolve. Walk up to the ``individual-funcs_*`` ancestor so cwd is
         # consistent across modes; fall through to the original cwd if no
         # such ancestor exists (perf invoked outside the normal layout).
@@ -1176,7 +1146,7 @@ class PerformanceMixin:
                         runChecksums,
                     )
 
-            expectedChecksum = self.loadPreviousStageChecksum(performancePath)
+            expectedChecksum = self.loadBaselineChecksum(performancePath)
             correctnessCheckPassed = None
             if canonicalChecksum is not None:
                 if expectedChecksum is None:
@@ -1233,7 +1203,7 @@ class PerformanceMixin:
     @staticmethod
     def findCSourceWithMain(codebasePath):
         """Locate a top-level .c file that defines `int main(`. Returns the
-        path or None. Used to establish a Stage_1 baseline."""
+        path or None. Used to establish a C baseline."""
         import glob as _glob
         candidates = sorted(_glob.glob(os.path.join(codebasePath, "*.c")))
         for path in candidates:
@@ -1248,7 +1218,7 @@ class PerformanceMixin:
 
     def runCBaselinePerformance(self, codebasePath, individualFuncPath, performanceArguments):
         """Compile and run the original C source 5 times to establish a
-        Stage_1 baseline. Saves the result to performance_metrics.json under
+        C baseline. Saves the result to performance_metrics.json under
         the ``baseline_c`` key.
 
         MANDATORY: this method raises CBaselineError on any hard failure

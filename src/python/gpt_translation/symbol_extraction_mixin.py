@@ -937,7 +937,7 @@ class SymbolExtractionMixin:
             # ``URL_SCHEMES`` and stripped from the LLM's response by
             # ``_stripProvidedDependencyDefinitions``, deleting the
             # ``count`` declaration and leaving the loop with an undeclared
-            # identifier (observed on Stage_1 url_is_protocol, run
+            # identifier (observed on url_is_protocol, run
             # individual-funcs_claude-sonnet-4-6_2026-05-27_16-22-16).
             return re.compile(
                 r'(?m)^\s*(?:(?:pub(?:\s*\([^)]*\))?\s+)?(?:unsafe\s+)?(?:static(?:\s+mut)?|const)\b|static\b)[^\n;=({]*\b'

@@ -10,7 +10,7 @@ Usage:
     tracker.record(
         name="nsvg__pushAttr",
         kind="function",
-        stage="Stage_1",
+        stage="translate",
         model=self.model,
         completion=completion,
     )

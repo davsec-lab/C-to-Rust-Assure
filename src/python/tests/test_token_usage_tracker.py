@@ -126,13 +126,13 @@ def test_pricing_prefix_match():
 
 def test_record_and_summarize():
     tracker = TokenUsageTracker(logger=logging.getLogger("test_token"))
-    tracker.record("nsvg__pushAttr", "function", "Stage_1",
+    tracker.record("nsvg__pushAttr", "function", "an earlier pass",
                    "claude-opus-4-1", _anthropicCompletion(in_=1000, out=500))
-    tracker.record("nsvg__addShape", "function", "Stage_1",
+    tracker.record("nsvg__addShape", "function", "an earlier pass",
                    "claude-opus-4-1", _anthropicCompletion(in_=2000, out=300))
-    tracker.record("type_batch_1", "type_batch", "Stage_1",
+    tracker.record("type_batch_1", "type_batch", "an earlier pass",
                    "claude-opus-4-1", _anthropicCompletion(in_=500, out=100))
-    tracker.record("nsvg__pushAttr", "function_retry", "Stage_2",
+    tracker.record("nsvg__pushAttr", "function_retry", "an earlier pass",
                    "claude-opus-4-1", _anthropicCompletion(in_=1500, out=200, cache_read=900))
 
     summary = tracker.summarize()
@@ -144,8 +144,8 @@ def test_record_and_summarize():
     assert summary["by_kind"]["function"]["calls"] == 2
     assert summary["by_kind"]["function_retry"]["calls"] == 1
     assert summary["by_kind"]["type_batch"]["calls"] == 1
-    assert summary["by_stage"]["Stage_1"]["calls"] == 3
-    assert summary["by_stage"]["Stage_2"]["calls"] == 1
+    assert summary["by_stage"]["an earlier pass"]["calls"] == 3
+    assert summary["by_stage"]["an earlier pass"]["calls"] == 1
     assert t["estimated_cost_usd"] > 0
     print(f"PASS: aggregation correct, totals={t['calls']} calls, "
           f"in={t['input_tokens']}, out={t['output_tokens']}, "
@@ -154,9 +154,9 @@ def test_record_and_summarize():
 
 def test_dump_writes_jsonl_and_summary():
     tracker = TokenUsageTracker(logger=logging.getLogger("test_token"))
-    tracker.record("a", "function", "Stage_1", "claude-opus-4-1",
+    tracker.record("a", "function", "an earlier pass", "claude-opus-4-1",
                    _anthropicCompletion(in_=10, out=5))
-    tracker.record("b", "type_batch", "Stage_1", "claude-opus-4-1",
+    tracker.record("b", "type_batch", "an earlier pass", "claude-opus-4-1",
                    _anthropicCompletion(in_=20, out=8))
 
     with tempfile.TemporaryDirectory() as tmp:
@@ -185,7 +185,7 @@ def test_thread_safety():
 
     def worker(thread_id):
         for i in range(PER_THREAD):
-            tracker.record(f"f_{thread_id}_{i}", "function", "Stage_1",
+            tracker.record(f"f_{thread_id}_{i}", "function", "an earlier pass",
                            "claude-opus-4-1", _anthropicCompletion(in_=10, out=5))
 
     threads = [threading.Thread(target=worker, args=(t,)) for t in range(NUM_THREADS)]
@@ -210,7 +210,7 @@ def test_send_integration_records():
             self.logger = logging.getLogger("test_send_integration")
             self.tokenTracker = TokenUsageTracker(self.logger)
             self.currentCallKind = "function"
-            self.stage = "Stage_1"
+            self.stage = "an earlier pass"
             self.model = "claude-opus-4-1"
             self.dstLang = "Rust"
             self._completionCounter = 0
@@ -231,7 +231,7 @@ def test_send_integration_records():
     assert len(snap) == 1
     assert snap[0]["name"] == "nsvg__pushAttr"
     assert snap[0]["kind"] == "function"
-    assert snap[0]["stage"] == "Stage_1"
+    assert snap[0]["stage"] == "an earlier pass"
     assert snap[0]["input_tokens"] == 42
     assert snap[0]["output_tokens"] == 11
     print("PASS: send() emits a token-usage record automatically")

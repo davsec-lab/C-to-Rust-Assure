@@ -66,7 +66,6 @@ _FILE_IO_RE = re.compile(
 
 class TranslationPipelineMixin:
 
-    STAGE_STATE_FILENAME = "stage_state.json"
 
 
 
@@ -545,7 +544,7 @@ class TranslationPipelineMixin:
         # this, LLM-emitted decls accumulate in ``previouslyTranslatedFunctions``
         # and ``merged_funcs.{cpp,rs}`` and go stale when a later stage rewrites
         # a callee's signature, producing the same-name-different-signature
-        # link error we saw on Stage_8 cjson_new ``parse_value``.
+        # link error we saw on an earlier pass cjson_new ``parse_value``.
         return self._stripDependencyForwardDeclarations(cleaned, dependencyFunctionNames)
 
     @staticmethod
@@ -692,7 +691,7 @@ class TranslationPipelineMixin:
         linger with their original (often pointer) signatures while the
         actual definitions get rewritten to use references / smart
         pointers / etc. — producing same-name-different-signature pairs
-        in the merged output (Stage_8 of cjson_new ``parse_value``).
+        in the merged output (an earlier pass of cjson_new ``parse_value``).
 
         With correct topological order, dependency definitions are
         already emitted earlier in ``merged_funcs.cpp`` / ``.rs``, so no
@@ -835,10 +834,10 @@ class TranslationPipelineMixin:
             #
             # The phrasing here is deliberately NOT "translate to a more
             # idiomatic type". The previous open-ended wording, combined
-            # with the unscoped example-usage block, was getting Stage_1
-            # to also do Stage_4's job (e.g. converting char* fields to
+            # with the unscoped example-usage block, was getting an earlier pass
+            # to also do an earlier pass's job (e.g. converting char* fields to
             # std::string because the usage looked string-like, even
-            # though Stage_1's only mandate is to remove the custom
+            # though an earlier pass's only mandate is to remove the custom
             # allocator). The STAGE-EXCLUSIVITY block already enumerates
             # what each future stage owns; this sentence's job is just
             # to tell the model what the example block is FOR.
@@ -918,16 +917,16 @@ class TranslationPipelineMixin:
 
         Single source of truth: callers/translators and the yes/no judge
         used to disagree on whether usage was available — the type-batch
-        prompt rendered it from ``node.usageList`` while ``stageCheck``
+        prompt rendered it from ``node.usageList`` while the judge
         rendered nothing at all. That asymmetry let cases like the
-        Stage_4 ``char* → std::string`` slip past the judge (which saw
+        an earlier pass ``char* → std::string`` slip past the judge (which saw
         only the type definitions) even though the actual translation
         prompt had usage evidence (``item->valuestring = (char*)output;``
         / ``free(item->valuestring)``) that would have flagged the
         conversion as unsafe. Routing both through this helper guarantees
         they see byte-identical evidence.
 
-        Stage_10 (Rust) intentionally returns "" — the mechanical mapping
+        the Rust pass (Rust) intentionally returns "" — the mechanical mapping
         hint covers what to do without per-field usage, and dangling
         promises of examples we don't deliver mislead the model into
         "guess what's idiomatic" mode (see _buildTypeBatchBasePrompt).
@@ -1145,7 +1144,7 @@ class TranslationPipelineMixin:
             # translate. Calling the LLM with an empty input section in the
             # type-batch prompt risks hallucinated content (observed: sonnet
             # emitted `pub struct internal_hooks { default_allocate, ... }`
-            # from an empty input during Stage_10 perf retry, cascade-failing
+            # from an empty input during a perf retry, cascade-failing
             # every function compile). Their rustCode stays as it was (= "")
             # which is the correct "still removed" state.
             batchNodes = [
@@ -1215,7 +1214,7 @@ class TranslationPipelineMixin:
         STRUCT/UNION surgical edits never feed the cascade — by design,
         the struct itself stays alive.
 
-        Concrete case observed (cjson_new, Stage_1):
+        Concrete case observed (cjson_new):
           * struct:internal_hooks was normalized to "" (LLM dropped the
             custom-allocator hook type).
           * static:global_hooks was translated in a SEPARATE request
@@ -1769,7 +1768,7 @@ class TranslationPipelineMixin:
         # or similar, it emits a "help: consider importing this module"
         # block whose suggested `use ...;` lines are exact. The LLM
         # sometimes ignores that hint and rewrites unrelated code
-        # (observed on Stage_10's jrsl_center_string in run 16-48-26:
+        # (observed on jrsl_center_string in run 16-48-26:
         # 5 retries on identical `io::stdout()` calls with no
         # `use std::io;`). Apply the hint deterministically here; if it
         # fixes the build, skip the retry loop entirely. Only relevant
@@ -1792,7 +1791,7 @@ class TranslationPipelineMixin:
         # pulled in via ``<memory>``) shadows a user struct of the same
         # tag in template-argument position
         # (``std::vector<link>`` -> ``std::vector<struct link>``).
-        # Stage_9's introduction of ``std::unique_ptr<...>`` was
+        # an earlier pass's introduction of ``std::unique_ptr<...>`` was
         # observed (run 17-23-48) to trigger this exact bug on
         # ``skip_node_t.forward``, and the LLM cannot fix it because the
         # broken code lives in the dependency block, not the function it
@@ -1824,7 +1823,7 @@ class TranslationPipelineMixin:
         # a member referencing a later-defined struct
         # (``struct skip_node_t *node;`` -> ``skip_node_t *node;``),
         # losing the implicit forward declaration. Observed twice on
-        # Stage_9 skiplist (runs 17-04-00 and 17-54-38); the LLM repeats
+        # an earlier pass skiplist (runs 17-04-00 and 17-54-38); the LLM repeats
         # it deterministically, so retries are wasted. Heal the in-flight
         # context string directly (prepended forward declarations fix any
         # use-before-definition regardless of struct order, and unlike a
@@ -1934,7 +1933,7 @@ class TranslationPipelineMixin:
             targetFunction = "target function is " + funcName + "\n" + "Please do not change or modify any other functions" + "\n"
 
             # The "add missing include files" hint is appropriate for C/C++
-            # but actively harmful for Rust: in past Stage_10 perf-retries the
+            # but actively harmful for Rust: in past the Rust pass perf-retries the
             # model took the suggestion literally and emitted `#include
             # <cstddef>` at the top of a .rs file, producing
             #   `error: expected one of `!` or `[`, found `include``
@@ -2102,16 +2101,12 @@ class TranslationPipelineMixin:
         if updateFuncMapAfterCheck and funcMap is not None:
             self.updateFuncMap(funcMap)
 
-        # 1. Correctness gate (independent of perf): if this stage produced wrong
-        #    output (checksum mismatch), discard it. No retry — retry only fixes perf.
-        #
-        # Exception: Stage_10 emits Rust while every prior stage emits C++.
-        # Reverting Stage_10 to its predecessor would replace Rust output with
-        # C++ output, which is never the user's intent — keep the Stage_10
-        # result regardless and surface the failure via the False return.
+        # 1. Correctness gate (independent of perf): a checksum mismatch means
+        #    the output is wrong; keep it and surface the failure via the False
+        #    return — there is nothing sensible to revert to.
         if correctnessCheckPassed is False:
             self.logger.warning(
-                "[Stage discarded] : %s reason=correctness expected=%s got=%s",
+                "[Correctness failed] : %s expected=%s got=%s",
                 label, expectedChecksum, currentChecksum,
             )
             return False
@@ -2273,8 +2268,7 @@ class TranslationPipelineMixin:
         silently losing the implicit forward declaration. The LLM cannot
         repair this from the function retry loop because the broken code
         lives in the dependency block, so every dependent function burns
-        all its retries on the same diagnostic (observed on Stage_9
-        skiplist, runs 17-04-00 and 17-54-38). Forward declarations are
+        all its retries on the same diagnostic (observed on skiplist, runs 17-04-00 and 17-54-38). Forward declarations are
         order-independent, idempotent, and legal even when the definition
         later appears via ``typedef struct``.
 
@@ -2317,7 +2311,7 @@ class TranslationPipelineMixin:
 
     def _healContextStructsBlob(self, blob):
         """Syntax-check the assembled struct/typedef context snapshot and
-        repair the two Stage_9 dep-block regressions IN THE STRING, so the
+        repair the two an earlier pass dep-block regressions IN THE STRING, so the
         fix reaches everything assembled from this one snapshot.
 
         ``createSccTopoQueue`` computes ``contextedStructs`` once; the
@@ -2485,7 +2479,7 @@ class TranslationPipelineMixin:
         Scope is intentionally narrow — return type only, no parameter
         count / type comparison — to keep the prompt change small and
         the false-positive rate near zero. The motivating regression:
-        Stage_2 transforms ``comparator_t`` from
+        an earlier pass transforms ``comparator_t`` from
         ``char (*)(void*, void*)`` (three-way ``-1/0/+1``) to
         ``bool (*)(void*, void*)`` (less-than predicate). Functions
         that *call* the typedef through a struct field (e.g.

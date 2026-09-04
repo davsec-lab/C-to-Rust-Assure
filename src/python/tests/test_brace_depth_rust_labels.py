@@ -1,7 +1,7 @@
 """Regression tests for ``_computeBraceDepthAt`` + ``_stripDependencyForwardDeclarations``
 on Rust source that contains labels / lifetimes.
 
-Background: a Stage_9 parse_string translation contained
+Background: a an earlier pass parse_string translation contained
 ``let result = 'fail: { ... }`` (Rust labelled-block syntax) and
 ``break 'fail false;`` statements. The brace-depth tracker entered
 char-literal mode at every ``'fail`` apostrophe and stayed there until
@@ -257,7 +257,7 @@ class StripperRespectsBraceDepthAcrossLabels(unittest.TestCase):
 
 
 # =============================================================================
-# Anchor to the exact log-extracted snippet that caused Stage_9 to fail
+# Anchor to the exact log-extracted snippet that caused an earlier pass to fail
 # =============================================================================
 class Stage9ParseStringRegression(unittest.TestCase):
     """Locks the exact byte sequence that came back from the LLM at
@@ -317,7 +317,7 @@ class Stage9ParseStringRegression(unittest.TestCase):
             "The stripper must leave this parse_string body byte-identical. "
             "If this assertion fails, the dependency-forward-declaration "
             "stripper has regressed to deleting the in-body call site of "
-            "`utf16_literal_to_utf8`, which prevents Stage_9 parse_string "
+            "`utf16_literal_to_utf8`, which prevents an earlier pass parse_string "
             "from ever compiling (cascade-fails parse_array, parse_object, "
             "parse_value, and all four cJSON_Parse* wrappers).",
         )

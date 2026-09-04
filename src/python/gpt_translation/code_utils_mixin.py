@@ -35,7 +35,7 @@ _USE_LIBC_WILDCARD_RE = re.compile(
     r"(?m)^[ \t]*use[ \t]+libc::\*[ \t]*;[ \t]*\n?"
 )
 
-# TEMP FIX (cjson_parse Stage_10): the Rust idiomizer emits the two
+# TEMP FIX (cjson_parse the Rust pass): the Rust idiomizer emits the two
 # whitespace/BOM helpers with a self-referential lifetime
 # `&'a mut ParseBuffer<'a>`, which unifies the mutable-borrow lifetime with
 # the buffer's *content* lifetime and so keeps the buffer borrowed for the
@@ -837,7 +837,7 @@ class CodeUtilsMixin:
         form has no `!= 0`). See _TEST_CREATE_OBJECTS_CHECK_RE.
 
         GUARD: only rewrite when the function actually returns `bool` (true=ok).
-        The original int form (0=ok — Stage_1 / pre-idiomization) is CORRECT with
+        The original int form (0=ok — an earlier pass / pre-idiomization) is CORRECT with
         `!= 0`; rewriting it to `!` would INVERT the check (success 0 -> !0 ->
         treated as failure -> main returns 1). `cJSON_bool` (=int) is excluded by
         the `\\bbool` boundary."""
@@ -995,8 +995,7 @@ class CodeUtilsMixin:
         ``E0425`` import-resolution errors as a structured ``help:``
         block followed by ``<line> + use <path>;`` insertion-edit lines.
         The LLM sometimes ignores this hint and keeps re-emitting the
-        same broken code (observed on Stage_10's ``jrsl_center_string``
-        in run 16-48-26: 5 retries all repeating the same ``io::stdout()``
+        same broken code (observed on ``jrsl_center_string``)``
         call with no ``use std::io;``). This extractor lifts the
         suggested ``use`` lines out of the stderr so a non-LLM auto-fix
         layer can prepend them to the candidate code and skip the LLM
@@ -1196,7 +1195,7 @@ class CodeUtilsMixin:
         rustc reports "this file contains an unclosed delimiter" at EOF with no
         line number, which the LLM cannot fix from a generic error message —
         especially sonnet on long Rust outputs, where dropping a trailing `}`
-        was observed to fail 5 retries in a row on cjson_new Stage_9.
+        was observed to fail 5 retries in a row on cjson_new an earlier pass.
         """
         if not errStr or not candidateCode:
             return ""
@@ -1254,7 +1253,7 @@ class CodeUtilsMixin:
         C/C++/Rust line / block comments.
 
         Used to detect "removed type" outputs (e.g. LLM emits
-        ``// internal_hooks removed: ...`` as a placeholder when Stage_1
+        ``// internal_hooks removed: ...`` as a placeholder when an earlier pass
         wipes a custom allocator struct). Storing such outputs verbatim as
         ``rustCode`` makes later stages see a non-empty rendering, which has
         two failure modes:
@@ -1262,7 +1261,7 @@ class CodeUtilsMixin:
         1. Perf-retry's "your previous attempt was X, try different" prompt
            includes the comment, tempting the model to ABANDON the correct
            no-op and emit a full struct from scratch (observed in cjson_new
-           Stage_9, where this re-introduced removed ``default_allocate``
+           an earlier pass, where this re-introduced removed ``default_allocate``
            references and cascade-failed every function compile).
 
         2. The merged ``merged_funcs.{cpp,rs}`` ends up with stray

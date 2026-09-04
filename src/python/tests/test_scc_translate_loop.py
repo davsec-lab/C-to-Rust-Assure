@@ -277,7 +277,7 @@ class SanityCheckWarningOnLeftoverScc(_BypassFindTargetMixin, unittest.TestCase)
 class SplitSccTranslatedResult(unittest.TestCase):
     """``_splitSccTranslatedResult`` must give each SCC member its own
     funcCodeLines, otherwise the perf-retry loop sends an empty source to the
-    LLM and infinite-loops on struct retries (cjson_new Stage_8 incident).
+    LLM and infinite-loops on struct retries (cjson_new an earlier pass incident).
 
     These tests cover the bug-fix invariant directly: every member must end up
     with NON-EMPTY content. The exact content depends on whether tree-sitter

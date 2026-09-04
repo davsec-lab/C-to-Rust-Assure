@@ -447,7 +447,7 @@ int main(void)
 ```"""
 
         with tempfile.TemporaryDirectory() as temp_dir:
-            stage_dir = os.path.join(temp_dir, "_Stage.Stage_1")
+            stage_dir = os.path.join(temp_dir, "_legacy_dir")
             os.makedirs(stage_dir)
             input_path = os.path.join(stage_dir, "merged_funcs.cpp")
             output_binary_path = os.path.join(stage_dir, "performance.out")
@@ -654,7 +654,7 @@ main(int argc, char *argv[])
 
         passed = probe.runPerformanceCheckForOutput(
             "/tmp/out/merged_funcs.rs",
-            "Stage_1",
+            "an earlier pass",
             func_map,
             True,
         )
@@ -682,7 +682,7 @@ main(int argc, char *argv[])
             with mock.patch.object(probe, "loadCurrentStageRecord", return_value={}):
                 passed = probe.runPerformanceCheckForOutput(
                     "/tmp/out/merged_funcs.rs",
-                    "Stage_2",
+                    "an earlier pass",
                     None,
                     False,
                 )
@@ -856,7 +856,7 @@ class TestPerformanceCppCompilerSelection(unittest.TestCase):
     ``__resize_and_overwrite`` — a C++23 library symbol clang-14's
     libstdc++ doesn't carry — producing an ``undefined reference``
     linker error every time the LLM emits ``std::to_string`` in a
-    Stage_4+ regenerated performance.cpp. Switching to system
+    an earlier pass+ regenerated performance.cpp. Switching to system
     ``clang++-19`` resolves that link cleanly. These tests pin the
     selection so a future refactor that resets the constant back to
     plain ``clang++`` regresses loudly."""
@@ -865,7 +865,7 @@ class TestPerformanceCppCompilerSelection(unittest.TestCase):
         # If you genuinely need a different compiler for the perf
         # build, update PerformanceMixin.PERFORMANCE_CPP_COMPILER and
         # this constant — they MUST stay in sync, or the bundled
-        # clang-14 will be picked up and Stage_4+ will hit the
+        # clang-14 will be picked up and an earlier pass+ will hit the
         # ``__resize_and_overwrite`` undefined reference again.
         from gpt_translation.performance_mixin import PerformanceMixin
         self.assertEqual(PerformanceMixin.PERFORMANCE_CPP_COMPILER,
@@ -904,7 +904,7 @@ class TestInferMissingPerformanceIncludes(unittest.TestCase):
 
     Background: the LLM regenerates ``performance.cpp`` every stage
     and its include list is unstable — observed loss of
-    ``<cstdint>`` between Stage_1 and Stage_3 on the skiplist input.
+    ``<cstdint>`` between an earlier pass and an earlier pass on the skiplist input.
     Without auto-fix, the pipeline stalls at the interactive manual
     prompt. The rules below cover the high-confidence standard-library
     identifiers the LLM most frequently drops; each test pins one
@@ -932,7 +932,7 @@ class TestInferMissingPerformanceIncludes(unittest.TestCase):
     def test_uint64_t_maps_to_cstdint(self):
         # The regression that motivated the rule expansion. The
         # clang diagnostic shape is "unknown type name 'uint64_t'"
-        # (Stage_3 run 16-09-37) — same flavour the existing rules
+        # (an earlier pass run 16-09-37) — same flavour the existing rules
         # already match, so we anchor on the bare identifier.
         out = self._infer("error: unknown type name 'uint64_t'")
         self.assertIn("#include <cstdint>", out)
@@ -998,15 +998,15 @@ class TestInferMissingPerformanceIncludes(unittest.TestCase):
 
     def test_skiplist_stage3_failure_stderr_repairs_cleanly(self):
         # The exact stderr text the validator logged for the
-        # 16-09-37 Stage_3 failure. The auto-fix must emit
+        # 16-09-37 an earlier pass failure. The auto-fix must emit
         # ``<cstdint>`` so the retry loop can succeed without
         # falling through to the interactive prompt.
         actual_stderr = (
-            "./inputs-complex/skiplist/individual-funcs_claude-sonnet-4-6_2026-05-26_16-09-37/_Stage.Stage_3/performance.cpp:371:5: "
+            "./inputs-complex/skiplist/individual-funcs_claude-sonnet-4-6_2026-05-26_16-09-37/_legacy_dir/performance.cpp:371:5: "
             "error: unknown type name 'uint64_t'\n"
             "    uint64_t header[4];\n"
             "    ^\n"
-            "./inputs-complex/skiplist/individual-funcs_claude-sonnet-4-6_2026-05-26_16-09-37/_Stage.Stage_3/performance.cpp:372:30: "
+            "./inputs-complex/skiplist/individual-funcs_claude-sonnet-4-6_2026-05-26_16-09-37/_legacy_dir/performance.cpp:372:30: "
             "error: use of undeclared identifier 'uint64_t'\n"
             "    if (fread(header, sizeof(uint64_t), 4, fp) != 4) {\n"
         )

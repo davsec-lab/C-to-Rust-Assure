@@ -67,7 +67,6 @@ def main():
             print(f"  FAIL merged artifact present: {', '.join(r['merged_files'])}")
             print("     the backend matches the target function by file name; a merged "
                   "'Error: target function not found'.")
-            print("     check whether --translator-mode was switched to new-mode / struct-fn-replay.")
         for key, label in (("missing_rs", "missing .rs"), ("missing_i", "missing .i"),
                            ("bad_names", "invalid basename")):
             if r[key]:

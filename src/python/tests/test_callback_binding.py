@@ -350,7 +350,7 @@ class TestFunctionPointerReturnTypeExtractor(unittest.TestCase):
 
 class TestTypedefSignatureChangeSection(unittest.TestCase):
     """End-to-end test for the "TYPEDEF SIGNATURE CHANGES" prompt
-    section. The narrow goal: cover the regression where Stage_2
+    section. The narrow goal: cover the regression where an earlier pass
     flipped ``comparator_t`` from ``char`` to ``bool`` return and the
     consumer functions (``jrsl_search`` / ``jrsl_remove``) kept their
     ``< 0`` / ``== 0`` checks. The section's job is to make that

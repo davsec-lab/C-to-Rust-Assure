@@ -283,7 +283,7 @@ class Claude_Opus_Translator(Translator):
             temperature=0.0)
         rawResponse = completion.content[0].text
         self.logger.debug("Rust raw response: %s", rawResponse)
-        # Stash the raw (pre-extractTargetCode) text so stageCheck can find
+        # Stash the raw (pre-extractTargetCode) text for later inspection.
         # yes/no answers that the model placed OUTSIDE the ```cpp``` fence.
         # extractTargetCode strips everything but the code block, which
         # silently drops a trailing "no" when sonnet replies in the form:
@@ -324,7 +324,7 @@ class Gemini_Flash_Translator(Translator):
     """Gemini 3.5 Flash backend. Mirrors Claude_Opus_Translator's pattern
     (bypass Translator.__init__'s OpenAI client construction and wire up
     the google-genai client instead) so the rest of the pipeline —
-    mixins, stageCheck, retry loop — sees the same surface as the other
+    mixins, retry loop — sees the same surface as the other
     providers.
 
     Key differences from the Claude/OpenAI clients:

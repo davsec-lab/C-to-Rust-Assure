@@ -14,17 +14,17 @@ after filling ``output`` byte-by-byte through an alias cursor
     ...
     item->valuestring = (char*)output;
 
-When Stage_3 of the C++ refactor asked the LLM "is ``valuestring`` a text
+When an earlier pass of the C++ refactor asked the LLM "is ``valuestring`` a text
 string or a byte buffer?", the per-field usage block surfaced the
 cast-assignment line but the LLM defaulted to "JSON value → text" and
-left the field as ``char *``. Stage_3 then converted the local ``output``
+left the field as ``char *``. an earlier pass then converted the local ``output``
 into ``std::vector<unsigned char>`` while leaving the field as raw
 pointer, producing ``item->valuestring = (char*)output.data();`` — a
 dangling pointer into a stack-local vector whose destructor freed the
 storage, and ``cJSON_Delete`` then ``free()``d it again. SIGABRT on the
 first perf run.
 
-The bug was a misclassification, not a missing rule. The Stage_3 prompt
+The bug was a misclassification, not a missing rule. The an earlier pass prompt
 already says "byte buffers go to std::vector<unsigned char>" — what was
 missing was a way for the LLM to *verify* "this field's producer is a
 byte cursor build" from the one-line usage evidence it was given.
@@ -51,7 +51,7 @@ When all three hold, the use line is annotated with::
 
     [BYTE BUFFER: cursor build verified - must become std::vector<unsigned char>]
 
-The Stage_3 prompt then has a hard rule to trust this tag and classify
+The an earlier pass prompt then has a hard rule to trust this tag and classify
 unconditionally, no LLM heuristic needed.
 """
 
@@ -344,7 +344,7 @@ def propagate_byte_buffer_tags(usage_list, struct_c_code):
       ``<expr>(.|->)B = <expr>(.|->)A`` (a pure field-to-field pointer
       move with no cast), then field B is also a byte buffer — both
       fields share a single ownership token by C semantics, and they
-      must share a single C++ type by Stage_3 semantics.
+      must share a single C++ type by an earlier pass semantics.
 
     Gating preserved from the direct pass:
 

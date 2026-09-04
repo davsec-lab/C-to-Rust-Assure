@@ -1,10 +1,10 @@
 """Unit tests for ``gpt_translation.byte_buffer_classifier``.
 
-The classifier exists to catch the cjson_new Stage_3 failure described in
+The classifier exists to catch the cjson_new an earlier pass failure described in
 the module docstring: ``cJSON.valuestring`` was left as ``char *``
 because the LLM read the per-field usage block as "text-like" (null
 checks + cursor read + free) and ignored the lone smoking-gun line
-``item->valuestring = (char*)output``. Stage_3 then converted the local
+``item->valuestring = (char*)output``. an earlier pass then converted the local
 ``output`` in ``parse_string`` to ``std::vector<unsigned char>`` and
 aliased its ``.data()`` into the still-``char*`` field, producing a
 double-free at the next ``cJSON_Delete``.
@@ -410,7 +410,7 @@ class ClassifyUseSiteTests(unittest.TestCase):
 
     def test_emits_tag_for_cjson_valuestring(self):
         """The headline case: cjson_new's parse_string bug. The
-        annotation MUST appear so the Stage_3 prompt's trust-the-tag
+        annotation MUST appear so the an earlier pass prompt's trust-the-tag
         rule has something to trust."""
         suffix = classify_use_site(
             "item->valuestring = (char*)output",
@@ -549,7 +549,7 @@ class ClassifyUseSiteTests(unittest.TestCase):
 # Cross-cutting: the exact line set the cjson_new bug produced
 # ============================================================================
 class CjsonNewBugRepro(unittest.TestCase):
-    """Mirrors the actual usage-example block sent to the Stage_3 LLM
+    """Mirrors the actual usage-example block sent to the an earlier pass LLM
     for ``cJSON.valuestring`` in the 2026-05-17 run that SIGABRT'd. For
     each line we assert whether the classifier tags it — the ONLY line
     that should be tagged is the cast assignment. All siblings (which
@@ -786,7 +786,7 @@ class PropagateByteBufferTagsTests(unittest.TestCase):
 
 
 # ============================================================================
-# Stage_3 prompt ↔ classifier tag literal consistency
+# an earlier pass prompt ↔ classifier tag literal consistency
 # ============================================================================
 
 

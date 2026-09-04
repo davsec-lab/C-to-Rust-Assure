@@ -1,7 +1,7 @@
 """Unit tests for ``_cascadeDeleteEmptyTypeReferences`` and the helper
 ``_surgicallyRemoveLines``.
 
-Context: in the cjson_new pipeline (Stage_1, run 2026-05-13_17-06-23) the
+Context: in the cjson_new pipeline (an earlier pass, run 2026-05-13_17-06-23) the
 LLM emitted ``// internal_hooks removed: ...`` for ``struct:internal_hooks``
 in one type-batch request, but in a SEPARATE request emitted
 ``static internal_hooks global_hooks = { nullptr, nullptr, nullptr };``
@@ -110,7 +110,7 @@ class _FakeManager:
 class _PipelineProbe(CodeUtilsMixin, TranslationPipelineMixin):
     """Minimal probe exposing ``_cascadeDeleteEmptyTypeReferences``.
 
-    ``translatorMode = NEW_MODE`` so ``_isStagedMode()`` is True and the
+    the registry-side cascade path is exercised and the
     manager.updateStructTranslateResultWithStructName(...) sync path is
     exercised (we then assert on it via _FakeManager.calls)."""
 
@@ -560,7 +560,7 @@ class CascadeRobustness(unittest.TestCase):
             self.fail(f"cascade should tolerate nameless nodes, raised {e!r}")
 
     def test_works_when_not_in_staged_mode(self):
-        """Outside NEW_MODE we must not call the manager (it might be
+        """We must not call the manager (it might be
         None / wrong type), but the in-memory rustCode must still get
         cleared so the merged file is correct."""
         deleted = _node(TypeKind.STRUCT, "internal_hooks", "")

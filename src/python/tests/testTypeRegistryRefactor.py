@@ -342,8 +342,8 @@ csv_error(const struct csv_parser *p)
         Historical note: this test used to assert the literal phrase
         "more idiomatic type in Rust/C++". That phrasing was removed
         because it was an open-ended invitation that caused stage
-        scope creep (Stage_1 was reading it as license to also do
-        Stage_2's char* → std::string conversion). The replacement
+        scope creep (an earlier pass was reading it as license to also do
+        an earlier pass's char* → std::string conversion). The replacement
         wording (asserted here) explicitly says the usage block is
         NOT a license for cross-stage type changes."""
         rust_probe = PromptProbe()
@@ -370,7 +370,7 @@ csv_error(const struct csv_parser *p)
                           "type changes")
 
         # The legacy "more idiomatic type" phrasing must NOT come back —
-        # it was the proximate cause of the Stage_1→std::string bug.
+        # it was the proximate cause of the an earlier pass→std::string bug.
         self.assertNotIn("more idiomatic type in Rust", rust_prompt)
         self.assertNotIn("more idiomatic type in C++", cpp_prompt)
         self.assertNotIn("according to the usage in the C", rust_prompt)

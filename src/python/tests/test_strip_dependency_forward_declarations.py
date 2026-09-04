@@ -1,6 +1,5 @@
 """Tests for ``TranslationPipelineMixin._stripDependencyForwardDeclarations``.
 
-The regression target is Stage_8 of cjson_new in NEW_MODE: the ``funcCodeLines``
 for ``cJSON_ParseWithLengthOpts`` carries a stale pointer-version forward
 declaration of ``parse_value`` even after the SCC translated parse_value to
 take references. The stale declaration ends up alongside the new definition in
@@ -85,7 +84,7 @@ def test_preserves_in_body_call_sites():
 
 
 def test_stage_8_cjson_regression():
-    """Replays the exact funcCodeLines pattern that broke Stage_8 cjson_new.
+    """Replays the exact funcCodeLines pattern that broke an earlier pass cjson_new.
 
     The ``parse_value`` forward declaration in pointer form must be removed so
     it cannot conflict with the SCC-translated reference-form definition in
@@ -129,7 +128,7 @@ def test_stage_8_cjson_regression():
     assert "cJSON * cJSON_ParseWithLengthOpts" in out
     assert "if (!parse_value(item, buffer_skip_whitespace(skip_utf8_bom(&buffer))))" in out
     assert "#include <cstdlib>" in out
-    print("PASS: Stage_8 cjson_new regression — all stale dep forward decls stripped")
+    print("PASS: an earlier pass cjson_new regression — all stale dep forward decls stripped")
 
 
 def test_handles_multiline_forward_declaration():
@@ -184,7 +183,7 @@ def test_strips_forward_decls_from_typedecl_preamble():
     line range). The strip must operate on the assembled funcSrc so this
     preamble is also cleaned, otherwise stripping ``funcCodeLines`` alone
     leaves the stale declarations intact (regression seen in cjson_new
-    Stage_1 merged_funcs.cpp at run 16-35-44)."""
+    an earlier pass merged_funcs.cpp at run 16-35-44)."""
     typeDeclDefCodeLines = (
         "extern void *malloc (size_t __size) __attribute__ ((__nothrow__));\n"
         "extern void free (void *__ptr) __attribute__ ((__nothrow__));\n"
@@ -239,8 +238,7 @@ def test_strips_forward_decls_from_typedecl_preamble():
 
 
 def test_rust_forward_declaration():
-    """Rust-style forward decls should also be stripped (struct-fn-replay /
-    Stage_9 in NEW_MODE produce Rust output)."""
+    """Rust-style forward decls should also be stripped (struct-fn-replay)."""
     snippet = (
         "fn parse_value(item: *mut cJSON, buffer: *mut parse_buffer) -> i32;\n"
         "\n"

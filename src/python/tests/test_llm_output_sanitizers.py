@@ -479,7 +479,7 @@ pub fn good() -> i32 { 42 }
 class ExtractRustcImportSuggestions(unittest.TestCase):
     """Unit tests for ``extractRustcImportSuggestions``.
 
-    Stage_10 (C++ -> Rust) on the 16-48-26 skiplist run lost two
+    the Rust pass (C++ -> Rust) on the 16-48-26 skiplist run lost two
     functions to ``E0433: unresolved module 'io'``. rustc emitted the
     fix as a structured help block —
 
@@ -733,7 +733,7 @@ class ApplyRustcImportAutoFix(unittest.TestCase):
 class ExtractCppTemplateNotATypeNames(unittest.TestCase):
     """Unit tests for ``extractCppTemplateNotATypeNames``.
 
-    Stage_9 (smart-pointer) on run 17-23-48 added ``<memory>`` to the
+    an earlier pass (smart-pointer) on run 17-23-48 added ``<memory>`` to the
     skiplist dep block. ``<memory>`` transitively declares the POSIX
     ``link()`` function, which shadows the user's ``struct link`` tag
     once both are in scope. clang then refuses ``std::vector<link>``
