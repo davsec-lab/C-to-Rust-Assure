@@ -147,60 +147,6 @@ class TestTranslationValidatorSkip(unittest.TestCase):
         self.assertNotIn("dead_helper", filtered_source)
 
 
-class TestMergedViewsCompat(unittest.TestCase):
-    """Stage_4's prompt now folds in the non-owning string-view lowering that
-    used to live in the removed Stage_8. ``new-mode-merged-views`` is kept as a
-    deprecated CLI alias of ``new-mode``; pin both the alias and the merged
-    Stage_4 ownership note."""
-
-    def _probe(self, mode):
-        from gpt_translation.translation_pipeline_mixin import TranslationPipelineMixin
-
-        class _Logger:
-            def __getattr__(self, _name):
-                return lambda *a, **k: None
-
-        class _Probe(TranslationPipelineMixin):
-            def __init__(self, m):
-                self.translatorMode = m
-                self.logger = _Logger()
-
-        return _Probe(mode)
-
-    def test_cli_string_maps_to_enum(self):
-        from gpt_translation.config import TranslatorModes
-        from gpt_translation.translator import Translator
-
-        self.assertEqual(
-            Translator.getTranslatorMode("new-mode-merged-views"),
-            TranslatorModes.NEW_MODE_MERGED_VIEWS,
-        )
-        # existing modes still map unchanged
-        self.assertEqual(Translator.getTranslatorMode("new-mode"), TranslatorModes.NEW_MODE)
-
-    def test_stage4_prompt_contains_merged_view_logic(self):
-        from gpt_translation.config import Stage
-
-        # Stage_4's prompt now covers both the owner (`std::string`) AND the
-        # view (`std::basic_string_view<char>`) decisions in one pass.
-        self.assertIn("std::basic_string_view<char>", Stage.Stage_4.value)
-        self.assertIn("std::string", Stage.Stage_4.value)
-
-    def test_stage8_no_longer_exists(self):
-        from gpt_translation.config import Stage
-
-        self.assertFalse(hasattr(Stage, "Stage_8"))
-
-    def test_stage4_preserve_note_mentions_views(self):
-        from gpt_translation.config import Stage, TranslatorModes
-
-        probe = self._probe(TranslatorModes.NEW_MODE)
-        probe.skippedStages = {Stage.Stage_5, Stage.Stage_6}
-
-        # Stage_9's PRESERVE/DEFER text must tell it Stage_4 produced
-        # string_view views to preserve.
-        exclusions = probe._stageExclusionsForOtherStages(Stage.Stage_9)
-        self.assertIn("string_view", exclusions)
 
 
 if __name__ == "__main__":

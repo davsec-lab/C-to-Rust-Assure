@@ -42,36 +42,22 @@ from gpt_translation.config import (
     PERF_DEGRADE_THRESHOLD_PCT,
     PERF_DEGRADE_THRESHOLD_PCT_PER_STAGE,
     STRUCT_RETRIES,
-    Stage,
     TranslatorModes,
-)
-from gpt_translation.prompt_hints import (
-    GOTO_BYPASS_INIT_HINT,
-    STAGE_3_TAGGED_USAGE_HINT,
-    STAGE_10_FILE_IO_HINT,
-    STAGE_10_GLOBAL_OWNERSHIP_HINT,
-    STAGE_10_LIFETIME_SELF_CHECK_HINT,
-    STAGE_10_MECHANICAL_MAPPING_HINT,
 )
 
 # Detects `goto` keyword in C/C++ source. Uses word boundary to avoid
 # matching identifiers like `gotos_count`. Used by the on-demand
-# injection of GOTO_BYPASS_INIT_HINT — see _gotoBypassHintIfNeeded.
 _GOTO_RE = re.compile(r"\bgoto\b")
 
 # Detects any C++ borrowed-view type in struct field declarations.
 # `std::string_view`, `std::basic_string_view<...>`, `std::span<...>` —
 # all translate to Rust borrowed forms (`&str` / `&[T]`) that force a
 # lifetime parameter on the enclosing struct. Used by the on-demand
-# injection of STAGE_10_LIFETIME_SELF_CHECK_HINT — see
-# _stage10LifetimeSelfCheckHintIfNeeded.
 _BORROWED_VIEW_RE = re.compile(r"\b(?:basic_)?string_view\b|\bstd::span\b")
 
 # Detects stdio File I/O in C++ source: a `FILE` typename used as
 # a pointer / reference (parameter, return type, local) OR any of the
 # C stdio entry points the model would translate 1:1 to `libc::*`. Used
-# by the on-demand injection of STAGE_10_FILE_IO_HINT — see
-# _stage10FileIoHintIfNeeded.
 _FILE_IO_RE = re.compile(
     r"\bFILE\s*[*&]"
     r"|\bf(?:open|read|write|close|seek|tell|flush|eof|error|gets|puts|scanf|printf)\b"
@@ -82,144 +68,13 @@ class TranslationPipelineMixin:
 
     STAGE_STATE_FILENAME = "stage_state.json"
 
-    def _isStagedMode(self):
-        """True for any mode that runs the per-stage NEW_MODE pipeline (full,
-        single-stage, merged-views, or resume). Used to gate prompt formatting
-        and stageCheck logic that should fire identically in all of them."""
-        return self.translatorMode in (
-            TranslatorModes.NEW_MODE,
-            TranslatorModes.NEW_MODE_SINGLE_STAGE,
-            TranslatorModes.NEW_MODE_MERGED_VIEWS,
-            TranslatorModes.NEW_MODE_RESUME,
-        )
 
-    def _stagePromptText(self, stage):
-        """The instruction text injected for ``stage``. Normally this is
-        ``stage.value`` (the Stage enum's prompt); ``self.stagePromptOverrides``
-        is a general-purpose hook for installing a per-stage override."""
-        if stage is None:
-            return ""
-        overrides = getattr(self, "stagePromptOverrides", None) or {}
-        return overrides.get(stage, stage.value)
 
-    def _gotoBypassHintIfNeeded(self, stage, sourceText):
-        """Return the C++ goto-bypass-init hint when it actually applies:
-        output is C++ (Stage_1..Stage_9, NOT Stage_10 / Rust) AND the
-        source contains a `goto` keyword. Empty string otherwise.
 
-        The rule is ~50 lines / ~2500 chars of system-prompt-grade
-        guidance; injecting it on every LLM call wastes tokens when the
-        codebase doesn't use goto. Function bodies are the only place
-        the pattern can appear (typedefs / struct definitions don't
-        carry control flow), so this helper is called from the function-
-        translation prompt assembly path only.
-        """
-        if stage is None or stage == Stage.Stage_10:
-            return ""
-        if not sourceText or not _GOTO_RE.search(sourceText):
-            return ""
-        return GOTO_BYPASS_INIT_HINT
 
-    def _stage10HasMutableGlobals(self):
-        """True iff this codebase has any file-scope `static` declaration
-        the extractor registered as `TypeKind.STATIC` in the type
-        registry. Cached on first call — the type registry is populated
-        at extraction (before any stage), so the answer is stable for
-        the lifetime of this Translator instance.
-        """
-        cached = getattr(self, "_stage10HasGlobalsCache", None)
-        if cached is not None:
-            return cached
-        registry = getattr(self, "typeRegistry", None)
-        has = False
-        if registry is not None:
-            for key in registry.all_keys():
-                if key.kind == TypeKind.STATIC:
-                    has = True
-                    break
-        self._stage10HasGlobalsCache = has
-        return has
 
-    def _stage10GlobalOwnershipHintIfNeeded(self, stage):
-        """Return the Stage_10 mutable-global ownership hint when the
-        codebase has any file-scope `static` (per the type registry).
-        Empty string otherwise.
 
-        Gating prevents the ~25 lines / ~1.4K chars of hint from being
-        sent on the 6 / 8 known codebases that have no globals, and —
-        more importantly — keeps the section's "owning field is
-        CORRECT" example from over-generalising to non-global structs
-        in codebases that don't need it.
-        """
-        if stage != Stage.Stage_10:
-            return ""
-        if not self._stage10HasMutableGlobals():
-            return ""
-        return STAGE_10_GLOBAL_OWNERSHIP_HINT
 
-    def _stage10HasBorrowedStructFields(self):
-        """True iff any struct (or typedef) in the type registry holds a
-        C++ borrowed-view field — `std::string_view`,
-        `std::basic_string_view<...>`, `std::span<...>` — that translates
-        to a Rust borrowed form (`&str` / `&[T]`) and thus forces a
-        lifetime parameter on the struct. Cached on first call (the
-        type registry is stable by Stage_10).
-
-        Used to decide whether STAGE_10_LIFETIME_SELF_CHECK_HINT must
-        be injected: without any such struct, the model never writes
-        `<'a>` and can't hit the single-lifetime trap.
-        """
-        cached = getattr(self, "_stage10HasBorrowedFieldsCache", None)
-        if cached is not None:
-            return cached
-        registry = getattr(self, "typeRegistry", None)
-        has = False
-        if registry is not None:
-            for node in registry.all_nodes():
-                cCode = getattr(node, "cCode", None)
-                if cCode and _BORROWED_VIEW_RE.search(cCode):
-                    has = True
-                    break
-        self._stage10HasBorrowedFieldsCache = has
-        return has
-
-    def _stage10LifetimeSelfCheckHintIfNeeded(self, stage):
-        """Return the Stage_10 lifetime self-check hint when at least
-        one struct holds a borrowed-view field. Empty string otherwise.
-
-        Gating saves ~6 lines / ~400 chars per LLM call on codebases
-        whose structs are purely owning types (libcsv, libbmp_*, etc.).
-        On view-heavy codebases (url.h has 69 string_view fields), the
-        rule still ships in full.
-        """
-        if stage != Stage.Stage_10:
-            return ""
-        if not self._stage10HasBorrowedStructFields():
-            return ""
-        return STAGE_10_LIFETIME_SELF_CHECK_HINT
-
-    def _stage10FileIoHintIfNeeded(self, stage, sourceText):
-        """Return the Stage_10 stdio→std::fs hint when ``sourceText``
-        actually contains File I/O (`FILE *` / `FILE &` parameters or
-        any `f{open,read,write,close,seek,...}` call). Empty otherwise.
-
-        Per-prompt detection (not codebase-cached) because the input is
-        the C++ already assembled for THIS SCC group / function — the
-        regex scan is O(len) and runs once per Stage_10 LLM call. The
-        SCC-level assembly means a function that takes only a `FILE *`
-        parameter still triggers (its body's `fread(..., img_file)`
-        matches), so caller and callee both see the rule and pick
-        mutually-consistent signatures (`&mut impl Read` etc.).
-
-        Skipped on the type-batch prompt site: struct/typedef definitions
-        rarely embed stdio handles, and pre-emptively appending a 10-line
-        I/O rule to every type batch would be pure overhead.
-        """
-        if stage != Stage.Stage_10:
-            return ""
-        if not sourceText or not _FILE_IO_RE.search(sourceText):
-            return ""
-        return STAGE_10_FILE_IO_HINT
 
     def _dumpTokenUsage(self, outputDir):
         """Persist token-usage records and summary at the end of a run.
@@ -232,278 +87,10 @@ class TranslationPipelineMixin:
         except Exception as e:
             self.logger.warning("Failed to dump token usage: %s", e)
 
-    def _dumpStageState(self, stageDir, stage, funcMap):
-        """Snapshot the stage-varying state at the END of ``stage`` so a later
-        ``new-mode-single-stage`` run can resume immediately at stage+1.
 
-        What we write captures the post-``updateFuncMap`` snapshot:
-          * ``type_code`` per type (== ``TypeNode.cCode`` after this stage's
-            ``updateFuncMap``, which equals ``rustCode`` for the same node)
-          * ``function_bodies`` per function (== ``funcMap[name].funcCodeLines``
-            after ``updateFuncMap``)
-          * ``stage`` and ``dstLang`` for sanity checks at load time.
 
-        Static-analysis state (type kinds, dependency graph, RICH_STRUCT
-        markers, funcMap.dependFunctions) is intentionally NOT serialised; it
-        is recomputed deterministically from the C source on every run.
-        """
-        import json
-        if not stageDir:
-            return
 
-        state = {
-            "stage": stage.name if stage is not None else None,
-            "dstLang": self.dstLang,
-            "type_code": {},
-            "function_bodies": {},
-        }
 
-        for typeKey in FunctionAndDependencies.typeRegistry.sorted_keys():
-            typeNode = FunctionAndDependencies.getTypeNode(typeKey)
-            if typeNode is None:
-                continue
-            cCode = typeNode.cCode if isinstance(typeNode.cCode, str) else self.stringifyCodeBlock(typeNode.cCode)
-            state["type_code"][typeKey.storage_key()] = cCode or ""
-
-        for funcName, deps in funcMap.items():
-            state["function_bodies"][funcName] = deps.funcCodeLines or ""
-
-        os.makedirs(stageDir, exist_ok=True)
-        statePath = os.path.join(stageDir, self.STAGE_STATE_FILENAME)
-        with open(statePath, "w") as f:
-            json.dump(state, f, indent=2)
-        self.logger.info("[stage-state] dumped %d types and %d functions to %s",
-                         len(state["type_code"]), len(state["function_bodies"]), statePath)
-        return statePath
-
-    def _loadStageState(self, stateJsonPath, funcMap):
-        """Restore the post-``updateFuncMap`` snapshot of a previous stage so
-        the next stage can run as if the prior stage had just completed.
-
-        Mirrors the field mutations ``Translator.updateFuncMap`` performs:
-          - ``TypeNode.cCode`` and ``TypeNode.rustCode`` set to ``type_code[...]``
-          - ``funcMap[name].funcCodeLines`` set to ``function_bodies[name]``
-          - ``funcMap[name].typeDeclDefCodeLines`` cleared to ""
-          - ``funcMap[name].targetLangSignature`` re-extracted from body via
-            tree-sitter (deterministic; failure modes match NEW_MODE)
-        """
-        import json
-        from type_registry import TypeKind, TypeNodeKey
-
-        with open(stateJsonPath, "r") as f:
-            state = json.load(f)
-
-        recordedStage = state.get("stage")
-        recordedDstLang = state.get("dstLang")
-        self.logger.info("[stage-state] loading checkpoint stage=%s dstLang=%s from %s",
-                         recordedStage, recordedDstLang, stateJsonPath)
-
-        loadedTypes = 0
-        for storageKey, cCode in (state.get("type_code") or {}).items():
-            if ":" not in storageKey:
-                continue
-            kindStr, name = storageKey.split(":", 1)
-            try:
-                kind = TypeKind(kindStr)
-            except ValueError:
-                self.logger.warning("[stage-state] unknown type kind %s for %s", kindStr, name)
-                continue
-            typeKey = TypeNodeKey(kind=kind, name=name)
-            typeNode = FunctionAndDependencies.getTypeNode(typeKey)
-            if typeNode is None:
-                # Static analysis didn't surface this key locally; nothing to
-                # write into. Skip rather than error - missing types are
-                # harmless when they're not referenced by the target stage.
-                continue
-            typeNode.cCode = cCode
-            typeNode.rustCode = cCode
-            loadedTypes += 1
-
-        loadedFuncs = 0
-        for funcName, body in (state.get("function_bodies") or {}).items():
-            if funcName not in funcMap:
-                continue
-            funcMap[funcName].funcCodeLines = body
-            funcMap[funcName].typeDeclDefCodeLines = ""
-            funcMap[funcName].targetLangSignature = self._extractSignatureFromBody(body, funcName)
-            loadedFuncs += 1
-
-        self.logger.info("[stage-state] restored %d types and %d functions",
-                         loadedTypes, loadedFuncs)
-        return recordedStage, recordedDstLang
-
-    def _extractSignatureFromBody(self, body, funcName):
-        """Re-derive a function's ``targetLangSignature`` from its body using
-        the same tree-sitter helpers NEW_MODE uses online. Empty string when
-        extraction fails (matches NEW_MODE's behavior on parse failure).
-        """
-        if not body:
-            return ""
-        try:
-            encoded = body.encode()
-        except Exception:
-            return ""
-
-        if self.dstLang == "Rust":
-            try:
-                target = find_target_rust_function(encoded, funcName)
-            except Exception:
-                target = None
-            if not target:
-                return ""
-            try:
-                sig = fetch_rust_function_signature_with_byte(encoded, target)
-            except Exception:
-                sig = None
-            if sig and sig[0] == target:
-                return sig[1]
-            return ""
-        else:
-            try:
-                target = find_target_cpp_function(encoded, funcName)
-            except Exception:
-                target = None
-            if not target:
-                return ""
-            try:
-                sig = fetch_cpp_function_signature_with_byte(encoded, target)
-            except Exception:
-                sig = None
-            realName = target[0] if isinstance(target, (list, tuple)) and target else None
-            if sig and realName and sig[0] == realName:
-                return sig[1]
-            return ""
-
-    def _walkFunctionSpansFromSource(self, srcBytes, isRust):
-        """Walk every function_definition (C++) or function_item (Rust) in
-        ``srcBytes`` and return ``{name: (start_byte, end_byte)}``.
-
-        Exact-name lookup table for ``_reloadFunctionsFromDisk``. Unlike the
-        edit-distance ``find_target_cpp_function`` / ``find_target_rust_function``,
-        this returns *every* function so the caller can detect a missing name
-        instead of silently substituting the nearest neighbour. Duplicate names
-        keep the later span (the implementation following any forward decl).
-        """
-        try:
-            parser = Parser(RUST if isRust else CPP)
-        except NameError as e:
-            raise ImportError(
-                "tree_sitter parsers are required for --resume-reload-functions; "
-                f"fetchTargetFunction did not initialise ({e})."
-            )
-        tree = parser.parse(srcBytes)
-        root = tree.root_node
-
-        spans = {}
-
-        def visit(node):
-            if isRust and node.type == "function_item":
-                nameNode = node.child_by_field_name("name")
-                if nameNode is not None:
-                    fname = srcBytes[nameNode.start_byte:nameNode.end_byte].decode(
-                        "utf-8", errors="replace"
-                    )
-                    spans[fname] = (node.start_byte, node.end_byte)
-            elif (not isRust) and node.type in (
-                "function_definition",
-                "constructor_or_destructor_definition",
-            ):
-                decl = node.child_by_field_name("declarator")
-                if decl is not None:
-                    identNode = find_identifier(decl)
-                    if identNode is not None:
-                        fname = srcBytes[identNode.start_byte:identNode.end_byte].decode(
-                            "utf-8", errors="replace"
-                        )
-                        spans[fname] = (node.start_byte, node.end_byte)
-            for c in node.children:
-                visit(c)
-
-        visit(root)
-        return spans
-
-    def _reloadFunctionsFromDisk(self, funcMap, priorStateDir, functionNames,
-                                 recordedDstLang=None):
-        """Override ``funcMap[name].funcCodeLines`` for each name in
-        ``functionNames`` using the function body found in
-        ``<priorStateDir>/merged_funcs.{cpp,rs}``.
-
-        Use when the user has hand-fixed a function in the prior stage's merged
-        file and wants the fix to carry into the resumed stages.
-        ``stage_state.json`` captures the in-memory funcMap, so on-disk edits
-        made between the prior run and a resume invocation are otherwise lost.
-
-        Exact-name match — a requested name that does not appear in the file
-        raises RuntimeError so a typo surfaces immediately instead of silently
-        loading a sibling function's body.
-
-        Returns the number of functions overridden.
-        """
-        if not functionNames:
-            return 0
-
-        # Pick the extension from the prior stage's recorded dstLang (falls
-        # back to whichever file exists). Stages 1-9 emit C++, Stage_10 emits
-        # Rust; the prior stage being resumed-from determines this.
-        dstLang = (recordedDstLang or self.dstLang or "C++").strip()
-        primaryName = "merged_funcs.rs" if dstLang.lower() == "rust" else "merged_funcs.cpp"
-        fallbackName = "merged_funcs.cpp" if primaryName.endswith(".rs") else "merged_funcs.rs"
-
-        primaryPath = os.path.join(priorStateDir, primaryName)
-        fallbackPath = os.path.join(priorStateDir, fallbackName)
-
-        if os.path.isfile(primaryPath):
-            sourcePath = primaryPath
-        elif os.path.isfile(fallbackPath):
-            sourcePath = fallbackPath
-            self.logger.warning(
-                "[resume-reload] %s missing; falling back to %s",
-                primaryPath, fallbackPath,
-            )
-        else:
-            raise RuntimeError(
-                f"[resume-reload] neither {primaryPath} nor {fallbackPath} "
-                "exists; cannot reload function bodies from disk."
-            )
-
-        with open(sourcePath, "rb") as f:
-            srcBytes = f.read()
-        if not srcBytes:
-            raise RuntimeError(f"[resume-reload] {sourcePath} is empty")
-
-        isRust = sourcePath.endswith(".rs")
-        spans = self._walkFunctionSpansFromSource(srcBytes, isRust)
-
-        notInFuncMap = [n for n in functionNames if n and n not in funcMap]
-        notInFile = [n for n in functionNames if n and n in funcMap and n not in spans]
-        if notInFile:
-            raise RuntimeError(
-                f"[resume-reload] could not find these functions in {sourcePath}: "
-                f"{notInFile}. Function names in {sourcePath}: "
-                f"{sorted(spans.keys())[:30]}{' ...' if len(spans) > 30 else ''}."
-            )
-        if notInFuncMap:
-            raise RuntimeError(
-                f"[resume-reload] these names are not in funcMap (filtered upstream "
-                f"or misspelled?): {notInFuncMap}"
-            )
-
-        overridden = 0
-        for funcName in functionNames:
-            if not funcName:
-                continue
-            startByte, endByte = spans[funcName]
-            body = srcBytes[startByte:endByte].decode("utf-8", errors="replace")
-            funcMap[funcName].funcCodeLines = body
-            funcMap[funcName].typeDeclDefCodeLines = ""
-            funcMap[funcName].targetLangSignature = self._extractSignatureFromBody(body, funcName)
-            overridden += 1
-            self.logger.info(
-                "[resume-reload] overrode %s from %s (%d bytes)",
-                funcName, sourcePath, endByte - startByte,
-            )
-
-        return overridden
 
     def translateSimpleTypedefDefinition(self, typedefCode):
         code = self.stringifyCodeBlock(typedefCode).strip()
@@ -577,156 +164,25 @@ class TranslationPipelineMixin:
 
         return f"type {aliasName} = {rustTarget};"
 
-    def stageCheck(self, stage=None, *, funcSrc="", contextStructs="", funcSignatures="",
-                   usageExamples="", proposedChange=None):
-        """Judge whether the proposed stage transformation should be applied.
-
-        Slim, judgment-focused prompt. Caller MUST pass structured kwargs:
-
-          * ``funcSrc``         — the code being judged (function body or
-                                  type definitions)
-          * ``contextStructs``  — translated dependency types, read-only
-          * ``funcSignatures``  — translated dependency function signatures,
-                                  read-only
-          * ``usageExamples``   — formatted block from
-                                  ``_formatTypeUsageExamples`` describing
-                                  how dependency types are used by
-                                  callers. Same string the translation
-                                  prompt sees, so judge and translator
-                                  agree on the evidence.
-
-        Pre-fix this method accepted a single ``proposedChange`` blob that
-        was the ENTIRE translation prompt (stage intent + funcSrc + structs +
-        sigs + main-function disclaimers + "Final result code" formatting
-        directives). That blob then got wrapped again with a judge-side
-        template, leaving the model with:
-          * the stage intent duplicated twice (judge template + translation
-            prompt body),
-          * ~50 lines of translation directives ("Only apply edits ...",
-            "If the source does not have a main function ...", "For the
-            final code result ...") that have no bearing on judgment,
-          * ~88% template bloat and observed instruction confusion (sonnet
-            returning the code itself instead of a yes/no answer).
-
-        The slim prompt presents ONLY what a judge needs.
-
-        ``proposedChange`` is kept as a legacy positional-name parameter that
-        older callers / tests still pass. When provided we treat it as the
-        funcSrc body.
-        """
-        # CLI escape hatch: --skip-stage-check forces every gate to approve.
-        # Use cases: cheaper debug runs (no stage_check tokens), or models that
-        # cannot reliably produce one-word yes/no answers. We do NOT call
-        # recordStageCheckResult here so the stagecheck_summary.txt doesn't get
-        # filled with fake "Yes" tallies that obscure the fact the gate was off.
-        if getattr(self, "skipStageCheck", False):
-            return True
-        # Auto-approve stages whose transformations are either mechanical
-        # (Stage_2 int→bool, Stage_10 C++→Rust transliteration) or whose
-        # judge has been observed to false-negative on (Stage_3 vector,
-        # Stage_9 raw-pointer ownership lift). The remaining stages —
-        # std::string + std::string_view (Stage_4), list, map, optional —
-        # still require judge approval.
-        if stage in (Stage.Stage_1, Stage.Stage_2, Stage.Stage_3,
-                     Stage.Stage_9, Stage.Stage_10):
-            return True
-
-        # Back-compat: if caller still uses the old single-blob API, treat
-        # it as the funcSrc body. Newer callers pass structured kwargs.
-        if proposedChange is not None and not funcSrc:
-            funcSrc = proposedChange
-
-        if not funcSrc and not contextStructs and not funcSignatures:
-            if stage is not None:
-                self.recordStageCheckResult(stage, False)
-            return False
-
-        stageIntent = self.fetchStageCheckPrompt(stage)
-
-        request = (
-            "You are judging a proposed C++ code transformation. "
-            "Reply with exactly one word: yes or no.\n\n"
-            "Question: Will applying the step below make the code more idiomatic?\n\n"
-            "Step intent:\n"
-            f"{stageIntent}\n\n"
-            "Code under review:\n"
-            f"{funcSrc}\n"
-        )
-        if contextStructs and contextStructs.strip():
-            request += (
-                "\nDependency types (read-only context, not part of the code under review):\n"
-                f"{contextStructs}\n"
-            )
-        if funcSignatures and funcSignatures.strip():
-            request += (
-                "\nDependency function signatures (read-only context):\n"
-                f"{funcSignatures}\n"
-            )
-        if usageExamples and usageExamples.strip():
-            # Show the judge the same per-field usage evidence the
-            # translation prompt sees. Critical for catching cases where
-            # the proposed type change LOOKS idiomatic in isolation but
-            # is incompatible with how the field is actually accessed
-            # (e.g. Stage_4's char* → std::string while call sites still
-            # do `field = (char*)malloc(...)` and `free(field)`).
-            request += (
-                "\nHow these types are actually used by callers (read-only "
-                "context; the proposed change must remain compatible with "
-                "these access patterns):\n"
-                f"{usageExamples}\n"
-            )
-        with _callKindContext(self, "stage_check"):
-            (_, response) = self.send("stage_check", request)
-        # Prefer the RAW model text (pre-extractTargetCode) for yes/no
-        # detection. extractTargetCode pulls out only the contents of
-        # ```...``` fences, dropping any prose answer outside the fence.
-        # Sonnet was observed replying in the form:
-        #   "Final result code is: ```cpp <code> ``` no"
-        # where the actual decision "no" sits outside the code block and
-        # was being silently stripped. Fall back to the extracted response
-        # if the raw isn't available (e.g. tests stub send/getResponse).
-        rawResponse = getattr(self, "lastRawResponse", None)
-        decision = self.extractYesNoDecision(rawResponse) if rawResponse else None
-        if decision is None:
-            decision = self.extractYesNoDecision(response)
-        if decision == "yes":
-            if stage is not None:
-                self.recordStageCheckResult(stage, True)
-            return True
-        if decision == "no":
-            if stage is not None:
-                self.recordStageCheckResult(stage, False)
-            return False
-
-        self.logger.info("stageCheck got non yes/no response: %s", response)
-        if stage is not None:
-            self.recordStageCheckResult(stage, False)
-        return False
 
     def _typeStorageKey(self, typeNodeOrKey):
         typeKey = typeNodeOrKey.key if hasattr(typeNodeOrKey, "key") else typeNodeOrKey
         return typeKey.storage_key()
 
-    def _logStoredTypeResult(self, node, stage=None):
+    def _logStoredTypeResult(self, node):
         if node is None:
             return
         debugLog = getattr(self.logger, "debug", None)
         if not callable(debugLog):
             return
         storageKey = self._typeStorageKey(node)
-        if stage is not None:
-            debugLog("[type stored %s][%s]: %s", storageKey, stage, node.rustCode)
-            return
         debugLog("[type stored %s]: %s", storageKey, node.rustCode)
 
-    def _logStoredFunctionResult(self, funcName, translatedResult, stage=None):
+    def _logStoredFunctionResult(self, funcName, translatedResult):
         if not funcName:
             return
         debugLog = getattr(self.logger, "debug", None)
         if not callable(debugLog):
-            return
-        if stage is not None:
-            debugLog("[function stored %s][%s]: %s", funcName, stage, translatedResult)
             return
         debugLog("[function stored %s]: %s", funcName, translatedResult)
 
@@ -1360,219 +816,22 @@ class TranslationPipelineMixin:
             i += 1
         return None
 
-    def _stageScopeInstruction(self, stage=None):
-        if stage == Stage.Stage_10:
-            return ""
-        base = (
-            "Only apply edits directly required by this proposed step. "
-            "When this step changes a type, also update directly affected function signatures, "
-            "return types, parameter types, forward declarations, and call sites to use the "
-            "idiomatic target-language type. Signature or parameter-type changes required to "
-            "propagate the proposed ownership/type change through the call chain (for example, "
-            "changing a callee's parameter from T& to std::unique_ptr<T> by value so that "
-            "ownership flows in explicitly, and adding std::move at the call sites) ARE "
-            "expected and must be applied in this step. "
-            "Do not make unrelated refactors, formatting-only rewrites, renames, control-flow "
-            "changes, or semantic changes beyond what the proposed type change (and its "
-            "required propagation) requires. "
-            "Preserve all code outside what the propagation requires.\n"
-        )
-        return base + self._stageExclusionsForOtherStages(stage)
 
-    # Per-stage "what each later stage owns" map. The current stage MUST
-    # leave these surfaces alone — they are pre-empted otherwise (the
-    # classic case: Stage_1's "remove custom allocator" prompt + the
-    # open-ended "translate to more idiomatic type" sentence below
-    # leads the LLM to also convert `char*` to `std::string` because
-    # the usage looks string-like, silently doing Stage_4's job and
-    # leaving downstream stages with code that's half-transformed in
-    # ways their own prompts can't predict).
-    _STAGE_OWNERSHIP_NOTES = {
-        Stage.Stage_1: (
-            "removes the `internal_hooks` / `global_hooks` custom-allocator "
-            "infrastructure and any struct fields / call-sites that route "
-            "through it"
-        ),
-        Stage.Stage_2: (
-            "converts boolean-valued integers to `bool`"
-        ),
-        Stage.Stage_3: (
-            "converts array-shaped pointers / byte-buffer `char *` fields "
-            "(e.g. write-cursor outputs of escape decoding, hash digests, "
-            "or any pointer populated byte-by-byte) to `std::vector<T>` / "
-            "`std::vector<unsigned char>`"
-        ),
-        Stage.Stage_4: (
-            "converts TEXT `char *` to `std::string` when the name owns its "
-            "bytes, and to `std::basic_string_view<char>` when it only views "
-            "bytes owned by a longer-lived object (interior pointers into "
-            "another field's buffer, read-only parameters) — the owner+view "
-            "cluster is decided together in one pass; both the std::string "
-            "owners and the string_view views are deliberate and must be "
-            "preserved"
-        ),
-        Stage.Stage_5: (
-            "converts list-shaped structures to `std::list<T>`"
-        ),
-        Stage.Stage_6: (
-            "converts map-shaped structures to `std::unordered_map<K, V>`"
-        ),
-        Stage.Stage_7: (
-            "wraps in `std::optional<T>` those variables (parameters, "
-            "fields, locals) where null is a STRUCTURAL state the "
-            "function's logic distinguishes from non-null — and collapses "
-            "their null checks to `has_value()` / `value()`; pointers "
-            "whose only null handling is a defensive top-of-function "
-            "early-return guard stay as raw pointers and will be lifted "
-            "to references (with the guard deleted) by Stage_9"
-        ),
-        Stage.Stage_9: (
-            "lifts remaining raw pointers to a SINGLE object to "
-            "references, values, or smart pointers (`T*` → `T&` / value "
-            "/ `std::unique_ptr<T>` / `std::shared_ptr<T>`) based on "
-            "ownership, deleting any leftover defensive top-of-function "
-            "null guards on parameters that get lifted to references, "
-            "and preserving any `std::optional<T>` wrapper Stage_7 added "
-            "so structural nullability is not silently collapsed"
-        ),
-    }
 
-    def _stageExclusionsForOtherStages(self, stage):
-        """Enumerate the transformations OTHER stages own, split by whether
-        they ran BEFORE or AFTER the current one.
 
-        Two asymmetric rules:
-          * Past stages ⇒ PRESERVE. Their results are already in the input
-            code; the current step must never undo them, even when the
-            current prompt's topic doesn't involve them. A field that is
-            already ``std::string`` / ``std::vector`` / ``std::optional``
-            / ``std::unique_ptr`` is a load-bearing decision; silently
-            reverting it to a raw pointer or manual buffer is a regression.
-          * Future stages ⇒ DEFER. Reserved for later passes; do not do
-            their work here, even if it looks "while-you're-at-it"
-            idiomatic.
 
-        Previously a single ``STAGE-EXCLUSIVITY`` block listed ALL other
-        stages without distinguishing past from future. That wording let
-        the LLM cite a past stage as a reason to refuse legitimate work
-        (e.g. at Stage_9, "I shouldn't preempt Stage_5's list conversion"
-        even though Stage_5 had already run and chose not to). And it
-        offered no explicit anti-revert guarantee for the past half, so
-        Stages 5–8 consistently reverted Stage_4's ``std::string`` fields
-        back to ``char *``.
-
-        Stage_10 gets a different prompt path (a short type-correspondence
-        hint, not the staged C++-flavoured PRESERVE/DEFER text), so it
-        short-circuits here.
-        """
-        if stage is None or stage == Stage.Stage_10:
-            return ""
-        try:
-            stageNum = int(stage.name.split("_", 1)[1])
-        except (AttributeError, IndexError, ValueError):
-            return ""
-
-        # When --skip-stages omits a stage, its line is also omitted from
-        # both the PRESERVE and DEFER lists — the LLM should never read
-        # about a stage that won't actually run in this pipeline.
-        skipped = getattr(self, "skippedStages", set()) or set()
-        # A mode may rewrite what a stage "owns" via stageNoteOverrides so the
-        # PRESERVE/DEFER text other stages read matches what actually ran.
-        noteOverrides = getattr(self, "stageNoteOverrides", None) or {}
-        pastEntries = []
-        futureEntries = []
-        for otherStage, action in self._STAGE_OWNERSHIP_NOTES.items():
-            try:
-                otherNum = int(otherStage.name.split("_", 1)[1])
-            except (AttributeError, IndexError, ValueError):
-                continue
-            if otherNum == stageNum:
-                continue
-            if otherStage in skipped:
-                continue
-            action = noteOverrides.get(otherStage, action)
-            line = f"  * {otherStage.name} {action}."
-            if otherNum < stageNum:
-                pastEntries.append(line)
-            else:
-                futureEntries.append(line)
-
-        if not pastEntries and not futureEntries:
-            return ""
-
-        sections = []
-        if pastEntries:
-            sections.append(
-                "\nALREADY-COMPLETED STAGES — these ran BEFORE this step. "
-                "Their decisions are baked into the input code. PRESERVE them "
-                "verbatim. If a field is already `std::string` / `std::vector` "
-                "/ `std::optional` / `std::unique_ptr` / `std::shared_ptr` / "
-                "`bool` / etc., that is a deliberate choice from the listed "
-                "stage; do NOT silently change it back to a raw pointer, "
-                "manual `malloc`/`free` buffer, `cJSON_bool`/`int` flag, "
-                "null-checked `T*`, or any other pre-stage form, even when "
-                "the current prompt's topic doesn't involve that field. "
-                "This extends BEYOND types to the LOGIC around them: control "
-                "flow, view-operation idioms, comparison expressions, "
-                "helper-function signatures, and error-handling branches "
-                "from prior stages also stay verbatim. The earlier stage "
-                "that emitted that code had context the current step lacks "
-                "— even when the form looks 'simplifiable', leave it.\n"
-                + "\n".join(pastEntries) + "\n"
-            )
-        if futureEntries:
-            sections.append(
-                "\nUPCOMING STAGES — reserved for LATER passes. Do NOT do "
-                "their work in this step, even when the example-usage block "
-                "below makes the change look idiomatic or 'while-you're-at-"
-                "it'. A later stage has more context than this one to make "
-                "that call:\n"
-                + "\n".join(futureEntries) + "\n"
-            )
-
-        return "".join(sections) + (
-            "If a field's existing type is what THIS stage's intent wants "
-            "(or is unrelated to this stage), keep it unchanged.\n"
-        )
-
-    # Stage_10 mechanical mapping hint: ``STAGE_10_MECHANICAL_MAPPING_HINT``
-    # in ``prompt_hints``. Injected at THREE prompt sites — type-batch
-    # (struct field declarations), SCC function-translate, compileWithFeedback.
-
-    def _buildTypeBatchBasePrompt(self, batchNodes, stage=None):
+    def _buildTypeBatchBasePrompt(self, batchNodes):
         kinds = {node.kind for node in batchNodes}
         hasRichStruct = any(node.translation_mode == TranslationMode.RICH_STRUCT for node in batchNodes)
-        if self._isStagedMode():
-            if stage == Stage.Stage_1:
-                prompt = "Translate the following C definitions to " + self.dstLang + " step by step. In this step, please only " + self._stagePromptText(stage) + "\n"
-            elif stage == Stage.Stage_10:
-                # Stage_10 receives the post-stage_9 C++ definitions (the
-                # type registry's cCode field is overwritten at end of each
-                # stage by updateFuncMap). Say "C++" not "C" so the model
-                # treats the input as already-refined C++ to transliterate.
-                prompt = "Translate the following C++ definitions to Rust.\n"
-                prompt = prompt + STAGE_10_MECHANICAL_MAPPING_HINT
-                prompt = prompt + self._stage10GlobalOwnershipHintIfNeeded(stage)
-                prompt = prompt + self._stage10LifetimeSelfCheckHintIfNeeded(stage)
-            else:
-                prompt = "Modify the following " + self.dstLang + " definitions step by step. In this step, please only " + self._stagePromptText(stage) + "\n"
-            prompt = prompt + self._stageScopeInstruction(stage)
-            prompt = prompt + "Please add any necessary header files, include statements, imports, or use statements required for the translated code to compile.\n"
-        else:
-            prompt = "Please translate the following C definitions to " + self.dstLang + ".\n"
-            prompt = prompt + "Please add any necessary header files, include statements, imports, or use statements required for the translated code to compile.\n"
+        prompt = "Please translate the following C definitions to " + self.dstLang + ".\n"
+        prompt = prompt + "Please add any necessary header files, include statements, imports, or use statements required for the translated code to compile.\n"
         if kinds == {TypeKind.STATIC}:
             prompt = prompt + "The definitions are file-scope variable definitions.\n"
         elif kinds == {TypeKind.EXTERN}:
             prompt = prompt + "The definitions are file-scope external variable declarations.\n"
         elif kinds.issubset({TypeKind.STATIC, TypeKind.EXTERN}):
             prompt = prompt + "The definitions are file-scope variable declarations or definitions.\n"
-        elif hasRichStruct and stage != Stage.Stage_10:
-            # Stage_10 does NOT actually attach usage examples (see line where
-            # `richNodes and stage != Stage.Stage_10` gates the attachment).
-            # Promising examples we never deliver misleads the model into
-            # "guess what's idiomatic" mode; the mechanical mapping hint
-            # already covers what to do without per-field usage.
+        elif hasRichStruct:
             #
             # The phrasing here is deliberately NOT "translate to a more
             # idiomatic type". The previous open-ended wording, combined
@@ -1610,15 +869,14 @@ class TranslationPipelineMixin:
         prompt = prompt + '\nFor the final code result, please response with "Final result code" is : \n'
         return prompt
 
-    def _buildTypeBatchPrompt(self, batchNodes, predecessorContext, stage=None, err="", lastTimeResult="",
-                              perfRetryContext=None):
-        request = self._buildTypeBatchBasePrompt(batchNodes, stage)
+    def _buildTypeBatchPrompt(self, batchNodes, predecessorContext, err="", lastTimeResult=""):
+        request = self._buildTypeBatchBasePrompt(batchNodes)
 
         # On perf retry, prepend the PERFORMANCE CONTEXT suffix so the model
         # sees the rejected rendering BEFORE the "definitions:" block, mirroring
         # the function-level prompt layout. The fence markers on each node's
         # cCode below give the model an unambiguous "this is the source" anchor.
-        perfSuffix = self._buildPerfContextSuffixForTypes(batchNodes, perfRetryContext, stage)
+        perfSuffix = ""
         if perfSuffix:
             request = request + perfSuffix
 
@@ -1642,15 +900,10 @@ class TranslationPipelineMixin:
             request = request + "Do not repeat these dependency definitions in your response. Translate only the target definitions listed above.\n"
             request = request + predecessorContext + "\n\n"
 
-        usageBlock = self._formatTypeUsageExamples(batchNodes, stage)
+        usageBlock = self._formatTypeUsageExamples(batchNodes)
         if usageBlock:
             request = request + usageBlock
             # On-demand: only spell out the BYTE BUFFER tag rule to the
-            # model when the usage block actually carries the tag literal.
-            # Saves tokens on batches where the static-analysis classifier
-            # produced nothing tagged.
-            if stage == Stage.Stage_3 and _BYTE_BUFFER_TAG in usageBlock:
-                request = request + STAGE_3_TAGGED_USAGE_HINT
 
         if err:
             request = request + "In the previous translation, I got an compile error \n" + err + "\n"
@@ -1658,7 +911,7 @@ class TranslationPipelineMixin:
         return request
 
     @staticmethod
-    def _formatTypeUsageExamples(nodes, stage=None):
+    def _formatTypeUsageExamples(nodes):
         """Render the "example usage:" block shown to both the translation
         prompt and the stage_check judge. Returns "" when there is nothing
         worth showing.
@@ -1679,8 +932,6 @@ class TranslationPipelineMixin:
         promises of examples we don't deliver mislead the model into
         "guess what's idiomatic" mode (see _buildTypeBatchBasePrompt).
         """
-        if stage == Stage.Stage_10:
-            return ""
         richNodes = [
             n for n in nodes
             if getattr(n, "translation_mode", None) == TranslationMode.RICH_STRUCT
@@ -1785,23 +1036,18 @@ class TranslationPipelineMixin:
             finalCode = self.cleanCode(finalCode)
         return finalCode
 
-    def _translateDeterministicTypedefBatch(self, batchNodes, translationManager, stage=None):
+    def _translateDeterministicTypedefBatch(self, batchNodes, translationManager):
         unresolvedNodes = []
         for node in batchNodes:
             node.rustCode = self.translateSimpleTypedefDefinition(node.cCode)
             if node.rustCode:
-                self._logStoredTypeResult(node, stage)
-                if stage:
-                    translationManager.updateStructTranslateResultWithStructName(
-                        self._typeStorageKey(node),
-                        node.rustCode,
-                    )
+                self._logStoredTypeResult(node)
             else:
                 unresolvedNodes.append(node)
         return unresolvedNodes
 
-    def _translateTypedefBatch(self, batchNodes, predecessorContext, dependencyCodes, predecessorKeys, translationManager, stage=None):
-        unresolvedNodes = self._translateDeterministicTypedefBatch(batchNodes, translationManager, stage)
+    def _translateTypedefBatch(self, batchNodes, predecessorContext, dependencyCodes, predecessorKeys, translationManager):
+        unresolvedNodes = self._translateDeterministicTypedefBatch(batchNodes, translationManager)
         if not unresolvedNodes:
             return
 
@@ -1814,40 +1060,18 @@ class TranslationPipelineMixin:
             llmDependencyCodes,
             predecessorKeys,
             translationManager,
-            stage,
-        )
+                    )
 
-    def _translateTypeBatchWithLlm(self, batchNodes, predecessorContext, dependencyCodes, dependencyKeys, translationManager, stage=None, perfRetryContext=None):
+    def _translateTypeBatchWithLlm(self, batchNodes, predecessorContext, dependencyCodes, dependencyKeys, translationManager):
         trialCount = 0
         err = ""
         lastTimeResult = ""
 
         while True:
             request = self._buildTypeBatchPrompt(
-                batchNodes, predecessorContext, stage, err, lastTimeResult,
-                perfRetryContext=perfRetryContext,
+                batchNodes, predecessorContext, err, lastTimeResult,
             )
             reusePreviousResult = False
-            if not err and self._isStagedMode():
-                # Slim stage_check: pass only the type definitions being
-                # judged + their predecessor types as context. Avoid stuffing
-                # the entire translation prompt — see stageCheck docstring.
-                #
-                # usageExamples uses the SAME formatter the translation
-                # prompt above already called, so the judge sees byte-
-                # identical per-field evidence (no asymmetry between
-                # "what we asked the translator to produce" and "what we
-                # asked the judge to approve").
-                typeDefsBlob = "\n\n".join(
-                    self.stringifyCodeBlock(n.cCode) for n in batchNodes
-                )
-                if not self.stageCheck(
-                    stage=stage,
-                    funcSrc=typeDefsBlob,
-                    contextStructs=predecessorContext,
-                    usageExamples=self._formatTypeUsageExamples(batchNodes, stage),
-                ):
-                    reusePreviousResult = True
 
             if not reusePreviousResult:
                 batchName = "+".join(node.name for node in batchNodes)
@@ -1886,26 +1110,16 @@ class TranslationPipelineMixin:
                             )
                         finalCode = ""
                     node.rustCode = finalCode
-                    self._logStoredTypeResult(node, stage)
-                    if self._isStagedMode():
-                        translationManager.updateStructTranslateResultWithStructName(
-                            self._typeStorageKey(node),
-                            node.rustCode,
-                        )
+                    self._logStoredTypeResult(node)
 
                 if successFlag or trialCount > 5:
                     break
             else:
                 for node in batchNodes:
-                    self._logStoredTypeResult(node, stage)
-                    if self._isStagedMode() and node.rustCode:
-                        translationManager.updateStructTranslateResultWithStructName(
-                            self._typeStorageKey(node),
-                            node.rustCode,
-                        )
+                    self._logStoredTypeResult(node)
                 break
 
-    def preTranslateComplexStructs(self, stage=None, perfRetryContext=None):
+    def preTranslateComplexStructs(self):
         """Translate all complex type definitions for the current stage.
 
         ``perfRetryContext`` is propagated to ``_translateTypeBatchWithLlm`` so
@@ -1917,16 +1131,10 @@ class TranslationPipelineMixin:
         if self.translatorMode not in [TranslatorModes.CF_STRUCT_REPLAY,
                                        TranslatorModes.CF_STRUCT_FN_REPLAY,
                                        TranslatorModes.CF_SINGLE_REQUEST_MERGE,
-                                       TranslatorModes.COMPILATION_FEEDBACK,
-                                       TranslatorModes.NEW_MODE,
-                                       TranslatorModes.NEW_MODE_SINGLE_STAGE,
-                                       TranslatorModes.NEW_MODE_MERGED_VIEWS,
-                                       TranslatorModes.NEW_MODE_RESUME]:
+                                       TranslatorModes.COMPILATION_FEEDBACK]:
             return
 
         translationManager = TranslationResultManager()
-        if stage:
-            translationManager.updateTranslationStage(stage)
 
         graph = self.getTypeDependencyGraph()
         for batchKeys in graph.topo_batches():
@@ -1958,19 +1166,19 @@ class TranslationPipelineMixin:
                 # aliases (e.g. cJSON_bool, size_t) are not the source of perf
                 # regressions in any stage we've seen; the heavy hitters are
                 # STRUCT/UNION batches which take the LLM path below.
-                self._translateTypedefBatch(batchNodes, predecessorContext, dependencyCodes, predecessorKeys, translationManager, stage)
+                self._translateTypedefBatch(batchNodes, predecessorContext, dependencyCodes, predecessorKeys, translationManager)
                 continue
 
             if any(node.kind in (TypeKind.STRUCT, TypeKind.UNION, TypeKind.ENUM) for node in batchNodes):
                 self._translateTypeBatchWithLlm(
                     batchNodes, predecessorContext, dependencyCodes, predecessorKeys,
-                    translationManager, stage, perfRetryContext=perfRetryContext,
+                    translationManager,
                 )
                 continue
 
             self._translateTypeBatchWithLlm(
                 batchNodes, predecessorContext, dependencyCodes, predecessorKeys,
-                translationManager, stage, perfRetryContext=perfRetryContext,
+                translationManager,
             )
 
         # After all type batches finish: cascade-delete any entry that
@@ -2074,10 +1282,6 @@ class TranslationPipelineMixin:
                             [ln.strip() for ln in removedLines],
                         )
                         n.rustCode = newCode
-                        if self._isStagedMode():
-                            translationManager.updateStructTranslateResultWithStructName(
-                                storageKey, newCode
-                            )
                     else:
                         # Reference is present but we couldn't find a
                         # clean single-line field declaration to drop
@@ -2103,10 +1307,6 @@ class TranslationPipelineMixin:
                     "removed entire entry.", storageKey, refs,
                 )
                 n.rustCode = ""
-                if self._isStagedMode():
-                    translationManager.updateStructTranslateResultWithStructName(
-                        storageKey, ""
-                    )
                 newlyDeleted.add(n.name)
 
             if not newlyDeleted:
@@ -2153,7 +1353,7 @@ class TranslationPipelineMixin:
                 kept.append(line)
         return "\n".join(kept), removed
 
-    def compileSccWithFeedback(self, sccGroup, funcMap, contextStructs, previouslyTranslatedFunctions, stage=None, perfRetryContext=None):
+    def compileSccWithFeedback(self, sccGroup, funcMap, contextStructs, previouslyTranslatedFunctions):
         """Translate a strongly-connected group of mutually-recursive functions in one
         LLM round-trip. Returns ``(successFlag, translatedResult, sccLabel)``.
 
@@ -2248,39 +1448,15 @@ class TranslationPipelineMixin:
             f"Functions in this group: {', '.join(sccGroup)}\n\n"
         )
 
-        if not self._isStagedMode():
-            prompt = (
-                sccPreamble
-                + "Translate " + self.srcLang + " to " + self.dstLang
-                + ". If the source code does not have a main function, please do not add a main function. "
-                + "If the source code does not have a called function defined, please do NOT add a dummy definition. "
-                + "Translate ONLY the provided functions.\n"
-                + "Please use standard library functions if a C function has been implemented by the target standard library.\n"
-                + 'For the final code result, please respond with "Final result code" is :\n'
-            )
-        else:
-            if stage == Stage.Stage_1:
-                prompt = sccPreamble + "Transpile " + self.srcLang + " to " + self.dstLang + " step by step. In this step, please only " + self._stagePromptText(stage) + "\n"
-            elif stage == Stage.Stage_10:
-                # Stage_10 input is the post-stage_9 C++ function body
-                # (updateFuncMap copies rustCode -> funcCodeLines at end of
-                # each stage). Tell the model it is reading C++, so it does
-                # not "re-decide" what idiomatic Rust looks like, and inject
-                # the mechanical mapping rules for function bodies.
-                prompt = sccPreamble + "Translate C++ to Rust. Translate ONLY the provided functions; do not add a main function or dummy callees outside the group.\n"
-                prompt = prompt + STAGE_10_MECHANICAL_MAPPING_HINT
-                prompt = prompt + self._stage10GlobalOwnershipHintIfNeeded(stage)
-                prompt = prompt + self._stage10LifetimeSelfCheckHintIfNeeded(stage)
-                prompt = prompt + self._stage10FileIoHintIfNeeded(stage, funcSrc)
-            else:
-                prompt = sccPreamble + "Modify " + self.dstLang + " code step by step. In this step, please only " + self._stagePromptText(stage) + "\n"
-            prompt = prompt + self._stageScopeInstruction(stage)
-            prompt = prompt + (
-                ". If the source code does not have a main function, please do not add a main function. "
-                "If the source code does not have a called function defined, please do NOT add a dummy definition. "
-                "Translate ONLY the provided functions and make sure to include proper header files.\n"
-                'For the final code result, please respond with "Final result code" is :\n'
-            )
+        prompt = (
+            sccPreamble
+            + "Translate " + self.srcLang + " to " + self.dstLang
+            + ". If the source code does not have a main function, please do not add a main function. "
+            + "If the source code does not have a called function defined, please do NOT add a dummy definition. "
+            + "Translate ONLY the provided functions.\n"
+            + "Please use standard library functions if a C function has been implemented by the target standard library.\n"
+            + 'For the final code result, please respond with "Final result code" is :\n'
+        )
 
         previouslyTranslatedPrompt = ""
         if previouslyTranslatedFunctions:
@@ -2291,12 +1467,6 @@ class TranslationPipelineMixin:
                 "has made a dependency unnecessary, do not call it. \n"
             )
 
-        if perfRetryContext is not None:
-            prompt = prompt + self._buildPerfContextSuffix(
-                perfRetryContext.get("this_attempt_function", ""),
-                perfRetryContext.get("degrade_pct", 0.0),
-                stage=stage,
-            )
 
         (successFlag, result) = self.compileAndRetryLoopforDepency(
             sccLabel,
@@ -2310,9 +1480,7 @@ class TranslationPipelineMixin:
             externalDeps,
             dependencyCodes,
             dependencyKeys,
-            stage,
-            funcSrc,
-            perfRetryContext=perfRetryContext,
+                        funcSrc,
         )
         return (successFlag, result, sccLabel)
 
@@ -2468,32 +1636,8 @@ class TranslationPipelineMixin:
 
         return result
 
-    def compileWithFeedback(self, funcName, funcDepsObj, contextStructs, dependencyTranslate=False, stage=None,
-                            perfRetryContext=None):
-        if not self._isStagedMode():
-            prompt = "Translate " + self.srcLang + " to " + self.dstLang + ". If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function." + "\n Please use standard library function if a C function has been implemented by Rust standard library" + "\n For the final code result, please response with \"Final result code\" is : \n"
-        else:
-            if stage == Stage.Stage_1:
-                prompt = "Transpile " + self.srcLang + " to " + self.dstLang + " step by step. In this step, please only " + self._stagePromptText(stage) + "\n"
-            elif stage == Stage.Stage_10:
-                # Same C++ -> Rust transliteration rules as the SCC path;
-                # the input is already-refined C++ from stage 9.
-                prompt = "Translate C++ to Rust. If the C++ source code does not have a main function, please do not add a main function. If the C++ source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function.\n"
-                prompt = prompt + STAGE_10_MECHANICAL_MAPPING_HINT
-                prompt = prompt + self._stage10GlobalOwnershipHintIfNeeded(stage)
-                prompt = prompt + self._stage10LifetimeSelfCheckHintIfNeeded(stage)
-                prompt = prompt + self._stage10FileIoHintIfNeeded(stage, funcDepsObj.funcCodeLines)
-            else:
-                prompt = "Modify " + self.dstLang + " code step by step. In this step, please only " + self._stagePromptText(stage) + "\n"
-            prompt = prompt + self._stageScopeInstruction(stage)
-            otherInformation = ". If the source code does not have a main function, please do not add a main function. If the source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function and make sure including proper header files. \n" + "\n For the final code result, please response with \"Final result code\" is : "
-            prompt = prompt + otherInformation
-        if perfRetryContext is not None:
-            prompt = prompt + self._buildPerfContextSuffix(
-                perfRetryContext.get("this_attempt_function", ""),
-                perfRetryContext.get("degrade_pct", 0.0),
-                stage=stage,
-            )
+    def compileWithFeedback(self, funcName, funcDepsObj, contextStructs, dependencyTranslate=False):
+        prompt = "Translate " + self.srcLang + " to " + self.dstLang + ". If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function." + "\n Please use standard library function if a C function has been implemented by Rust standard library" + "\n For the final code result, please response with \"Final result code\" is : \n"
         callbackContract = self._buildCallbackContractSection(funcDepsObj)
         if callbackContract:
             prompt = prompt + callbackContract
@@ -2583,9 +1727,7 @@ class TranslationPipelineMixin:
                                                                        funcDepsObj.dependFunctions,
                                                                        dependencyCodes,
                                                                        dependencyKeys,
-                                                                       stage,
-                                                                       funcSrc,
-                                                                       perfRetryContext=perfRetryContext)
+                                                                                                                                              funcSrc)
         return (successFlag, result)
 
     def compileAndRetryLoopforDepency(self,
@@ -2600,59 +1742,18 @@ class TranslationPipelineMixin:
                                       dependencyFunctionNames,
                                       dependencyCodes,
                                       dependencyKeys,
-                                      stage,
-                                      funcSrc,
-                                      perfRetryContext=None):
+                                                                            funcSrc):
         # When this is a perf retry, fence the actual source code with explicit
         # SOURCE-TO-TRANSFORM markers. Without these, the prompt has two C++
         # snippets back-to-back — the rejected attempt in PERFORMANCE CONTEXT
         # and the prior-stage source as funcSrc — and the model has been
         # observed to apply the stage transformation to the wrong one.
-        if perfRetryContext is not None:
-            funcSrc = (
-                "\n// === BEGIN SOURCE TO TRANSFORM (prior-stage output; this is your input) ===\n"
-                + funcSrc
-                + "\n// === END SOURCE TO TRANSFORM ===\n"
-            )
-        # On-demand: only spell out the C++ goto/init-bypass rule when the
-        # source actually contains `goto` AND we're outputting C++ (Rust
-        # has no goto, so Stage_10 never needs it). Most modern codebases
-        # don't use goto, so this saves ~2.5K chars per LLM call in the
-        # common case.
-        gotoHint = self._gotoBypassHintIfNeeded(stage, funcSrc)
-        request = prompt + gotoHint + "\n" + funcSrc + "\n"
+        request = prompt + "\n" + funcSrc + "\n"
         if len(translatedStructs) > 0:
             request = request + "\n" + translatedStructPrompt + "\n" + translatedStructs + "\n"
 
         request = request + "\n" + translatedFuncPrompt + "/* \n" + translatedFuncsSignatures + "*/\n"
 
-        if self._isStagedMode():
-            # Slim stage_check: feed only the structured pieces a judge needs
-            # (the function source + dependency types + dependency function
-            # signatures) — NOT the full translation request, which carries
-            # ~50 lines of translation-side directives that don't belong in
-            # a yes/no judgment context.
-            #
-            # usageExamples mirrors what the type-batch translation prompt
-            # already shows for the SAME dependency types: rendered via the
-            # shared _formatTypeUsageExamples helper so the judge and the
-            # translator never disagree on the evidence available.
-            dependencyNodes = [
-                node for node in (
-                    FunctionAndDependencies.getTypeNode(k) for k in dependencyKeys
-                ) if node is not None
-            ]
-            if not self.stageCheck(
-                stage=stage,
-                funcSrc=funcSrc,
-                contextStructs=translatedStructs,
-                funcSignatures=translatedFuncsSignatures,
-                usageExamples=self._formatTypeUsageExamples(dependencyNodes, stage),
-            ):
-                checkResult = self.cleanCode(contextStructs + "\n" + translatedFuncs + "\n" + funcSrc)
-                (successFlag, err) = self.compile(checkResult)
-                if successFlag:
-                    return (True, funcSrc)
         result = self.chunkAndSend(funcName, request)
         result = self._sanitizeResultAgainstDependencies(
             result,
@@ -2859,12 +1960,6 @@ class TranslationPipelineMixin:
             # clang. Without this, fixing the compile can silently produce the
             # same slow idiom and the perf retry burns an attempt for nothing.
             perfContextSuffix = ""
-            if perfRetryContext is not None:
-                perfContextSuffix = self._buildPerfContextSuffix(
-                    perfRetryContext.get("this_attempt_function", ""),
-                    perfRetryContext.get("degrade_pct", 0.0),
-                    stage=stage,
-                )
             request = hintEmphasis + basicFeedback + inputInformation + targetFunction + correctInformation + compileErrorInformation + compilefix + otherInformation + perfContextSuffix
             with _callKindContext(self, "function_retry"):
                 result = self.chunkAndSend(funcName, request)
@@ -2990,15 +2085,7 @@ class TranslationPipelineMixin:
 
         return result
 
-    def runPerformanceCheckForOutput(self, outputPath, label, funcMap=None, updateFuncMapAfterCheck=False,
-                                     stage=None, prevStageFuncMap=None, prevStageTypes=None):
-        # ``stage`` is passed as a Stage enum in production code paths but as a
-        # bare string ("Stage_3", "Stage_10", ...) in many unit tests. Normalise
-        # to a plain stage-name string so per-stage lookups and Stage_10
-        # comparisons work uniformly without forcing every test to switch.
-        stageName = None
-        if stage is not None:
-            stageName = stage.name if hasattr(stage, "name") else str(stage)
+    def runPerformanceCheckForOutput(self, outputPath, label, funcMap=None, updateFuncMapAfterCheck=False):
 
         performancePrompt, performanceArguments = self.loadPerformanceInformation(outputPath)
         self.logger.info("[Performance check start] : %s", label)
@@ -3027,10 +2114,6 @@ class TranslationPipelineMixin:
                 "[Stage discarded] : %s reason=correctness expected=%s got=%s",
                 label, expectedChecksum, currentChecksum,
             )
-            if stageName != "Stage_10" and funcMap is not None and prevStageFuncMap is not None:
-                self._revertStageToPrev(funcMap, prevStageFuncMap, prevStageTypes)
-                self._flushPrevStageMergedFileToCurrent(outputPath, stage)
-                self._markStageDiscardedInMetrics(outputPath, prevMs)
             return False
 
         # 2. Perf gate.
@@ -3043,48 +2126,17 @@ class TranslationPipelineMixin:
         # 3. Skip retry mechanism entirely?
         skipRetry = bool(getattr(self, "perfDegradeSkipRetry", False))
         discardOnFail = bool(getattr(self, "perfDegradeDiscardOnFail", False))
-        # Stage_10 (Rust) is never reverted to its C++ predecessor on perf
-        # failure either — the only sensible action is to keep the Rust
-        # output and log the degradation.
-        if stageName == "Stage_10":
-            discardOnFail = False
-        # Stage_1 (custom-allocator removal) is the foundation every later
-        # stage builds on; reverting it puts the custom allocator back and
-        # invalidates the rewrite. Opt-in via --perf-degrade-keep-stage-1.
-        if stageName == "Stage_1" and bool(getattr(self, "keepStage1OnDegrade", False)):
-            discardOnFail = False
 
         if skipRetry:
             self.logger.info("[Perf retry skipped] : %s", label)
-            if discardOnFail and funcMap is not None and prevStageFuncMap is not None:
-                self.logger.info("[Stage discarded] : %s reason=perf (discard_on_fail=True)", label)
-                self._revertStageToPrev(funcMap, prevStageFuncMap, prevStageTypes)
-                self._flushPrevStageMergedFileToCurrent(outputPath, stage)
-                self._markStageDiscardedInMetrics(outputPath, prevMs)
-                return False
             return True
 
         # 4. Trigger retry only if degradation actually exceeds threshold.
-        #    A per-stage override (config.PERF_DEGRADE_THRESHOLD_PCT_PER_STAGE)
-        #    takes precedence over the global / CLI value — e.g. Stage_3 on
-        #    pure-string parsers like cJSON has a theoretical floor near +8%
-        #    even when implemented optimally.
         thresholdPct = float(getattr(self, "perfDegradeThresholdPct", PERF_DEGRADE_THRESHOLD_PCT))
-        if stageName is not None:
-            stageOverride = PERF_DEGRADE_THRESHOLD_PCT_PER_STAGE.get(stageName)
-            if stageOverride is not None:
-                thresholdPct = float(stageOverride)
         retryCount = int(getattr(self, "perfDegradeRetryCount", 2))
 
         if prevMs is None or currentMs is None or prevMs <= 0:
             self.logger.info("[Perf retry skipped] : %s (no prev baseline)", label)
-            if discardOnFail and funcMap is not None and prevStageFuncMap is not None:
-                self.logger.info("[Stage discarded] : %s reason=perf (no baseline)", label)
-                self._revertStageToPrev(funcMap, prevStageFuncMap, prevStageTypes)
-                self._flushPrevStageMergedFileToCurrent(outputPath, stage)
-                # No prev baseline to stamp into the metrics record; the
-                # discarded stage's average_elapsed_ms remains as-recorded.
-                return False
             return True
 
         degradePct = (currentMs - prevMs) / prevMs * 100.0
@@ -3103,38 +2155,12 @@ class TranslationPipelineMixin:
         )
 
         retryPassed = False
-        if funcMap is not None and prevStageFuncMap is not None and stage is not None:
-            retryPassed = self._runStagePerfRetryLoop(
-                stage=stage,
-                label=label,
-                funcMap=funcMap,
-                prevStageFuncMap=prevStageFuncMap,
-                outputPath=outputPath,
-                performancePrompt=performancePrompt,
-                performanceArguments=performanceArguments,
-                prevMs=prevMs,
-                currentMs=currentMs,
-                expectedChecksum=expectedChecksum,
-                thresholdPct=thresholdPct,
-                retryCount=retryCount,
-                prevStageTypes=prevStageTypes,
-            )
-        else:
-            self.logger.warning(
-                "[Perf retry skipped] : %s (missing funcMap/prevStageFuncMap/stage)", label,
-            )
 
         if retryPassed:
             self.logger.info("[Performance check pass] : %s (after perf retry)", label)
             return True
 
         self.logger.info("[Perf retry exhausted] : %s", label)
-        if discardOnFail and funcMap is not None and prevStageFuncMap is not None:
-            self.logger.info("[Stage discarded] : %s reason=perf (discard_on_fail=True)", label)
-            self._revertStageToPrev(funcMap, prevStageFuncMap, prevStageTypes)
-            self._flushPrevStageMergedFileToCurrent(outputPath, stage)
-            self._markStageDiscardedInMetrics(outputPath, prevMs)
-            return False
 
         # Default: keep the slow result, log clearly.
         self.logger.info("[Performance degrade accepted] : %s", label)
@@ -3167,53 +2193,6 @@ class TranslationPipelineMixin:
             for key, value in fields.items():
                 setattr(target, key, value)
 
-    def _snapshotTypeRegistry(self):
-        """Snapshot every TypeNode's translated code so perf retry can revert
-        typedef/struct definitions to the prior-stage version before re-
-        translating types. Mirrors ``_snapshotFuncMap`` for the type-registry
-        side. Captured fields:
-          - ``rustCode`` (the active translation for the current stage)
-          - ``cCode``   (input baseline for the next stage; ``updateFuncMap``
-                        copies ``rustCode`` to ``cCode`` at end of stage)
-        Returns a ``{typeKey: {field: value}}`` dict suitable for
-        ``_adoptTypeRegistrySnapshot``.
-
-        Baseline fallback for rustCode: when a TypeNode has not yet been
-        translated (rustCode == "" but cCode is real C source — the
-        Stage_1 entry state), capture the stringified cCode as the
-        snapshot's rustCode. Without this, Stage_1 perf-discard reverts
-        rustCode back to "" for every type, and the next stage's SCC
-        translation builds its dependency-definitions block by reading
-        rustCode — which means cJSON / internal_hooks / parse_buffer are
-        all silently absent from the LLM's "translated dependency
-        definitions" prompt section. The LLM then redefines those types
-        inconsistently across each function's translation (one with
-        ``internal_hooks hooks;`` field, another without), the merged
-        compile errors with "redefinition" + "no member 'hooks'", and
-        retry-prompted models "fix" the call sites by passing
-        ``nullptr`` to ``cJSON_New_Item`` — whose body unconditionally
-        dereferences ``hooks->allocate(...)`` and segfaults at runtime.
-
-        The fallback is intentionally NOT applied when both rustCode
-        and cCode are empty: that pair means the type was deleted in a
-        prior stage's cascade and the end-of-stage updateFuncMap
-        propagated the deletion to cCode. Reviving such a type here
-        would un-do the deletion.
-        """
-        snapshot = {}
-        for typeKey in FunctionAndDependencies.typeRegistry.sorted_keys():
-            typeNode = FunctionAndDependencies.getTypeNode(typeKey)
-            if typeNode is None:
-                continue
-            rustCode = getattr(typeNode, "rustCode", "")
-            cCode = getattr(typeNode, "cCode", "")
-            if not rustCode and cCode:
-                rustCode = self.stringifyCodeBlock(cCode)
-            snapshot[typeKey] = {
-                "rustCode": rustCode,
-                "cCode": cCode,
-            }
-        return snapshot
 
     def _adoptTypeRegistrySnapshot(self, snapshot):
         """Restore TypeNode fields from a snapshot produced by
@@ -3227,179 +2206,9 @@ class TranslationPipelineMixin:
             for key, value in fields.items():
                 setattr(typeNode, key, value)
 
-    def _revertFuncMapToPrev(self, funcMap, prevStageFuncMap):
-        """Restore funcMap entries from a prev-stage snapshot."""
-        if not prevStageFuncMap:
-            return
-        # prevStageFuncMap may be either a snapshot dict or a real funcMap.
-        for funcName in funcMap:
-            if funcName not in prevStageFuncMap:
-                continue
-            prev = prevStageFuncMap[funcName]
-            target = funcMap[funcName]
-            if isinstance(prev, dict):
-                for key, value in prev.items():
-                    setattr(target, key, value)
-            else:
-                # Treat as another funcMap entry object.
-                for key in ("funcCodeLines", "typeDeclDefCodeLines", "targetLangSignature"):
-                    if hasattr(prev, key):
-                        setattr(target, key, getattr(prev, key))
 
-    def _revertStageToPrev(self, funcMap, prevStageFuncMap, prevStageTypes):
-        """Symmetric revert: undo BOTH funcMap and typeRegistry mutations that
-        a discarded stage may have introduced.
 
-        Without the type half, a discarded stage that mutated struct fields
-        (e.g. Stage_8's unique_ptr conversion) leaves typeRegistry in the
-        failing-stage shape while funcMap is on the prev-stage shape → the
-        next stage compiles into an inconsistent universe (functions expect
-        raw pointers, struct fields are smart pointers).
 
-        ``prevStageTypes`` is the snapshot captured in ``translateAll`` at
-        stage entry (mirror of ``prevStageFuncMap``). Older code paths that
-        don't yet plumb this through pass None — in that case only funcMap
-        is reverted (matches pre-fix behavior).
-
-        NOTE: this only updates IN-MEMORY state. The on-disk
-        ``merged_funcs.{cpp,rs}`` is NOT touched here — call sites that
-        are discarding a stage should also call
-        ``_flushPrevStageMergedFileToCurrent`` to make the disk match.
-        Failed perf-retry attempts archived under
-        ``<stageDir>/attempt_<N>/`` are left intact.
-        """
-        self._revertFuncMapToPrev(funcMap, prevStageFuncMap)
-        if prevStageTypes is not None:
-            self._adoptTypeRegistrySnapshot(prevStageTypes)
-
-    def _flushPrevStageMergedFileToCurrent(self, outputPath, stage):
-        """After a stage is discarded back to its predecessor, copy the
-        predecessor's ``merged_funcs.{cpp,rs}`` into the current stage's
-        directory so the on-disk file matches the in-memory funcMap
-        (already reverted by ``_revertStageToPrev``).
-
-        Before this method existed, a discarded Stage_3 left
-        ``_Stage.Stage_3/merged_funcs.cpp`` holding the failing attempt's
-        code even though ``performance_metrics.json`` claimed
-        ``effective_source: previous_stage (discarded by
-        discard_on_fail)``. Users opening the file would see the
-        broken code that the metrics said had been rolled back.
-
-        When ``--skip-stages`` omits stages, the immediate ``stageNum-1``
-        dir may not exist on disk. The walk-backwards mirrors
-        ``getPerformanceMetricsContext`` so e.g. a discarded Stage_7 with
-        Stage_5/6 skipped correctly flushes from ``_Stage.Stage_4`` rather
-        than silently giving up because ``_Stage.Stage_6`` is missing.
-
-        Per-attempt archives under ``<stageDir>/attempt_<N>/`` are
-        intentionally left untouched — they remain forensic snapshots
-        of what each retry attempt actually produced.
-
-        Best-effort: any error here is logged but never raised — the
-        discard path must not crash because the prev dir was, say,
-        garbage-collected or read-only.
-        """
-        try:
-            stageName = stage.name if hasattr(stage, "name") else (str(stage) if stage else "")
-            # Parse "Stage_N" → N. Anything else (None, "Stage_1" with no
-            # prior, malformed) → nothing to copy.
-            if not stageName.startswith("Stage_"):
-                return
-            try:
-                stageNum = int(stageName.split("_", 1)[1])
-            except (IndexError, ValueError):
-                return
-            if stageNum <= 1:
-                # Stage_1 has no predecessor; nothing to revert from.
-                return
-
-            currentStageDir = os.path.abspath(os.path.dirname(outputPath))
-            parentDir = os.path.dirname(currentStageDir)
-            # When --skip-stages omits stages, the immediate `stageNum - 1`
-            # dir does not exist on disk. Walk backwards to find the most
-            # recent stage that ACTUALLY ran — mirrors the walk in
-            # ``getPerformanceMetricsContext`` so file-revert and metric-
-            # revert stay consistent.
-            prevStageDir = None
-            prevStageDirName = None
-            for candidate in range(stageNum - 1, 0, -1):
-                candidateName = f"_Stage.Stage_{candidate}"
-                candidateDir = os.path.join(parentDir, candidateName)
-                if os.path.isdir(candidateDir):
-                    prevStageDir = candidateDir
-                    prevStageDirName = candidateName
-                    break
-            if prevStageDir is None:
-                self.logger.warning(
-                    "[Stage discarded] no prior stage dir found under %s; "
-                    "leaving %s as-is", parentDir, currentStageDir,
-                )
-                return
-
-            copied = []
-            for name in ("merged_funcs.cpp", "merged_funcs.rs"):
-                srcPath = os.path.join(prevStageDir, name)
-                if not os.path.isfile(srcPath):
-                    continue
-                dstPath = os.path.join(currentStageDir, name)
-                shutil.copy2(srcPath, dstPath)
-                copied.append(name)
-            if copied:
-                self.logger.info(
-                    "[Stage discarded] flushed prev-stage merged file(s) %s "
-                    "from %s -> %s",
-                    copied, prevStageDirName, os.path.basename(currentStageDir),
-                )
-        except Exception as e:
-            self.logger.warning(
-                "[Stage discarded] failed to flush prev-stage merged file: %s",
-                e,
-            )
-
-    def _markStageDiscardedInMetrics(self, outputPath, prevStageBaselineMs):
-        """When a stage is reverted via discard_on_fail, its effective perf is
-        identical to the prior stage's (because funcMap + typeRegistry are now
-        in the prior stage's exact shape). Update the persisted metrics so
-        that subsequent stages use the prior stage's ms as their
-        ``previous_stage_baseline_ms`` rather than the slow failing-attempt
-        ms.
-
-        Without this, e.g. Stage_4 fails @ 8s and gets discarded back to
-        Stage_3 (2s); Stage_5 then reads Stage_4.average_elapsed_ms=8s as its
-        baseline and a perfectly fine Stage_5 looks great vs an inflated
-        baseline — masking real regressions. After this stamp,
-        Stage_4.average_elapsed_ms=2s (telemetry of the failed attempt is
-        preserved in ``discarded_attempt_ms`` for forensics).
-
-        Returns the resolved baseline ms, or None when no update could be
-        applied (missing record, missing prev baseline).
-        """
-        if prevStageBaselineMs is None:
-            return None
-        try:
-            metricsPath, currentKey, _previousKey = self.getPerformanceMetricsContext(outputPath)
-            metrics = self.loadPerformanceMetrics(metricsPath)
-            if currentKey not in metrics:
-                return None
-            record = metrics[currentKey]
-            failingMs = record.get("average_elapsed_ms")
-            record["discarded"] = True
-            record["discarded_attempt_ms"] = failingMs
-            record["average_elapsed_ms"] = prevStageBaselineMs
-            record["effective_source"] = "previous_stage (discarded by discard_on_fail)"
-            metrics[currentKey] = record
-            self.writePerformanceMetrics(metricsPath, metrics)
-            self.logger.info(
-                "[Stage discarded baseline stamp] : %s effective_ms=%.3f (was %.3f, discarded)",
-                currentKey, prevStageBaselineMs,
-                failingMs if isinstance(failingMs, (int, float)) else float("nan"),
-            )
-            return prevStageBaselineMs
-        except Exception as e:
-            self.logger.warning(
-                "[Stage discarded baseline stamp] failed for %s: %s", outputPath, e,
-            )
-            return None
 
     def _autoElaborateStructTemplateArgs(self, errStr):
         """When clang stderr contains the
@@ -3671,8 +2480,7 @@ class TranslationPipelineMixin:
     def _buildTypedefSignatureChangeSection(self, funcDepsObj):
         """Render the "Typedef signature changes" section that tells
         the LLM which function-pointer typedefs in its dependency
-        closure have had their RETURN TYPE changed by this stage,
-        compared to the original C form.
+        closure have had their RETURN TYPE changed by this         compared to the original C form.
 
         Scope is intentionally narrow — return type only, no parameter
         count / type comparison — to keep the prompt change small and
@@ -3758,139 +2566,8 @@ class TranslationPipelineMixin:
             + "\n".join(lines) + "\n"
         )
 
-    def _buildPerfContextSuffix(self, thisAttemptFuncCode, degradePct, stage=None):
-        """Build the perf-retry suffix appended to a per-function user prompt.
 
-        The prev-stage source is intentionally NOT included here: it is already
-        supplied as the function body of the prompt (funcSrc), so duplicating it
-        would only waste tokens. The retry message focuses on what NOT to repeat
-        (the failed attempt) and how slow it was, and asks for a faster idiom.
-        Pipeline-level discard_on_fail handles falling back to the prev stage
-        automatically when retries are exhausted, so the prompt should drive the
-        model toward a faster solution rather than toward keeping prev verbatim.
-        """
-        if self.dstLang.lower() == "rust":
-            lang = "rust"
-        else:
-            lang = "cpp"
-        suffix = (
-            "\n\nPERFORMANCE CONTEXT (this is a retry due to perf regression):\n\n"
-            f"Your previous (REJECTED) attempt at this stage produced the code below — "
-            f"it ran {degradePct:.1f}% slower than the prior stage and was discarded:\n\n"
-            f"```{lang}\n{thisAttemptFuncCode}\n```\n\n"
-            "Try a different approach for this stage's transformation that avoids the "
-            "slowdown pattern shown above. Do NOT replicate the same pattern — find a "
-            "faster idiom that still satisfies this stage's goal.\n"
-        )
-        # The vector stage's perf-retry hint. Vector is now Stage_3 (after
-        # the reorder that pulled bool to Stage_2 in front of all container
-        # / pointer / optional stages).
-        if stage == Stage.Stage_3:
-            suffix += (
-                "\nSTAGE_3 (std::vector) IDIOM HINT:\n"
-                "Examine your previous attempt: if it iterates a std::vector via "
-                "an explicit index (e.g. `for (size_t i = 0; i < v.size(); ++i) "
-                "... v[i]`, or nested `v[y][x]`) and the loop body does NOT "
-                "otherwise use the index `i` (or `y`, `x`), rewrite the loop "
-                "with range-based for (`for (auto& p : v)`) or a standard "
-                "algorithm (`std::accumulate`, `std::for_each`). Iterator-form "
-                "loops often produce tighter codegen on vector-of-vector "
-                "layouts and avoid redundant double-indirection through "
-                "`v[y][x]`. Keep the index form ONLY when `i` participates in "
-                "another expression (for example `row_index = (offset >= i) ? "
-                "offset - i : i - offset`).\n"
-                "Only adopt this rewrite if the regression appears to come "
-                "from element-access patterns. If the bottleneck is allocation "
-                "or copy (e.g. excessive `push_back` reallocations, full "
-                "`std::vector` copies on assignment, or per-element constructor "
-                "cost), address that root cause instead and leave the access "
-                "pattern as is.\n"
-            )
-        # Always end with the source-vs-failed-attempt disambiguator so it sits
-        # right before funcSrc in the assembled prompt. Without this, the model
-        # has been observed to apply the stage transformation to the rejected
-        # code shown above instead of to the actual source below.
-        suffix += (
-            "\nIMPORTANT — TWO code blocks appear in this prompt, do NOT confuse them:\n"
-            "  * The block above (under 'Your previous (REJECTED) attempt') is the\n"
-            "    slow output to AVOID. Use it ONLY as a negative example. Do NOT\n"
-            "    apply the stage transformation to that code.\n"
-            "  * The next code block immediately below this paragraph (fenced with\n"
-            "    `// === BEGIN SOURCE TO TRANSFORM ... === END SOURCE TO TRANSFORM ===`)\n"
-            "    is the prior-stage's accepted output — your real input. Apply this\n"
-            "    stage's transformation to THAT code, using a different idiom than\n"
-            "    the rejected attempt above.\n"
-        )
-        return suffix
 
-    def _buildPerfContextSuffixForTypes(self, batchNodes, perfRetryContext, stage=None):
-        """Type-batch counterpart of ``_buildPerfContextSuffix``. For each type
-        in this batch whose prior-attempt rendering caused the regression, show
-        the failing rendering as a negative example. ``perfRetryContext`` is a
-        dict with keys:
-          - ``this_attempt_types``: ``{typeKey: {"rustCode": ...}}`` snapshot
-            of the failing-stage rendering (captured BEFORE we reverted to
-            prev-stage state)
-          - ``degrade_pct``: percent slowdown vs prior stage
-        Returns empty string if no failing rendering is available for any
-        type in the batch (so non-retry calls produce zero overhead).
-        """
-        if not perfRetryContext:
-            return ""
-        snapshot = perfRetryContext.get("this_attempt_types") or {}
-        degradePct = perfRetryContext.get("degrade_pct", 0.0)
-        if self.dstLang.lower() == "rust":
-            lang = "rust"
-        else:
-            lang = "cpp"
-
-        blocks = []
-        for node in batchNodes:
-            prior = snapshot.get(node.key)
-            if not prior:
-                continue
-            priorCode = prior.get("rustCode") or ""
-            if not priorCode:
-                continue
-            blocks.append(
-                f"For type `{node.key.storage_key()}` your previous attempt was:\n\n"
-                f"```{lang}\n{priorCode}\n```\n"
-            )
-        if not blocks:
-            return ""
-
-        suffix = (
-            "\n\nPERFORMANCE CONTEXT (this is a retry due to perf regression):\n\n"
-            + "\n".join(blocks)
-            + f"\nThe merged binary using the above type definitions ran "
-            f"{degradePct:.1f}% slower than the prior stage and was discarded. "
-            "Try a different approach for this stage's type transformation that "
-            "avoids the slowdown pattern shown above. Do NOT replicate the same "
-            "pattern — find a faster idiom that still satisfies this stage's goal.\n"
-        )
-        suffix += (
-            "\nIMPORTANT — TWO sets of type definitions appear in this prompt for each "
-            "type, do NOT confuse them:\n"
-            "  * The blocks above (under 'your previous attempt') are the slow output\n"
-            "    to AVOID. Use them ONLY as negative examples. Do NOT apply the stage\n"
-            "    transformation to those definitions.\n"
-            "  * The type definitions immediately below this paragraph (fenced with\n"
-            "    `// === BEGIN TYPE TO TRANSFORM ... === END TYPE TO TRANSFORM ===`)\n"
-            "    are the prior-stage's accepted output — your real input. Apply this\n"
-            "    stage's transformation to THOSE types, using a different idiom than\n"
-            "    the rejected attempts above.\n"
-        )
-        return suffix
-
-    def _resolvePrevStageFuncCode(self, prevStageFuncMap, funcName):
-        """Look up ``funcName``'s prev-stage funcCodeLines from a snapshot or
-        live funcMap. Returns "" when prev state is unavailable."""
-        if isinstance(prevStageFuncMap, dict) and funcName in prevStageFuncMap:
-            prevEntry = prevStageFuncMap[funcName]
-            if isinstance(prevEntry, dict):
-                return prevEntry.get("funcCodeLines", "")
-            return getattr(prevEntry, "funcCodeLines", "")
-        return ""
 
     # Files and directories that exist inside a stage dir but are NOT part of
     # the per-attempt artifact set: build caches, lock dirs, our own archive
@@ -3898,400 +2575,7 @@ class TranslationPipelineMixin:
     # and from any subtree we descend into.
     _ATTEMPT_ARCHIVE_SKIP_NAMES = frozenset({"temp", ".performance_cargo_build"})
 
-    def _archiveAttemptDir(self, outputPath, attempt):
-        """Copy this perf-retry attempt's artifacts into
-        ``<stageDir>/attempt_<N>/`` so each attempt is preserved verbatim.
 
-        Lifecycle: ``updateFuncMap`` at the top of every retry iteration
-        rewrites the stage dir's ``merged_funcs.*``, and
-        ``runPerformanceCheck`` then writes ``performance.{cpp,rs,out}``.
-        Without an archive step those files are overwritten by the next
-        iteration (or rolled back by the correctness-fail / loop-exhaust
-        revert path), so only the LAST retained snapshot survives. That
-        makes it impossible to see why attempt 2 was slower than 1, or to
-        inspect the code a correctness-fail attempt actually produced.
-
-        Called once per attempt, immediately after the perf-run completes
-        and before any revert. ``stage_2/`` keeps the latest attempt's
-        files as before; ``stage_2/attempt_1/``, ``stage_2/attempt_2/``,
-        … each hold a frozen copy of their respective attempt.
-
-        Best-effort: any failure here is logged but never raised — the
-        retry loop must not crash because of a snapshot side-effect.
-        """
-        try:
-            stageDir = os.path.abspath(os.path.dirname(outputPath))
-            if not os.path.isdir(stageDir):
-                return
-            attemptDir = os.path.join(stageDir, f"attempt_{attempt}")
-            # If a prior partial run left this dir behind, blow it away so we
-            # don't merge two attempts' files into one place.
-            if os.path.exists(attemptDir):
-                shutil.rmtree(attemptDir, ignore_errors=True)
-            os.makedirs(attemptDir, exist_ok=True)
-
-            for name in os.listdir(stageDir):
-                # Don't recurse into our own archive history, and skip the
-                # build-cache dirs.
-                if name.startswith("attempt_"):
-                    continue
-                if name in self._ATTEMPT_ARCHIVE_SKIP_NAMES:
-                    continue
-                src = os.path.join(stageDir, name)
-                dst = os.path.join(attemptDir, name)
-                if os.path.isdir(src):
-                    shutil.copytree(
-                        src, dst,
-                        ignore=shutil.ignore_patterns(*self._ATTEMPT_ARCHIVE_SKIP_NAMES),
-                    )
-                else:
-                    shutil.copy2(src, dst)
-
-            self.logger.info(
-                "[Perf retry archive] attempt %d artifacts -> %s",
-                attempt, attemptDir,
-            )
-        except Exception as e:
-            self.logger.warning(
-                "[Perf retry archive] failed for attempt %d: %s",
-                attempt, e,
-            )
-
-    def _runStagePerfRetryLoop(self, stage, label, funcMap, prevStageFuncMap, outputPath,
-                               performancePrompt, performanceArguments, prevMs, currentMs,
-                               expectedChecksum, thresholdPct, retryCount,
-                               prevStageTypes=None):
-        """Per-stage perf rerun loop. Returns True iff a retry attempt passes
-        the perf threshold AND keeps checksum consistent.
-
-        The inner translation walk mirrors ``_runSccTopoTranslateLoop``: SCCs
-        are traversed in topological order (deps before consumers) and per-step
-        we rebuild each function's ``previouslyTranslatedFunctionSignatures``
-        and ``previouslyTranslatedFunctions`` from the CURRENT in-progress
-        retry state, not from the failing-stage snapshot. This guarantees that
-        when X's signature changes during retry (e.g. cJSON* -> cJSON&), the
-        consumer Y translated later in the topo order sees the new signature
-        rather than X's stale failing-stage signature.
-
-        Before each ``compileWithFeedback`` call we reset ``funcCodeLines`` to
-        the prev-stage version so the LLM is asked to re-apply this stage's
-        transformation to the baseline input — not to "do this stage on top of
-        my own already-broken attempt". The failing attempt is shown
-        separately in the PERFORMANCE CONTEXT suffix so the model knows what
-        pattern to avoid.
-
-        Type-level retry: when ``prevStageTypes`` is provided, each attempt
-        also reverts the typeRegistry to the prior-stage rendering and re-runs
-        ``preTranslateComplexStructs`` with the failing rendering surfaced via
-        ``perfRetryContext``. This lets the model fix regressions whose root
-        cause is the struct/typedef shape itself (e.g. unique_ptr-in-hot-loop
-        on Stage_8), not just the function bodies.
-        """
-        # bestSnapshot starts as the failing original (so if no attempt is faster,
-        # we leave funcMap untouched).
-        originalSnapshot = self._snapshotFuncMap(funcMap)
-        originalTypeSnapshot = self._snapshotTypeRegistry()
-        bestSnapshot = originalSnapshot
-        bestTypeSnapshot = originalTypeSnapshot
-        bestMs = currentMs
-
-        # Archive the failing original as ``attempt_0/`` BEFORE the loop body
-        # runs, because:
-        #   1. With ``retryCount=0`` the for-loop below is empty, so without
-        #      this call there is zero on-disk evidence of the failing state
-        #      under ``<stageDir>/attempt_*/`` — the user sees
-        #      ``[Perf retry exhausted]`` in the log but has nothing to diff
-        #      against a passing baseline.
-        #   2. With ``retryCount>0`` the FIRST thing the loop body does is
-        #      ``updateFuncMap`` (overwrites ``<stageDir>/merged_funcs.*``)
-        #      and ``runPerformanceCheck`` (overwrites
-        #      ``<stageDir>/performance.{cpp,rs,out}``). Before this archive
-        #      call existed, the failing-original artifacts were silently
-        #      clobbered by attempt 1 and never preserved anywhere — the
-        #      first thing archived was ``attempt_1`` = the FIRST RERUN.
-        # Note: we intentionally do NOT call ``appendPerfRetryAttempt`` for
-        # attempt 0. The original's metrics already live in
-        # ``performance_metrics.json[currentKey]`` written by the perf-run
-        # that triggered this loop; duplicating them under
-        # ``perf_retry.attempts[]`` would invert the existing
-        # ``attempted = len(attempts)`` semantics (rerun count, not total).
-        self._archiveAttemptDir(outputPath, 0)
-
-        for attempt in range(1, retryCount + 1):
-            self.logger.info("[Perf retry attempt] : %s #%d/%d", label, attempt, retryCount)
-            attemptSnapshot = {}
-            degradePct = (currentMs - prevMs) / prevMs * 100.0
-
-            # Capture each function's failing-stage body BEFORE we mutate
-            # funcCodeLines back to prev-stage code below — the perf-context
-            # suffix needs to display the failing body, not the prev one.
-            thisAttemptCodeByFunc = {
-                fn: getattr(fd, "funcCodeLines", "") for fn, fd in funcMap.items()
-            }
-
-            # Capture the failing-stage type rendering (for perf-context suffix
-            # of the re-translation), then revert types to prior-stage so the
-            # LLM is asked to redo this stage's TYPE transformation from a clean
-            # baseline. Only does anything when the caller threaded
-            # prevStageTypes through — non-perf callers (and legacy callers
-            # pre-dating this plumbing) skip type retry entirely.
-            if prevStageTypes is not None:
-                thisAttemptTypeSnapshot = self._snapshotTypeRegistry()
-                self._adoptTypeRegistrySnapshot(prevStageTypes)
-                try:
-                    self.preTranslateComplexStructs(
-                        stage,
-                        perfRetryContext={
-                            "this_attempt_types": thisAttemptTypeSnapshot,
-                            "degrade_pct": degradePct,
-                        },
-                    )
-                except Exception as e:
-                    self.logger.warning(
-                        "[Perf retry] type re-translation failed for %s attempt %d: %s — "
-                        "keeping prior-stage types and continuing with function retry",
-                        label, attempt, e,
-                    )
-
-            # SCC topo walk. createSccTopoQueue also returns the concatenated
-            # struct-context blob (contextedStructs) used by clang during the
-            # prepend-and-compile path in compileAndRetryLoopforDepency.
-            sccQueue, sccIncomingEdges, sccConsumers, sccs, _funcToScc, contextedStructs = \
-                self.createSccTopoQueue(funcMap)
-            contextedStructs = self._healContextStructsBlob(contextedStructs)
-            previouslyTranslatedFunctions = ""
-
-            while sccQueue:
-                sccId = sccQueue.popleft()
-                sccGroup = sccs[sccId]
-
-                if len(sccGroup) == 1:
-                    funcName = sccGroup[0]
-                    funcDeps = funcMap[funcName]
-                    prevCode = self._resolvePrevStageFuncCode(prevStageFuncMap, funcName)
-
-                    # Fix A: funcSrc inside compileWithFeedback is read from
-                    # funcDeps.funcCodeLines. Reset to prev so the LLM treats
-                    # the prev-stage code as the input to transform.
-                    if prevCode:
-                        funcDeps.funcCodeLines = prevCode
-
-                    # Fix DE: rebuild dep state from current topo-walk so that
-                    # signatures and bodies reflect THIS retry attempt's progress.
-                    funcDeps.previouslyTranslatedFunctions = previouslyTranslatedFunctions
-                    allSignature = ""
-                    for dep in funcDeps.dependFunctions:
-                        if dep in funcMap:
-                            allSignature = allSignature + funcMap[dep].targetLangSignature + "\n"
-                    funcDeps.previouslyTranslatedFunctionSignatures = allSignature
-
-                    ctx = {
-                        "this_attempt_function": thisAttemptCodeByFunc.get(funcName, ""),
-                        "degrade_pct": degradePct,
-                    }
-                    ok, newCode = False, None
-                    try:
-                        with _callKindContext(self, f"perf_retry_attempt_{attempt}"):
-                            ok, newCode = self.compileWithFeedback(
-                                funcName, funcDeps, contextedStructs,
-                                dependencyTranslate=True,
-                                stage=stage, perfRetryContext=ctx,
-                            )
-                    except Exception as e:
-                        self.logger.warning(
-                            "[Perf retry] compile/translate exception for %s: %s", funcName, e,
-                        )
-                        ok = False
-
-                    if ok and newCode:
-                        funcDeps.funcCodeLines = newCode
-                        # Refresh targetLangSignature from the new body so
-                        # downstream consumers in this same topo walk see this
-                        # attempt's signature (fixes the stale-signature half
-                        # of issue D+E).
-                        sigs, _missing = self._extractSccFunctionSignatures(newCode, sccGroup)
-                        if sigs.get(funcName):
-                            funcDeps.targetLangSignature = sigs[funcName]
-                    # else: funcCodeLines already left at prevCode above.
-
-                    previouslyTranslatedFunctions = (
-                        previouslyTranslatedFunctions + "\n" + funcDeps.funcCodeLines
-                    )
-                    attemptSnapshot[funcName] = {
-                        "funcCodeLines": getattr(funcDeps, "funcCodeLines", ""),
-                        "typeDeclDefCodeLines": getattr(funcDeps, "typeDeclDefCodeLines", ""),
-                        "targetLangSignature": getattr(funcDeps, "targetLangSignature", ""),
-                    }
-                else:
-                    # Multi-function SCC: translate the whole mutually-recursive
-                    # group together via compileSccWithFeedback.
-                    for funcName in sccGroup:
-                        prevCode = self._resolvePrevStageFuncCode(prevStageFuncMap, funcName)
-                        if prevCode:
-                            funcMap[funcName].funcCodeLines = prevCode
-
-                    for funcName in sccGroup:
-                        funcDeps = funcMap[funcName]
-                        funcDeps.previouslyTranslatedFunctions = previouslyTranslatedFunctions
-                        sigBuilder = ""
-                        for dep in funcDeps.dependFunctions:
-                            if dep in funcMap and dep not in sccGroup:
-                                sigBuilder = sigBuilder + funcMap[dep].targetLangSignature + "\n"
-                        funcDeps.previouslyTranslatedFunctionSignatures = sigBuilder
-
-                    # One perf-context snippet covers the whole group; the LLM
-                    # gets to see all failing bodies side-by-side which is
-                    # roughly how the SCC was translated to begin with.
-                    sccThisAttempt = "\n\n".join(
-                        thisAttemptCodeByFunc.get(fn, "") for fn in sccGroup
-                    )
-                    ctx = {
-                        "this_attempt_function": sccThisAttempt,
-                        "degrade_pct": degradePct,
-                    }
-
-                    sccOk = False
-                    translatedResult = ""
-                    try:
-                        with _callKindContext(self, f"perf_retry_attempt_{attempt}"):
-                            successFlag, translatedResult, _sccLabel = self.compileSccWithFeedback(
-                                sccGroup, funcMap, contextedStructs, previouslyTranslatedFunctions,
-                                stage=stage, perfRetryContext=ctx,
-                            )
-                        sccOk = successFlag
-                    except Exception as e:
-                        self.logger.warning(
-                            "[Perf retry] SCC compile/translate exception for %s: %s",
-                            list(sccGroup), e,
-                        )
-                        sccOk = False
-
-                    if sccOk and translatedResult:
-                        sigs, _missing = self._extractSccFunctionSignatures(translatedResult, sccGroup)
-                        perFunction = self._splitSccTranslatedResult(translatedResult, sccGroup)
-                        for funcName in sccGroup:
-                            body = perFunction.get(funcName) or funcMap[funcName].funcCodeLines
-                            funcMap[funcName].funcCodeLines = body
-                            if sigs.get(funcName):
-                                funcMap[funcName].targetLangSignature = sigs[funcName]
-                        previouslyTranslatedFunctions = (
-                            previouslyTranslatedFunctions + "\n" + translatedResult
-                        )
-                    else:
-                        # Members already hold prev-stage code from the reset
-                        # above; append those to keep the topo chain compileable.
-                        for funcName in sccGroup:
-                            previouslyTranslatedFunctions = (
-                                previouslyTranslatedFunctions + "\n" + funcMap[funcName].funcCodeLines
-                            )
-
-                    for funcName in sccGroup:
-                        funcDeps = funcMap[funcName]
-                        attemptSnapshot[funcName] = {
-                            "funcCodeLines": getattr(funcDeps, "funcCodeLines", ""),
-                            "typeDeclDefCodeLines": getattr(funcDeps, "typeDeclDefCodeLines", ""),
-                            "targetLangSignature": getattr(funcDeps, "targetLangSignature", ""),
-                        }
-
-                for consumerSccId in sccConsumers[sccId]:
-                    sccIncomingEdges[consumerSccId] -= 1
-                    if sccIncomingEdges[consumerSccId] == 0:
-                        sccQueue.append(consumerSccId)
-
-            # Re-merge & re-check. updateFuncMap re-emits the per-stage merged file.
-            try:
-                self.updateFuncMap(funcMap)
-            except Exception as e:
-                self.logger.warning("[Perf retry] updateFuncMap failed: %s", e)
-                self._adoptFuncMapSnapshot(funcMap, originalSnapshot)
-                self._adoptTypeRegistrySnapshot(originalTypeSnapshot)
-                self.appendPerfRetryAttempt(outputPath, {
-                    "attempt": attempt, "compiled": False, "perf_passed": False,
-                    "correctness_passed": None, "reason": "merge_failed",
-                })
-                continue
-
-            # Re-run perf check on the merged output. runPerformanceCheck both
-            # captures perf and writes correctness to metrics; we then read it
-            # back to decide.
-            try:
-                perfPassed = self.runPerformanceCheck(
-                    outputPath, performancePrompt, performanceArguments,
-                )
-            except Exception as e:
-                self.logger.warning("[Perf retry] runPerformanceCheck raised: %s", e)
-                self._adoptFuncMapSnapshot(funcMap, originalSnapshot)
-                self._adoptTypeRegistrySnapshot(originalTypeSnapshot)
-                self.appendPerfRetryAttempt(outputPath, {
-                    "attempt": attempt, "compiled": False, "perf_passed": False,
-                    "correctness_passed": None, "reason": "perf_run_failed",
-                })
-                continue
-
-            attemptRecord = self.loadCurrentStageRecord(outputPath)
-            attemptMs = attemptRecord.get("average_elapsed_ms")
-            attemptChecksum = attemptRecord.get("checksum")
-            attemptCorrectness = attemptRecord.get("correctness_check_passed")
-
-            self.logger.info(
-                "[Perf retry attempt result] : %s #%d ms=%s checksum_ok=%s perf_ok=%s",
-                label, attempt, attemptMs, attemptCorrectness, perfPassed,
-            )
-
-            # Snapshot this attempt's artifacts into <stageDir>/attempt_<N>/
-            # BEFORE the correctness-fail revert below or the next iteration's
-            # updateFuncMap overwrites the stage dir. Without this every
-            # attempt clobbers the previous one and only the final retained
-            # snapshot survives — making it impossible to inspect why
-            # attempt 2 was slower than 1, or to look at the code a
-            # correctness-fail attempt actually produced.
-            self._archiveAttemptDir(outputPath, attempt)
-
-            # Reject attempts that broke correctness.
-            if attemptCorrectness is False:
-                self.logger.warning(
-                    "[Perf retry] attempt %d produced wrong checksum (expected=%s got=%s); reverting",
-                    attempt, expectedChecksum, attemptChecksum,
-                )
-                self._adoptFuncMapSnapshot(funcMap, bestSnapshot)
-                self._adoptTypeRegistrySnapshot(bestTypeSnapshot)
-                self.appendPerfRetryAttempt(outputPath, {
-                    "attempt": attempt, "compiled": True,
-                    "average_elapsed_ms": attemptMs,
-                    "checksum": attemptChecksum,
-                    "perf_passed": False,
-                    "correctness_passed": False,
-                })
-                continue
-
-            self.appendPerfRetryAttempt(outputPath, {
-                "attempt": attempt, "compiled": True,
-                "average_elapsed_ms": attemptMs,
-                "checksum": attemptChecksum,
-                "perf_passed": bool(perfPassed),
-                "correctness_passed": True,
-            })
-
-            if isinstance(attemptMs, (int, float)) and attemptMs < bestMs:
-                bestMs = float(attemptMs)
-                bestSnapshot = attemptSnapshot
-                # Snapshot the typeRegistry alongside funcMap. Without this,
-                # the funcMap is rolled back to a good attempt while types
-                # silently keep the latest (potentially worse) rendering.
-                bestTypeSnapshot = self._snapshotTypeRegistry()
-
-            if perfPassed:
-                # Already adopted via funcMap.funcCodeLines = newCode in the loop.
-                return True
-
-        # Exhausted all attempts — adopt the best snapshot (could equal original).
-        self._adoptFuncMapSnapshot(funcMap, bestSnapshot)
-        self._adoptTypeRegistrySnapshot(bestTypeSnapshot)
-        try:
-            self.updateFuncMap(funcMap)
-        except Exception:
-            pass
-        return False
 
     def prepareStructFnReplayPerformanceOutput(self, outputPath):
         outputDir = os.path.abspath(os.path.dirname(outputPath))
@@ -4354,8 +2638,7 @@ class TranslationPipelineMixin:
             if os.path.isfile(srcPath):
                 shutil.copy2(srcPath, os.path.join(outputDir, fileName))
 
-    def runMergedOutputChecksForOutput(self, outputPath, label, funcMap=None, updateFuncMapAfterCheck=False,
-                                       stage=None, prevStageFuncMap=None, prevStageTypes=None):
+    def runMergedOutputChecksForOutput(self, outputPath, label, funcMap=None, updateFuncMapAfterCheck=False):
         if getattr(self, "skipPerformanceCheck", False):
             self.logger.info("[Performance check skipped] : %s", label)
             if updateFuncMapAfterCheck and funcMap is not None:
@@ -4373,9 +2656,6 @@ class TranslationPipelineMixin:
                 label,
                 funcMap,
                 updateFuncMapAfterCheck,
-                stage=stage,
-                prevStageFuncMap=prevStageFuncMap,
-                prevStageTypes=prevStageTypes,
             )
         finally:
             if label == "struct-fn-replay":
@@ -4385,13 +2665,7 @@ class TranslationPipelineMixin:
         return performanceCheckPassed
 
     def translateAll(self, funcMap, individualFuncPath, multiThreading):
-        if self.translatorMode not in (
-            TranslatorModes.NEW_MODE,
-            TranslatorModes.NEW_MODE_SINGLE_STAGE,
-            TranslatorModes.NEW_MODE_MERGED_VIEWS,
-            TranslatorModes.NEW_MODE_RESUME,
-        ):
-            self.preTranslateComplexStructs()
+        self.preTranslateComplexStructs()
         if self.translatorMode in [TranslatorModes.BASIC_CHUNK_CHAIN, TranslatorModes.COMPILATION_FEEDBACK, TranslatorModes.CF_STRUCT_REPLAY]:
             if multiThreading:
                 threads = []
@@ -4415,281 +2689,7 @@ class TranslationPipelineMixin:
                     self.translateAndCreateRustFiles(funcMap, key, individualFuncPath)
         else:
             if self.translatorMode == TranslatorModes.CF_STRUCT_FN_REPLAY:
-                self._runSccTopoTranslateLoop(funcMap, individualFuncPath, stage=None)
-                self._dumpTokenUsage(individualFuncPath)
-            elif self.translatorMode in (
-                TranslatorModes.NEW_MODE,
-                TranslatorModes.NEW_MODE_MERGED_VIEWS,
-            ):
-                # CLI --skip-stages omits the named stages from the run.
-                # Filter once here so the rest of NEW_MODE (stage-check stat
-                # init, result-manager schema, iteration loop, and the
-                # PRESERVE/DEFER prompt builder via self.skippedStages)
-                # all observe the same reduced set.
-                skipped = getattr(self, "skippedStages", set()) or set()
-                allStages = [s for s in Stage if s not in skipped]
-                if skipped:
-                    self.logger.info(
-                        "[Skip stages] omitting %s; running %s",
-                        sorted(s.name for s in skipped),
-                        [s.name for s in allStages],
-                    )
-                self.ensureStageCheckStats(allStages)
-                translationResultManager = TranslationResultManager(funcMap, allStages)
-
-                # MANDATORY: establish a Stage_1 baseline by running the
-                # original C source 5 times. Recorded under "baseline_c" in
-                # performance_metrics.json and used as Stage_1's prev. Any
-                # failure here aborts the run — Stage_1 must have a baseline
-                # to detect regressions like the libbmp empty-bmp_img_free
-                # bug. Use --skip-c-baseline=true to bypass (not recommended).
-                if not getattr(self, "skipCBaseline", False):
-                    codebaseRoot = os.path.dirname(os.path.abspath(individualFuncPath))
-                    _prompt, performanceArguments = self.loadPerformanceInformation(
-                        os.path.join(individualFuncPath, "_baseline_c", "stub")
-                    )
-                    self.runCBaselinePerformance(
-                        codebaseRoot, individualFuncPath, performanceArguments,
-                    )
-                else:
-                    self.logger.warning(
-                        "[C baseline skipped] : --skip-c-baseline=true; "
-                        "Stage_1 perf check will have no baseline to compare against"
-                    )
-
-                for currentStage in allStages:
-                    if currentStage == Stage.Stage_10:
-                        self.dstLang = "Rust"
-                    self.logger.info("[stageInfo] : %s", currentStage)
-                    # Tag every LLM call made during this stage with the stage
-                    # name so the token usage tracker can produce a by_stage
-                    # breakdown (otherwise all records get stage=""). See
-                    # _recordTokenUsage which reads self.stage.
-                    if hasattr(self, "changeStage"):
-                        self.changeStage(currentStage)
-                    currentStageDirectory = os.path.join(individualFuncPath, f"_{currentStage}")
-                    os.makedirs(currentStageDirectory, exist_ok=True)
-                    # Snapshot funcMap AND typeRegistry state BEFORE this
-                    # stage modifies them. The perf-retry path uses both to:
-                    #   (a) feed prev-stage code into the perf-context prompt
-                    #       (function bodies + type definitions are independent
-                    #        retry surfaces — see _runStagePerfRetryLoop),
-                    #   (b) revert on correctness or perf regressions.
-                    prevStageFuncMapSnapshot = self._snapshotFuncMap(funcMap)
-                    prevStageTypeSnapshot = self._snapshotTypeRegistry()
-                    self.preTranslateComplexStructs(currentStage)
-                    self._runSccTopoTranslateLoop(
-                        funcMap,
-                        currentStageDirectory,
-                        stage=currentStage,
-                        translationResultManager=translationResultManager,
-                        prevStageFuncMap=prevStageFuncMapSnapshot,
-                        prevStageTypes=prevStageTypeSnapshot,
-                    )
-                    # Dump checkpoint AFTER _runSccTopoTranslateLoop's
-                    # runMergedOutputChecksForOutput has triggered updateFuncMap;
-                    # at this point funcCodeLines / TypeNode.cCode are the
-                    # post-stage translated code. Without this, single-stage
-                    # mode cannot resume at stage+1.
-                    self._dumpStageState(currentStageDirectory, currentStage, funcMap)
-                self.emitStageCheckSummary(individualFuncPath, allStages)
-                self._dumpTokenUsage(individualFuncPath)
-            elif self.translatorMode == TranslatorModes.NEW_MODE_SINGLE_STAGE:
-                targetStage = getattr(self, "targetStage", None)
-                priorStateDir = getattr(self, "priorStageStateDir", None)
-                if targetStage is None:
-                    raise RuntimeError("NEW_MODE_SINGLE_STAGE requires translator.targetStage to be set")
-                if not isinstance(targetStage, Stage):
-                    targetStage = Stage[str(targetStage)]
-                if targetStage != Stage.Stage_1 and not priorStateDir:
-                    raise RuntimeError(
-                        f"NEW_MODE_SINGLE_STAGE target_stage={targetStage} requires "
-                        "translator.priorStageStateDir to be set (path to the prior stage's directory)"
-                    )
-
-                # Match NEW_MODE's dstLang-by-stage rule.
-                self.dstLang = "Rust" if targetStage == Stage.Stage_10 else "C++"
-
-                self.ensureStageCheckStats([targetStage])
-                translationResultManager = TranslationResultManager(funcMap, [targetStage])
-
-                if targetStage != Stage.Stage_1:
-                    statePath = os.path.join(priorStateDir, self.STAGE_STATE_FILENAME)
-                    if not os.path.isfile(statePath):
-                        raise RuntimeError(
-                            f"prior-stage-state checkpoint missing: {statePath}\n"
-                            "Run NEW_MODE first to generate stage_state.json files for each stage."
-                        )
-                    self._loadStageState(statePath, funcMap)
-
-                    # Seed performance_metrics.json from prior run so this stage's
-                    # perf check has a baseline to compare against. Without this,
-                    # single-stage mode passes perf trivially even when the new
-                    # stage regresses vs the prior stage. Drop the target stage's
-                    # prior record (e.g. a failed attempt being re-run) so the new
-                    # attempt is recorded fresh and does not inherit stale retry
-                    # history.
-                    priorRunDir = os.path.dirname(os.path.normpath(priorStateDir))
-                    priorMetricsPath = os.path.join(priorRunDir, "performance_metrics.json")
-                    newMetricsPath = os.path.join(individualFuncPath, "performance_metrics.json")
-                    if os.path.isfile(priorMetricsPath) and not os.path.exists(newMetricsPath):
-                        priorMetrics = self.loadPerformanceMetrics(priorMetricsPath)
-                        priorMetrics.pop(targetStage.name, None)
-                        self.writePerformanceMetrics(newMetricsPath, priorMetrics)
-                        self.logger.info(
-                            "[single-stage] seeded performance_metrics.json from %s (dropped %s)",
-                            priorMetricsPath, targetStage.name,
-                        )
-
-                self.logger.info("[stageInfo] : %s (single-stage mode)", targetStage)
-                if hasattr(self, "changeStage"):
-                    self.changeStage(targetStage)
-                currentStageDirectory = os.path.join(individualFuncPath, f"_{targetStage}")
-                os.makedirs(currentStageDirectory, exist_ok=True)
-                prevStageFuncMapSnapshot = self._snapshotFuncMap(funcMap)
-                prevStageTypeSnapshot = self._snapshotTypeRegistry()
-                self.preTranslateComplexStructs(targetStage)
-                self._runSccTopoTranslateLoop(
-                    funcMap,
-                    currentStageDirectory,
-                    stage=targetStage,
-                    translationResultManager=translationResultManager,
-                    prevStageFuncMap=prevStageFuncMapSnapshot,
-                    prevStageTypes=prevStageTypeSnapshot,
-                )
-                self._dumpStageState(currentStageDirectory, targetStage, funcMap)
-                self.emitStageCheckSummary(individualFuncPath, [targetStage])
-                self._dumpTokenUsage(individualFuncPath)
-            elif self.translatorMode == TranslatorModes.NEW_MODE_RESUME:
-                # Resume mode: load a prior NEW_MODE checkpoint and run every
-                # later non-skipped stage in order. Combines the SINGLE_STAGE
-                # state-loading with NEW_MODE's iteration loop so a partially
-                # completed run can pick up at Stage_{N+1}..Stage_10 without
-                # redoing the earlier stages.
-                priorStateDir = getattr(self, "priorStageStateDir", None)
-                if not priorStateDir:
-                    raise RuntimeError(
-                        "NEW_MODE_RESUME requires translator.priorStageStateDir "
-                        "(path to the prior stage's directory containing stage_state.json)"
-                    )
-
-                statePath = os.path.join(priorStateDir, self.STAGE_STATE_FILENAME)
-                if not os.path.isfile(statePath):
-                    raise RuntimeError(
-                        f"prior-stage-state checkpoint missing: {statePath}\n"
-                        "Point --prior-stage-state at a NEW_MODE stage directory "
-                        "(e.g. <run>/_Stage.Stage_9) that contains stage_state.json."
-                    )
-
-                # Derive the prior stage number from the checkpoint directory's
-                # basename (NEW_MODE writes _Stage.Stage_N/). Falls back to the
-                # stage recorded inside stage_state.json on parse failure.
-                priorStage = None
-                basename = os.path.basename(os.path.normpath(priorStateDir))
-                match = re.search(r"[Ss]tage[._]*?(\d+)\s*$", basename)
-                if match:
-                    enumName = f"Stage_{match.group(1)}"
-                    priorStage = Stage.__members__.get(enumName)
-                if priorStage is None:
-                    import json as _json
-                    with open(statePath, "r") as _f:
-                        recordedStageName = (_json.load(_f) or {}).get("stage")
-                    if recordedStageName and recordedStageName in Stage.__members__:
-                        priorStage = Stage[recordedStageName]
-                if priorStage is None:
-                    raise RuntimeError(
-                        f"Could not infer prior stage from {priorStateDir!r} "
-                        "(directory basename does not end in a stage number "
-                        "and stage_state.json has no usable 'stage' field)."
-                    )
-
-                priorNum = int(priorStage.name.split("_", 1)[1])
-                skipped = getattr(self, "skippedStages", set()) or set()
-                remainingStages = [
-                    s for s in Stage
-                    if int(s.name.split("_", 1)[1]) > priorNum and s not in skipped
-                ]
-                if not remainingStages:
-                    self.logger.warning(
-                        "[resume] no stages left after %s under --skip-stages=%s; nothing to do",
-                        priorStage.name,
-                        sorted(s.name for s in skipped),
-                    )
-                    return
-
-                self.logger.info(
-                    "[resume] prior=%s, running %s (skipped=%s)",
-                    priorStage.name,
-                    [s.name for s in remainingStages],
-                    sorted(s.name for s in skipped),
-                )
-
-                # Match NEW_MODE's dstLang-by-stage rule for the FIRST stage we
-                # will run; the per-stage loop below flips to Rust on Stage_10.
-                self.dstLang = "Rust" if remainingStages[0] == Stage.Stage_10 else "C++"
-
-                # Load the checkpoint into funcMap / typeRegistry so the first
-                # remaining stage sees the prior stage's post-translate state.
-                _recordedStage, recordedDstLang = self._loadStageState(statePath, funcMap)
-
-                # Optional: apply --resume-reload-functions overrides. The
-                # checkpoint stores funcCodeLines from in-memory funcMap at the
-                # end of the prior run, so any hand-fix made to the prior
-                # stage's merged_funcs.{cpp,rs} on disk gets ignored by
-                # default. Re-reading those functions from disk here lets the
-                # user surgically patch the input to a resumed stage.
-                reloadList = getattr(self, "resumeReloadFunctions", None) or []
-                if reloadList:
-                    overridden = self._reloadFunctionsFromDisk(
-                        funcMap, priorStateDir, reloadList,
-                        recordedDstLang=recordedDstLang,
-                    )
-                    self.logger.info(
-                        "[resume-reload] overrode %d function(s) from %s before running %s",
-                        overridden, priorStateDir, [s.name for s in remainingStages],
-                    )
-
-                # Seed performance_metrics.json from the prior run so the first
-                # remaining stage's perf check has a baseline. Drops the entries
-                # for stages we are about to (re-)run so stale retry history
-                # doesn't leak in. Mirrors the SINGLE_STAGE seeding above.
-                priorRunDir = os.path.dirname(os.path.normpath(priorStateDir))
-                priorMetricsPath = os.path.join(priorRunDir, "performance_metrics.json")
-                newMetricsPath = os.path.join(individualFuncPath, "performance_metrics.json")
-                if os.path.isfile(priorMetricsPath) and not os.path.exists(newMetricsPath):
-                    priorMetrics = self.loadPerformanceMetrics(priorMetricsPath)
-                    for s in remainingStages:
-                        priorMetrics.pop(s.name, None)
-                    self.writePerformanceMetrics(newMetricsPath, priorMetrics)
-                    self.logger.info(
-                        "[resume] seeded performance_metrics.json from %s (dropped %s)",
-                        priorMetricsPath, [s.name for s in remainingStages],
-                    )
-
-                self.ensureStageCheckStats(remainingStages)
-                translationResultManager = TranslationResultManager(funcMap, remainingStages)
-
-                for currentStage in remainingStages:
-                    if currentStage == Stage.Stage_10:
-                        self.dstLang = "Rust"
-                    self.logger.info("[stageInfo] : %s (resume mode)", currentStage)
-                    if hasattr(self, "changeStage"):
-                        self.changeStage(currentStage)
-                    currentStageDirectory = os.path.join(individualFuncPath, f"_{currentStage}")
-                    os.makedirs(currentStageDirectory, exist_ok=True)
-                    prevStageFuncMapSnapshot = self._snapshotFuncMap(funcMap)
-                    prevStageTypeSnapshot = self._snapshotTypeRegistry()
-                    self.preTranslateComplexStructs(currentStage)
-                    self._runSccTopoTranslateLoop(
-                        funcMap,
-                        currentStageDirectory,
-                        stage=currentStage,
-                        translationResultManager=translationResultManager,
-                        prevStageFuncMap=prevStageFuncMapSnapshot,
-                        prevStageTypes=prevStageTypeSnapshot,
-                    )
-                    self._dumpStageState(currentStageDirectory, currentStage, funcMap)
-                self.emitStageCheckSummary(individualFuncPath, remainingStages)
+                self._runSccTopoTranslateLoop(funcMap, individualFuncPath)
                 self._dumpTokenUsage(individualFuncPath)
 
     def canPromptForInteractiveFix(self):
@@ -4718,7 +2718,7 @@ class TranslationPipelineMixin:
             print(f"Could not re-read {failurePath}: {e}")
             return None
 
-    def _offerManualFunctionFix(self, funcSym, failurePath, stage):
+    def _offerManualFunctionFix(self, funcSym, failurePath):
         """Block on user input: they edit ``failurePath`` (a complete compile
         unit dumped by the failure branch), then press Enter to recompile and
         accept. On accept, returns ``(True, fixedFunctionBlock)`` where the
@@ -4731,8 +2731,7 @@ class TranslationPipelineMixin:
         routing the accepted result through the existing success-branch side
         effects (merged_funcs write, translationResultManager update).
         """
-        stageLabel = stage.name if hasattr(stage, "name") else str(stage)
-        title = f"{funcSym} failed to compile in {stageLabel} after all retries."
+        title = f"{funcSym} failed to compile after all retries."
         while True:
             self._printManualFixPreamble(title, failurePath)
             try:
@@ -4775,12 +2774,12 @@ class TranslationPipelineMixin:
             fixedBlock = editedBytes[node.start_byte:node.end_byte].decode("utf-8", errors="replace")
             self.logger.info(
                 "[Manual Fix] accepted hand-fixed %s (%d bytes) in %s",
-                funcSym, len(fixedBlock), stageLabel,
+                funcSym, len(fixedBlock),
             )
             print(f"\n[Manual Fix] Accepted. {funcSym} will flow into merged_funcs and downstream stages.")
             return (True, fixedBlock)
 
-    def _offerManualSccFix(self, sccGroup, failurePath, stage):
+    def _offerManualSccFix(self, sccGroup, failurePath):
         """SCC variant of ``_offerManualFunctionFix``. Returns
         ``(True, joinedFunctionBlocks)`` on accept, where the joined string
         concatenates every SCC member's hand-fixed body in source-position
@@ -4788,8 +2787,7 @@ class TranslationPipelineMixin:
         ``translatedResult``. Returns ``(False, None)`` on skip / EOF / parse
         failure.
         """
-        stageLabel = stage.name if hasattr(stage, "name") else str(stage)
-        title = f"SCC group [{', '.join(sccGroup)}] failed to compile in {stageLabel}."
+        title = f"SCC group [{', '.join(sccGroup)}] failed to compile."
         while True:
             self._printManualFixPreamble(title, failurePath)
             try:
@@ -4839,7 +2837,7 @@ class TranslationPipelineMixin:
             )
             self.logger.info(
                 "[Manual Fix] accepted hand-fixed SCC %s (%d bytes) in %s",
-                sccGroup, len(fixedBlock), stageLabel,
+                sccGroup, len(fixedBlock),
             )
             print(f"\n[Manual Fix] Accepted. SCC will flow into merged_funcs and downstream stages.")
             return (True, fixedBlock)
@@ -4880,9 +2878,8 @@ class TranslationPipelineMixin:
         with open(os.path.join(outputDir, "contexted_structs.rs"), "w") as f:
             f.write(contextedStructs)
 
-    def _runSccTopoTranslateLoop(self, funcMap, outputDir, stage=None, translationResultManager=None,
-                                 prevStageFuncMap=None, prevStageTypes=None):
-        """Shared SCC-aware topo loop for both CF_STRUCT_FN_REPLAY and NEW_MODE.
+    def _runSccTopoTranslateLoop(self, funcMap, outputDir, translationResultManager=None):
+        """SCC-aware topo loop for CF_STRUCT_FN_REPLAY.
 
         Single-function SCCs go through ``compileWithFeedback`` (existing behavior).
         Multi-function SCCs go through ``compileSccWithFeedback`` and produce one merged
@@ -4911,7 +2908,7 @@ class TranslationPipelineMixin:
             if len(sccGroup) == 1:
                 funcSym = sccGroup[0]
                 if translationResultManager is not None:
-                    translationResultManager.updateCurrentFuncNameAndStage(funcSym, stage)
+                    translationResultManager.updateCurrentFuncNameAndStage(funcSym)
                 funcDepsObj = funcMap[funcSym]
                 funcDepsObj.previouslyTranslatedFunctions = previouslyTranslatedFunctions
 
@@ -4922,7 +2919,7 @@ class TranslationPipelineMixin:
                 funcDepsObj.previouslyTranslatedFunctionSignatures = allSignature
 
                 (successFlag, translatedResult) = self.compileWithFeedback(
-                    funcSym, funcDepsObj, contextedStructs, True, stage,
+                    funcSym, funcDepsObj, contextedStructs, True,
                 )
 
                 manuallyFixed = False
@@ -4937,7 +2934,7 @@ class TranslationPipelineMixin:
 
                     if self.canPromptForInteractiveFix():
                         accepted, fixedResult = self._offerManualFunctionFix(
-                            funcSym, failurePath, stage,
+                            funcSym, failurePath,
                         )
                         if accepted:
                             translatedResult = fixedResult
@@ -4987,7 +2984,7 @@ class TranslationPipelineMixin:
                 if translationResultManager is not None:
                     storedResult = self.cleanCode(translatedResult)
                     translationResultManager.updateFunctionTranslateResult(storedResult)
-                    self._logStoredFunctionResult(funcSym, storedResult, stage)
+                    self._logStoredFunctionResult(funcSym, storedResult)
 
             else:
                 self.logger.info(
@@ -5005,10 +3002,10 @@ class TranslationPipelineMixin:
                     funcDepsObj.previouslyTranslatedFunctionSignatures = sigBuilder
 
                 if translationResultManager is not None:
-                    translationResultManager.updateCurrentFuncNameAndStage(sccGroup[0], stage)
+                    translationResultManager.updateCurrentFuncNameAndStage(sccGroup[0])
 
                 (successFlag, translatedResult, sccLabel) = self.compileSccWithFeedback(
-                    sccGroup, funcMap, contextedStructs, previouslyTranslatedFunctions, stage,
+                    sccGroup, funcMap, contextedStructs, previouslyTranslatedFunctions,
                 )
 
                 manuallyFixedScc = False
@@ -5019,7 +3016,7 @@ class TranslationPipelineMixin:
 
                     if self.canPromptForInteractiveFix():
                         accepted, fixedResult = self._offerManualSccFix(
-                            sccGroup, failurePath, stage,
+                            sccGroup, failurePath,
                         )
                         if accepted:
                             translatedResult = fixedResult
@@ -5065,9 +3062,9 @@ class TranslationPipelineMixin:
                     storedResult = self.cleanCode(translatedResult)
                     perFunction = self._splitSccTranslatedResult(storedResult, sccGroup)
                     for funcName in sccGroup:
-                        translationResultManager.updateCurrentFuncNameAndStage(funcName, stage)
+                        translationResultManager.updateCurrentFuncNameAndStage(funcName)
                         translationResultManager.updateFunctionTranslateResult(perFunction[funcName])
-                        self._logStoredFunctionResult(funcName, perFunction[funcName], stage)
+                        self._logStoredFunctionResult(funcName, perFunction[funcName])
 
             for consumerSccId in sccConsumers[sccId]:
                 sccIncomingEdges[consumerSccId] -= 1
@@ -5096,14 +3093,4 @@ class TranslationPipelineMixin:
 
         if self.translatorMode == TranslatorModes.CF_STRUCT_FN_REPLAY:
             self.runMergedOutputChecksForOutput(outputPath, "struct-fn-replay")
-        elif self.translatorMode in (
-            TranslatorModes.NEW_MODE,
-            TranslatorModes.NEW_MODE_SINGLE_STAGE,
-            TranslatorModes.NEW_MODE_MERGED_VIEWS,
-            TranslatorModes.NEW_MODE_RESUME,
-        ):
-            self.runMergedOutputChecksForOutput(
-                outputPath, stage, funcMap, True,
-                stage=stage, prevStageFuncMap=prevStageFuncMap,
-                prevStageTypes=prevStageTypes,
-            )
+

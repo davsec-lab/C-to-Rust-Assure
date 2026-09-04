@@ -24,7 +24,7 @@ sys.modules.setdefault("sympy.codegen.cnodes", cnodes_mod)
 from functionAndDeps import FunctionAndDependencies
 from functionAndDepsExtractor import FunctionAndDepsExtractor
 from gpt_translation.code_utils_mixin import CodeUtilsMixin
-from gpt_translation.config import Stage, TranslatorModes
+from gpt_translation.config import TranslatorModes
 from gpt_translation.symbol_extraction_mixin import SymbolExtractionMixin
 from gpt_translation.translation_pipeline_mixin import TranslationPipelineMixin
 from translationValidator import repairMissingExternSemicolons
@@ -333,25 +333,6 @@ csv_error(const struct csv_parser *p)
         self.assertLess(prompt.index("definitions:\n"), prompt.index("translated dependency definitions for reference only:\n"))
         self.assertIn("Do not repeat these dependency definitions in your response.", prompt)
 
-    def test_type_batch_prompt_omits_usage_examples_for_rust_stage(self):
-        prompt_probe = PromptProbe()
-        node = FunctionAndDependencies.upsertTypeNode(
-            TypeKind.STRUCT,
-            "Holder",
-            ["typedef struct {", "    char *name;", "} Holder;"],
-            TranslationMode.RICH_STRUCT,
-            "normal",
-        )
-        node.usageList = {"name": ["Holder: name: free(item->name)"]}
-
-        prompt = prompt_probe._buildTypeBatchPrompt(
-            [node],
-            "",
-            Stage.Stage_9,
-        )
-
-        self.assertNotIn("example usage:", prompt)
-        self.assertNotIn("free(item->name)", prompt)
 
     def test_type_batch_prompt_emits_example_usage_block_for_rich_structs(self):
         """For RICH_STRUCT nodes, the type-batch prompt must include an
@@ -402,28 +383,6 @@ csv_error(const struct csv_parser *p)
         self.assertNotIn("target-language types", rust_prompt)
         self.assertNotIn("target-language types", cpp_prompt)
 
-    def test_step_prompt_allows_direct_type_signature_updates(self):
-        prompt_probe = CppPromptProbe()
-        prompt_probe.translatorMode = TranslatorModes.NEW_MODE
-        node = FunctionAndDependencies.upsertTypeNode(
-            TypeKind.STRUCT,
-            "Holder",
-            ["typedef struct {", "    char *name;", "} Holder;"],
-            TranslationMode.PLAIN_STRUCT,
-            "normal",
-        )
-
-        prompt = prompt_probe._buildTypeBatchPrompt(
-            [node],
-            "",
-            Stage.Stage_2,
-        )
-
-        self.assertIn("update directly affected function signatures", prompt)
-        self.assertIn("parameter types", prompt)
-        self.assertIn("call sites", prompt)
-        self.assertIn("Signature or parameter-type changes required to propagate", prompt)
-        self.assertIn("Do not make unrelated refactors", prompt)
 
     def test_plain_char_typedef_is_translated_deterministically(self):
         prompt_probe = PromptProbe()
@@ -440,128 +399,8 @@ csv_error(const struct csv_parser *p)
         translated = prompt_probe.translateSimpleTypedefDefinition("typedef _Bool Bool;")
         self.assertEqual(translated, "typedef bool Bool;")
 
-    def test_unmatched_typedef_falls_back_to_llm(self):
-        probe = TypedefFallbackProbe()
-        callback_node = FunctionAndDependencies.upsertTypeNode(
-            TypeKind.TYPEDEF,
-            "Callback",
-            ["typedef int (*Callback)(int);"],
-            TranslationMode.TYPEDEF,
-            "normal",
-        )
 
-        probe._translateTypedefBatch(
-            [callback_node],
-            "type Int32 = i32;",
-            ["type Int32 = i32;"],
-            [],
-            translationManager=None,
-            stage=None,
-        )
 
-        self.assertEqual(
-            callback_node.rustCode,
-            "type Callback = Option<unsafe extern \"C\" fn(i32) -> i32>;",
-        )
-        self.assertEqual(len(probe.llm_calls), 1)
-        self.assertIn("typedef int (*Callback)(int);", probe.llm_calls[0][1])
-
-    def test_cpp_function_pointer_typedef_extracted_from_llm_output(self):
-        """Regression: when dstLang is C++, function-pointer typedefs
-        must be extracted from the LLM result via the C++ scanner.
-        Previously the Rust-only ``extractTypeAliasDefinitionByName``
-        was the sole TYPEDEF extractor, so C++ ``typedef R (*N)(args);``
-        forms returned ``""``. Every dependent struct/function prompt
-        then lost the typedef from its predecessor context, which
-        cascaded into ``unknown type name`` compile failures on every
-        per-function file. See ``extractCppTypedefDefinitionByName``."""
-        llmResponse = (
-            "typedef char (*comparator_t)(void *key1, void *key2);\n"
-            "typedef void (*key_destructor_t)(void *key);\n"
-        )
-        probe = CppTypedefFallbackProbe(llmResponse)
-        cmp_node = FunctionAndDependencies.upsertTypeNode(
-            TypeKind.TYPEDEF,
-            "comparator_t",
-            ["typedef char (*comparator_t)(void *key1, void *key2);"],
-            TranslationMode.TYPEDEF,
-            "normal",
-        )
-        dtor_node = FunctionAndDependencies.upsertTypeNode(
-            TypeKind.TYPEDEF,
-            "key_destructor_t",
-            ["typedef void (*key_destructor_t)(void *key);"],
-            TranslationMode.TYPEDEF,
-            "normal",
-        )
-
-        probe._translateTypedefBatch(
-            [cmp_node, dtor_node],
-            "",
-            [],
-            [],
-            translationManager=None,
-            stage=None,
-        )
-
-        # Each typedef must be captured into its rustCode so downstream
-        # ``_collectTranslatedTypeCodes`` includes it in the predecessor
-        # context of dependent structs.
-        self.assertEqual(
-            cmp_node.rustCode,
-            "typedef char (*comparator_t)(void *key1, void *key2);",
-        )
-        self.assertEqual(
-            dtor_node.rustCode,
-            "typedef void (*key_destructor_t)(void *key);",
-        )
-
-    def test_cpp_using_alias_typedef_extracted_from_llm_output(self):
-        """Regression: GPT-5.x rewrites C function-pointer typedefs as
-        C++11 alias declarations (``using N = R (*)(args);``). The C++
-        typedef scanner only recognized ``typedef``-led statements, so
-        the alias was stored as ``rustCode == ""`` — observed in the
-        skiplist Stage_1 run, where the missing ``comparator_t`` /
-        ``key_destructor_t`` left ``struct skip_list_t`` half-defined
-        and every per-function merged compile failed with
-        ``unknown type name '<alias>'``."""
-        llmResponse = (
-            "using comparator_t = char (*)(void *key1, void *key2);\n"
-            "using key_destructor_t = void (*)(void *key);\n"
-        )
-        probe = CppTypedefFallbackProbe(llmResponse)
-        cmp_node = FunctionAndDependencies.upsertTypeNode(
-            TypeKind.TYPEDEF,
-            "comparator_t",
-            ["typedef char (*comparator_t)(void *key1, void *key2);"],
-            TranslationMode.TYPEDEF,
-            "normal",
-        )
-        dtor_node = FunctionAndDependencies.upsertTypeNode(
-            TypeKind.TYPEDEF,
-            "key_destructor_t",
-            ["typedef void (*key_destructor_t)(void *key);"],
-            TranslationMode.TYPEDEF,
-            "normal",
-        )
-
-        probe._translateTypedefBatch(
-            [cmp_node, dtor_node],
-            "",
-            [],
-            [],
-            translationManager=None,
-            stage=None,
-        )
-
-        self.assertEqual(
-            cmp_node.rustCode,
-            "using comparator_t = char (*)(void *key1, void *key2);",
-        )
-        self.assertEqual(
-            dtor_node.rustCode,
-            "using key_destructor_t = void (*)(void *key);",
-        )
 
     def test_cpp_typedef_extractor_handles_common_shapes(self):
         """Direct unit test for ``extractCppTypedefDefinitionByName``

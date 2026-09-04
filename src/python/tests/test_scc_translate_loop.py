@@ -31,7 +31,7 @@ sys.modules.setdefault("sympy.codegen.cnodes", cnodes_mod)
 from gpt_translation.code_utils_mixin import CodeUtilsMixin
 from gpt_translation.translation_utils_mixin import TranslationUtilsMixin
 from gpt_translation.translation_pipeline_mixin import TranslationPipelineMixin
-from gpt_translation.config import Stage, TranslatorModes
+from gpt_translation.config import TranslatorModes
 
 
 class _RecordingLogger:
@@ -272,99 +272,6 @@ class SanityCheckWarningOnLeftoverScc(_BypassFindTargetMixin, unittest.TestCase)
         self.assertIn("b", formatted)
 
 
-class NewModeStageDispatch(_BypassFindTargetMixin, unittest.TestCase):
-    """Verify NEW_MODE plumbs the SCC path through every stage."""
-
-    def test_new_mode_calls_loop_with_each_stage(self):
-        funcMap = _funcMap({"a": []})
-        probe = _ScriptedTranslatorProbe(translatorMode=TranslatorModes.NEW_MODE,
-                                          dstLang="C++")
-
-        # Capture which (outputDir, stage) pairs the loop is invoked with.
-        calls = []
-        original = probe._runSccTopoTranslateLoop
-
-        def trace(funcMap, outputDir, stage=None, translationResultManager=None,
-                  prevStageFuncMap=None, prevStageTypes=None):
-            calls.append((outputDir, stage))
-            return original(funcMap, outputDir, stage=stage,
-                            translationResultManager=translationResultManager,
-                            prevStageFuncMap=prevStageFuncMap,
-                            prevStageTypes=prevStageTypes)
-
-        probe._runSccTopoTranslateLoop = trace
-
-        # Stub out methods that translateAll's NEW_MODE branch needs.
-        probe.preTranslateComplexStructs = lambda stage=None, perfRetryContext=None: None
-        probe.ensureStageCheckStats = lambda stages=None: None
-        probe.emitStageCheckSummary = lambda outputDir, stages=None: None
-        probe._dumpTokenUsage = lambda outputDir: None
-
-        # The loop calls runMergedOutputChecksForOutput with funcMap, True for NEW_MODE.
-        # _ScriptedTranslatorProbe already records that.
-
-        with tempfile.TemporaryDirectory() as tmp:
-            probe.translateAll(funcMap, tmp, multiThreading=False)
-
-            stages = [stage for _outputDir, stage in calls]
-            # Every Stage enum value should have been visited.
-            self.assertEqual(stages, list(Stage))
-            # Each stage should have produced a stage subdirectory and merged output.
-            for outputDir, stage in calls:
-                self.assertTrue(os.path.isdir(outputDir),
-                                f"stage {stage} directory {outputDir} not created")
-
-    def test_new_mode_dispatches_scc_group_per_stage(self):
-        # Confirm a mutual-recursion group in NEW_MODE goes through the SCC path
-        # at every stage (not just Stage_1 or Stage_9).
-        funcMap = _funcMap({
-            "parseAttr": ["parseStyle"],
-            "parseStyle": ["parseAttr"],
-        })
-        probe = _ScriptedTranslatorProbe(translatorMode=TranslatorModes.NEW_MODE,
-                                          dstLang="C++")
-        probe.preTranslateComplexStructs = lambda stage=None: None
-        probe.ensureStageCheckStats = lambda stages=None: None
-        probe.emitStageCheckSummary = lambda outputDir, stages=None: None
-        probe._dumpTokenUsage = lambda outputDir: None
-
-        with tempfile.TemporaryDirectory() as tmp:
-            probe.translateAll(funcMap, tmp, multiThreading=False)
-
-        # The SCC of {parseAttr, parseStyle} should be dispatched in every Stage.
-        sccTuples = [g for g, _stage in probe.sccCalls]
-        self.assertEqual(len(sccTuples), len(list(Stage)),
-                         "SCC group must be dispatched once per stage in NEW_MODE")
-        for group in sccTuples:
-            self.assertEqual(set(group), {"parseAttr", "parseStyle"})
-
-    def test_new_mode_switches_dst_lang_to_rust_at_stage_9(self):
-        funcMap = _funcMap({"a": []})
-        probe = _ScriptedTranslatorProbe(translatorMode=TranslatorModes.NEW_MODE,
-                                          dstLang="C++")
-        seen_lang_at_stage = {}
-        original = probe._runSccTopoTranslateLoop
-
-        def trace(funcMap, outputDir, stage=None, translationResultManager=None,
-                  prevStageFuncMap=None, prevStageTypes=None):
-            seen_lang_at_stage[stage] = probe.dstLang
-            return original(funcMap, outputDir, stage=stage,
-                            translationResultManager=translationResultManager,
-                            prevStageFuncMap=prevStageFuncMap,
-                            prevStageTypes=prevStageTypes)
-
-        probe._runSccTopoTranslateLoop = trace
-        probe.preTranslateComplexStructs = lambda stage=None, perfRetryContext=None: None
-        probe.ensureStageCheckStats = lambda stages=None: None
-        probe.emitStageCheckSummary = lambda outputDir, stages=None: None
-        probe._dumpTokenUsage = lambda outputDir: None
-
-        with tempfile.TemporaryDirectory() as tmp:
-            probe.translateAll(funcMap, tmp, multiThreading=False)
-
-        self.assertEqual(seen_lang_at_stage[Stage.Stage_9], "Rust")
-        # Earlier stages should still be C++.
-        self.assertEqual(seen_lang_at_stage[Stage.Stage_1], "C++")
 
 
 class SplitSccTranslatedResult(unittest.TestCase):
@@ -510,40 +417,6 @@ class SccPerMemberStorage(_BypassFindTargetMixin, unittest.TestCase):
         def updateFunctionTranslateResult(self, storedResult):
             self.stored[(self.currentFuncName, self.currentStage)] = storedResult
 
-    def test_each_scc_member_gets_a_stored_translate_result(self):
-        funcMap = _funcMap({
-            "parse_array": ["parse_object"],
-            "parse_object": ["parse_value"],
-            "parse_value": ["parse_array"],
-        })
-        # Use a Rust-shaped SCC translation so the splitter's tree-sitter path
-        # produces non-empty per-function bodies.
-        sccTuple = ("parse_array", "parse_object", "parse_value")
-        translation = (
-            "use std::ptr;\n"
-            "\n"
-            "fn parse_array() {}\n"
-            "fn parse_object() {}\n"
-            "fn parse_value() {}\n"
-        )
-        probe = _ScriptedTranslatorProbe(
-            sccResults={sccTuple: (True, translation)},
-        )
-        manager = self._RecordingTranslationManager()
-
-        with tempfile.TemporaryDirectory() as tmp:
-            probe._runSccTopoTranslateLoop(
-                funcMap, tmp, stage=Stage.Stage_1, translationResultManager=manager,
-            )
-
-        # Every member must have a stored entry, not just sccGroup[0].
-        for member in sccTuple:
-            self.assertIn((member, Stage.Stage_1), manager.stored,
-                          f"{member} missing from functionTranslateResults — this is the cjson_new bug")
-            self.assertNotEqual(manager.stored[(member, Stage.Stage_1)], "",
-                                f"{member} stored result is empty")
-            # Per-function content must reference the right function name.
-            self.assertIn(member, manager.stored[(member, Stage.Stage_1)])
 
 
 if __name__ == "__main__":

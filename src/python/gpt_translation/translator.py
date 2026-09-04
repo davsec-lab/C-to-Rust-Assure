@@ -47,7 +47,6 @@ from gpt_translation.config import (
     GPT5_MODEL_MAX_COMPLETION_TOKENS,
     GPT5_NANO_MODEL,
     LLMModels,
-    Stage,
     TranslatorModes,
 )
 from gpt_translation.dependency_utils_mixin import DependencyUtilsMixin
@@ -103,14 +102,6 @@ class Translator(
             return TranslatorModes.CF_STRUCT_FN_REPLAY
         elif translatorModeStr == "single-request-merge":
             return TranslatorModes.CF_SINGLE_REQUEST_MERGE
-        elif translatorModeStr == "new-mode":
-            return TranslatorModes.NEW_MODE
-        elif translatorModeStr == "new-mode-single-stage":
-            return TranslatorModes.NEW_MODE_SINGLE_STAGE
-        elif translatorModeStr == "new-mode-merged-views":
-            return TranslatorModes.NEW_MODE_MERGED_VIEWS
-        elif translatorModeStr == "new-mode-resume":
-            return TranslatorModes.NEW_MODE_RESUME
         else:
             print("Invalid translator mode")
             sys.exit(-1)
@@ -130,86 +121,21 @@ class Translator(
         self.systemPrompt = systemPrompt
         self.translatorMode = translatorMode
         self.previousResponse = None
-        self.stage = ""
-        # NEW_MODE_SINGLE_STAGE plumbing; CLI sets these post-construction.
-        self.targetStage = None
-        self.priorStageStateDir = None
         self.structIdentifierToStructKey = {}
-        self.stageCheckStats = OrderedDict()
         self.tokenTracker = TokenUsageTracker(logger)
         self.currentCallKind = "function"
         if OpenAI is None:
             raise ImportError("openai package is required to use Translator")
         self.client = OpenAI(api_key=self.apiKey)
 
-    def fetchStageCheckPrompt(self, stage):
-        if stage == Stage.Stage_2:
-            return """Identify types used as boolean values and determine whether converting them to bool would make the code more idiomatic."""
-        elif stage == Stage.Stage_3:
-            return """Identify types used as arrays in the following code and determine whether converting them to std::vector would make the code more idiomatic.
 
-            If converting to std::vector, all of the following feature of std::vector will make the code more idiomatic:
-            - Avoid manual memory management and resizing.
-            - Use push_back() to append elements.
-            - Use size() to query the number of elements.
-            - Use resize() to remove elements when needed.
-            - If operations are only at the end, avoid manual index tracking."""
-        elif stage == Stage.Stage_4:
-            return """Identify types used as strings in the following code and determine whether converting them to std::string would make the code more idiomatic. Please consider the change based on the following :
-            1. We don't need any manual memory allocate operation.
-            2. We don't need any custom allocator.
-            3. We don't need exactly same semantic in C. for example, std::string cannot be null but char * can, we will wrap std::string with optional in the following step.
-            4. We don't need exactly same semantic in C. for example, We don't need exactly same ownership semantic and we will lift the pointer to reference or smart pointers in the following steps.
-            5. Stage_3 already converted byte-buffer char* fields to std::vector<unsigned char>. Only act on char* fields that are genuinely TEXT (ASCII / UTF-8 identifiers, format strings) and were NOT picked up by Stage_3.
-            """
-        elif stage == Stage.Stage_5:
-            return """Identify types used as lists and determine whether converting them to std::list would make the code more idiomatic.
 
-    Only use std::list when frequent insertions/removals in the middle are required; otherwise prefer std::vector."""
-        elif stage == Stage.Stage_6:
-            return """Identify types used as maps and determine whether converting them to std::unordered_map would make the code more idiomatic."""
-        elif stage == Stage.Stage_7:
-            return """Identify variables (parameters, fields, locals) where null is a STRUCTURAL state the function's logic distinguishes from non-null — wrap those in `std::optional<T>`. Do NOT wrap variables whose only null handling is a defensive top-of-function early-return guard followed by unconditional dereference; those are non-null by caller contract and Stage_9 will lift them to a reference and delete the guard."""
-        elif stage == Stage.Stage_9:
-            return """Decide ownership for every remaining raw pointer to a SINGLE object in parameters, fields, return types, and locals. Non-owning string views were already lowered by Stage_4 to `std::basic_string_view<char>` — leave those alone. Replace remaining `T*` with references, values, `std::unique_ptr`, or `std::shared_ptr` based on whether ownership transfers and whether the handle is the sole owner. A leftover defensive top-of-function null guard (`if (p == nullptr) return ...;`) does NOT block lifting a parameter to `T&` — Stage_7 left it unwrapped because the caller's contract is non-null; delete the guard along with the lift. Preserve any `std::optional<T>` wrapper Stage_7 already added rather than collapsing nullability into a smart-pointer's empty state."""
-        elif stage == Stage.Stage_10:
-            return """Transpile the code to Rust, leveraging idiomatic Rust features such as ownership, borrowing, and safe abstractions."""
-        return ""
 
-    def ensureStageCheckStats(self, stages=None):
-        if stages is None:
-            stages = list(Stage)
-        for stage in stages:
-            stageKey = stage.name if isinstance(stage, Stage) else str(stage)
-            if stageKey not in self.stageCheckStats:
-                self.stageCheckStats[stageKey] = {"yes": 0, "no": 0}
-
-    def recordStageCheckResult(self, stage, approved):
-        stageKey = stage.name if isinstance(stage, Stage) else str(stage)
-        self.ensureStageCheckStats([stageKey])
-        resultKey = "yes" if approved else "no"
-        self.stageCheckStats[stageKey][resultKey] += 1
-
-    def emitStageCheckSummary(self, outputDir, stages=None):
-        self.ensureStageCheckStats(stages)
-        summaryLines = ["StageCheck Summary:"]
-        for stageKey, counts in self.stageCheckStats.items():
-            summaryLines.append(f"{stageKey}: Yes={counts['yes']}, No={counts['no']}")
-
-        summary = "\n".join(summaryLines)
-        self.logger.info(summary)
-
-        if outputDir:
-            summaryPath = os.path.join(outputDir, "stagecheck_summary.txt")
-            with open(summaryPath, "w") as summaryFile:
-                summaryFile.write(summary + "\n")
 
     def isFitInLimits(self, request):
         tokens = self.countTokens(request)
         return tokens < self.requestTokenLimit and tokens < self.maxCompletionTokens
 
-    def changeStage(self, stageStr):
-        self.stage = stageStr
 
     def preanalyze(self, funcMap, individualFuncPath):
         analysisFilePath = os.path.join(individualFuncPath, "analysis.log")
@@ -323,9 +249,7 @@ class Claude_Opus_Translator(Translator):
         self.model = CLAUDE_OPUS_4_1_MODEL
         self.systemPrompt = systemPrompt
         self.translatorMode = translatorMode
-        self.stage = ""
         self.structIdentifierToStructKey = {}
-        self.stageCheckStats = OrderedDict()
         self.tokenTracker = TokenUsageTracker(logger)
         self.currentCallKind = "function"
         self.client = anthropic.Anthropic(api_key=self.apiKey, timeout=3600.0, max_retries=5)
@@ -434,11 +358,7 @@ class Gemini_Flash_Translator(Translator):
         self.systemPrompt = systemPrompt
         self.translatorMode = translatorMode
         self.previousResponse = None
-        self.stage = ""
-        self.targetStage = None
-        self.priorStageStateDir = None
         self.structIdentifierToStructKey = {}
-        self.stageCheckStats = OrderedDict()
         self.tokenTracker = TokenUsageTracker(logger)
         self.currentCallKind = "function"
         self.client = genai.Client(api_key=self.apiKey)

@@ -24,7 +24,6 @@ from gpt_translation.config import (
     PERF_DEGRADE_RETRY_COUNT,
     PERF_DEGRADE_DISCARD_ON_FAIL,
     PERF_DEGRADE_SKIP_RETRY,
-    Stage,
 )
 
 
@@ -68,16 +67,6 @@ TRANSLATION_SKIP_FUNCTIONS = {
 
 
 def _systemPromptFileForMode(translatorMode):
-    # new-mode runs the C→C++→Rust multi-stage refactor; its prompt is tuned
-    # for the C++ intermediate (non-POD containers, std::optional, etc.).
-    # All other modes go C→Rust directly and use a leaner Rust-only prompt.
-    if translatorMode in (
-        TranslatorModes.NEW_MODE,
-        TranslatorModes.NEW_MODE_SINGLE_STAGE,
-        TranslatorModes.NEW_MODE_MERGED_VIEWS,
-        TranslatorModes.NEW_MODE_RESUME,
-    ):
-        return "system.prompt"
     return "system_rust.prompt"
 
 
@@ -649,221 +638,24 @@ def parseBoolArg(value):
     raise argparse.ArgumentTypeError("expected true or false")
 
 
-def parseSkipStagesArg(value):
-    """Parse "5,6" or "Stage_5,Stage_6" (mix allowed) into a set of Stage
-    enum values. Empty string → empty set. Unknown token → ArgumentTypeError.
-    """
-    if value is None:
-        return set()
-    text = str(value).strip()
-    if not text:
-        return set()
-    result = set()
-    for raw in text.split(","):
-        token = raw.strip()
-        if not token:
-            continue
-        name = token if token.startswith("Stage_") else f"Stage_{token}"
-        if name not in Stage.__members__:
-            raise argparse.ArgumentTypeError(
-                f"unknown stage {token!r}; expected 1..10 or Stage_1..Stage_10"
-            )
-        result.add(Stage[name])
-    return result
 
 
 # The basename must contain a "stage" token; we won't sniff a bare trailing
 # digit. Otherwise a versioned-run shorthand like ``v1`` silently parses to
-# Stage_1 (the user pointed at the run root, not a stage subdir) and the loader
-# downstream gives a confusing "stage_state.json not found" error after we've
 # already mis-routed the target.
 _PRIOR_STAGE_BASENAME = re.compile(r"stage[._]*?(\d+)\s*$", re.IGNORECASE)
 
 
-def inferStageFromPriorPath(priorPath):
-    """Extract a Stage enum value from the basename of a prior-stage-state
-    directory. Accepts the on-disk layout NEW_MODE writes (``_Stage.Stage_1``)
-    as well as friendlier shorthands the user may type at the CLI
-    (``Stage_1`` / ``stage_1`` / ``_stage_1``).
-
-    The basename must end in ``stage<N>`` (any case, optional separators) so
-    that pointing at the run root (e.g. ``v1``) errors out cleanly instead of
-    silently mis-routing to Stage_1.
-    """
-    basename = os.path.basename(os.path.normpath(priorPath or ""))
-    if not basename or basename == ".":
-        raise argparse.ArgumentTypeError(
-            f"prior-stage-state path is empty or has no basename: {priorPath!r}"
-        )
-    match = _PRIOR_STAGE_BASENAME.search(basename)
-    if not match:
-        raise argparse.ArgumentTypeError(
-            f"could not infer prior stage from path basename {basename!r}; "
-            "expected a directory name like '_Stage.Stage_1', 'stage_1', "
-            "or 'Stage_1'."
-        )
-    enumName = f"Stage_{match.group(1)}"
-    if enumName not in Stage.__members__:
-        raise argparse.ArgumentTypeError(
-            f"prior stage number {match.group(1)!r} parsed from {basename!r} "
-            f"is not a known stage; expected one of "
-            f"{sorted(Stage.__members__)}"
-        )
-    return Stage[enumName]
 
 
-def nextStageAfter(priorStage, skippedStages):
-    """Return the first Stage that sorts after ``priorStage`` and is not in
-    ``skippedStages``. Returns ``None`` when no such stage exists (i.e. the
-    prior stage was the last one under the current skip set).
-    """
-    priorNum = int(priorStage.name.split("_", 1)[1])
-    skipped = set(skippedStages or [])
-    nextCandidate = None
-    nextCandidateNum = None
-    for stage in Stage:
-        stageNum = int(stage.name.split("_", 1)[1])
-        if stageNum <= priorNum or stage in skipped:
-            continue
-        if nextCandidateNum is None or stageNum < nextCandidateNum:
-            nextCandidate = stage
-            nextCandidateNum = stageNum
-    return nextCandidate
 
 
-_STAGE_STATE_FILENAME = "stage_state.json"
 
 
-def resolvePriorStagePath(priorPath, searchRoots=None):
-    """Resolve a prior-stage-state path to a directory that actually contains
-    ``stage_state.json``. Tries, in order:
-
-      1. The path as-is (absolute or cwd-relative).
-      2. ``<root>/<priorPath>`` for each ``root`` in ``searchRoots`` — the CLI
-         passes ``--src`` here, so users can type a path that's intuitive
-         relative to their codebase (``v1/stage_3`` under
-         ``--src=./inputs-complex/cjson_write/`` is the same as typing the
-         full ``./inputs-complex/cjson_write/v1/stage_3``).
-      3. For each of the above candidate roots, sibling directories whose
-         basename matches a known on-disk variant for the same stage number.
-         NEW_MODE writes checkpoints to ``_Stage.Stage_N/`` (because
-         ``str(Stage.Stage_N)`` is ``Stage.Stage_N``), but users naturally
-         type the friendlier ``stage_3``; this branch bridges the two.
-
-    Returns the resolved directory path. Falls back to the original
-    ``priorPath`` when nothing matches, so the downstream loader's error
-    message still points at exactly what the user typed.
-    """
-    if not priorPath:
-        return priorPath
-
-    normalizedRoots = ["."]
-    if searchRoots:
-        for root in searchRoots:
-            if not root:
-                continue
-            normalizedRoots.append(os.path.expanduser(str(root)))
-
-    basename = os.path.basename(os.path.normpath(priorPath))
-    match = _PRIOR_STAGE_BASENAME.search(basename)
-    stageNum = match.group(1) if match else None
-    candidateBasenames = []
-    if stageNum is not None:
-        candidateBasenames = [
-            f"_Stage.Stage_{stageNum}",
-            f"Stage.Stage_{stageNum}",
-            f"_Stage_{stageNum}",
-            f"Stage_{stageNum}",
-            f"_stage_{stageNum}",
-            f"stage_{stageNum}",
-        ]
-
-    isAbsolute = os.path.isabs(priorPath)
-
-    def _candidatePathExists(p):
-        return os.path.isfile(os.path.join(p, _STAGE_STATE_FILENAME))
-
-    # Pass 1: respect the path verbatim from each root.
-    for root in normalizedRoots:
-        candidate = priorPath if (isAbsolute or root == ".") else os.path.join(root, priorPath)
-        if _candidatePathExists(candidate):
-            return candidate
-
-    # Pass 2: sibling-name fallback for friendly-vs-legacy naming. Only fires
-    # when the basename parses to a stage number; otherwise there's nothing
-    # to translate.
-    if candidateBasenames:
-        for root in normalizedRoots:
-            base = priorPath if (isAbsolute or root == ".") else os.path.join(root, priorPath)
-            parent = os.path.dirname(os.path.normpath(base)) or "."
-            if not os.path.isdir(parent):
-                continue
-            for name in candidateBasenames:
-                candidate = os.path.join(parent, name)
-                if _candidatePathExists(candidate):
-                    return candidate
-
-    return priorPath
 
 
-def findAvailableStageCheckpoints(srcDir, maxDepth=3):
-    """Scan ``srcDir`` for any directory containing a ``stage_state.json``
-    that NEW_MODE wrote. Used to render a helpful error when the user's
-    ``--prior-stage-state`` does not resolve.
-
-    Returns a sorted list of paths relative to ``srcDir`` (or absolute, if
-    they sit outside ``srcDir``). Caps depth at ``maxDepth`` segments below
-    ``srcDir`` because NEW_MODE only writes one level deep
-    (``<run>/_Stage.Stage_N/stage_state.json``).
-    """
-    if not srcDir or not os.path.isdir(srcDir):
-        return []
-
-    matches = []
-    srcAbs = os.path.abspath(srcDir)
-    for dirpath, dirnames, filenames in os.walk(srcAbs):
-        if _STAGE_STATE_FILENAME in filenames:
-            try:
-                rel = os.path.relpath(dirpath, srcAbs)
-            except ValueError:
-                rel = dirpath
-            matches.append(rel)
-            # No nested stage dirs under a stage dir; prune to keep the walk cheap.
-            dirnames[:] = []
-            continue
-        relDepth = os.path.relpath(dirpath, srcAbs).count(os.sep)
-        if relDepth >= maxDepth:
-            dirnames[:] = []
-    matches.sort()
-    return matches
 
 
-def _checkPriorStagePathResolved(resolvedPath, srcDir, label):
-    """Verify ``resolvedPath/stage_state.json`` exists; if not, raise
-    ``argparse.ArgumentTypeError`` with a list of valid checkpoints found
-    under ``srcDir``. ``label`` tags the error so the user knows which mode
-    triggered it.
-    """
-    if resolvedPath and os.path.isfile(os.path.join(resolvedPath, _STAGE_STATE_FILENAME)):
-        return
-    candidates = findAvailableStageCheckpoints(srcDir)
-    suggestion = ""
-    if candidates:
-        suggestion = (
-            "\n\nValid checkpoints found under --src=" + str(srcDir) + ":\n  "
-            + "\n  ".join(candidates[:25])
-            + ("\n  ..." if len(candidates) > 25 else "")
-            + "\n\nPass any of these to --prior-stage-state (path relative to --src is OK)."
-        )
-    else:
-        suggestion = (
-            f"\n\nNo NEW_MODE checkpoints found under --src={srcDir}. "
-            "Run translator-mode=new-mode first to generate stage_state.json files."
-        )
-    raise argparse.ArgumentTypeError(
-        f"[{label}] --prior-stage-state did not resolve to a directory containing "
-        f"{_STAGE_STATE_FILENAME}: {resolvedPath!r}" + suggestion
-    )
 
 
 def _captureToolchainInfo():
@@ -871,7 +663,7 @@ def _captureToolchainInfo():
 
     - ``clang_version`` / ``cargo_version``: first line of ``<tool> --version``
       output, or None when the binary is missing / errors out. Both compilers
-      get invoked by the perf path (clang++ for C++ stages, cargo for Stage_10
+      get invoked by the perf path (cargo for the Rust build
       Rust), so recording both makes the binary reproducible.
     - ``perf_opt_level``: the ``-O`` level used to compile the measured binary
       (``PerformanceMixin.PERFORMANCE_OPT_LEVEL``). The single number that
@@ -912,8 +704,7 @@ def dumpRunConfig(individualFuncPath, codebasePath, translator, llmmodel, transl
                   fineTunedModel, preanalysisOnly, singleFileName, dirPrefix, fileListFile,
                   multiThreading, perfDegradeThresholdPct, perfDegradeRetryCount,
                   perfDegradeDiscardOnFail, perfDegradeSkipRetry, skipCBaseline,
-                  targetStage, priorStageStateDir, formattedDateTime, logger,
-                  skippedStages=None, keepStage1OnDegrade=False):
+                  formattedDateTime, logger):
     """Dump the resolved run configuration to <individualFuncPath>/run_config.json
     so each result directory is self-describing and reproducible.
     """
@@ -939,14 +730,9 @@ def dumpRunConfig(individualFuncPath, codebasePath, translator, llmmodel, transl
             "retry_count": perfDegradeRetryCount,
             "discard_on_fail": perfDegradeDiscardOnFail,
             "skip_retry": perfDegradeSkipRetry,
-            "keep_stage_1": keepStage1OnDegrade,
         },
         "skip_c_baseline": skipCBaseline,
-        "skip_stage_check": getattr(translator, "skipStageCheck", False),
-        "skipped_stages": sorted(s.name for s in (skippedStages or [])),
         "single_stage": {
-            "target_stage": str(targetStage) if targetStage else None,
-            "prior_stage_state_dir": priorStageStateDir or None,
         },
         "python_version": sys.version,
         # Toolchain + optimization level: captured so each run is reproducible
@@ -1009,12 +795,6 @@ def processCodebase(codebasePath,
                     perfDegradeSkipRetry,
                     skipCBaseline,
                     logger,
-                    targetStage=None,
-                    priorStageStateDir=None,
-                    skipStageCheck=False,
-                    skippedStages=None,
-                    keepStage1OnDegrade=False,
-                    resumeReloadFunctions=None,
                     interactiveFixOnFail=False):
     fileList = []
     if fileListFile is not None and len(fileListFile) > 0:
@@ -1026,76 +806,15 @@ def processCodebase(codebasePath,
     formattedDateTime = currentDatetime.strftime("%Y-%m-%d_%H-%M-%S")
     
     extractor = FunctionAndDepsExtractor(logger)
-    if translatorMode == translatorMode.NEW_MODE:
-        translator = createTranslator(logger, llmmodel, translatorMode, fineTunedModel, "C", "C++")
-    elif translatorMode == translatorMode.NEW_MODE_MERGED_VIEWS:
-        # Deprecated alias for NEW_MODE — same C->C++ staged pipeline.
-        # dstLang flips to Rust at Stage_10.
-        translator = createTranslator(logger, llmmodel, translatorMode, fineTunedModel, "C", "C++")
-    elif translatorMode == translatorMode.NEW_MODE_SINGLE_STAGE:
-        # dstLang is finalized inside translateAll based on target_stage; the
-        # initial value is overwritten before the stage runs. Picking C++ here
-        # so attributes line up with NEW_MODE for stages 1-8.
-        translator = createTranslator(logger, llmmodel, translatorMode, fineTunedModel, "C", "C++")
-    elif translatorMode == translatorMode.NEW_MODE_RESUME:
-        # Resume the staged pipeline from a prior checkpoint. translateAll
-        # sets dstLang per-stage; pick C++ as the initial value so attributes
-        # line up with NEW_MODE for stages 1-9.
-        translator = createTranslator(logger, llmmodel, translatorMode, fineTunedModel, "C", "C++")
-    else:
-        translator = createTranslator(logger, llmmodel, translatorMode, fineTunedModel, "C", "Rust")
+    translator = createTranslator(logger, llmmodel, translatorMode, fineTunedModel, "C", "Rust")
     translator.perfDegradeThresholdPct = perfDegradeThresholdPct
     translator.perfDegradeRetryCount = perfDegradeRetryCount
     translator.perfDegradeDiscardOnFail = perfDegradeDiscardOnFail
     translator.perfDegradeSkipRetry = perfDegradeSkipRetry
-    translator.keepStage1OnDegrade = keepStage1OnDegrade
     translator.skipCBaseline = skipCBaseline
-    translator.skipStageCheck = skipStageCheck
     translator.interactiveFixOnFail = interactiveFixOnFail
-    # NEW_MODE iteration loop reads this; non-NEW_MODE paths ignore it.
-    # Also consumed by _stageExclusionsForOtherStages to omit skipped
-    # stages from both PRESERVE and DEFER prompt lists, so the LLM never
-    # references a stage that won't run.
-    translator.skippedStages = set(skippedStages) if skippedStages else set()
-    if Stage.Stage_10 in translator.skippedStages:
-        logger.warning(
-            "[Skip stages] Stage_10 is in --skip-stages; the run will end "
-            "with C++ output and produce no Rust transliteration."
-        )
 
-    # Plumb single-stage knobs into the translator. translateAll's
-    # NEW_MODE_SINGLE_STAGE branch consumes these.
-    if translatorMode == translatorMode.NEW_MODE_SINGLE_STAGE:
-        if not targetStage:
-            raise RuntimeError("--target-stage is required for translator-mode=new-mode-single-stage")
-        try:
-            translator.targetStage = Stage[targetStage] if isinstance(targetStage, str) else targetStage
-        except KeyError:
-            raise RuntimeError(
-                f"Invalid --target-stage value: {targetStage!r}. "
-                f"Expected one of: {[s.name for s in Stage]}"
-            )
-        translator.priorStageStateDir = priorStageStateDir or None
 
-    # Resume mode reuses --prior-stage-state but does not take --target-stage:
-    # the set of stages to run is derived from priorStage + skippedStages.
-    if translatorMode == translatorMode.NEW_MODE_RESUME:
-        if not priorStageStateDir:
-            raise RuntimeError(
-                "--prior-stage-state is required for translator-mode=new-mode-resume"
-            )
-        translator.priorStageStateDir = priorStageStateDir
-        # List of function names whose post-stage body should be reloaded from
-        # the prior stage's merged_funcs.{cpp,rs} on disk before any resumed
-        # stage runs. Lets the user hand-fix a function in the prior stage's
-        # output and have the fix flow into the resumed stages.
-        translator.resumeReloadFunctions = list(resumeReloadFunctions or [])
-    elif resumeReloadFunctions:
-        logger.warning(
-            "--resume-reload-functions=%s is ignored unless "
-            "--translator-mode=new-mode-resume",
-            resumeReloadFunctions,
-        )
     performanceOnlyFunctions = loadPerformanceOnlyFunctions(codebasePath, logger)
 
     # TODO : @gabe Do we still need this?
@@ -1137,9 +856,7 @@ def processCodebase(codebasePath,
         fineTunedModel, preanalysisOnly, singleFileName, dirPrefix, fileListFile,
         multiThreading, perfDegradeThresholdPct, perfDegradeRetryCount,
         perfDegradeDiscardOnFail, perfDegradeSkipRetry, skipCBaseline,
-        targetStage, priorStageStateDir, formattedDateTime, logger,
-        skippedStages=translator.skippedStages,
-        keepStage1OnDegrade=keepStage1OnDegrade,
+        formattedDateTime, logger,
     )
 
     functionOrderList = []
@@ -1348,9 +1065,7 @@ if __name__ == "__main__":
     # parser.add_argument("--llm-mode", type=str, default="gemini-3.1-pro", help="The GPT model used for transpilation. Options: claude / claude-opus (= claude-opus-4-6), claude-sonnet / sonnet (= claude-sonnet-4-6, cheaper for debug), claude-haiku / haiku (= claude-haiku-4-5, cheapest; 200K context / 64K max output), gpt-5.")
     # --llm-mode=gemini-3.5-flash
     # parser.add_argument("--llm-mode", type=str, default="gpt-5", help="The GPT model used for transpilation.")
-    # parser.add_argument("--translator-mode", type=str, default="struct-fn-replay", help="Controls how the input file and its dependencies are chunked to fit into the LLM model context window. See gptTranslation.py for more information.")
-    # parser.add_argument("--translator-mode", type=str, default="new-mode", help="Controls how the input file and its dependencies are chunked to fit into the LLM model context window. Options: basic, feedback, cf-struct-replay, struct-fn-replay, single-request-merge, new-mode, new-mode-single-stage, new-mode-merged-views (like new-mode but folds Stage_8 view-lowering into Stage_4). See gptTranslation.py for more information.")
-    parser.add_argument("--translator-mode", type=str, default="new-mode-merged-views", help="Controls how the input file and its dependencies are chunked to fit into the LLM model context window. Options: basic, feedback, cf-struct-replay, struct-fn-replay, single-request-merge, new-mode, new-mode-single-stage, new-mode-merged-views (deprecated alias for new-mode), new-mode-resume (resume the staged pipeline from --prior-stage-state and run every later non-skipped stage). See gptTranslation.py for more information.")
+    parser.add_argument("--translator-mode", type=str, default="struct-fn-replay", help="Controls how the input file and its dependencies are chunked to fit into the LLM model context window. Options: basic, feedback, cf-struct-replay, struct-fn-replay, single-request-merge.")
     parser.add_argument("--fine-tuned-model", type=str, default="", help="The source directory that contains the preprocessed C files")
     parser.add_argument("--single-file-name", type=str, default="", help="The name of the single file that should be analyzed")
     parser.add_argument("--dir-prefix", type=str, default="", help="Add a prefix to the individual-funcs directory name")
@@ -1382,73 +1097,16 @@ if __name__ == "__main__":
     parser.add_argument("--perf-degrade-skip-retry", type=parseBoolArg, default=PERF_DEGRADE_SKIP_RETRY,
                         help="Skip the entire perf retry mechanism. Degradation is still recorded; "
                              "no retry happens. Default: %(default)s")
-
-    # Stage_1 (custom-allocator removal) is the foundation of the C++/Rust
     # rewrite; reverting it puts the custom allocator back and undoes every
-    # later stage's assumption. When set, Stage_1 behaves like Stage_10:
     # perf regression is logged but never triggers a revert, regardless of
     # --perf-degrade-discard-on-fail / --perf-degrade-skip-retry.
-    parser.add_argument("--perf-degrade-keep-stage-1", type=parseBoolArg, default=True,
-                        help="Never discard Stage_1 on perf regression (mirrors Stage_10's "
-                             "hardcoded exemption). Retry still runs; only the final revert "
-                             "is suppressed. Default: %(default)s")
 
-    # Skip the LLM-driven stageCheck (the Yes/No 'is this idiomatic?' gate
-    # used by Stage_4/5/6/7). When true, every stageCheck returns True and
-    # the proposed change is always applied. Useful when (a) you want to
-    # debug pipeline behavior without paying for stage_check tokens, or
-    # (b) the model under test is unreliable at single-word yes/no answers
-    # (sonnet 4.6 hallucinates K&R-style example code instead of replying
-    # yes/no — see cjson_new_validator_*.log "stageCheck got non yes/no").
-    parser.add_argument("--skip-stage-check", type=parseBoolArg, default=True,
-                        help="Skip the LLM stage_check (Yes/No idiomatic-change gate). "
-                             "When true, every proposed change is auto-approved. "
-                             "Default: %(default)s")
     parser.add_argument("--skip-c-baseline", type=parseBoolArg, default=False,
-                        help="Skip running the original C source as a baseline for Stage_1's perf check. "
-                             "By default (false), the pipeline REQUIRES a .c source with `int main(` at "
-                             "the codebase root, compiles it 5x at the start of NEW_MODE, and records the "
-                             "result under 'baseline_c' in performance_metrics.json so Stage_1 can detect "
-                             "regressions vs the C version. Failure to compile/run this baseline aborts "
-                             "the run. Set true ONLY when you understand Stage_1 perf check will then have "
+                        help="Skip running the original C source as a perf baseline."
                              "no baseline to compare against. Default: %(default)s")
 
 
     
-    parser.add_argument("--target-stage", type=str, default="",
-                        help="When translator-mode=new-mode-single-stage: which stage to run "
-                             "(Stage_1..Stage_10). May be omitted when --prior-stage-state is set, "
-                             "in which case the next non-skipped stage after the prior one is run "
-                             "automatically. Pointing --prior-stage-state at a directory whose "
-                             "basename ends in the stage number (e.g. 'v1/_Stage.Stage_1' or "
-                             "'v1/stage_1') is enough to trigger a Stage_2-only run that tests "
-                             "performance and stops.")
-    parser.add_argument("--prior-stage-state", type=str, default="", help="Path to a prior NEW_MODE stage's directory (containing stage_state.json). Required for --target-stage other than Stage_1, and required for translator-mode=new-mode-resume (which then runs every later non-skipped stage).")
-    parser.add_argument(
-        "--resume-reload-functions", type=str, default="",
-        help="(translator-mode=new-mode-resume only) Comma-separated list of "
-             "function names whose body should be RELOADED from "
-             "<prior-stage-state>/merged_funcs.{cpp,rs} on disk after the "
-             "stage_state.json checkpoint is loaded. Use this when you have "
-             "hand-fixed a function in the prior stage's merged file and want "
-             "the fix to flow into the resumed stages — the checkpoint stores "
-             "the in-memory funcMap, so on-disk edits are otherwise ignored. "
-             "Names must match function definitions exactly (no edit-distance "
-             "fallback); unknown names abort the run.",
-    )
-    parser.add_argument(
-        "--skip-stages", type=parseSkipStagesArg,
-        default={Stage.Stage_5, Stage.Stage_6},
-        help="Comma-separated stage numbers (or Stage_N names) to skip in NEW_MODE. "
-             "Default: 5,6 — Stage_5 (std::list) and Stage_6 (std::unordered_map) "
-             "have been observed to reliably regress on cjson-shaped inputs "
-             "(LLM produces no list/map conversion and instead reverts earlier "
-             "stages' std::string fields, failing the perf gate). The pipeline "
-             "runs the remaining stages in order; references to skipped stages "
-             "are also removed from the per-stage PRESERVE/DEFER prompt text. "
-             "Pass --skip-stages='' to run all 9 stages. Skipping Stage_9 leaves "
-             "the output in C++ with no Rust transliteration."
-    )
 
     args = parser.parse_args()
     if not args.src:
@@ -1471,73 +1129,7 @@ if __name__ == "__main__":
     if args.interactive_fix_on_fail:
         args.multithreading = False
 
-    # Single-stage UX. Two conveniences for --prior-stage-state, both
-    # gated on translator-mode=new-mode-single-stage:
-    #   1. Resolve a friendly basename (e.g. ``v1/stage_3``) to the actual
-    #      on-disk directory NEW_MODE writes (``v1/_Stage.Stage_3``). Runs
-    #      whether or not --target-stage is explicit, so the friendly name
-    #      works in both auto-inference and explicit-target modes.
-    #   2. If --target-stage is omitted, derive it as "the next non-skipped
-    #      stage after the prior". Lets ``--prior-stage-state=v1/stage_1``
-    #      alone trigger a Stage_2 perf-only run.
-    if args.translator_mode == "new-mode-single-stage" and args.prior_stage_state:
-        resolvedPriorPath = resolvePriorStagePath(args.prior_stage_state, searchRoots=[args.src])
-        if resolvedPriorPath != args.prior_stage_state:
-            logger.info(
-                "[single-stage] resolved --prior-stage-state=%s -> %s",
-                args.prior_stage_state, resolvedPriorPath,
-            )
-            args.prior_stage_state = resolvedPriorPath
 
-        try:
-            _checkPriorStagePathResolved(args.prior_stage_state, args.src, "single-stage")
-        except argparse.ArgumentTypeError as e:
-            parser.error(str(e))
-
-        if not args.target_stage:
-            priorStage = inferStageFromPriorPath(args.prior_stage_state)
-            inferredNext = nextStageAfter(priorStage, args.skip_stages)
-            if inferredNext is None:
-                parser.error(
-                    f"prior stage {priorStage.name} is the last stage under "
-                    f"--skip-stages={sorted(s.name for s in args.skip_stages)}; "
-                    "nothing left to run."
-                )
-            args.target_stage = inferredNext.name
-            logger.info(
-                "[single-stage] auto-inferred --target-stage=%s from --prior-stage-state=%s (prior=%s)",
-                inferredNext.name, args.prior_stage_state, priorStage.name,
-            )
-
-    # Resume mode reuses the same friendly-basename resolution so the user
-    # can type ``v1/stage_9`` and have it map to ``v1/_Stage.Stage_9``.
-    # Unlike single-stage, --target-stage is not consulted here — the
-    # translateAll branch derives every later non-skipped stage from the
-    # prior-stage directory's basename.
-    if args.translator_mode == "new-mode-resume" and args.prior_stage_state:
-        resolvedPriorPath = resolvePriorStagePath(args.prior_stage_state, searchRoots=[args.src])
-        if resolvedPriorPath != args.prior_stage_state:
-            logger.info(
-                "[resume] resolved --prior-stage-state=%s -> %s",
-                args.prior_stage_state, resolvedPriorPath,
-            )
-            args.prior_stage_state = resolvedPriorPath
-
-        try:
-            _checkPriorStagePathResolved(args.prior_stage_state, args.src, "resume")
-        except argparse.ArgumentTypeError as e:
-            parser.error(str(e))
-
-        # Fail fast at CLI parse time if the prior stage is the last one
-        # under --skip-stages — same error condition as single-stage's
-        # auto-inference path.
-        priorStage = inferStageFromPriorPath(args.prior_stage_state)
-        if nextStageAfter(priorStage, args.skip_stages) is None:
-            parser.error(
-                f"[resume] prior stage {priorStage.name} is the last stage "
-                f"under --skip-stages={sorted(s.name for s in args.skip_stages)}; "
-                "nothing left to run."
-            )
 
     logger.info("Command line options: %s", args)
 
@@ -1556,12 +1148,4 @@ if __name__ == "__main__":
                     args.perf_degrade_skip_retry,
                     args.skip_c_baseline,
                     logger,
-                    targetStage=args.target_stage or None,
-                    priorStageStateDir=args.prior_stage_state or None,
-                    skipStageCheck=args.skip_stage_check,
-                    skippedStages=args.skip_stages,
-                    keepStage1OnDegrade=args.perf_degrade_keep_stage_1,
-                    resumeReloadFunctions=[
-                        n.strip() for n in (args.resume_reload_functions or "").split(",") if n.strip()
-                    ],
                     interactiveFixOnFail=args.interactive_fix_on_fail) # ./inputs-complex/zlib-1.3.1/"

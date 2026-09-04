@@ -788,33 +788,6 @@ class PropagateByteBufferTagsTests(unittest.TestCase):
 # ============================================================================
 # Stage_3 prompt ↔ classifier tag literal consistency
 # ============================================================================
-class TagLiteralReferencedByStage3Prompt(unittest.TestCase):
-    """The Stage_3 prompt rule that tells the LLM to ``trust the tag``
-    matches it as a substring. If a future edit renames ``BYTE_BUFFER_TAG``
-    without updating the prompt (or vice versa), the LLM would silently
-    stop honoring tagged lines and the cjson_new double-free regression
-    can come back. Pin the cross-file invariant here so the next person
-    sees a failing test instead of a silent regression."""
-
-    # The literal that must appear, verbatim, in BOTH the classifier's
-    # emitted tag AND the Stage_3 instruction text.
-    TAG_LITERAL = "[BYTE BUFFER: cursor build verified - must become std::vector<unsigned char>]"
-
-    def test_classifier_emits_canonical_literal(self):
-        self.assertIn(self.TAG_LITERAL, BYTE_BUFFER_TAG)
-
-    def test_stage_3_prompt_quotes_canonical_literal(self):
-        from config import Stage  # imported lazily to keep top-of-file lean
-        self.assertIn(self.TAG_LITERAL, Stage.Stage_3)
-
-    def test_stage_3_prompt_instructs_unconditional_conversion(self):
-        """If the literal is referenced but the rule's wording weakens
-        the directive (e.g. ``consider converting``), the LLM may
-        still override the tag. Pin the imperative phrasing."""
-        from config import Stage
-        # Key directive phrases that make the rule unambiguous:
-        self.assertIn("trust the tag", Stage.Stage_3.lower())
-        self.assertIn("unconditionally", Stage.Stage_3)
 
 
 if __name__ == "__main__":

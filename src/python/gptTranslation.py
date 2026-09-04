@@ -19,7 +19,6 @@ from gpt_translation.config import (
     LLMModels,
     MAX_THREADS,
     STRUCT_RETRIES,
-    Stage,
     TranslatorModes,
 )
 from gpt_translation.translator import (
@@ -63,7 +62,6 @@ __all__ = [
     "LLMModels",
     "MAX_THREADS",
     "STRUCT_RETRIES",
-    "Stage",
     "Translator",
     "TranslatorModes",
 ]

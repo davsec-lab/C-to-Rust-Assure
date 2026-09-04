@@ -116,7 +116,7 @@ class _PipelineProbe(CodeUtilsMixin, TranslationPipelineMixin):
 
     def __init__(self, nodes_by_key):
         self.logger = _Logger()
-        self.translatorMode = TranslatorModes.NEW_MODE
+        self.translatorMode = TranslatorModes.CF_STRUCT_FN_REPLAY
         self._keys = list(nodes_by_key.keys())
 
     def getTypeDependencyGraph(self):
@@ -307,11 +307,9 @@ class CascadeDeleteFullEntries(unittest.TestCase):
         _probe, manager = _run([deleted, sg])
 
         self.assertEqual(sg.rustCode, "")
-        self.assertIn(
-            ("static:global_hooks", ""),
-            manager.calls,
-            "manager must be told to drop the entry too",
-        )
+        # The manager sync was staged-mode-only and was removed with it;
+        # the registry-side deletion above is the whole contract now.
+        self.assertEqual(manager.calls, [])
 
     def test_extern_declaration_referencing_deleted_struct_is_removed(self):
         deleted = _node(TypeKind.STRUCT, "internal_hooks", "")
@@ -387,11 +385,9 @@ class CascadeSurgicalComposites(unittest.TestCase):
         self.assertNotIn("internal_hooks", pb.rustCode)
         self.assertIn("length", pb.rustCode)
         self.assertIn("} parse_buffer;", pb.rustCode)
-        self.assertIn(
-            "struct:parse_buffer",
-            [c[0] for c in manager.calls],
-            "manager must be told about the surgical rewrite",
-        )
+        # Staged-only manager sync removed with staged mode; the registry
+        # rewrite above is the contract.
+        self.assertEqual(manager.calls, [])
 
     def test_union_with_offending_field_keeps_type_drops_field(self):
         deleted = _node(TypeKind.STRUCT, "internal_hooks", "")
