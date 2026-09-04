@@ -37,11 +37,12 @@ from type_registry import TranslationMode, TypeKind
 from gpt_translation._call_kind_helper import callKindContext as _callKindContext
 from gpt_translation.byte_buffer_classifier import _TAG_CORE as _BYTE_BUFFER_TAG
 from gpt_translation.behaviour_contract import C_SEMANTIC_FIDELITY_CONTRACT
+from gpt_translation.c_idiom_audit import auditTranslation
 from gpt_translation.config import (
+    C_IDIOM_AUDIT_ROUNDS,
     COMPILATION_RETRIES,
     MAX_THREADS,
     PERF_DEGRADE_THRESHOLD_PCT,
-    PERF_DEGRADE_THRESHOLD_PCT_PER_STAGE,
     STRUCT_RETRIES,
     TranslatorModes,
 )
@@ -1739,6 +1740,107 @@ class TranslationPipelineMixin:
                                                                                                                                               funcSrc)
         return (successFlag, result)
 
+    def _repairAuditedIdioms(self, funcName, funcSrc, result, contextStructs,
+                             translatedFuncs, translatedFuncsSignatures,
+                             dependencyCodes=(), dependencyKeys=(),
+                             dependencyFunctionNames=()):
+        """Re-translate a unit that a mechanical C-vs-Rust check says is wrong.
+
+        The compile loop only ever establishes that rustc accepts the output.
+        Nothing asks whether it still does what the C did, and the metric is a
+        symbolic-tree comparison, so a translation that compiles and reads
+        perfectly can still score zero on every argument. gpt_translation/
+        c_idiom_audit.py answers that question for the cases it can decide by
+        counting, and this method spends one LLM round on the answer.
+
+        The audit is what makes this affordable and honest: on the four
+        measured libcsv rounds it fires on 1-2 of 23 functions, and on the one
+        round whose csv_parse had the control flow right it fires on none. The
+        20 clean functions are never touched, so this cannot regress them.
+
+        Contract: the replacement is accepted only if it still compiles AND the
+        audit finds no more than it did before, so this can neither break a
+        compiling function (it cannot move
+        counts.arguments_of_compiled_funcs) nor trade one divergence for two.
+        """
+        if self.dstLang != "Rust" or C_IDIOM_AUDIT_ROUNDS <= 0:
+            return result
+        current = result
+        for roundIndex in range(C_IDIOM_AUDIT_ROUNDS):
+            try:
+                findings = auditTranslation(funcName, funcSrc, self.cleanCode(current))
+            except Exception as exc:
+                self.logger.warning("[C IDIOM AUDIT] %s: audit failed (%s), keeping translation",
+                                    funcName, exc)
+                return current
+            if not findings:
+                if roundIndex == 0:
+                    self.logger.info("[C IDIOM AUDIT] %s: clean", funcName)
+                return current
+            self.logger.info("[C IDIOM AUDIT] %s: %d finding(s) on round %d: %s",
+                             funcName, len(findings), roundIndex + 1, " | ".join(findings))
+            try:
+                request = (
+                    "Your Rust translation below compiles, but a mechanical comparison "
+                    "against the C source found the discrepancies listed under FINDINGS. "
+                    "Each one is a plain count or a syntactic shape read off the two "
+                    "sources — not an opinion — but a count can have an innocent "
+                    "explanation, so check each one against the C before changing "
+                    "anything.\n\nFINDINGS:\n"
+                    + "\n".join("  %d. %s" % (n + 1, f) for n, f in enumerate(findings))
+                    + "\n\nThe C source:\n" + (funcSrc or "") + "\n"
+                    + "\nYour Rust translation:\n" + self.cleanCode(current) + "\n"
+                    + "\nAvailable dependency function signatures:\n/*\n"
+                    + (translatedFuncsSignatures or "") + "*/\n"
+                    + "\nIf every finding has an innocent explanation and the Rust is "
+                    "already behaviourally identical to the C, reply with exactly "
+                    "NO DIVERGENCE and no code.\n"
+                    "Otherwise reply with the corrected translation of the SAME "
+                    "function(s), complete and self-contained, keeping the same "
+                    "signature(s) and the same names. Do not redefine the dependency "
+                    "structs or the dependency functions, and change nothing the "
+                    "findings did not point at.\n"
+                    'For the final code result, please response with "Final result code" is : \n'
+                )
+                with _callKindContext(self, "c_idiom_audit"):
+                    revised = self.chunkAndSend(funcName, request)
+            except Exception as exc:   # never let the audit break a good translation
+                self.logger.warning("[C IDIOM AUDIT] %s: repair call failed (%s), keeping translation",
+                                    funcName, exc)
+                return current
+
+            revised = self._sanitizeResultAgainstDependencies(
+                revised, dependencyCodes, dependencyKeys, dependencyFunctionNames,
+            )
+            candidate = (revised or "").strip()
+            # A real correction contains a function definition. "NO DIVERGENCE",
+            # prose, or an empty extraction all mean keep what we have.
+            if "fn " not in candidate or self._isEmptyOrCommentOnly(candidate):
+                self.logger.info("[C IDIOM AUDIT] %s: no usable rewrite, keeping translation", funcName)
+                return current
+            if self.cleanCode(candidate).strip() == self.cleanCode(current).strip():
+                self.logger.info("[C IDIOM AUDIT] %s: no change proposed", funcName)
+                return current
+            completeCandidate = self.cleanCode(contextStructs + "\n" + translatedFuncs + "\n" + candidate)
+            (candidateOk, candidateErr) = self.compile(completeCandidate)
+            if not candidateOk:
+                self.logger.info("[C IDIOM AUDIT] %s: rewrite does not compile, keeping the original (%s)",
+                                 funcName, self.extractError(candidateErr)[:200])
+                return current
+            try:
+                after = auditTranslation(funcName, funcSrc, self.cleanCode(candidate))
+            except Exception:
+                after = findings
+            if len(after) > len(findings):
+                self.logger.info(
+                    "[C IDIOM AUDIT] %s: rewrite trips more checks than the original "
+                    "(%d -> %d), keeping the original", funcName, len(findings), len(after))
+                return current
+            self.logger.info("[C IDIOM AUDIT] %s: accepted a rewrite on round %d (%d -> %d finding(s))",
+                             funcName, roundIndex + 1, len(findings), len(after))
+            current = candidate
+        return current
+
     def compileAndRetryLoopforDepency(self,
                                       funcName,
                                       prompt,
@@ -1995,6 +2097,14 @@ class TranslationPipelineMixin:
             attempts = attempts + 1
         if attempts != 0:
             self.logger.debug("[COMPILE AND LINK] After %d retranslation attempts result, complete result: %s, %s", attempts, result, completeResult)
+
+        if successFlag:
+            # rustc has accepted this. Nothing has yet compared it to the C.
+            result = self._repairAuditedIdioms(
+                funcName, funcSrc, result, contextStructs,
+                translatedFuncs, translatedFuncsSignatures,
+                dependencyCodes, dependencyKeys, dependencyFunctionNames,
+            )
 
         return (successFlag, result)
 

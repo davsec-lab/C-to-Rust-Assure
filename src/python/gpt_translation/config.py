@@ -32,6 +32,11 @@ CARGO_LIBC_REQUIREMENT = _os.environ.get("ASSURE_CARGO_LIBC_REQ", "=0.2.149")
 # Defaults are kept as-is; with no env vars set, behavior is exactly as before
 # the change.
 COMPILATION_RETRIES = int(_os.environ.get("ASSURE_COMPILATION_RETRIES", "5"))
+# Rounds of the mechanical C-idiom audit (gpt_translation/c_idiom_audit.py)
+# run on an already-compiling Rust unit. 0 disables it. Each round costs at
+# most one LLM call, and only for the functions where a check actually
+# tripped -- on libcsv that is 1-2 of 23.
+C_IDIOM_AUDIT_ROUNDS = int(_os.environ.get("ASSURE_C_IDIOM_AUDIT_ROUNDS", "1"))
 STRUCT_RETRIES = int(_os.environ.get("ASSURE_STRUCT_RETRIES", "5"))
 MAX_THREADS = 40
 
@@ -46,7 +51,6 @@ PERF_DEGRADE_RETRY_COUNT = 0
 PERF_DEGRADE_DISCARD_ON_FAIL = False
 PERF_DEGRADE_SKIP_RETRY = False
 
-PERF_DEGRADE_THRESHOLD_PCT_PER_STAGE: dict = {}
 
 # https://docs.anthropic.com/en/docs/models-overview
 CLAUDE_OPUS_4_1_MODEL = "claude-opus-4-6"
