@@ -46,7 +46,6 @@ PERF_DEGRADE_RETRY_COUNT = 0
 PERF_DEGRADE_DISCARD_ON_FAIL = False
 PERF_DEGRADE_SKIP_RETRY = False
 
-PERF_DEGRADE_THRESHOLD_PCT_PER_STAGE: dict = {}
 
 # https://docs.anthropic.com/en/docs/models-overview
 CLAUDE_OPUS_4_1_MODEL = "claude-opus-4-6"

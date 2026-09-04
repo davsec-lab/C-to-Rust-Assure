@@ -37,11 +37,11 @@ from type_registry import TranslationMode, TypeKind
 from gpt_translation._call_kind_helper import callKindContext as _callKindContext
 from gpt_translation.byte_buffer_classifier import _TAG_CORE as _BYTE_BUFFER_TAG
 from gpt_translation.behaviour_contract import C_SEMANTIC_FIDELITY_CONTRACT
+from gpt_translation.libc_bindings import libcBindingContract
 from gpt_translation.config import (
     COMPILATION_RETRIES,
     MAX_THREADS,
     PERF_DEGRADE_THRESHOLD_PCT,
-    PERF_DEGRADE_THRESHOLD_PCT_PER_STAGE,
     STRUCT_RETRIES,
     TranslatorModes,
 )
@@ -73,6 +73,31 @@ class TranslationPipelineMixin:
         return C_SEMANTIC_FIDELITY_CONTRACT
 
     STAGE_STATE_FILENAME = "stage_state.json"
+
+
+
+
+    def _libcBindingContract(self, funcSrc):
+        """Exact Rust spellings for the C library symbols this C source calls.
+
+        typedefFilter.stripLibcExternDeclarations deletes glibc-derived
+        declarations from the per-function `.i` because the C++ stages get them
+        back from `#include <cstdlib>`. Rust has no include, so for a Rust
+        target the model is shown C that calls `realloc` and `free` with
+        neither declared and has to guess. On csv_init it guessed
+        `std::alloc::realloc`, then `libc::realloc` with a bare `free`, three
+        times over, reasoning "I'm making an assumption that `free` is in
+        scope" — and three retries were spent on the errors that guess did not
+        cause. Six of libcsv's 23 functions reference a stripped symbol.
+
+        Only emitted for Rust output, and only when the source actually
+        mentions one of the table's symbols, so the C++ prompts and the 17
+        libcsv functions that need nothing are byte-identical.
+        """
+        if self.dstLang != "Rust":
+            return ""
+        return libcBindingContract(funcSrc)
+
 
 
 
@@ -1475,6 +1500,8 @@ class TranslationPipelineMixin:
             )
 
 
+        prompt = prompt + self._libcBindingContract(funcSrc)
+
         (successFlag, result) = self.compileAndRetryLoopforDepency(
             sccLabel,
             prompt,
@@ -1725,6 +1752,7 @@ class TranslationPipelineMixin:
                                                              funcSrc,
                                                              funcDepsObj=funcDepsObj)
         else:
+            prompt = prompt + self._libcBindingContract(funcSrc)
             (successFlag, result) = self.compileAndRetryLoopforDepency(funcName,
                                                                        prompt,
                                                                        contextStructs,
@@ -1973,6 +2001,9 @@ class TranslationPipelineMixin:
                 "do not move statements into or out of a conditional, and "
                 "do not add null/bounds/overflow checks or early returns the C does not have.\n"
             )
+            # A rustc-driven rewrite is where the C library binding drifts:
+            # restate the exact libc spellings alongside the error.
+            compilefix = compilefix + self._libcBindingContract(funcSrc)
             otherInformation = "\n For the final code result, please response with \"Final result code\" is : \n"
             # Preserve perf-retry context across compile-fix iterations so the
             # model does not forget WHY it is being retried (perf regression),
