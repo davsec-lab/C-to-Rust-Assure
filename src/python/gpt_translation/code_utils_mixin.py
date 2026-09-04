@@ -979,12 +979,33 @@ class CodeUtilsMixin:
     # us to insert. Multiple suggestions appear under "one of these
     # items"; we want every offered ``use`` so the caller can pick the
     # first that compiles (or apply them all when they're disjoint).
+    #
+    # The "this <kind>" list must stay open-ended: rustc names the *item kind*
+    # it is suggesting, and the set is long (function, struct, enum, union,
+    # trait, module, type alias, constant, static, macro, tuple struct,
+    # unsafe function, associated function, ...). Enumerating three of them
+    # silently dropped the rest. Measured on libcsv (fidelity_contract round):
+    # csv_init's `(*p).free_func = Some(free);` produced
+    #   error[E0425]: cannot find value `free` in this scope
+    #   help: consider importing this function
+    #       | use libc::free;
+    # and because "this function" was not in the alternation, the free
+    # deterministic auto-fix never fired; all three LLM retries were spent on
+    # the two E0308s that *were* visible, the unit was merged still broken,
+    # and csv_init's 13 arguments were lost. Accept any "this <words>".
     _RUSTC_IMPORT_HINT_HEADER_PATTERN = re.compile(
-        r'help:\s+consider importing (?:this (?:module|trait)|one of these items)\b',
+        r'help:\s+consider importing (?:this [a-z ]+|one of these items)\b',
         re.IGNORECASE,
     )
+    # rustc renders the insertion row two ways depending on whether it has a
+    # surrounding-context diff to show: `1   + use std::io;` (patch form) and
+    # `1   | use libc::free;` (plain form, used when the file has no line 1 to
+    # diff against). Only the `+` form was matched, so the plain form — which
+    # is what an `E0425 cannot find value` on a fresh snippet actually emits —
+    # produced an empty suggestion list. Both are accepted now; the trailing
+    # `use ...;` requirement keeps ordinary quoted source lines out.
     _RUSTC_IMPORT_HINT_USE_LINE_PATTERN = re.compile(
-        r'^\s*\d+\s*\+\s*(use\s+[^;\n]+;)',
+        r'^\s*\d+\s*[+|]\s*(use\s+[^;\n]+;)',
     )
 
     def extractRustcImportSuggestions(self, errStr):

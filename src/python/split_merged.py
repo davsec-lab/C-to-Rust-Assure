@@ -25,6 +25,7 @@ already dumped the failure scene as <fn>.rs, and this script does not touch it.
 """
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -32,6 +33,77 @@ import tempfile
 import backend_libc
 
 RUST_EDITION = os.environ.get("ASSURE_RUST_EDITION", "2021")
+
+# ── Linkage repair for the split (2026-09-03) ────────────────────────────
+#
+# The split file is assembled from `contexted_structs.rs` + the function's
+# dependency blocks, and **nothing else**. Two kinds of binding that the
+# frontend had are therefore missing from it:
+#
+#  1. `use` lines the model wrote at *file* level in merged_funcs.rs rather
+#     than inside a block. Measured on libcsv (fidelity_contract round):
+#     csv_error's block referenced `c_char` inside a nested `extern "C"`
+#     declaration, the merged file's `use std::os::raw::{c_char, c_int};`
+#     lived at file level, and the closure build died with
+#     `error[E0412]: cannot find type c_char in this scope`.
+#
+#  2. The libc prelude. `code_utils_mixin._prepend_rust_libc_prelude`
+#     silently injects `use libc::{free, malloc, realloc, ...};` into the
+#     *frontend* compile check, so a translation that writes a bare `free`
+#     compiles there and is accepted — but the text that gets written out
+#     never carries that line. Measured on the same round: csv_init's
+#     `(*p).free_func = Some(free);` passed frontend validation and then
+#     failed the split with `error[E0425]: cannot find value free`.
+#
+# Both landed in the whole-merge fallback, the merge did not compile either,
+# and the two functions contributed 14 "Rust Empty!" arguments — 20% of
+# libcsv's denominator (71 -> 57).
+#
+# The repair is staged and compile-gated: plain closure first (so every file
+# that compiles today is byte-for-byte unchanged), then + carried file-level
+# `use` lines, then + the libc prelude, then the pre-existing whole-merge
+# fallback. Nothing is added to a file that does not need it.
+LIBC_PRELUDE_NAMES = (
+    "free", "malloc", "calloc", "realloc",
+    "memcpy", "memmove", "memset", "memcmp",
+    "strcmp", "strncmp", "strlen", "strcpy", "strncpy",
+    "fopen", "fclose", "fread", "fwrite", "fseek", "ftell",
+    "fputc", "fputs", "fgetc", "putc", "getc",
+    "abort", "exit",
+)
+
+_TOP_LEVEL_USE_RE = re.compile(r"(?m)^(?:pub\s+)?use\s+[^;]+;\s*$")
+
+
+def top_level_use_lines(mergedText):
+    """The `use ...;` lines that sit at column 0 of merged_funcs.rs.
+
+    Column 0 is the discriminator: a `use` inside a function body is
+    indented, has its own scope, and must not be lifted out."""
+    return [m.group(0).rstrip() for m in _TOP_LEVEL_USE_RE.finditer(mergedText or "")]
+
+
+def libc_use_line(content):
+    """`use libc::{...};` naming exactly the prelude symbols `content`
+    references bare and does not bind itself.
+
+    Conservative on both sides: a name is only requested when it appears as
+    a standalone identifier token, and it is dropped again if the file
+    defines or imports that name (which would make the import an E0255
+    collision rather than a fix)."""
+    needed = []
+    for name in LIBC_PRELUDE_NAMES:
+        if not re.search(r"(?<![\w:.])" + name + r"\b", content):
+            continue
+        if re.search(r"(?m)^\s*(?:pub\s+)?(?:unsafe\s+)?(?:extern\s+\"C\"\s+)?fn\s+"
+                     + name + r"\b", content):
+            continue
+        if re.search(r"(?m)^\s*(?:pub\s+)?(?:static|const|type)\s+" + name + r"\b", content):
+            continue
+        if re.search(r"(?m)^\s*(?:pub\s+)?use\s+[^;]*\b" + name + r"\b[^;]*;", content):
+            continue
+        needed.append(name)
+    return "use libc::{" + ", ".join(needed) + "};" if needed else ""
 
 
 def dedupe_top_level(lines):
@@ -163,7 +235,11 @@ def main():
 
     topo = manifest["topo_sccs"]          # block names, callees first
     funcs = sorted(os.path.splitext(f)[0] for f in os.listdir(d) if f.endswith(".i"))
-    stats = {"split": 0, "fallback_merge": 0, "merge_failed": 0}
+    stats = {"split": 0, "fallback_merge": 0, "merge_failed": 0, "repaired": 0}
+    # File-level `use` lines the model wrote in merged_funcs.rs. They are not
+    # part of any block, so the closure loses them; carrying them back is the
+    # stage-1 repair below.
+    mergedUses = top_level_use_lines(merged)
 
     for fn in funcs:
         if manifest["block_of"].get(fn) is None or blockText(manifest["block_of"][fn]) is None:
@@ -175,11 +251,35 @@ def main():
         parts = [structs] + [blockText(b) for b in topo if b in need]
         content = dedupe_top_level(("\n".join(p for p in parts if p)).splitlines())
         out = os.path.join(d, f"{fn}.rs")
-        with open(out, "w") as f:
-            f.write(content)
-        ok, err = rustc_ok(out)
+
+        # Staged, compile-gated linkage repair. Stage 0 is exactly what this
+        # script did before, so any function that split cleanly before still
+        # produces a byte-identical file and never reaches stages 1-2.
+        stage0 = content
+        stage1 = dedupe_top_level(mergedUses + stage0.splitlines()) if mergedUses else stage0
+        libcLine = libc_use_line(stage0)
+        stage2 = dedupe_top_level([libcLine] + stage1.splitlines()) if libcLine else stage1
+
+        attempts = [("closure", stage0)]
+        if stage1 != stage0:
+            attempts.append(("closure + file-level use lines", stage1))
+        if stage2 != stage1:
+            attempts.append(("closure + file-level use lines + libc prelude", stage2))
+
+        ok, err, repairedBy = False, "", None
+        for label, candidate in attempts:
+            with open(out, "w") as f:
+                f.write(candidate)
+            ok, err = rustc_ok(out)
+            if ok:
+                repairedBy = label
+                break
+
         if ok:
             stats["split"] += 1
+            if repairedBy != "closure":
+                stats["repaired"] += 1
+                print(f"[split] {fn}: repaired linkage ({repairedBy})")
         else:
             # Closure missed something (the Rust translation references an edge absent from the C-side AST) — fall back to the whole merge
             with open(out, "w") as f:
@@ -218,7 +318,8 @@ def main():
             if f.endswith(".rs"):
                 os.rename(os.path.join(root, f), os.path.join(root, f + ".block"))
 
-    print(f"[split] done: closure-split {stats['split']} / whole-merge fallback {stats['fallback_merge']}"
+    print(f"[split] done: closure-split {stats['split']} (linkage-repaired {stats['repaired']})"
+          f" / whole-merge fallback {stats['fallback_merge']}"
           f" / merge-stage failures {stats['merge_failed']}  ({len(funcs)} functions total)")
     return 0
 

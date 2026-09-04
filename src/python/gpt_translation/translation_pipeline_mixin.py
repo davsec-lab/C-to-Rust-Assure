@@ -2676,6 +2676,27 @@ class TranslationPipelineMixin:
                 funcMap,
                 updateFuncMapAfterCheck,
             )
+        except Exception as exc:
+            # The perf harness is a *separate* LLM-written `main` compiled on
+            # top of the merged translation; when it does not build,
+            # runPerformanceCheck raises and — because nothing caught it — the
+            # exception unwound out of translateAll and killed processCodebase
+            # before it could rename the individual-funcs directory
+            # `__complete` or run the CROWN pass. Observed on all three
+            # iteration-1 libcsv rounds, where the generated main contained
+            # `let argc = libc::argc;`. The translations themselves were
+            # already written to disk at that point, so aborting bought
+            # nothing and cost the post-translation steps.
+            #
+            # The perf number is not the metric under evolution here; a
+            # harness that cannot measure it must still hand its translations
+            # to the backend.
+            self.logger.error(
+                "[Performance check aborted] : %s (%s: %s) — continuing; "
+                "the translations are already written",
+                label, type(exc).__name__, exc,
+            )
+            performanceCheckPassed = False
         finally:
             if label == "struct-fn-replay":
                 self.syncStructFnReplayPerformanceResults(performanceOutputPath, outputPath)
