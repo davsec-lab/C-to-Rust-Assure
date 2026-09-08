@@ -103,8 +103,15 @@ breaks them.
 
 | | |
 |---|---|
-| source | submodule **`tools/rustify-klee`** (`davsec-lab/rustify-klee` @ `d880ceb4`) |
+| source | submodule **`tools/rustify-klee`** (`davsec-lab/rustify-klee` @ `fae6e1b7`) |
 | built against | `llvm-target` (§1), **not** `typedefextractor-target` |
+
+`fae6e1b7` (2026-09-06, committed 2026-09-08) is `d880ceb4` plus one change to
+`lib/Core/Executor.cpp`: single-object resolution keeps its base mapping on
+derived pointers instead of moving it (so `*dest++ = *src++` in the runtime
+memcpy still resolves), and two options are added, `-base-object-resolution`
+and `-debug-sor`. The pipeline passes neither by default. The commit is local
+to the reference host until pushed to `davsec-lab/rustify-klee`.
 
 ```bash
 cmake -S <assure>/tools/rustify-klee -B klee-build \
