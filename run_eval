@@ -80,6 +80,7 @@ fail() { say "❌ $*"; echo "FAILED: $*" > "$OUT/STATUS"; exit 1; }
 cd "$ROOT/src/python"
 say "run_eval start  id=$RUN_ID mode=$MODE model=$LLM_MODE codebase=$CODEBASE"
 say "  KLEE max-time: C=${ASSURE_KLEE_MAX_TIME_C:-default 7200} Rust=${ASSURE_KLEE_MAX_TIME_RUST:-default 10800}"
+say "  KLEE extra flags: ${ASSURE_KLEE_EXTRA_FLAGS-default --single-object-resolution}"
 
 # ── 1. frontend ───────────────────────────────────────────────────────────
 say "[1/5] frontend translation ..."

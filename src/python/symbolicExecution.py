@@ -24,6 +24,18 @@ KLEE_MAX_TIME_RUST = int(os.environ.get("ASSURE_KLEE_MAX_TIME_RUST", "10800"))
 # Leave headroom in the outer subprocess timeout, keeping the original ratios (+600s / +200s)
 KLEE_TIMEOUT_C = KLEE_MAX_TIME_C + 600
 KLEE_TIMEOUT_RUST = KLEE_MAX_TIME_RUST + 200
+# Extra flags appended to every klee invocation (both sides).
+# Default since 2026-09-08: --single-object-resolution. A store through
+# `base + symbolic offset` then resolves to the object the base came from
+# instead of forking one state per feasible object; those forks produced
+# aliased-write trees on both sides that never matched. Needs the rustify-klee
+# build at fae6e1b7 or later, where the mapping survives pointer arithmetic.
+# Set ASSURE_KLEE_EXTRA_FLAGS="" to get the previous command line back.
+KLEE_EXTRA_FLAGS = os.environ.get("ASSURE_KLEE_EXTRA_FLAGS", "--single-object-resolution").strip()
+# Path of the Symbolizer pass plugin (relative to the perform_general_execution_* dir).
+# Overridable so an alternative build (e.g. the unpatched pass) can be A/B tested
+# without swapping files under src/Symbolizer/build/.
+SYMBOLIZER_SO = os.environ.get("ASSURE_SYMBOLIZER_SO", "../build/Pass/SymbolizerPass.so")
 
 logger = logging.getLogger("my_logger")
 logger.setLevel(logging.DEBUG)
@@ -95,6 +107,13 @@ def run_command(cmd, cwd=None):
 
     print(f"[INFO] Running command: {cmd}")
     safe_cmd = re.sub(r"[^\w.-]", "_", cmd)
+    # 2026-09-06: the log name is the whole command line; a long absolute path
+    # (e.g. an ASSURE_SYMBOLIZER_SO override) pushed it past NAME_MAX and
+    # open() raised ENAMETOOLONG, silently killing every symbolisation step.
+    # Keep short names verbatim (existing logs stay findable), hash the rest.
+    if len(safe_cmd) > 200:
+        import hashlib
+        safe_cmd = safe_cmd[:160] + "__" + hashlib.md5(safe_cmd.encode()).hexdigest()[:12]
     log_file = f"all_logs/{safe_cmd}.log"
 
     with open(log_file, "w") as log:
@@ -185,7 +204,7 @@ def process_c_file(bc_file):
     run_command(link_core)
 
     cmd_opt = (
-        f"opt -load-pass-plugin ../build/Pass/SymbolizerPass.so "
+        f"opt -load-pass-plugin {SYMBOLIZER_SO} "
         f"-O0 klee_ir_files/C/{base_name}.ll -S -o klee_ir_files/C/{base_name}_klee.ll"
     )
 
@@ -201,7 +220,7 @@ def process_c_file(bc_file):
     # 2) klee. We capture the entire output.
     cmd_klee = (
         f"klee --libc=klee --write-no-tests=true --max-time={KLEE_MAX_TIME_C} --max-tests=5000000 "
-        f"--target-function-name={target_function_name} klee_ir_files/C/{base_name}_klee.ll"
+        f"--target-function-name={target_function_name} {KLEE_EXTRA_FLAGS} klee_ir_files/C/{base_name}_klee.ll"
     )
 
     try:
@@ -268,7 +287,7 @@ def process_rust_file(bc_file):
 
     # symbolize
     cmd_opt1 = (
-        f"opt -load ../build/Pass/SymbolizerPass.so -load-pass-plugin ../build/Pass/SymbolizerPass.so "
+        f"opt -load {SYMBOLIZER_SO} -load-pass-plugin {SYMBOLIZER_SO} "
         f"-O0 -isRust=true klee_ir_files/Rust/{base_name}.ll -S -o klee_ir_files/Rust/{base_name}_klee.ll"
     )
     run_command(cmd_opt1)
@@ -284,7 +303,7 @@ def process_rust_file(bc_file):
     # 3) klee
     cmd_klee = (
         f"klee --libc=klee --write-no-tests=true --max-time={KLEE_MAX_TIME_RUST} --max-tests=500000 "
-        f"--target-function-name={target_function_name} klee_ir_files/Rust/{base_name}_klee.ll"
+        f"--target-function-name={target_function_name} {KLEE_EXTRA_FLAGS} klee_ir_files/Rust/{base_name}_klee.ll"
     )
 
     try:
