@@ -260,6 +260,35 @@ namespace {
 
 		Function *global_target_function;
 		std::queue<Value*> worklist;
+
+		// A struct the harness must treat as an opaque system object: never
+		// initialise its fields, never klee_make_symbolic it, never read it
+		// back after the call. Matches by name for C (`struct._IO_FILE`, with
+		// or without LLVM's `.N` suffix) and Rust (`libc::unix::FILE`, or any
+		// `...::FILE`), and by shape for Rust extern-type placeholders such as
+		// `%"libc::unix::FILE" = type { [0 x i8] }`, whose alloc size is 0.
+		bool is_system_struct(Module &M, Type *type) {
+			StructType *st = dyn_cast_or_null<StructType>(type);
+			if (!st) return false;
+			if (!st->isLiteral()) {
+				StringRef n = st->getName();
+				if (n == "struct._IO_FILE" || n.startswith("struct._IO_FILE.")) return true;
+				if (n == "libc::unix::FILE" || n.endswith("::FILE")) return true;
+			}
+			if (!st->isOpaque() && st->isSized() &&
+			    M.getDataLayout().getTypeAllocSize(st) == 0) return true;
+			return false;
+		}
+
+		// Give a system struct the same 2-byte placeholder body the opaque
+		// branch already uses, so both sides hand the callee a non-empty object.
+		bool DL_alloc_size_is_zero(Module &M, StructType *st) {
+			return st->isSized() && M.getDataLayout().getTypeAllocSize(st) == 0;
+		}
+
+		Type* system_struct_placeholder(Module &M) {
+			return ArrayType::get(Type::getInt8Ty(M.getContext()), 2);
+		}
 		std::string map_key(const std::string &name, const std::string &index) {
 			return name + "_" + index;
 		}
@@ -401,6 +430,38 @@ namespace {
 					need_cast = true;
 				}
 			}
+			// 2026-09-07: bind nested by-value structs IN PLACE.
+			//
+			// The legacy path below builds a separate object for the nested
+			// struct (with its own klee_make_symbolic array named
+			// "<parent>.field_N"), binds pointers inside that copy, then copies
+			// the whole value into the parent's field. Since mark_symbolic now
+			// runs before initialize_inner_objects, that copy survives, so the
+			// nested struct's scalar fields (Vec.cap / Vec.len) read from the
+			// "<parent>.field_N" array instead of the parent's "<parent>"
+			// array: same value, different array name, one extra edit per
+			// Read node on every Rust translation that uses Vec/String.
+			//
+			// In place: the parent's bytes are already symbolic; only the
+			// pointer slots inside the nested struct need a concrete pointee
+			// address, so recurse on the parent's field address itself. The
+			// legacy copy path is kept for placeholders that have no room in
+			// place (opaque / zero-sized / system structs).
+			{
+				const DataLayout &DL = M.getDataLayout();
+				StructType *cst = dyn_cast<StructType>(converted_type);
+				bool in_place = cst && !cst->isOpaque() && cst->isSized()
+					&& DL.getTypeAllocSize(cst) != 0 && !is_system_struct(M, cst);
+				if (in_place) {
+					Value *target = pointer;
+					if (need_cast) {
+						target = Builder.CreateBitCast(pointer, PointerType::get(converted_type, 0));
+					}
+					errs() << "[inplace] nested struct " << argument_name << "\n";
+					initialize_inner_objects(M, Builder, target, argument_name);
+					return;
+				}
+			}
 			Value* stack_object = create_object_and_mark_symbolic(M, Builder, converted_type, name, PointerType::get(type, 0), need_cast, need_ignore, argument_name);
 			if (pointer->getType() != stack_object->getType()) {
 				stack_object = Builder.CreateBitCast(stack_object, pointer->getType());
@@ -473,7 +534,7 @@ namespace {
 				if (StructType* struct_type = dyn_cast<StructType>(pointer->getType()->getPointerElementType())) { // these are stack variables
 					const DataLayout &DL = M.getDataLayout();
 					auto *SL = DL.getStructLayout(struct_type);
-					if (!struct_type->isLiteral() && struct_type->getName() == "struct._IO_FILE") {
+					if (is_system_struct(M, struct_type)) {
 						errs() << "[exclude] system_type_init " << argument_name << "\n";
 						return;
 					}
@@ -588,6 +649,15 @@ namespace {
 					// Create a dummy struct type of two ints
 					struct_symbol_type->setBody({llvm::Type::getInt8Ty(ctx), llvm::Type::getInt8Ty(ctx)});
 				}
+				// Rust extern types (`libc::FILE`) lower to `{ [0 x i8] }`: not opaque,
+				// but zero-sized. An alloca of it is a 0-byte object and any later
+				// load through it is "out of bound pointer". Mirror the opaque case.
+				bool is_system_struct_arg = struct_symbol_type && is_system_struct(M, struct_symbol_type);
+				if (is_system_struct_arg && DL_alloc_size_is_zero(M, struct_symbol_type)) {
+					type = system_struct_placeholder(M);
+					needCast = true;
+					errs() << "[exclude] system_type_zero_sized " << argument_name << "\n";
+				}
 
 				//special handle array when its size is 0
 				if (auto *arrayTy = llvm::dyn_cast<llvm::ArrayType>(type)) {
@@ -598,24 +668,37 @@ namespace {
 					}
 				}
 				stack_arg = Builder.CreateAlloca(type, 0, name);
-				// Any inner objects, should also be initialized
-				initialize_inner_objects(M, Builder, stack_arg, argument_name);
 				// Only mark the non-pointers symbolic
 				// For structs, only mark the non-pointer fields symbolic
 				if (isa<PointerType>(type)) {
 					needIgnore = true;
 				}
 				if (StructType* struct_type = dyn_cast<StructType>(type)) {
-					if (!struct_type->isLiteral() && struct_type->getName() == "struct._IO_FILE") {
+					if (is_system_struct(M, struct_type)) {
 						needIgnore = true;
 					}
 				}
+				if (is_system_struct_arg) {
+					needIgnore = true;
+				}
+				// ORDER MATTERS (2026-09-06): mark the whole object symbolic FIRST, then
+				// bind its pointer fields to their pointee objects. klee_make_symbolic
+				// overwrites every byte of the object, so doing it after
+				// initialize_inner_objects erased the stored pointee addresses and left
+				// every pointer field (e.g. csv_parser.entry_buf, Vec.ptr) fully
+				// symbolic. KLEE then forked one state per memory object on each write
+				// through that pointer (writes landing in `s`, `data`, the struct
+				// itself), producing aliased-write trees on both sides that never
+				// match. With this order the numeric fields stay symbolic and the
+				// pointer fields hold concrete addresses of their own pointee objects.
 				if (!needIgnore) {
 					// type is the type passed to the CreateAlloca
 					// For structs too, we can mark the whole struct
 					// as symbolic
 					mark_symbolic(M, type, stack_arg, Builder, argument_name);
 				}
+				// Any inner objects, should also be initialized (after mark_symbolic, see above)
+				initialize_inner_objects(M, Builder, stack_arg, argument_name);
 				if (needCast) {
 					return Builder.CreateBitCast(stack_arg, originType);
 				} else if (cast_to_integer) {
@@ -792,7 +875,7 @@ namespace {
 				Type *arg_type = arg_value->getType();
 				if (PointerType *pointerType = dyn_cast<PointerType>(arg_type)) {
 					if (StructType* structType = dyn_cast<StructType>(pointerType->getPointerElementType())) {
-						if (!structType->isLiteral() && structType->getName() == "struct._IO_FILE") {
+						if (is_system_struct(M, structType)) {
 							// Denominator composition (DESIGN.md §5.4): every exclusion path must
 							// leave a trace, otherwise "why is the denominator 73" can only be
 							// inferred by reading the code. The format is fixed as
@@ -896,6 +979,14 @@ namespace {
 				args_vec.push_back(Builder.CreateGlobalStringPtr("SYM VALUE: " + label + " : "));
 				args_vec.push_back(arg_value);
 				Builder.CreateCall(klee_print_expr_function, args_vec);
+				return;
+			}
+
+			// Never read back through a pointer to a system struct (FILE and friends):
+			// the object is a placeholder and a load from it is out of bounds.
+			if (isa<PointerType>(arg_value->getType()) &&
+			    is_system_struct(M, arg_value->getType()->getPointerElementType())) {
+				errs() << "[exclude] system_type " << label << "\n";
 				return;
 			}
 
@@ -1370,8 +1461,16 @@ namespace {
 			static const std::regex dyn_fn_re(
 				R"!(^\s*(?:&?'\w+\s+)?dyn\s+Fn\s*\([^)]*\)\s*(?:->\s*.*)?\s*$)!"
 			);
+			// 2026-09-06: also accept the qualified forms rustc emits for C
+			// callbacks — `unsafe extern "C" fn(...)`, `extern "C" fn(...)`.
+			// Before this, `Option<extern "C" fn(c_uchar) -> i32>` was not
+			// recognised, the field was bound to a fake [100 x i64] object, and
+			// (once pointer bindings survive mark_symbolic) the Rust side could
+			// never take the `None` branch that the C side (symbolic fn ptr,
+			// NULL possible) takes: csv_increase_buffer lost its
+			// `realloc_func == NULL -> return 0` path.
 			static const std::regex fn_ptr_re(
-				R"!(^\s*fn\s*\([^)]*\)\s*(?:->\s*.*)?\s*$)!"
+				R"!(^\s*(?:unsafe\s+)?(?:extern\s*"[^"]*"\s+)?fn\s*\([^)]*\)\s*(?:->\s*.*)?\s*$)!"
 			);
 
 			if ( std::regex_match(str, dyn_fn_re)
