@@ -30,6 +30,7 @@
 #include <filesystem>
 #include <sstream>
 #include <map>
+#include <set>
 #include <system_error>
 #include "llvm/Support/FileSystem.h"
 #include <nlohmann/json.hpp>
@@ -260,6 +261,72 @@ namespace {
 
 		Function *global_target_function;
 		std::queue<Value*> worklist;
+
+		// 2026-09-15: the post-call dump finds the buffer behind a leaf pointer
+		// field (char*, void*, int* ... inside a struct) by the field's PATH,
+		// not by its position in `worklist`.
+		//
+		// `worklist` is a FIFO: initialize_inner_pointer pushes one buffer per
+		// leaf pointer it allocates, print_nested_klee_exprs pops one per leaf
+		// pointer field it prints, and the two are paired only by count. The
+		// two walks do not visit the same fields: init stops at the recursion
+		// boundary (visited_structs) and pushes nothing there, the Rust dump
+		// walks into that node and pops there, and the C dump pops once for
+		// every pruned pointer field (isFieldUnused) whether or not init ever
+		// pushed for it. Measured 2026-09-15 (tmp/sync-ab/queue-trace.txt):
+		// Rust labels in cJSON_Delete, add_item_to_object and jrsl_search read
+		// another field's, or another argument's, buffer.
+		//
+		// leaf_buffers maps "arg_value_0.field_4.field_1" (the same string
+		// klee_make_symbolic is given) to the buffer init allocated for it.
+		// The dump builds the same path alongside its label and looks it up;
+		// a miss falls through to the runtime read that an empty queue already
+		// fell through to. Pruning no longer pops. ASSURE_LEAF_LOOKUP=0
+		// restores the positional queue for A/B.
+		std::map<std::string, Value*> leaf_buffers;
+		// Paths of the nodes initialize_inner_objects stopped at (the recursion
+		// boundary, visited_structs): their pointer fields were never bound, so a
+		// lookup miss under one of them means "unbound", not "read at runtime".
+		std::set<std::string> boundary_nodes;
+
+		bool under_boundary(const std::string &path) {
+			for (const auto &b : boundary_nodes) {
+				if (path == b || path.compare(0, b.size() + 1, b + ".") == 0) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		static bool leaf_lookup_enabled() {
+			const char *v = std::getenv("ASSURE_LEAF_LOOKUP");
+			if (!v) {
+				return true;
+			}
+			std::string s(v);
+			return !(s == "0" || s == "false" || s == "off" || s == "no");
+		}
+
+		// The buffer init recorded for a leaf pointer field, or nullptr. With the
+		// lookup off this is the old queue pop, so the two mechanisms are never
+		// mixed inside one harness.
+		Value* take_leaf_buffer(const std::string &path) {
+			if (leaf_lookup_enabled()) {
+				auto it = leaf_buffers.find(path);
+				if (it == leaf_buffers.end()) {
+					errs() << "[leafbuf] miss " << path << "\n";
+					return nullptr;
+				}
+				errs() << "[leafbuf] hit " << path << "\n";
+				return it->second;
+			}
+			if (worklist.empty()) {
+				return nullptr;
+			}
+			Value *cur = worklist.front();
+			worklist.pop();
+			return cur;
+		}
 
 		// A struct the harness must treat as an opaque system object: never
 		// initialise its fields, never klee_make_symbolic it, never read it
@@ -495,6 +562,9 @@ namespace {
 					need_cast = true;
 				}
 			}
+			// mark_symbolic may append "_pointer" to argument_name; the dump builds
+			// its path from the label, which never carries that suffix.
+			const std::string leaf_path = argument_name;
 			Value* stack_object = create_object_and_mark_symbolic(M, Builder, converted_type, name, ptr_type, need_cast, need_ignore, argument_name);
 			// Store it to the pointer
 			if (pointer->getType()->getPointerElementType() != stack_object->getType()) {
@@ -507,6 +577,11 @@ namespace {
 			}
 			if (!isa<StructType>(converted_type) && from_struct) {
 				worklist.push(stack_object);
+				if (leaf_buffers.count(leaf_path)) {
+					errs() << "[leafbuf] duplicate " << leaf_path << "\n";
+				}
+				leaf_buffers[leaf_path] = stack_object;
+				errs() << "[leafbuf] record " << leaf_path << "\n";
 			}
 		}
 
@@ -557,6 +632,7 @@ namespace {
 							bool visited_struct_flag = false;
 							if (StructType *inner_struct_type = dyn_cast<StructType>(field_ptr_type->getPointerElementType())) {
 								if (visited_structs.count(struct_type)) {
+									boundary_nodes.insert(argument_name);
 									return;
 								} else {
 									visited_structs.insert(struct_type);
@@ -914,19 +990,22 @@ namespace {
 				if (!target_function->getArg(i)->hasAttribute(Attribute::StructRet)) {
 					prefix = prefix + std::to_string(index);
 				}
-				print_nested_klee_exprs(M, Builder, target_value, prefix);
+				print_nested_klee_exprs(M, Builder, target_value, prefix, prefix);
 			}
 
 			// The return value
 			if (!call_with_symb_args->getType()->isVoidTy()) {
 				std::string targetName;
-				print_nested_klee_exprs(M, Builder, call_with_symb_args, std::string("ret_value"));
+				print_nested_klee_exprs(M, Builder, call_with_symb_args, std::string("ret_value"), std::string("ret_value"));
 			}
 
 			Builder.CreateRetVoid();
 		}
 
-		void print_nested_klee_exprs(Module& M, IRBuilder<>& Builder, Value* arg_value, std::string label) {
+		// `label` is what klee_print_expr prints ("*(arg_value_0.field_4)"); `path`
+		// is the same walk without the dereference marks ("arg_value_0.field_4"),
+		// the key initialize_inner_pointer recorded in leaf_buffers.
+		void print_nested_klee_exprs(Module& M, IRBuilder<>& Builder, Value* arg_value, std::string label, const std::string &path) {
 			LLVMContext& ctx = M.getContext();
 			// Now we add the calls to the klee_print_expr functions
 			Function* klee_print_expr_function = M.getFunction("klee_print_expr");
@@ -948,9 +1027,26 @@ namespace {
 								is_struct_type = true;
 							}
 
-							if (!worklist.empty() && !is_struct_type && label != "ret_value" && !isa<ArrayType>(field_type)) {
-								Value *cur = worklist.front();
-								worklist.pop();
+							const std::string field_path = path + "." + "field_" + std::to_string(i);
+							const bool leaf_field = !is_struct_type && label != "ret_value" && !isa<ArrayType>(field_type);
+							Value *cur = nullptr;
+							if (leaf_field) {
+								cur = take_leaf_buffer(field_path);
+							}
+							if (leaf_field && !cur && leaf_lookup_enabled() && under_boundary(path)) {
+								// init recorded no buffer for this leaf pointer: the field holds
+								// whatever bytes klee_make_symbolic gave the enclosing node (the
+								// recursion boundary). Reading through an unconstrained pointer
+								// makes KLEE resolve it against every live object; measured on
+								// cjson_parse it took add_item_to_object from 45 completed Rust
+								// paths to 0. The C side prunes these fields, so nothing pairs
+								// with them; exclude, like a pruned field. A miss anywhere else
+								// (ret_value, a pointer the target wrote) keeps the runtime read
+								// below, as the empty queue did.
+								errs() << "[exclude] leaf_unbound " << label << ".field_" << i << "\n";
+								continue;
+							}
+							if (cur) {
 								if (PointerType *gep_pointer_type = dyn_cast<PointerType>(gep->getType()->getPointerElementType())) {
 									if (cur->getType() == gep_pointer_type) {
 										new_label = "*(" + label + "." + "field_" + std::to_string(i) + ")";
@@ -962,7 +1058,7 @@ namespace {
 							} else {
 								new_label = label + "." + "field_" + std::to_string(i);
 							}
-							print_nested_klee_exprs(M, Builder, gep, new_label);
+							print_nested_klee_exprs(M, Builder, gep, new_label, field_path);
 						} else {
 							std::vector<Value*> args_vec;
 							std::string new_label = label + "." + "field_" + std::to_string(i);
@@ -1027,7 +1123,9 @@ namespace {
 						std::string new_label = label + "." + "field_" + std::to_string(i);
 						outs() << "Arguments have not been used: " << new_label << "\n";
 						errs() << "[exclude] unwritten_field " << new_label << "\n";
-						if (isa<PointerType>(field_type) || isa<ArrayType>(field_type)) {
+						// The positional queue had to pop here to stay in step with init;
+						// a keyed lookup does not.
+						if (!leaf_lookup_enabled() && (isa<PointerType>(field_type) || isa<ArrayType>(field_type))) {
 							if (!worklist.empty()) {
 								worklist.pop();
 							}
@@ -1081,9 +1179,22 @@ namespace {
 								need_cast = true;
 							}
 						}
-						if (!worklist.empty() && !is_struct_type && !isa<ArrayType>(field_type)) {
-							Value *cur = worklist.front();
-							worklist.pop();
+						const std::string field_path = path + "." + "field_" + std::to_string(i);
+						const bool leaf_field = !is_struct_type && !isa<ArrayType>(field_type);
+						Value *cur = nullptr;
+						if (leaf_field) {
+							cur = take_leaf_buffer(field_path);
+						}
+						if (leaf_field && !cur && leaf_lookup_enabled() && under_boundary(path)) {
+							// See the by-value branch above: no buffer recorded, do not read
+							// through an unbound pointer.
+							errs() << "[exclude] leaf_unbound " << label << ".field_" << i << "\n";
+							if (visited_struct_flag) {
+								visited_structs.erase(struct_type);
+							}
+							continue;
+						}
+						if (cur) {
 							std::string new_label = "";
 							if (PointerType *gep_pointer_type = dyn_cast<PointerType>(gep->getType()->getPointerElementType())) {
 								if (cur->getType() == gep_pointer_type) {
@@ -1092,7 +1203,7 @@ namespace {
 									new_label = label + "." + "field_" + std::to_string(i);
 								}
 							}
-							print_nested_klee_exprs(M, Builder, cur, new_label);
+							print_nested_klee_exprs(M, Builder, cur, new_label, field_path);
 							if (visited_struct_flag) {
 								visited_structs.erase(struct_type);
 							}
@@ -1101,9 +1212,9 @@ namespace {
 						//need pointer again..
 						converted_type = PointerType::get(converted_type, 0);
 						if (need_cast) {
-							print_nested_klee_exprs(M, Builder, Builder.CreateBitCast(gep, converted_type), label + "." + "field_" + std::to_string(i));
+							print_nested_klee_exprs(M, Builder, Builder.CreateBitCast(gep, converted_type), label + "." + "field_" + std::to_string(i), field_path);
 						} else {
-							print_nested_klee_exprs(M, Builder, gep, label + "." + "field_" + std::to_string(i));
+							print_nested_klee_exprs(M, Builder, gep, label + "." + "field_" + std::to_string(i), field_path);
 						}
 						if (visited_struct_flag) {
 							visited_structs.erase(struct_type);
@@ -1134,7 +1245,7 @@ namespace {
 							ArrayRef<Value*>({ConstantInt::get(IntegerType::get(ctx, 64), 0), ConstantInt::get(IntegerType::get(ctx, 64), i)}),
 							"gep");
 					if (isa<PointerType>(element_type) || isa<StructType>(element_type) || isa<ArrayType>(element_type)) {
-						print_nested_klee_exprs(M, Builder, gep, label + "[" + std::to_string(i) + "]");
+						print_nested_klee_exprs(M, Builder, gep, label + "[" + std::to_string(i) + "]", path + "[" + std::to_string(i) + "]");
 					} else {
 
 						// Create a load
