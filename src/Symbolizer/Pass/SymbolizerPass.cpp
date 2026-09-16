@@ -615,6 +615,15 @@ namespace {
 			return !(s == "0" || s == "false" || s == "off" || s == "no");
 		}
 
+		static bool boundary_leaf_enabled() {
+			const char *v = std::getenv("ASSURE_BOUNDARY_LEAF");
+			if (!v) {
+				return true;
+			}
+			std::string s(v);
+			return !(s == "0" || s == "false" || s == "off" || s == "no");
+		}
+
 		void null_boundary_pointers(Module& M,
 			IRBuilder<>& Builder,
 			StructType* struct_type,
@@ -638,6 +647,23 @@ namespace {
 						continue;
 					}
 					Value* gep = Builder.CreateStructGEP(struct_type, pointer, j, "boundary_gep");
+					// Chain/leaf split (2026-09-15). Only a pointer to a struct can carry
+					// the walk further, so only those end in NULL. A pointer to anything
+					// else (char*, void*, int*: strings, keys, payloads) gets the same
+					// symbolic buffer it would get one level up; a buffer holds no
+					// pointer, so it cannot re-open the unbounded walk NULL closes, and
+					// the target reads a real value here instead of NULL on both sides.
+					// The buffer is recorded in leaf_buffers by path like every other
+					// leaf, which is why this needs the keyed lookup: with the
+					// positional queue the extra entries shifted every later read.
+					// ASSURE_BOUNDARY_LEAF=0 keeps NULL for leaves too.
+					if (boundary_leaf_enabled() && !isa<StructType>(field_ptr_type->getPointerElementType())) {
+						std::string leaf_name = argument_name + ".field_" + index;
+						std::string sname = struct_name;
+						initialize_inner_pointer(M, Builder, gep, field_ptr_type, "field", leaf_name, sname, index, true);
+						errs() << "[boundary] leaf " << argument_name << ".field_" << j << "\n";
+						continue;
+					}
 					Builder.CreateStore(ConstantPointerNull::get(field_ptr_type), gep);
 					errs() << "[boundary] null " << argument_name << ".field_" << j << "\n";
 				} else if (StructType* nested = dyn_cast<StructType>(field_type)) {
