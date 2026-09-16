@@ -585,6 +585,71 @@ namespace {
 			}
 		}
 
+		// 2026-09-14: end the harness object graph at the recursion boundary.
+		//
+		// initialize_inner_objects stops expanding a struct once its type is already
+		// on the expansion stack (visited_structs). The node it stopped at is
+		// allocated and marked symbolic, but its own pointer fields are never bound:
+		// cJSON's inner `next` target, skiplist's second node. With mark_symbolic
+		// running before the bind, those fields keep klee_make_symbolic's bytes, so
+		// the first hop along a list is a concrete address and the second is an
+		// unconstrained pointer that KLEE can resolve to any live object. A walk like
+		// `while (item) item = item->next` then never ends, on the C and the Rust side
+		// alike. Store NULL into every data pointer of the boundary node instead: the
+		// graph the target sees is finite and ends the way a real list does.
+		//
+		// Stores only, never allocations. The post-call dump consumes `worklist` in
+		// the order initialize_inner_pointer filled it, so a new object here would
+		// shift every later entry. The dump already skips struct pointers at this
+		// same boundary and null-checks scalar pointers before reading through them.
+		// Function-pointer fields keep their symbolic bytes, as they do at every other
+		// depth, so the rule is the same on both sides. Arrays are left alone, as
+		// initialize_inner_objects leaves them. ASSURE_BOUNDARY_NULL=0 restores the
+		// previous behaviour.
+		static bool boundary_null_enabled() {
+			const char *v = std::getenv("ASSURE_BOUNDARY_NULL");
+			if (!v) {
+				return true;
+			}
+			std::string s(v);
+			return !(s == "0" || s == "false" || s == "off" || s == "no");
+		}
+
+		void null_boundary_pointers(Module& M,
+			IRBuilder<>& Builder,
+			StructType* struct_type,
+			Value* pointer,
+			unsigned start,
+			const std::string &argument_name,
+			int depth = 0) {
+			if (depth > 4) {
+				return;
+			}
+			const std::string struct_name = struct_type->isLiteral() ? "" : struct_type->getName().str();
+			for (unsigned j = start; j < struct_type->getNumElements(); j++) {
+				Type* field_type = struct_type->getElementType(j);
+				const std::string index = std::to_string(j);
+				if (PointerType* field_ptr_type = dyn_cast<PointerType>(field_type)) {
+					if (isa<FunctionType>(field_ptr_type->getPointerElementType())) {
+						continue;
+					}
+					if (!struct_name.empty() &&
+					    check_struct_function_ptr(field_ptr_type->getPointerElementType(), M, struct_name, index)) {
+						continue;
+					}
+					Value* gep = Builder.CreateStructGEP(struct_type, pointer, j, "boundary_gep");
+					Builder.CreateStore(ConstantPointerNull::get(field_ptr_type), gep);
+					errs() << "[boundary] null " << argument_name << ".field_" << j << "\n";
+				} else if (StructType* nested = dyn_cast<StructType>(field_type)) {
+					if (nested->isOpaque() || !nested->isSized() || is_system_struct(M, nested)) {
+						continue;
+					}
+					Value* gep = Builder.CreateStructGEP(struct_type, pointer, j, "boundary_gep");
+					null_boundary_pointers(M, Builder, nested, gep, 0, argument_name + ".field_" + index, depth + 1);
+				}
+			}
+		}
+
 		void initialize_inner_objects(Module& M,
 			IRBuilder<>& Builder,
 			Value* stack_var,
@@ -633,6 +698,11 @@ namespace {
 							if (StructType *inner_struct_type = dyn_cast<StructType>(field_ptr_type->getPointerElementType())) {
 								if (visited_structs.count(struct_type)) {
 									boundary_nodes.insert(argument_name);
+									// Recursion boundary: this node's pointers are never bound. See
+									// null_boundary_pointers.
+									if (boundary_null_enabled()) {
+										null_boundary_pointers(M, Builder, struct_type, pointer, i, argument_name);
+									}
 									return;
 								} else {
 									visited_structs.insert(struct_type);
