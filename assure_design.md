@@ -98,6 +98,33 @@ return !seenWrite;           // C side: only print fields written by the target 
 ```
 Comparison is anchored on **C's write set**; extra Rust symbols are ignored.
 
+### 2.3b The Harness Object Graph (SymbolizerPass, 2026-09-15)
+
+For every pointer argument the synthesized `main` allocates the pointee, marks it symbolic
+(`klee_make_symbolic`, named by its path: `arg_value_0`, `arg_value_0.field_4`, ...) and then
+walks its fields (`initialize_inner_objects`): a pointer field gets its own allocated pointee,
+recursively; a pointer to a non-struct (`char*`, `void*`, `int*`) gets a 100-byte symbolic
+buffer; by-value structs are walked in place; function pointers and arrays are left alone.
+Recursion through a self-referential struct (`cJSON.next`, `skip_list.head -> node`) is cut by
+`visited_structs`: the same struct type is expanded **once**, and the node the walk stops at is
+the **recursion boundary**.
+
+Three rules govern the boundary node and the post-call dump; each has an environment switch
+that restores the previous behaviour for A/B:
+
+| Rule | Switch | What it does |
+|---|---|---|
+| Leaf buffers are found by path | `ASSURE_LEAF_LOOKUP=0` | `initialize_inner_pointer` records every leaf buffer in `leaf_buffers[path]`; the dump (`print_nested_klee_exprs`) carries the same path and looks the buffer up. Before this the dump popped a FIFO (`worklist`) that init had filled, and the two walks did not visit the same fields, so Rust labels could read another field's or another argument's buffer. A miss under a boundary node is excluded as `[exclude] leaf_unbound` (reading through the unbound pointer made KLEE fork on every resolvable object); a miss elsewhere (`ret_value`, a pointer the target wrote) is read at runtime. |
+| Boundary chain pointers are NULL | `ASSURE_BOUNDARY_NULL=0` | `null_boundary_pointers` stores NULL into the boundary node's pointers to structs, so a list the target walks is finite (two nodes). Without it the second hop is an unconstrained pointer and `while (item) item = item->next` never ends on either side. |
+| Boundary leaf pointers get buffers | `ASSURE_BOUNDARY_LEAF=0` | The boundary node's pointers to non-structs (`key`, `data`, `valuestring`, `string`) get the same symbolic buffer they get one level up, so a function returning `node->key` compares a real value rather than NULL against NULL. |
+
+Consequences to keep in mind when reading results: the target sees at most two nodes of any
+self-referential structure; dereferencing the boundary without a NULL check ends the path with a
+null-page error on both sides (`jrsl_node_at`); and completed-path counts on list-walking
+functions are small by construction (skiplist `jrsl_search` 2/2), not because exploration failed.
+The C label set is unchanged by the three rules; the Rust label set loses only boundary-node leaf
+labels the C side never printed.
+
 ### 2.4 Version Compatibility via Demangling
 
 The symbol names of the 785 function definitions in `core_demangle.ll` are all in de-hashed readable form
