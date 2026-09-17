@@ -125,6 +125,45 @@ functions are small by construction (skiplist `jrsl_search` 2/2), not because ex
 The C label set is unchanged by the three rules; the Rust label set loses only boundary-node leaf
 labels the C side never printed.
 
+### 2.3c The Post-Call Dump and the Print Queue (fixed 2026-09-15, `0c830dc`)
+
+After the call, `print_nested_klee_exprs` walks each argument again and emits one
+`klee_print_expr` per scalar. For a leaf pointer field (`char*`, `void*`, `int*` inside a
+struct) it does not load the field: it prints the first byte of the buffer the harness allocated
+for that field in init, so the label `*(arg_value_0.field_4)` means "the buffer behind
+item.valuestring", whatever the target left in the pointer.
+
+**Old mechanism (positional):** init pushed every leaf buffer it allocated onto `worklist`, a
+FIFO, in traversal order; the dump popped one entry per leaf pointer field it printed. Nothing
+tied an entry to a field: the k-th pop was assumed to be the k-th push. That holds only if the
+two walks visit the same fields in the same order, and they did not:
+
+- init stops at the recursion boundary (`visited_structs`) and pushes nothing for that node;
+  the Rust dump walks into the boundary node and pops there;
+- the C dump popped once for every pruned field (`isFieldUnused`), including struct pointers
+  init never pushed for;
+- once the queue ran dry, the remaining leaf fields were read through the pointer at runtime,
+  which at a boundary node is an unconstrained symbolic pointer (KLEE forks on every object it
+  can resolve to: sync `parse_object` had 37870/21014 halted paths, all dump forks).
+
+Traced on the 62ef480 IR: `add_item_to_object`'s Rust label `object.prev->valuestring` read the
+buffer of a different argument (`item.valuestring`); `jrsl_search`'s Rust label for N2.key read
+N1.data and was printed under the wrong label shape (`*(arg_value_0.field_4).field_1`). C-scored
+labels happened to line up on both sides because both queues ran dry at the same point, so the
+denominator was correct by accident, and any change to what init allocates re-shuffled it (a
+prototype that gave boundary leaves buffers moved the misreads onto C-scored `cJSON_Delete`
+labels).
+
+**New mechanism (keyed):** init records `leaf_buffers[path] = buffer`, where `path` is the
+same string `klee_make_symbolic` is given (`arg_value_0.field_4.field_1`); the dump builds the
+same path alongside its label (the label adds `*(...)` for dereferences, the path does not) and
+looks the buffer up. Pruning no longer pops. A miss under a `boundary_nodes` entry is excluded
+as `[exclude] leaf_unbound` rather than read through the unbound pointer; a miss anywhere else
+keeps the runtime read. Verified with an IR tracer (both sides 0 misreads on cJSON_Delete,
+add_item_to_object, jrsl_search, csv_parse, csv_init) and a whole-corpus label-set diff (C side
+identical on all 66 harnessed functions; Rust side loses only boundary leaf labels and gets the
+jrsl_* label shape corrected). `ASSURE_LEAF_LOOKUP=0` restores the queue, with byte-identical IR.
+
 ### 2.4 Version Compatibility via Demangling
 
 The symbol names of the 785 function definitions in `core_demangle.ll` are all in de-hashed readable form
