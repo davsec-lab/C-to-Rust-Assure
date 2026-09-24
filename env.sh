@@ -20,6 +20,14 @@ fi
 # Note the :- default — callers often run with `set -u`, and an undefined variable would make the source fail outright.
 export LD_LIBRARY_PATH="/home/gabe/llvm-target/lib:${LD_LIBRARY_PATH:-}"
 
+# 2b. KLEE: the patched rustify-klee build (single-object-resolution propagate fix,
+#     -base-object-resolution, -debug-sor; 2026-09-06). Without any of those flags it
+#     behaves exactly like /usr/local/bin/klee (same revision d880ceb4), so putting it
+#     first on PATH changes nothing by default. Override with ASSURE_KLEE_BIN_DIR=""
+#     to fall back to the system klee.
+export ASSURE_KLEE_BIN_DIR="${ASSURE_KLEE_BIN_DIR-/home/gabe/klee-build/bin}"
+[ -n "$ASSURE_KLEE_BIN_DIR" ] && [ -x "$ASSURE_KLEE_BIN_DIR/klee" ] && export PATH="$ASSURE_KLEE_BIN_DIR:$PATH"
+
 # 3. LLVM 14 toolchain (opt / llvm-link / llvm-dis / clang),
 #    must match the LLVM_DIR used when building the Symbolizer pass
 export ASSURE_LLVM_DIR="/home/gabe/typedefextractor-target"
@@ -60,7 +68,7 @@ echo "[env.sh] python : $(command -v python3)"
 echo "[env.sh] rustc  : $(rustc --version 2>/dev/null)"
 echo "[env.sh] clang  : $(clang --version 2>/dev/null | head -1)"
 echo "[env.sh] opt    : $(opt --version 2>/dev/null | grep -i 'LLVM version' | tr -d ' ')"
-echo "[env.sh] klee   : $(klee --version 2>/dev/null | head -1)"
+echo "[env.sh] klee   : $(klee --version 2>/dev/null | head -1)  ($(command -v klee))"
 _assure_show_key() {
     eval "_v=\${$1:-}"
     if [ -n "$_v" ]; then echo "[env.sh] $1 : loaded (${#_v} chars)"; else echo "[env.sh] $1 : not set"; fi
