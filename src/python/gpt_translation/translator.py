@@ -28,6 +28,7 @@ from functionAndDeps import FunctionAndDependencies
 from tokenUsageTracker import TokenUsageTracker
 from translationResultManager import TranslationResultManager
 
+from gpt_translation.agent_mixin import AgentTranslationMixin
 from gpt_translation.code_utils_mixin import CodeUtilsMixin
 from gpt_translation.config import (
     CLAUDE_CTX_WINDOW_LEN,
@@ -58,6 +59,7 @@ from gpt_translation.translation_utils_mixin import TranslationUtilsMixin
 
 
 class Translator(
+    AgentTranslationMixin,
     CodeUtilsMixin,
     DependencyUtilsMixin,
     SymbolExtractionMixin,

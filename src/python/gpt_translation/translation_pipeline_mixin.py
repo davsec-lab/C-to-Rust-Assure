@@ -1480,6 +1480,7 @@ class TranslationPipelineMixin:
             dependencyCodes,
             dependencyKeys,
                         funcSrc,
+            targetFunctions=list(sccGroup),
         )
         return (successFlag, result, sccLabel)
 
@@ -1741,7 +1742,17 @@ class TranslationPipelineMixin:
                                       dependencyFunctionNames,
                                       dependencyCodes,
                                       dependencyKeys,
-                                                                            funcSrc):
+                                                                            funcSrc,
+                                      targetFunctions=None):
+        # Agent translation replaces the request-then-retry procedure below.
+        # getattr: test probes compose this mixin without AgentTranslationMixin.
+        agentEnabled = getattr(self, "agentTranslationEnabled", None)
+        if callable(agentEnabled) and agentEnabled():
+            return self.agentTranslate(funcName, prompt, contextStructs,
+                                       translatedStructPrompt, translatedStructs,
+                                       translatedFuncPrompt, translatedFuncsSignatures, translatedFuncs,
+                                       dependencyFunctionNames, dependencyCodes, dependencyKeys,
+                                       funcSrc, targetFunctions=targetFunctions)
         # When this is a perf retry, fence the actual source code with explicit
         # SOURCE-TO-TRANSFORM markers. Without these, the prompt has two C++
         # snippets back-to-back — the rejected attempt in PERFORMANCE CONTEXT
@@ -2889,6 +2900,8 @@ class TranslationPipelineMixin:
         # perf entry (assembled from it) inherit the fix, not just the
         # per-function compiles. See _healContextStructsBlob.
         contextedStructs = self._healContextStructsBlob(contextedStructs)
+        # The agent's find_usages / read_c_function tools search this.
+        self.agentFuncMap = funcMap
 
         previouslyTranslatedFunctions = ""
 

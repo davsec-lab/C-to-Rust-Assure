@@ -35,6 +35,14 @@ COMPILATION_RETRIES = int(_os.environ.get("ASSURE_COMPILATION_RETRIES", "5"))
 STRUCT_RETRIES = int(_os.environ.get("ASSURE_STRUCT_RETRIES", "5"))
 MAX_THREADS = 40
 
+# Agent translation (gpt_translation/agent_mixin.py): each function is
+# translated by a tool-using agent that reads the function's call sites first,
+# instead of by one request followed by compile-error retries. Off = the
+# single-request path, unchanged.
+AGENT_TRANSLATION = _os.environ.get("ASSURE_AGENT_TRANSLATION", "1").strip().lower() in ("1", "true", "yes", "on")
+# Model round-trips one function may take, tool calls included.
+AGENT_MAX_STEPS = int(_os.environ.get("ASSURE_AGENT_MAX_STEPS", "20"))
+
 # Performance regression retry defaults (CLI overridable in translationValidator.py).
 # A stage's average elapsed time exceeding prev_stage * (1 + PERF_DEGRADE_THRESHOLD_PCT/100)
 # triggers up to PERF_DEGRADE_RETRY_COUNT per-function rerun attempts. After all

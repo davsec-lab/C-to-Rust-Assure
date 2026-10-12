@@ -52,12 +52,16 @@ cfgGet() { grep -E "^[[:space:]]*$1[[:space:]]*:" "$CONFIG" 2>/dev/null \
 LLM_MODE="$(cfgGet llm_mode)";              LLM_MODE="${LLM_MODE:-gpt-5-mini}"
 COMPILATION_RETRIES="$(cfgGet compilation_retries)"
 STRUCT_RETRIES="$(cfgGet struct_retries)"
+TRANSLATION_AGENT="$(cfgGet translation_agent)"
+AGENT_MAX_STEPS="$(cfgGet agent_max_steps)"
 [ -z "$CODEBASE" ] && CODEBASE="$(cfgGet codebase)"
 CODEBASE="${CODEBASE:-./inputs-complex/libcsv}"
 
 # Knobs are injected into the inner layer via environment variables (see gpt_translation/config.py)
 [ -n "$COMPILATION_RETRIES" ] && export ASSURE_COMPILATION_RETRIES="$COMPILATION_RETRIES"
 [ -n "$STRUCT_RETRIES" ]      && export ASSURE_STRUCT_RETRIES="$STRUCT_RETRIES"
+[ -n "$TRANSLATION_AGENT" ]   && export ASSURE_AGENT_TRANSLATION="$TRANSLATION_AGENT"
+[ -n "$AGENT_MAX_STEPS" ]     && export ASSURE_AGENT_MAX_STEPS="$AGENT_MAX_STEPS"
 
 # ── KLEE time caps: immutable, never read from config ─────────────────────
 if [ "$MODE" = "full" ]; then
@@ -80,6 +84,7 @@ fail() { say "❌ $*"; echo "FAILED: $*" > "$OUT/STATUS"; exit 1; }
 cd "$ROOT/src/python"
 say "run_eval start  id=$RUN_ID mode=$MODE model=$LLM_MODE codebase=$CODEBASE"
 say "  KLEE max-time: C=${ASSURE_KLEE_MAX_TIME_C:-default 7200} Rust=${ASSURE_KLEE_MAX_TIME_RUST:-default 10800}"
+say "  translation agent: ${ASSURE_AGENT_TRANSLATION:-default on} max-steps=${ASSURE_AGENT_MAX_STEPS:-default 20}"
 
 # ── 1. frontend ───────────────────────────────────────────────────────────
 say "[1/5] frontend translation ..."

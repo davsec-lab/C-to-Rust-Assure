@@ -9,3 +9,5 @@ llm_mode: gpt-5-mini          # inner translation model
 codebase: ./inputs-complex/libcsv
 compilation_retries: 5        # max times rustc errors are fed back to the LLM
 struct_retries: 5             # struct remediation retry count
+translation_agent: true       # translate each function with a tool-using agent that reads its call sites first
+agent_max_steps: 20           # model round-trips per function, tool calls included
