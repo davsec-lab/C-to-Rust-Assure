@@ -19,6 +19,7 @@ _ERROR_LINES = 60
 
 class _Checker(CodeUtilsMixin):
     dstLang = "Rust"
+    injectLibcPrelude = False
     srcLang = "C"
     model = ""
 

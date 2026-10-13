@@ -321,7 +321,13 @@ class CodeUtilsMixin:
             with open(cargoTomlPath, "w") as cargoTomlFile:
                 cargoTomlFile.write(cargoToml)
 
-            preparedSnippet = _prepend_rust_libc_prelude(codeSnippet)
+            # An agent translator writes its own imports (injectLibcPrelude =
+            # False): what passes this check is then exactly what is stored,
+            # instead of code that compiles only with a `use` nobody kept.
+            if getattr(self, "injectLibcPrelude", True):
+                preparedSnippet = _prepend_rust_libc_prelude(codeSnippet)
+            else:
+                preparedSnippet = codeSnippet
 
             with open(sourceFilePath, "w") as sourceFile:
                 sourceFile.write(preparedSnippet)

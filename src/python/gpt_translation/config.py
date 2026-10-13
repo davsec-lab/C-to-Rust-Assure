@@ -50,6 +50,11 @@ AGENT_TIMEOUT = int(_os.environ.get("ASSURE_AGENT_TIMEOUT", "1200"))
 OPENROUTER_PROVIDER = _os.environ.get("ASSURE_OPENROUTER_PROVIDER", "").strip()
 # OpenCode model variant, i.e. provider-specific reasoning effort (e.g. "low").
 OPENCODE_VARIANT = _os.environ.get("ASSURE_OPENCODE_VARIANT", "").strip()
+# Output-token cap to declare for the agent's model, for a host that allows
+# less than OpenCode's catalogue says; 0 keeps the catalogue values. The
+# context limit is only declared together with it.
+OPENCODE_OUTPUT_LIMIT = int(_os.environ.get("ASSURE_OPENCODE_OUTPUT_LIMIT", "0") or 0)
+OPENCODE_CONTEXT_LIMIT = int(_os.environ.get("ASSURE_OPENCODE_CONTEXT_LIMIT", "1000000") or 1000000)
 # Context window / max output assumed for the agent's model; only the
 # preanalysis fit report reads them.
 OPENCODE_CTX_WINDOW_LEN = 1000 * 1000

@@ -17,6 +17,8 @@ from gpt_translation.config import (
     AGENT_TIMEOUT,
     COMPILATION_RETRIES,
     OPENCODE_BIN,
+    OPENCODE_CONTEXT_LIMIT,
+    OPENCODE_OUTPUT_LIMIT,
     OPENCODE_VARIANT,
     OPENROUTER_PROVIDER,
 )
@@ -82,6 +84,10 @@ functions). The task itself is in `task.md`.
 - For a definitions task, write exactly one Rust item per C definition, under
   the C name. Only those items are kept: a helper type or wrapper of your own
   is dropped, and whatever depended on it stops compiling.
+- Nothing is imported for you. Write every `use` your code needs, or use full
+  paths (`libc::free`, `std::ptr::null_mut`). Only `std` and the `libc` crate
+  are available. A `use` that `rust/context.rs` already has is in scope; do not
+  repeat it.
 - Edit nothing except `rust/out.rs`.
 - Do not add a `main`, and do not write a stand-in for a function that is
   called but not defined.
@@ -106,6 +112,9 @@ class AgentTranslationMixin:
     Order of work is the pipeline's and unchanged: types first, then functions
     callees first.
     """
+
+    # The agent adds every import its code needs; see compileWithCargoProject.
+    injectLibcPrelude = False
 
     # ── workspace ──────────────────────────────────────────────────────────
 
@@ -191,15 +200,23 @@ class AgentTranslationMixin:
             },
             "agent": {"build": {"steps": AGENT_MAX_STEPS}},
         }
-        if self.model.startswith("openrouter/") and OPENROUTER_PROVIDER:
+        (provider, _sep, modelId) = self.model.partition("/")
+        modelConfig = {}
+        if provider == "openrouter" and OPENROUTER_PROVIDER:
             # Pin the serving host: the same open-weight model is served at
             # different quantisations by different hosts.
-            config["provider"] = {"openrouter": {"models": {
-                self.model[len("openrouter/"):]: {"options": {"provider": {
-                    "order": [host.strip() for host in OPENROUTER_PROVIDER.split(",") if host.strip()],
-                    "allow_fallbacks": False,
-                }}},
-            }}}
+            modelConfig["options"] = {"provider": {
+                "order": [host.strip() for host in OPENROUTER_PROVIDER.split(",") if host.strip()],
+                "allow_fallbacks": False,
+            }}
+        if OPENCODE_OUTPUT_LIMIT:
+            # A host may cap output below the model's catalogue limit
+            # (DeepInfra serves deepseek-v4-pro with 16384); OpenCode then
+            # asks for more than the host allows and OpenRouter drops the
+            # host from routing ("Filter by Context Length").
+            modelConfig["limit"] = {"context": OPENCODE_CONTEXT_LIMIT, "output": OPENCODE_OUTPUT_LIMIT}
+        if modelConfig:
+            config["provider"] = {provider: {"models": {modelId: modelConfig}}}
         return config
 
     # ── one OpenCode invocation ────────────────────────────────────────────

@@ -274,6 +274,16 @@ class AgentTranslationTest(unittest.TestCase):
         options = probe._agentOpenCodeConfig()["provider"]["openrouter"]["models"]["vendor/some-model"]["options"]
         self.assertEqual(options["provider"]["order"], ["siliconflow", "deepinfra"])
 
+    def test_output_limit_is_declared_for_the_model(self):
+        probe = self._probe([{"out": "fn callee() {}"}])
+        saved = agent_mixin.OPENCODE_OUTPUT_LIMIT
+        agent_mixin.OPENCODE_OUTPUT_LIMIT = 16384
+        try:
+            model = probe._agentOpenCodeConfig()["provider"]["openrouter"]["models"]["vendor/some-model"]
+        finally:
+            agent_mixin.OPENCODE_OUTPUT_LIMIT = saved
+        self.assertEqual(model["limit"]["output"], 16384)
+
     def test_type_batch_is_one_agent_trial_and_its_definitions_are_stored(self):
         node = FunctionAndDependencies.upsertTypeNode(TypeKind.STRUCT, "S", c_code="struct S { int x; };")
         rust = "#[repr(C)]\npub struct S {\n    pub x: i32,\n}\n"
@@ -300,6 +310,31 @@ class AgentTranslationTest(unittest.TestCase):
         probe = self._probe([{"out": "fn anything() {}"}])
         self.assertEqual(probe.chunkAndSend("misc", "Do something."), "fn anything() {}")
         self.assertEqual(self._calls()[0]["files"]["task.md"], "Do something.")
+
+    def test_compile_check_adds_no_imports_for_an_agent(self):
+        from gpt_translation import code_utils_mixin
+        written = []
+
+        def fakeRun(cmd, cwd=None, **_kwargs):
+            with open(os.path.join(cwd, "src", "lib.rs")) as f:
+                written.append(f.read())
+            return types.SimpleNamespace(returncode=0, stdout="", stderr="")
+
+        class _Plain(CodeUtilsMixin):
+            logger = _SilentLogger()
+
+        class _Agent(AgentTranslationMixin, CodeUtilsMixin):
+            logger = _SilentLogger()
+
+        saved = code_utils_mixin.subprocess.run
+        code_utils_mixin.subprocess.run = fakeRun
+        try:
+            _Plain().compileWithCargoProject("fn f() {}")
+            _Agent().compileWithCargoProject("fn f() {}")
+        finally:
+            code_utils_mixin.subprocess.run = saved
+        self.assertIn("use libc::{", written[0])
+        self.assertEqual(written[1], "fn f() {}")
 
     def test_opencode_mode_string_selects_the_agent_translator(self):
         self.assertEqual(Translator.getLLMModel("opencode:openrouter/vendor/some-model"), LLMModels.OPENCODE)
