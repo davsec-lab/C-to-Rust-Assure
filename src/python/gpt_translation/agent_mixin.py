@@ -15,6 +15,7 @@ from functionAndDeps import FunctionAndDependencies
 from gpt_translation.config import (
     AGENT_MAX_STEPS,
     AGENT_TIMEOUT,
+    AGENT_UNIT_TIMEOUT,
     COMPILATION_RETRIES,
     OPENCODE_BIN,
     OPENCODE_CONTEXT_LIMIT,
@@ -197,6 +198,10 @@ class AgentTranslationMixin:
                 "bash": {"*": "deny", "./check": "allow", "./check *": "allow"},
                 "webfetch": "deny",
                 "external_directory": "deny",
+                # OpenCode asks before a third identical tool call in a row,
+                # and `opencode run` answers its own question with "reject",
+                # which ends the session. Let the step limit bound loops.
+                "doom_loop": "allow",
             },
             "agent": {"build": {"steps": AGENT_MAX_STEPS}},
         }
@@ -286,7 +291,13 @@ class AgentTranslationMixin:
                 part = event.get("part") or {}
                 if event.get("type") == "error":
                     data = (event.get("error") or {}).get("data") or {}
-                    apiError = {"status": data.get("statusCode"), "message": str(data.get("message") or "")}
+                    # Only a provider error carries an HTTP status. OpenCode
+                    # reports its own aborts (a rejected permission) through
+                    # the same event, and waiting does nothing for those.
+                    if data.get("statusCode") is not None:
+                        apiError = {"status": data.get("statusCode"), "message": str(data.get("message") or "")}
+                    else:
+                        self.logger.warning("[AGENT] %s: opencode error: %s", name, str(data.get("message") or "")[:200])
                 elif event.get("type") == "tool_use":
                     tools.append(part.get("tool") or "?")
                 elif event.get("type") == "text":
@@ -361,7 +372,13 @@ class AgentTranslationMixin:
         message = start
         sessionId = None
         lastResult = ""
+        deadline = time.monotonic() + AGENT_UNIT_TIMEOUT
         for attempt in range(COMPILATION_RETRIES + 1):
+            if attempt and time.monotonic() > deadline:
+                # Without this a unit the model cannot do costs
+                # (COMPILATION_RETRIES + 1) x AGENT_TIMEOUT: two hours.
+                self.logger.info("[AGENT] %s: unit budget of %d s used up", name, AGENT_UNIT_TIMEOUT)
+                break
             (foundSession, finalText) = self._agentInvokeWithBackoff(
                 name, kind if attempt == 0 else kind + "_retry", message, sessionId, outPath)
             sessionId = sessionId or foundSession
@@ -385,7 +402,7 @@ class AgentTranslationMixin:
             if not sessionId:
                 # Nothing to continue: the next run starts from the task again.
                 message = start + "\n" + message
-        self.logger.info("[AGENT] %s: no accepted result after %d attempts", name, COMPILATION_RETRIES + 1)
+        self.logger.info("[AGENT] %s: no accepted result", name)
         return (False, lastResult)
 
     def agentTranslate(self, funcName, prompt, contextStructs,

@@ -44,6 +44,9 @@ OPENCODE_BIN = _os.environ.get("ASSURE_OPENCODE_BIN", "opencode")
 AGENT_MAX_STEPS = int(_os.environ.get("ASSURE_AGENT_MAX_STEPS", "40"))
 # Wall-clock cap on one OpenCode invocation, seconds.
 AGENT_TIMEOUT = int(_os.environ.get("ASSURE_AGENT_TIMEOUT", "1200"))
+# Wall-clock cap on one unit (a type batch, a function) across all of its
+# attempts; no new attempt starts once it is used up.
+AGENT_UNIT_TIMEOUT = int(_os.environ.get("ASSURE_AGENT_UNIT_TIMEOUT", "2400"))
 # OpenRouter host(s) to pin, in order of preference, comma-separated
 # (e.g. "siliconflow" or "siliconflow,deepinfra"); no host outside the list is
 # used. Empty leaves routing to OpenRouter.

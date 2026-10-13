@@ -63,7 +63,9 @@ if step.get("out") is not None:
     open("rust/out.rs", "w").write(step["out"])
 def emit(kind, part):
     print(json.dumps({"type": kind, "sessionID": "ses_1", "part": part}))
-if step.get("error"):
+if "error" in step:
+    if step.get("out") is None and step["error"] is None:
+        open("rust/out.rs", "w").write("")
     print(json.dumps({"type": "error", "sessionID": "ses_1",
                       "error": {"name": "APIError", "data": {"statusCode": step["error"], "message": "provider says no"}}}))
     sys.exit(1)
@@ -258,6 +260,23 @@ class AgentTranslationTest(unittest.TestCase):
         (successFlag, _result) = self._translateFunction(probe)
         self.assertTrue(successFlag)
         self.assertEqual(len(self._calls()), 3)
+
+    def test_unit_budget_stops_further_attempts(self):
+        saved = agent_mixin.AGENT_UNIT_TIMEOUT
+        agent_mixin.AGENT_UNIT_TIMEOUT = -1
+        try:
+            probe = self._probe([{"out": "fn callee() { bad }"}], compileResults=[(False, "error")] * 9)
+            (successFlag, _result) = self._translateFunction(probe)
+        finally:
+            agent_mixin.AGENT_UNIT_TIMEOUT = saved
+        self.assertFalse(successFlag)
+        self.assertEqual(len(self._calls()), 1)
+
+    def test_opencode_abort_without_http_status_is_not_waited_out(self):
+        agent_mixin._API_ERROR_BACKOFF = (10 ** 6,)
+        probe = self._probe([{"error": None, "out": "fn callee() {}"}])
+        (successFlag, _result) = self._translateFunction(probe)
+        self.assertTrue(successFlag)
 
     def test_no_credit_aborts_the_run_at_once(self):
         probe = self._probe([{"error": 402}])
