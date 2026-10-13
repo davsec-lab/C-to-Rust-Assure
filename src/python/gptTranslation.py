@@ -30,6 +30,7 @@ from gpt_translation.translator import (
     Gpt5MiniTranslator,
     Gpt5NanoTranslator,
     Gpt5Translator,
+    OpenCodeTranslator,
     Translator,
 )
 
@@ -60,6 +61,7 @@ __all__ = [
     "Claude_Opus_Translator",
     "Claude_Sonnet_Translator",
     "LLMModels",
+    "OpenCodeTranslator",
     "MAX_THREADS",
     "STRUCT_RETRIES",
     "Translator",

@@ -1061,6 +1061,34 @@ class TranslationPipelineMixin:
             translationManager,
                     )
 
+    def _splitTypeBatchResult(self, result, batchNodes):
+        """Cut a batch translation into the definition stored for each node.
+        Returns ``[(node, code)]``. Only what is returned here survives: an
+        item of ``result`` that belongs to no node is dropped."""
+        includeBlock = self.extractIncludeBlock(result)
+        includeAttached = False
+        split = []
+        for node in batchNodes:
+            attachInclude = False
+            if includeBlock and not includeAttached:
+                attachInclude = True
+                includeAttached = True
+            finalCode = self._extractTypeDefinitionFromResult(result, node, includeBlock, attachInclude)
+            if node.kind == TypeKind.TYPEDEF and not finalCode:
+                finalCode = self.translateSimpleTypedefDefinition(node.cCode)
+            # Fix A: normalize comment-only LLM output to "" so later
+            # stages don't see a "// X removed: ..." placeholder and
+            # mistakenly try to translate / re-translate it.
+            if self._isEmptyOrCommentOnly(finalCode):
+                if finalCode and finalCode.strip():
+                    self.logger.info(
+                        "[type normalize] %s: comment-only output normalized to empty (was %r)",
+                        getattr(node, "name", "?"), finalCode[:80],
+                    )
+                finalCode = ""
+            split.append((node, finalCode))
+        return split
+
     def _translateTypeBatchWithLlm(self, batchNodes, predecessorContext, dependencyCodes, dependencyKeys, translationManager):
         trialCount = 0
         err = ""
@@ -1074,8 +1102,15 @@ class TranslationPipelineMixin:
 
             if not reusePreviousResult:
                 batchName = "+".join(node.name for node in batchNodes)
-                with _callKindContext(self, "type_batch"):
-                    result = self.chunkAndSend(batchName, request)
+                # An agent translator compiles and repairs the batch inside
+                # its own session, so it gets one trial here, not six.
+                agentTranslateTypeBatch = getattr(self, "agentTranslateTypeBatch", None)
+                if callable(agentTranslateTypeBatch):
+                    result = agentTranslateTypeBatch(
+                        batchName, request, batchNodes, predecessorContext, dependencyCodes, dependencyKeys)
+                else:
+                    with _callKindContext(self, "type_batch"):
+                        result = self.chunkAndSend(batchName, request)
                 result = self._sanitizeResultAgainstDependencies(result, dependencyCodes, dependencyKeys)
                 self.logger.debug("[type batch %s] sanitized result: %s", batchName, result)
                 lastTimeResult = result
@@ -1087,31 +1122,11 @@ class TranslationPipelineMixin:
                 # duplicate imports (which previously dominated retry loops).
                 combinedResult = self.cleanCode(combinedResult)
                 (successFlag, err) = self.compile(combinedResult)
-                includeBlock = self.extractIncludeBlock(result)
-                includeAttached = False
-
-                for node in batchNodes:
-                    attachInclude = False
-                    if includeBlock and not includeAttached:
-                        attachInclude = True
-                        includeAttached = True
-                    finalCode = self._extractTypeDefinitionFromResult(result, node, includeBlock, attachInclude)
-                    if node.kind == TypeKind.TYPEDEF and not finalCode:
-                        finalCode = self.translateSimpleTypedefDefinition(node.cCode)
-                    # Fix A: normalize comment-only LLM output to "" so later
-                    # stages don't see a "// X removed: ..." placeholder and
-                    # mistakenly try to translate / re-translate it.
-                    if self._isEmptyOrCommentOnly(finalCode):
-                        if finalCode and finalCode.strip():
-                            self.logger.info(
-                                "[type normalize] %s: comment-only output normalized to empty (was %r)",
-                                getattr(node, "name", "?"), finalCode[:80],
-                            )
-                        finalCode = ""
+                for node, finalCode in self._splitTypeBatchResult(result, batchNodes):
                     node.rustCode = finalCode
                     self._logStoredTypeResult(node)
 
-                if successFlag or trialCount > 5:
+                if successFlag or trialCount > 5 or callable(agentTranslateTypeBatch):
                     break
             else:
                 for node in batchNodes:
@@ -1744,15 +1759,15 @@ class TranslationPipelineMixin:
                                       dependencyKeys,
                                                                             funcSrc,
                                       targetFunctions=None):
-        # Agent translation replaces the request-then-retry procedure below.
-        # getattr: test probes compose this mixin without AgentTranslationMixin.
-        agentEnabled = getattr(self, "agentTranslationEnabled", None)
-        if callable(agentEnabled) and agentEnabled():
-            return self.agentTranslate(funcName, prompt, contextStructs,
-                                       translatedStructPrompt, translatedStructs,
-                                       translatedFuncPrompt, translatedFuncsSignatures, translatedFuncs,
-                                       dependencyFunctionNames, dependencyCodes, dependencyKeys,
-                                       funcSrc, targetFunctions=targetFunctions)
+        # An agent translator (AgentTranslationMixin) replaces the
+        # request-then-retry procedure below.
+        agentTranslate = getattr(self, "agentTranslate", None)
+        if callable(agentTranslate):
+            return agentTranslate(funcName, prompt, contextStructs,
+                                  translatedStructPrompt, translatedStructs,
+                                  translatedFuncPrompt, translatedFuncsSignatures, translatedFuncs,
+                                  dependencyFunctionNames, dependencyCodes, dependencyKeys,
+                                  funcSrc, targetFunctions=targetFunctions)
         # When this is a perf retry, fence the actual source code with explicit
         # SOURCE-TO-TRANSFORM markers. Without these, the prompt has two C++
         # snippets back-to-back — the rejected attempt in PERFORMANCE CONTEXT
@@ -2670,6 +2685,9 @@ class TranslationPipelineMixin:
         return performanceCheckPassed
 
     def translateAll(self, funcMap, individualFuncPath, multiThreading):
+        agentSetup = getattr(self, "agentSetup", None)
+        if callable(agentSetup):
+            agentSetup(funcMap, individualFuncPath)
         self.preTranslateComplexStructs()
         if self.translatorMode in [TranslatorModes.BASIC_CHUNK_CHAIN, TranslatorModes.COMPILATION_FEEDBACK, TranslatorModes.CF_STRUCT_REPLAY]:
             if multiThreading:
@@ -2900,8 +2918,6 @@ class TranslationPipelineMixin:
         # perf entry (assembled from it) inherit the fix, not just the
         # per-function compiles. See _healContextStructsBlob.
         contextedStructs = self._healContextStructsBlob(contextedStructs)
-        # The agent's find_usages / read_c_function tools search this.
-        self.agentFuncMap = funcMap
 
         previouslyTranslatedFunctions = ""
 

@@ -48,6 +48,8 @@ from gpt_translation.config import (
     GPT5_MODEL_MAX_COMPLETION_TOKENS,
     GPT5_NANO_MODEL,
     LLMModels,
+    OPENCODE_CTX_WINDOW_LEN,
+    OPENCODE_MAX_COMPLETION_TOKENS,
     TranslatorModes,
 )
 from gpt_translation.dependency_utils_mixin import DependencyUtilsMixin
@@ -59,7 +61,6 @@ from gpt_translation.translation_utils_mixin import TranslationUtilsMixin
 
 
 class Translator(
-    AgentTranslationMixin,
     CodeUtilsMixin,
     DependencyUtilsMixin,
     SymbolExtractionMixin,
@@ -72,7 +73,14 @@ class Translator(
     https://platform.openai.com/docs/guides/text-generation/chat-completions-api
     """
 
+    # "opencode:<provider/model>" carries the model id inside the mode string;
+    # getLLMModel parks it here for createTranslator.
+    openCodeModel = ""
+
     def getLLMModel(LLMModeStr):
+        if LLMModeStr.startswith("opencode:") and len(LLMModeStr) > len("opencode:"):
+            Translator.openCodeModel = LLMModeStr[len("opencode:"):]
+            return LLMModels.OPENCODE
         if LLMModeStr == "claude" or LLMModeStr == "claude-opus" or LLMModeStr == "claude-opus-4-1":
             return LLMModels.CLAUDE_OPUS
         elif LLMModeStr in ("claude-sonnet", "claude-sonnet-4-6", "sonnet"):
@@ -126,9 +134,12 @@ class Translator(
         self.structIdentifierToStructKey = {}
         self.tokenTracker = TokenUsageTracker(logger)
         self.currentCallKind = "function"
+        self.client = self._createClient()
+
+    def _createClient(self):
         if OpenAI is None:
             raise ImportError("openai package is required to use Translator")
-        self.client = OpenAI(api_key=self.apiKey)
+        return OpenAI(api_key=self.apiKey)
 
 
 
@@ -484,3 +495,17 @@ if __name__ == "__main__":
 # Budget-tier concrete classes (module-level, for easy import)
 Gpt5MiniTranslator = Gpt5Translator._makeCheapVariant(GPT5_MINI_MODEL)
 Gpt5NanoTranslator = Gpt5Translator._makeCheapVariant(GPT5_NANO_MODEL)
+
+
+class OpenCodeTranslator(AgentTranslationMixin, Translator):
+    """Translates through OpenCode sessions (see AgentTranslationMixin).
+    ``model`` is an OpenCode model id, ``<provider>/<model>``, e.g.
+    ``openrouter/deepseek/deepseek-v4-flash-0731``; the provider's API key is
+    read by OpenCode from the environment."""
+
+    def __init__(self, logger, model, srcLang, dstLang, systemPrompt, translatorMode):
+        super().__init__(logger, "", "", OPENCODE_CTX_WINDOW_LEN, OPENCODE_MAX_COMPLETION_TOKENS,
+                         srcLang, dstLang, model, systemPrompt, translatorMode)
+
+    def _createClient(self):
+        return None

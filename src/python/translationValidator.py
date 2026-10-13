@@ -15,7 +15,7 @@ import threading
 from datetime import datetime
 
 from loggerFactory import getLogger
-from gptTranslation import LLMModels, Translator, Claude_Opus_Translator, Claude_Sonnet_Translator, Claude_Haiku_Translator, TranslatorModes, Gpt5Translator, Gpt5MiniTranslator, Gpt5NanoTranslator, Gemini_Flash_Translator, Gemini_Pro_Translator
+from gptTranslation import LLMModels, Translator, Claude_Opus_Translator, Claude_Sonnet_Translator, Claude_Haiku_Translator, TranslatorModes, Gpt5Translator, Gpt5MiniTranslator, Gpt5NanoTranslator, Gemini_Flash_Translator, Gemini_Pro_Translator, OpenCodeTranslator
 from functionAndDeps import FunctionAndDependencies
 from functionAndDepsExtractor import FunctionAndDepsExtractor
 from typedefFilter import TypedefFilter
@@ -138,6 +138,13 @@ def createTranslator(logger,
                                            dstLang,
                                            systemPrompt,
                                            translatorMode)
+    elif llmmodel == llmmodel.OPENCODE:
+        translator = OpenCodeTranslator(logger,
+                                        Translator.openCodeModel,
+                                        srcLang,
+                                        dstLang,
+                                        systemPrompt,
+                                        translatorMode)
     else:
         logger.error("Unsupported llm mode: %s", llmmodel)
         raise ValueError(f"Unsupported llm mode: {llmmodel}")
@@ -820,10 +827,12 @@ def processCodebase(codebasePath,
     # TODO : @gabe Do we still need this?
     # fingerPrintModel(logger, codebasePath, translator)
 
+    # An OpenCode model id is <provider>/<model>; "/" must not reach the path.
+    modelDirName = translator.model.replace("/", "_")
     if len (dirPrefix) > 0:
-        individualFuncPath = codebasePath + "/individual-funcs_" + dirPrefix + "_" + translator.model + "_" + formattedDateTime
+        individualFuncPath = codebasePath + "/individual-funcs_" + dirPrefix + "_" + modelDirName + "_" + formattedDateTime
     else:
-        individualFuncPath = codebasePath + "/individual-funcs_" + translator.model + "_" + formattedDateTime
+        individualFuncPath = codebasePath + "/individual-funcs_" + modelDirName + "_" + formattedDateTime
 
     if preanalysisOnly:
         individualFuncPath = individualFuncPath + "__preanalysis_only"

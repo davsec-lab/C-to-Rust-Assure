@@ -5,9 +5,14 @@
 #   KLEE max-time          controlled by run_eval's --fast/--full, part of the metric definition
 #   scoring script score.py  metric definitions, root-owned
 
-llm_mode: gpt-5-mini          # inner translation model
+# Inner translation model. opencode:<provider/model> translates every type batch
+# and every function with an OpenCode agent that greps the C for how it is used;
+# any other value (gpt-5-mini, claude-sonnet, ...) is one model request per unit.
+# Open-model roster: openrouter/deepseek/deepseek-v4-pro-0813, .../deepseek-v4-flash-0731,
+#                    openrouter/qwen/qwen3.8-2.4t-a95b, openrouter/qwen/qwen3.8-27b
+llm_mode: opencode:openrouter/deepseek/deepseek-v4-flash-0731
+openrouter_provider:          # OpenRouter host(s) to pin, comma-separated in order of preference (e.g. siliconflow); empty = OpenRouter routes
+agent_max_steps: 40           # model round-trips per OpenCode invocation, tool calls included
 codebase: ./inputs-complex/libcsv
 compilation_retries: 5        # max times rustc errors are fed back to the LLM
 struct_retries: 5             # struct remediation retry count
-translation_agent: true       # translate each function with a tool-using agent that reads its call sites first
-agent_max_steps: 20           # model round-trips per function, tool calls included

@@ -35,13 +35,25 @@ COMPILATION_RETRIES = int(_os.environ.get("ASSURE_COMPILATION_RETRIES", "5"))
 STRUCT_RETRIES = int(_os.environ.get("ASSURE_STRUCT_RETRIES", "5"))
 MAX_THREADS = 40
 
-# Agent translation (gpt_translation/agent_mixin.py): each function is
-# translated by a tool-using agent that reads the function's call sites first,
-# instead of by one request followed by compile-error retries. Off = the
-# single-request path, unchanged.
-AGENT_TRANSLATION = _os.environ.get("ASSURE_AGENT_TRANSLATION", "1").strip().lower() in ("1", "true", "yes", "on")
-# Model round-trips one function may take, tool calls included.
-AGENT_MAX_STEPS = int(_os.environ.get("ASSURE_AGENT_MAX_STEPS", "20"))
+# Agent translation (gpt_translation/agent_mixin.py), selected with
+# --llm-mode=opencode:<provider/model>: every type batch and every function is
+# translated by an OpenCode session that greps the C sources for how the unit
+# is used, instead of by one model request followed by compile-error retries.
+OPENCODE_BIN = _os.environ.get("ASSURE_OPENCODE_BIN", "opencode")
+# Model round-trips per OpenCode invocation, tool calls included.
+AGENT_MAX_STEPS = int(_os.environ.get("ASSURE_AGENT_MAX_STEPS", "40"))
+# Wall-clock cap on one OpenCode invocation, seconds.
+AGENT_TIMEOUT = int(_os.environ.get("ASSURE_AGENT_TIMEOUT", "1200"))
+# OpenRouter host(s) to pin, in order of preference, comma-separated
+# (e.g. "siliconflow" or "siliconflow,deepinfra"); no host outside the list is
+# used. Empty leaves routing to OpenRouter.
+OPENROUTER_PROVIDER = _os.environ.get("ASSURE_OPENROUTER_PROVIDER", "").strip()
+# OpenCode model variant, i.e. provider-specific reasoning effort (e.g. "low").
+OPENCODE_VARIANT = _os.environ.get("ASSURE_OPENCODE_VARIANT", "").strip()
+# Context window / max output assumed for the agent's model; only the
+# preanalysis fit report reads them.
+OPENCODE_CTX_WINDOW_LEN = 1000 * 1000
+OPENCODE_MAX_COMPLETION_TOKENS = 64 * 1000
 
 # Performance regression retry defaults (CLI overridable in translationValidator.py).
 # A stage's average elapsed time exceeding prev_stage * (1 + PERF_DEGRADE_THRESHOLD_PCT/100)
@@ -89,6 +101,7 @@ class LLMModels(Enum):
     CLAUDE_HAIKU = 3
     GEMINI_FLASH = 4
     GEMINI_PRO = 5
+    OPENCODE = 8
 
 
 class TranslatorModes(Enum):

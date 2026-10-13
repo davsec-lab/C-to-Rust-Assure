@@ -96,6 +96,17 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     && rm -rf /var/lib/apt/lists/* \
     && pip install --no-cache-dir clang==14.0
 
+# OpenCode: the agent behind --llm-mode=opencode:<provider/model>
+# (src/python/gpt_translation/agent_mixin.py). The npm platform package is a
+# self-contained binary, so it is unpacked directly and the image needs no
+# Node. Pinned: an agent that changes between two runs is a changed inner loop.
+ARG OPENCODE_VERSION=1.19.0
+RUN curl -fsSL "https://registry.npmjs.org/opencode-linux-x64/-/opencode-linux-x64-${OPENCODE_VERSION}.tgz" \
+      | tar -xz -C /tmp package/bin/opencode \
+    && install -m 0755 /tmp/package/bin/opencode /usr/local/bin/opencode \
+    && rm -rf /tmp/package \
+    && opencode --version
+
 # ── Workspace ────────────────────────────────────────────────────────────
 # The container is L0's batch subprocess: no agent inside, no interactive shell.
 #
