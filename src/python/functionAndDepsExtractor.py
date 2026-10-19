@@ -19,6 +19,7 @@ import util
 # index = clang.cindex.Index.create()
 
 from functionAndDeps import FunctionAndDependencies
+from split_tag_declarations import splitTagDefinitionsInFile
 from type_registry import TranslationMode, TypeDependencyGraph, TypeKind
 from gpt_translation.byte_buffer_classifier import (
     classify_use_site,
@@ -733,7 +734,7 @@ class FunctionAndDepsExtractor:
             )
 
     def extractSymbolDefinition(self, cFileName, symbolName, cKinds = "v"):
-        findSymCmd = "ctags --fields=+ne -o - --language-force=C++ --c-kinds=" + cKinds + " " + cFileName
+        findSymCmd = "ctags --fields=+ne -o - --language-force=C --c-kinds=" + cKinds + " " + cFileName
         result = subprocess.run(findSymCmd, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
         if result.returncode != 0:
             return None
@@ -1342,9 +1343,19 @@ class FunctionAndDepsExtractor:
             sys.exit(-1)
 
         self.logger.info("(Re-)extracting functions from file %s", filename)
+        if "individual-funcs" not in filename:
+            # The corpus file, before any range is taken from it; the per-function
+            # files are built from it and need no pass of their own.
+            splitCount = splitTagDefinitionsInFile(filename)
+            if splitCount:
+                self.logger.info("Split %d struct/union/enum definitions from the variables "
+                                 "declared with them in %s", splitCount, filename)
         fileRanges = FileRanges()
 
-        funcExtractCmd = "ctags --fields=+ne -o -  --language-force=C++ --c-kinds=f " + filename
+        # C, not C++: the input is C, and as C++ a C identifier that is a C++ keyword
+        # (kairoCompiler's `void* private`) cost a function its end line, and 18 others
+        # their entry.
+        funcExtractCmd = "ctags --fields=+ne -o -  --language-force=C --c-kinds=f " + filename
         result = subprocess.getoutput(funcExtractCmd)
         totalRange = len(result.splitlines()) - 1
         sourceFunctionNames = self._get_original_source_function_names(filename)

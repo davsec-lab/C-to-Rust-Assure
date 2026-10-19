@@ -64,6 +64,10 @@ TRANSLATION_SKIP_FUNCTIONS = {
     "putchar_unlocked",
     "vprintf",
 }
+# A corpus whose `main` is the program under test, not a benchmark driver
+# (DARPA TRACTOR executables), has it translated like any other function.
+if os.environ.get("ASSURE_TRANSLATE_MAIN") == "1":
+    TRANSLATION_SKIP_FUNCTIONS.discard("main")
 
 
 def _systemPromptFileForMode(translatorMode):
@@ -251,7 +255,7 @@ def collectReferencedIdentifiers(sourceCode, identifierNames, currentIdentifier=
 
 def parseFunctionRanges(c_path):
     result = subprocess.run(
-        ["ctags", "--fields=+ne", "-o", "-", "--language-force=C++", "--c-kinds=f", c_path],
+        ["ctags", "--fields=+ne", "-o", "-", "--language-force=C", "--c-kinds=f", c_path],
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.DEVNULL,

@@ -37,7 +37,7 @@ from gpt_translation.llm_utils_mixin import LLMUtilsMixin
 from gpt_translation.symbol_extraction_mixin import SymbolExtractionMixin
 from gpt_translation.translation_pipeline_mixin import TranslationPipelineMixin
 from gpt_translation.translator import Translator
-from type_registry import TypeKind
+from type_registry import TranslationMode, TypeKind
 
 # Stands in for the opencode binary. Each invocation appends its argv and a
 # listing of what the agent could see to calls.jsonl, writes the next scripted
@@ -177,10 +177,13 @@ class AgentTranslationTest(unittest.TestCase):
     def test_function_is_translated_in_a_workspace_holding_the_c_sources(self):
         code = "pub fn callee(p: *mut u8, n: i32) -> i32 { n }"
         FunctionAndDependencies.upsertTypeNode(TypeKind.STRUCT, "S", c_code="struct S { int x; };")
-        probe = self._probe([{"out": code}])
+        before = "struct S;\nfn dep() {}\n"
+        probe = self._probe([{"out": before + code}])
+        probe.agentFile = before
         (successFlag, result) = self._translateFunction(probe)
         self.assertTrue(successFlag)
         self.assertEqual(result, code)
+        self.assertEqual(probe.agentFile, before + code)
 
         (call,) = self._calls()
         files = call["files"]
@@ -198,18 +201,20 @@ class AgentTranslationTest(unittest.TestCase):
         self.assertFalse(any("stale.i" in path for path in files))
         # The task, and what the result is compiled against.
         self.assertIn("int callee(char *p, int n) { return n; }", files["task.md"])
-        self.assertIn("Function(s) to translate: callee", files["task.md"])
-        self.assertEqual(files["rust/context.rs"], "struct S;\nfn dep() {}\n")
+        self.assertTrue(files["task.md"].startswith("Translate the C function callee to Rust and add it to rust/out.rs."))
+        # The agent edits the translation so far in place.
+        self.assertEqual(files["rust/out.rs"], before)
+        self.assertEqual(files["rust/context.rs"], "")
+        self.assertIn("in place", call["argv"][-1])
         self.assertIn("You are an expert.", files["AGENTS.md"])
-        self.assertNotIn("rust/out.rs", files)
         config = json.loads(files["opencode.json"])
         self.assertEqual(config["model"], "openrouter/vendor/some-model")
         self.assertEqual(config["small_model"], "openrouter/vendor/some-model")
         self.assertNotIn("provider", config)
         self.assertEqual(config["permission"]["bash"]["*"], "deny")
         self.assertEqual(config["permission"]["bash"]["./check"], "allow")
-        # The pipeline's own verdict is on context + result.
-        self.assertEqual(probe.compiled, ["struct S;\nfn dep() {}\n" + code])
+        # The pipeline's own verdict is on the edited file.
+        self.assertEqual(probe.compiled, [before + code])
         # A private home, outside the workspace the agent searches.
         self.assertTrue(call["home"].startswith(probe.agentRoot))
         self.assertFalse(call["home"].startswith(os.path.join(probe.agentRoot, "ws")))
@@ -303,27 +308,168 @@ class AgentTranslationTest(unittest.TestCase):
             agent_mixin.OPENCODE_OUTPUT_LIMIT = saved
         self.assertEqual(model["limit"]["output"], 16384)
 
-    def test_type_batch_is_one_agent_trial_and_its_definitions_are_stored(self):
+    def test_type_batch_is_one_agent_trial_and_a_failed_one_leaves_the_file_alone(self):
         node = FunctionAndDependencies.upsertTypeNode(TypeKind.STRUCT, "S", c_code="struct S { int x; };")
-        rust = "#[repr(C)]\npub struct S {\n    pub x: i32,\n}\n"
+        rust = "pub type T = i32;\n#[repr(C)]\npub struct S {\n    pub x: i32,\n}\n"
         probe = self._probe([{"out": rust}], compileResults=[(False, "error")] * 20)
+        probe.agentFile = "pub type T = i32;\n"
         probe._translateTypeBatchWithLlm([node], "", [], [], None)
         # The agent used its whole repair budget inside one session; the
         # single-request path's six fresh trials are not stacked on top.
         self.assertEqual(len(self._calls()), agent_mixin.COMPILATION_RETRIES + 1)
-        self.assertIn("pub struct S", node.rustCode)
+        self.assertEqual(probe.agentFile, "pub type T = i32;\n")
 
-    def test_type_batch_is_judged_on_what_is_kept_not_on_what_was_written(self):
+    def test_type_batch_edits_the_translation_so_far(self):
+        # tisp, xopt: the batches of `__gnuc_va_list` and `va_list` do not
+        # depend on each other; checked apart, each wrote its own
+        # `__va_list_tag`. In the one file, the second finds the first's.
+        before = "pub struct __va_list_tag { pub gp_offset: u32 }\npub type __gnuc_va_list = [__va_list_tag; 1];\n"
+        edited = before + "pub type va_list = [__va_list_tag; 1];\n"
+        node = FunctionAndDependencies.upsertTypeNode(TypeKind.TYPEDEF, "va_list", c_code="typedef __builtin_va_list va_list;")
+        probe = self._probe([{"out": edited}])
+        probe.agentFile = before
+        probe._translateTypeBatchWithLlm([node], "", [], [], None)
+        files = self._calls()[0]["files"]
+        self.assertEqual(files["rust/out.rs"], before)
+        self.assertIn("typedef __builtin_va_list va_list;", files["task.md"])
+        # Instructions for laying out a reply are for the single-request path.
+        self.assertNotIn("Final result code", files["task.md"])
+        self.assertNotIn("header files", files["task.md"])
+        self.assertEqual(probe.compiled, [edited])
+        self.assertEqual(probe.agentFile, edited)
+
+    def test_type_batch_gives_no_usage_examples(self):
+        # The agent greps c/ for how a field is used; the pipeline's examples
+        # are for the single-request path.
+        node = FunctionAndDependencies.upsertTypeNode(
+            TypeKind.STRUCT, "s_buf", c_code="struct s_buf { void *buffer; };",
+            translation_mode=TranslationMode.RICH_STRUCT)
+        node.usageList = {"buffer": ["char *b = cBuf->buffer"]}
+        probe = self._probe([{"out": "pub struct s_buf { pub buffer: *mut u8 }\n"}])
+        probe._translateTypeBatchWithLlm([node], "", [], [], None)
+        task = self._calls()[0]["files"]["task.md"]
+        self.assertIn("struct s_buf { void *buffer; };", task)
+        self.assertNotIn("cBuf->buffer", task)
+        self.assertNotIn("example usage", task)
+
+    def test_function_task_names_the_callees_signatures_as_a_hint(self):
+        before = "pub fn dep(x: i32,\n           y: i32) -> i32 { x + y }\n"
+        probe = self._probe([{"out": before + "fn callee() { dep(1, 2); }\n"}])
+        probe.agentFile = before
+        probe.compileAndRetryLoopforDepency(
+            "callee", "", "", "", "", "", "", "", ["dep", "gone", "callee"], [], [],
+            "int callee(void) { return dep(1, 2) + gone(); }")
+        task = self._calls()[0]["files"]["task.md"]
+        self.assertIn("pub fn dep(x: i32, y: i32) -> i32\n", task)
+        self.assertIn("Not in rust/out.rs: gone\n", task)
+        self.assertNotIn("x + y", task)
+
+    def test_type_batch_left_unchanged_passes_only_if_the_file_has_it(self):
+        node = FunctionAndDependencies.upsertTypeNode(TypeKind.TYPEDEF, "va_list", c_code="typedef __builtin_va_list va_list;")
+        probe = self._probe([{"out": "pub type other = i32;\n"}] * 3 + [{"out": "pub type va_list = u8;\n"}])
+        probe.agentFile = "pub type other = i32;\n"
+        probe._translateTypeBatchWithLlm([node], "", [], [], None)
+        self.assertIn("does not define va_list", self._calls()[1]["argv"][-1])
+        self.assertEqual(probe.agentFile, "pub type va_list = u8;\n")
+
+    def test_type_batch_keeps_the_helper_items_the_agent_wrote(self):
         node = FunctionAndDependencies.upsertTypeNode(TypeKind.STRUCT, "S", c_code="struct S { int x; };")
         rust = "pub struct Helper(i32);\n#[repr(C)]\npub struct S {\n    pub x: Helper,\n}\n"
-        probe = self._probe([{"out": rust}], compileResults=[(False, "error[E0412]: cannot find type `Helper`"), (True, "")])
+        probe = self._probe([{"out": rust}])
         probe._translateTypeBatchWithLlm([node], "", [], [], None)
-        self.assertNotIn("Helper(i32)", probe.compiled[0])
-        self.assertIn("pub struct S", probe.compiled[0])
+        probe.agentFinishTypes()
+        self.assertIn("Helper(i32)", node.rustCode)
+
+    def test_every_type_node_holds_the_whole_file_once_the_types_are_done(self):
+        # tisp: `typedef struct Val *Val;` - a struct tag and a typedef of the
+        # same name, which Rust cannot hold as two items called Val.
+        tag = FunctionAndDependencies.upsertTypeNode(TypeKind.STRUCT, "Val", c_code="struct Val { int x; };")
+        alias = FunctionAndDependencies.upsertTypeNode(TypeKind.TYPEDEF, "Val", c_code="typedef struct Val *Val;")
+        size = FunctionAndDependencies.upsertTypeNode(TypeKind.TYPEDEF, "size_t", c_code="typedef unsigned long size_t;")
+        rust = "#[repr(C)]\npub struct Val_s {\n    pub x: i32,\n}\npub type Val = *mut Val_s;\n"
+        probe = self._probe([{"out": rust}])
+        probe._translateTypeBatchWithLlm([tag, alias], "", [], [], None)
+        size.rustCode = "pub type size_t = usize;"
+        probe.agentAppendType(size)
+        probe.agentFinishTypes()
+        self.assertEqual({tag.rustCode, alias.rustCode, size.rustCode}, {probe.agentFile})
+        self.assertIn("pub type size_t = usize;", probe.agentFile)
+        context = probe._buildTranslatedTypeContext([tag.key, alias.key, size.key])
+        self.assertEqual(context.count("pub struct Val_s"), 1)
+
+    def test_a_resolved_typedef_the_agent_already_wrote_is_not_added_again(self):
+        node = FunctionAndDependencies.upsertTypeNode(TypeKind.TYPEDEF, "size_t", c_code="typedef unsigned long size_t;")
+        probe = self._probe([{"out": "fn unused() {}"}])
+        probe.agentFile = "pub type size_t = libc::size_t;\n"
+        node.rustCode = "pub type size_t = usize;"
+        probe.agentAppendType(node)
+        self.assertEqual(probe.agentFile, "pub type size_t = libc::size_t;\n")
+
+    def test_function_that_drops_an_earlier_function_is_rejected(self):
+        probe = self._probe([{"out": "fn callee() {}\n"}, {"out": "fn dep() {}\nfn callee() {}\n"}])
+        probe.agentFile = "fn dep() {}\n"
+        (successFlag, result) = self._translateFunction(probe)
+        self.assertTrue(successFlag)
+        self.assertIn("no longer has dep", self._calls()[1]["argv"][-1])
+        self.assertEqual(result, "fn callee() {}")
+        self.assertEqual(probe.agentFile, "fn dep() {}\nfn callee() {}\n")
+
+    def test_a_c_name_that_is_a_rust_keyword_is_accepted_as_a_raw_identifier(self):
+        # worsp's `match`: Rust can only spell it r#match.
+        probe = self._probe([{"out": "fn dep() {}\nfn r#match(s: i32) -> i32 { s }\n"}])
+        probe.agentFile = "fn dep() {}\n"
+        (successFlag, result) = probe.compileAndRetryLoopforDepency(
+            "match", "", "", "", "", "", "", "", [], [], [], "int match(int s) { return s; }")
+        self.assertTrue(successFlag)
+        self.assertEqual(result, "fn r#match(s: i32) -> i32 { s }")
+        self.assertIn("match", probe._agentFunctionNames(probe.agentFile))
+
+    def test_a_stubbed_function_is_rejected(self):
+        probe = self._probe([{"out": "fn callee() { todo!() }\n"}, {"out": "fn callee() {}\n"}])
+        (successFlag, _result) = self._translateFunction(probe)
+        self.assertTrue(successFlag)
+        self.assertIn("todo!() or unimplemented!() in callee", self._calls()[1]["argv"][-1])
+
+    def test_merged_file_is_the_file_the_agents_edited(self):
+        probe = self._probe([{"out": "pub type T = i32;\nfn callee() {}\n"}])
+        probe.agentFile = "pub type T = i32;\n"
+        self._translateFunction(probe)
+        self.assertEqual(probe._mergedFileText("pieces the pipeline put together"),
+                         "pub type T = i32;\nfn callee() {}\n")
+
+    def test_a_function_whose_callee_failed_is_not_sent_to_the_agent(self):
+        # callee is in the run's function map and came before caller, but is
+        # not in the file: its translation failed.
+        probe = self._probe([{"out": "fn caller() {}\n"}])
+        probe.agentFile = "fn other() {}\n"
+        (successFlag, result) = probe.compileAndRetryLoopforDepency(
+            "caller", "", "", "", "", "", "", "", ["callee", "strlen"], [], [],
+            "void caller(void) { callee(0, 0); }")
+        self.assertFalse(successFlag)
+        self.assertEqual(result, "")
+        self.assertFalse(os.path.exists(os.path.join(self.state, "calls.jsonl")))
+
+    def test_a_callee_outside_the_function_map_does_not_stop_the_unit(self):
+        # strlen and the like, or a function the pipeline skipped: the agent
+        # is told it is not in the file and decides.
+        probe = self._probe([{"out": "fn callee() {}\n"}])
+        (successFlag, _result) = probe.compileAndRetryLoopforDepency(
+            "callee", "", "", "", "", "", "", "", ["strlen"], [], [], "int callee(void) { return 0; }")
+        self.assertTrue(successFlag)
+        self.assertIn("Not in rust/out.rs: strlen", self._calls()[0]["files"]["task.md"])
+
+    def test_rejection_shows_the_errors_not_the_warnings(self):
+        warnings = "".join(
+            "warning: type `t%d` should have an upper camel case name\n --> src/lib.rs:%d:10\n  |\n\n" % (i, i)
+            for i in range(40))
+        err = (warnings + "error[E0308]: mismatched types\n --> src/lib.rs:90:5\n   |\n90 |     x\n   |     ^ expected `u8`\n\n"
+               + "error: could not compile `c` due to previous error; 40 warnings emitted\n")
+        probe = self._probe([{"out": "fn callee() {}\n"}] * 2, compileResults=[(False, err), (True, "")])
+        self._translateFunction(probe)
         feedback = self._calls()[1]["argv"][-1]
-        self.assertIn("Only the definitions of S are kept", feedback)
-        self.assertIn("E0412", feedback)
-        self.assertIn("struct S { int x; };", self._calls()[0]["files"]["task.md"])
+        self.assertIn("expected `u8`", feedback)
+        self.assertIn("could not compile", feedback)
+        self.assertNotIn("upper camel case", feedback)
 
     def test_requests_without_a_hook_still_go_through_the_agent(self):
         probe = self._probe([{"out": "fn anything() {}"}])

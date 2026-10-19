@@ -147,7 +147,7 @@ def extractTypedefDefinition(logger, cFileName, typedefName):
         return (start-1, end, extractedDefinition)
 
 def extractEnumDefRange(logger, cFileName, enumName):
-    findEnumCmd = "ctags --fields=+ne --c-kinds=g -o - --language-force=C++ " + cFileName
+    findEnumCmd = "ctags --fields=+ne --c-kinds=g -o - --language-force=C " + cFileName
     result = subprocess.run(findEnumCmd, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
     for line in result.stdout.split('\n'):
         tokens = line.split('\t')

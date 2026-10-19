@@ -8,13 +8,14 @@ Prints ``OK`` (exit 0) or the rustc errors (exit 1).
 """
 import logging
 import os
+import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from gpt_translation.code_utils_mixin import CodeUtilsMixin
 
-_ERROR_LINES = 60
+_ERROR_LINES = 150
 
 
 class _Checker(CodeUtilsMixin):
@@ -50,8 +51,27 @@ def main(argv):
     if successFlag:
         print("OK")
         return 0
-    print("\n".join(err.split("\n")[:_ERROR_LINES]))
+    print(firstLines(errorsOnly(err), _ERROR_LINES))
     return 1
+
+
+def errorsOnly(err):
+    """rustc's output without its warnings. Each diagnostic is a block that
+    ends at a blank line; the errors are the blocks that start with
+    ``error``. Kept with the warnings, the first error and a screen of
+    `non_camel_case_types` warnings filled the lines shown, and agents spent
+    whole sessions (one: 787 runs of ./check) trying to see the rest.
+    Text that is not rustc's comes back as it is."""
+    blocks = re.split(r"\n[ \t]*\n", err or "")
+    errors = [block for block in blocks if block.lstrip().startswith("error")]
+    return "\n\n".join(errors) if errors else err
+
+
+def firstLines(text, count):
+    lines = (text or "").split("\n")
+    if len(lines) <= count:
+        return text
+    return "\n".join(lines[:count]) + "\n... %d more lines" % (len(lines) - count)
 
 
 if __name__ == "__main__":

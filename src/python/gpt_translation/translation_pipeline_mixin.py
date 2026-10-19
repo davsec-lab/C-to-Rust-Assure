@@ -65,6 +65,14 @@ _FILE_IO_RE = re.compile(
 
 
 class TranslationPipelineMixin:
+    # The model answers a request with the code in its reply, which the
+    # pipeline then parses: the prompts tell it how to lay the reply out and
+    # to answer with nothing but the unit. An agent translator writes files
+    # under rules of its own (AgentTranslationMixin) and sets this False.
+    answersInReply = True
+    # Type prompts carry examples of how each field is used, found by the
+    # pipeline. An agent translator greps the codebase for usage itself.
+    promptGivesUsage = True
 
 
 
@@ -823,14 +831,15 @@ class TranslationPipelineMixin:
         kinds = {node.kind for node in batchNodes}
         hasRichStruct = any(node.translation_mode == TranslationMode.RICH_STRUCT for node in batchNodes)
         prompt = "Please translate the following C definitions to " + self.dstLang + ".\n"
-        prompt = prompt + "Please add any necessary header files, include statements, imports, or use statements required for the translated code to compile.\n"
+        if self.answersInReply:
+            prompt = prompt + "Please add any necessary header files, include statements, imports, or use statements required for the translated code to compile.\n"
         if kinds == {TypeKind.STATIC}:
             prompt = prompt + "The definitions are file-scope variable definitions.\n"
         elif kinds == {TypeKind.EXTERN}:
             prompt = prompt + "The definitions are file-scope external variable declarations.\n"
         elif kinds.issubset({TypeKind.STATIC, TypeKind.EXTERN}):
             prompt = prompt + "The definitions are file-scope variable declarations or definitions.\n"
-        elif hasRichStruct:
+        elif hasRichStruct and self.promptGivesUsage:
             #
             # The phrasing here is deliberately NOT "translate to a more
             # idiomatic type". The previous open-ended wording, combined
@@ -865,7 +874,8 @@ class TranslationPipelineMixin:
                 "`#[derive(Copy, Clone)]` only on the union itself, not on its fields' "
                 "owning types unless they are already trivially copyable.\n"
             )
-        prompt = prompt + '\nFor the final code result, please response with "Final result code" is : \n'
+        if self.answersInReply:
+            prompt = prompt + '\nFor the final code result, please response with "Final result code" is : \n'
         return prompt
 
     def _buildTypeBatchPrompt(self, batchNodes, predecessorContext, err="", lastTimeResult=""):
@@ -899,7 +909,7 @@ class TranslationPipelineMixin:
             request = request + "Do not repeat these dependency definitions in your response. Translate only the target definitions listed above.\n"
             request = request + predecessorContext + "\n\n"
 
-        usageBlock = self._formatTypeUsageExamples(batchNodes)
+        usageBlock = self._formatTypeUsageExamples(batchNodes) if self.promptGivesUsage else ""
         if usageBlock:
             request = request + usageBlock
             # On-demand: only spell out the BYTE BUFFER tag rule to the
@@ -1037,10 +1047,13 @@ class TranslationPipelineMixin:
 
     def _translateDeterministicTypedefBatch(self, batchNodes, translationManager):
         unresolvedNodes = []
+        agentAppendType = getattr(self, "agentAppendType", None)
         for node in batchNodes:
             node.rustCode = self.translateSimpleTypedefDefinition(node.cCode)
             if node.rustCode:
                 self._logStoredTypeResult(node)
+                if callable(agentAppendType):
+                    agentAppendType(node)
             else:
                 unresolvedNodes.append(node)
         return unresolvedNodes
@@ -1060,6 +1073,12 @@ class TranslationPipelineMixin:
             predecessorKeys,
             translationManager,
                     )
+
+    def _mergedFileText(self, assembled):
+        """merged_funcs: ``assembled`` from the pipeline's pieces, or the file
+        an agent translator edited unit by unit (agentMergedFile)."""
+        agentMergedFile = getattr(self, "agentMergedFile", None)
+        return agentMergedFile(assembled) if callable(agentMergedFile) else assembled
 
     def _splitTypeBatchResult(self, result, batchNodes):
         """Cut a batch translation into the definition stored for each node.
@@ -1090,6 +1109,15 @@ class TranslationPipelineMixin:
         return split
 
     def _translateTypeBatchWithLlm(self, batchNodes, predecessorContext, dependencyCodes, dependencyKeys, translationManager):
+        # An agent translator adds the batch to the one translation file it
+        # edits (AgentTranslationMixin), compiling and repairing it inside its
+        # own session; the predecessors are in that file.
+        agentTranslateTypeBatch = getattr(self, "agentTranslateTypeBatch", None)
+        if callable(agentTranslateTypeBatch):
+            agentTranslateTypeBatch("+".join(node.name for node in batchNodes),
+                                    self._buildTypeBatchPrompt(batchNodes, ""), batchNodes)
+            return
+
         trialCount = 0
         err = ""
         lastTimeResult = ""
@@ -1102,15 +1130,8 @@ class TranslationPipelineMixin:
 
             if not reusePreviousResult:
                 batchName = "+".join(node.name for node in batchNodes)
-                # An agent translator compiles and repairs the batch inside
-                # its own session, so it gets one trial here, not six.
-                agentTranslateTypeBatch = getattr(self, "agentTranslateTypeBatch", None)
-                if callable(agentTranslateTypeBatch):
-                    result = agentTranslateTypeBatch(
-                        batchName, request, batchNodes, predecessorContext, dependencyCodes, dependencyKeys)
-                else:
-                    with _callKindContext(self, "type_batch"):
-                        result = self.chunkAndSend(batchName, request)
+                with _callKindContext(self, "type_batch"):
+                    result = self.chunkAndSend(batchName, request)
                 result = self._sanitizeResultAgainstDependencies(result, dependencyCodes, dependencyKeys)
                 self.logger.debug("[type batch %s] sanitized result: %s", batchName, result)
                 lastTimeResult = result
@@ -1126,7 +1147,7 @@ class TranslationPipelineMixin:
                     node.rustCode = finalCode
                     self._logStoredTypeResult(node)
 
-                if successFlag or trialCount > 5 or callable(agentTranslateTypeBatch):
+                if successFlag or trialCount > 5:
                     break
             else:
                 for node in batchNodes:
@@ -1194,6 +1215,10 @@ class TranslationPipelineMixin:
                 batchNodes, predecessorContext, dependencyCodes, predecessorKeys,
                 translationManager,
             )
+
+        agentFinishTypes = getattr(self, "agentFinishTypes", None)
+        if callable(agentFinishTypes):
+            agentFinishTypes()
 
         # After all type batches finish: cascade-delete any entry that
         # still references a struct whose translation came out empty
@@ -1462,15 +1487,17 @@ class TranslationPipelineMixin:
             f"Functions in this group: {', '.join(sccGroup)}\n\n"
         )
 
-        prompt = (
-            sccPreamble
-            + "Translate " + self.srcLang + " to " + self.dstLang
-            + ". If the source code does not have a main function, please do not add a main function. "
-            + "If the source code does not have a called function defined, please do NOT add a dummy definition. "
-            + "Translate ONLY the provided functions.\n"
-            + "Please use standard library functions if a C function has been implemented by the target standard library.\n"
-            + 'For the final code result, please respond with "Final result code" is :\n'
-        )
+        prompt = sccPreamble
+        if self.answersInReply:
+            prompt = (
+                prompt
+                + "Translate " + self.srcLang + " to " + self.dstLang
+                + ". If the source code does not have a main function, please do not add a main function. "
+                + "If the source code does not have a called function defined, please do NOT add a dummy definition. "
+                + "Translate ONLY the provided functions.\n"
+                + "Please use standard library functions if a C function has been implemented by the target standard library.\n"
+                + 'For the final code result, please respond with "Final result code" is :\n'
+            )
 
         previouslyTranslatedPrompt = ""
         if previouslyTranslatedFunctions:
@@ -1652,7 +1679,9 @@ class TranslationPipelineMixin:
         return result
 
     def compileWithFeedback(self, funcName, funcDepsObj, contextStructs, dependencyTranslate=False):
-        prompt = "Translate " + self.srcLang + " to " + self.dstLang + ". If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function." + "\n Please use standard library function if a C function has been implemented by Rust standard library" + "\n For the final code result, please response with \"Final result code\" is : \n"
+        prompt = ""
+        if self.answersInReply:
+            prompt = "Translate " + self.srcLang + " to " + self.dstLang + ". If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function." + "\n Please use standard library function if a C function has been implemented by Rust standard library" + "\n For the final code result, please response with \"Final result code\" is : \n"
         callbackContract = self._buildCallbackContractSection(funcDepsObj)
         if callbackContract:
             prompt = prompt + callbackContract
@@ -2997,7 +3026,7 @@ class TranslationPipelineMixin:
                     self._dumpSplitBlock(outputDir, funcSym, translatedResult)
                     outputPath = os.path.join(outputDir, targetFileName)
                     with open(outputPath, "w") as rs_file:
-                        rs_file.write(previouslyTranslatedFunctions + "\n" + translatedResult)
+                        rs_file.write(self._mergedFileText(previouslyTranslatedFunctions + "\n" + translatedResult))
                     previouslyTranslatedFunctions = previouslyTranslatedFunctions + "\n" + translatedResult
                 else:
                     self.logger.warn("[COMPILE AND LINK] Failed to add %s to the merged file.", funcSym)
@@ -3071,7 +3100,7 @@ class TranslationPipelineMixin:
                     self._dumpSplitBlock(outputDir, "@".join(sccGroup), translatedResult)
                     outputPath = os.path.join(outputDir, targetFileName)
                     with open(outputPath, "w") as rs_file:
-                        rs_file.write(previouslyTranslatedFunctions + "\n" + translatedResult)
+                        rs_file.write(self._mergedFileText(previouslyTranslatedFunctions + "\n" + translatedResult))
                     previouslyTranslatedFunctions = previouslyTranslatedFunctions + "\n" + translatedResult
                 else:
                     self.logger.warn(
@@ -3105,7 +3134,7 @@ class TranslationPipelineMixin:
                 leftoverFuncs,
             )
 
-        translatedResult = contextedStructs + "\n" + previouslyTranslatedFunctions
+        translatedResult = self._mergedFileText(contextedStructs + "\n" + previouslyTranslatedFunctions)
         outputPath = os.path.join(outputDir, targetFileName)
         with open(outputPath, "w") as rs_file:
             rs_file.write(self.cleanCode(translatedResult))
