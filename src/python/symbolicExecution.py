@@ -24,6 +24,32 @@ KLEE_MAX_TIME_RUST = int(os.environ.get("ASSURE_KLEE_MAX_TIME_RUST", "10800"))
 # Leave headroom in the outer subprocess timeout, keeping the original ratios (+600s / +200s)
 KLEE_TIMEOUT_C = KLEE_MAX_TIME_C + 600
 KLEE_TIMEOUT_RUST = KLEE_MAX_TIME_RUST + 200
+# Extra flags appended to every klee invocation (both sides).
+# Default since 2026-09-08: --single-object-resolution. A store through
+# `base + symbolic offset` then resolves to the object the base came from
+# instead of forking one state per feasible object; those forks produced
+# aliased-write trees on both sides that never matched. Needs the rustify-klee
+# build at fae6e1b7 or later, where the mapping survives pointer arithmetic.
+# Set ASSURE_KLEE_EXTRA_FLAGS="" to get the previous command line back.
+KLEE_EXTRA_FLAGS = os.environ.get("ASSURE_KLEE_EXTRA_FLAGS", "--single-object-resolution").strip()
+# Path of the Symbolizer pass plugin (relative to the perform_general_execution_* dir).
+# Overridable so an alternative build (e.g. the unpatched pass) can be A/B tested
+# without swapping files under src/Symbolizer/build/.
+SYMBOLIZER_SO = os.environ.get("ASSURE_SYMBOLIZER_SO", "../build/Pass/SymbolizerPass.so")
+
+# convertGraph.py renders every .dot into a .png with graphviz. Nothing in the scoring
+# path reads those images -- distance.py parses the .dot files -- and on the cjson corpus
+# the render alone costs ~23 minutes per run. Skipped by default since 2026-09-20;
+# set ASSURE_RENDER_PNG=1 to get the images back.
+RENDER_PNG = os.environ.get("ASSURE_RENDER_PNG", "0") == "1"
+
+# ASSURE_REUSE_C=<previous perform_general_execution_* dir>: skip the whole C stage and
+# copy its artifacts from that run instead. Only sound when the change under test cannot
+# affect the C side (e.g. the 2026-09-20 pass fixes resolve Rust type names from
+# struct_map.json and treat Rust's NonNull::dangling() like NULL; C's struct_map_c.json
+# never matches and its pointers are alloca'd objects above page 0). The C artifacts are
+# copied verbatim, so the C column of edit_distance is bit-for-bit the previous run's.
+REUSE_C = os.environ.get("ASSURE_REUSE_C", "").strip()
 
 logger = logging.getLogger("my_logger")
 logger.setLevel(logging.DEBUG)
@@ -95,6 +121,13 @@ def run_command(cmd, cwd=None):
 
     print(f"[INFO] Running command: {cmd}")
     safe_cmd = re.sub(r"[^\w.-]", "_", cmd)
+    # 2026-09-06: the log name is the whole command line; a long absolute path
+    # (e.g. an ASSURE_SYMBOLIZER_SO override) pushed it past NAME_MAX and
+    # open() raised ENAMETOOLONG, silently killing every symbolisation step.
+    # Keep short names verbatim (existing logs stay findable), hash the rest.
+    if len(safe_cmd) > 200:
+        import hashlib
+        safe_cmd = safe_cmd[:160] + "__" + hashlib.md5(safe_cmd.encode()).hexdigest()[:12]
     log_file = f"all_logs/{safe_cmd}.log"
 
     with open(log_file, "w") as log:
@@ -110,15 +143,18 @@ def run_command(cmd, cwd=None):
     print(f"[INFO] command success: {cmd}")
     
 
-def prepare_directory(dir_path):
+def prepare_directory(dir_path, keep_c=False):
     """
     Replicates the logic of clearing or creating directories
     and removing process_log.log if present.
     """
     if os.path.exists(dir_path):
-        shutil.rmtree(dir_path)
-    os.makedirs(os.path.join(dir_path, "C"))
-    os.makedirs(os.path.join(dir_path, "Rust"))
+        if keep_c and os.path.isdir(os.path.join(dir_path, "C")):
+            shutil.rmtree(os.path.join(dir_path, "Rust"), ignore_errors=True)
+        else:
+            shutil.rmtree(dir_path)
+    os.makedirs(os.path.join(dir_path, "C"), exist_ok=True)
+    os.makedirs(os.path.join(dir_path, "Rust"), exist_ok=True)
 
     if os.path.exists("process_log.log"):
         os.remove("process_log.log")
@@ -185,7 +221,7 @@ def process_c_file(bc_file):
     run_command(link_core)
 
     cmd_opt = (
-        f"opt -load-pass-plugin ../build/Pass/SymbolizerPass.so "
+        f"opt -load-pass-plugin {SYMBOLIZER_SO} "
         f"-O0 klee_ir_files/C/{base_name}.ll -S -o klee_ir_files/C/{base_name}_klee.ll"
     )
 
@@ -201,7 +237,7 @@ def process_c_file(bc_file):
     # 2) klee. We capture the entire output.
     cmd_klee = (
         f"klee --libc=klee --write-no-tests=true --max-time={KLEE_MAX_TIME_C} --max-tests=5000000 "
-        f"--target-function-name={target_function_name} klee_ir_files/C/{base_name}_klee.ll"
+        f"--target-function-name={target_function_name} {KLEE_EXTRA_FLAGS} klee_ir_files/C/{base_name}_klee.ll"
     )
 
     try:
@@ -268,7 +304,7 @@ def process_rust_file(bc_file):
 
     # symbolize
     cmd_opt1 = (
-        f"opt -load ../build/Pass/SymbolizerPass.so -load-pass-plugin ../build/Pass/SymbolizerPass.so "
+        f"opt -load {SYMBOLIZER_SO} -load-pass-plugin {SYMBOLIZER_SO} "
         f"-O0 -isRust=true klee_ir_files/Rust/{base_name}.ll -S -o klee_ir_files/Rust/{base_name}_klee.ll"
     )
     run_command(cmd_opt1)
@@ -284,7 +320,7 @@ def process_rust_file(bc_file):
     # 3) klee
     cmd_klee = (
         f"klee --libc=klee --write-no-tests=true --max-time={KLEE_MAX_TIME_RUST} --max-tests=500000 "
-        f"--target-function-name={target_function_name} klee_ir_files/Rust/{base_name}_klee.ll"
+        f"--target-function-name={target_function_name} {KLEE_EXTRA_FLAGS} klee_ir_files/Rust/{base_name}_klee.ll"
     )
 
     try:
@@ -404,17 +440,31 @@ def main():
         os.remove("input.json")
     
     # Prepare directories
-    prepare_directory("klee_ir_files")
-    prepare_directory("klee_symbol_log")
+    prepare_directory("klee_ir_files", keep_c=bool(REUSE_C))
+    prepare_directory("klee_symbol_log", keep_c=bool(REUSE_C))
     prepare_directory("klee_symbol_error_log")
-    prepare_directory("graph_output")
+    prepare_directory("graph_output", keep_c=bool(REUSE_C))
 
 
     # 1) Emitting LLVM bitcode for C
-    try:
-        run_command("python3 ../../python/llvmBitcodeEmitter.py testcase/C")
-    except Exception as e:
-        logger.error("compile C error: %s", e, exc_info=True)
+    if REUSE_C:
+        src = os.path.abspath(REUSE_C)
+        print(f"[reuse-c] copying C artifacts from {src}")
+        for rel in ("testcase/C", "klee_symbol_log/C", "klee_ir_files/C", "graph_output/C"):
+            d = os.path.join(src, rel)
+            if os.path.isdir(d):
+                if os.path.isdir(rel):
+                    shutil.rmtree(rel)
+                shutil.copytree(d, rel)
+        for f in ("struct_map_c.json", "fn_type_map_c.json", "c_klee_terminate_results.csv"):
+            if os.path.isfile(os.path.join(src, f)):
+                shutil.copy2(os.path.join(src, f), f)
+        print(f"[reuse-c] C .bc={len(glob.glob('testcase/C/*.bc'))} graphs={len(os.listdir('graph_output/C')) if os.path.isdir('graph_output/C') else 0}")
+    else:
+        try:
+            run_command("python3 ../../python/llvmBitcodeEmitter.py testcase/C")
+        except Exception as e:
+            logger.error("compile C error: %s", e, exc_info=True)
 
     # 1.1) Emitting LLVM bitcode for Rust
     try:
@@ -425,13 +475,14 @@ def main():
     create_argument_map(create_map_by_llm, model)
 
     # 1.5) create C map
-    try:
-        run_command("python3 ../../python/process_c_file.py testcase/C")
-    except Exception as e:
-        logger.error("process rust error: %s", e, exc_info=True)
+    if not REUSE_C:
+        try:
+            run_command("python3 ../../python/process_c_file.py testcase/C")
+        except Exception as e:
+            logger.error("process rust error: %s", e, exc_info=True)
 
     # 2) Process each C .bc file in parallel
-    c_bc_files = glob.glob("testcase/C/*.bc")
+    c_bc_files = [] if REUSE_C else glob.glob("testcase/C/*.bc")
     with ThreadPoolExecutor(max_workers=MAX_JOBS) as executor:
         future_to_file = {executor.submit(process_c_file, f): f for f in c_bc_files}
 
@@ -443,15 +494,17 @@ def main():
                 logger.error(f"C symbolic {f} failed", exc_info=True)
 
     # Deduplicate + convertGraph for C
-    try:
-        run_command("python3 ../scripts/deduplicate.py C")
-    except Exception as e:
-        logger.error("deduplicate C outputs error: %s", e, exc_info=True)
+    if not REUSE_C:
+        try:
+            run_command("python3 ../scripts/deduplicate.py C")
+        except Exception as e:
+            logger.error("deduplicate C outputs error: %s", e, exc_info=True)
 
-    try:
-        run_command("python3 ../scripts/convertGraph.py C")
-    except Exception as e:
-        logger.error("convertGraph C outputs error: %s", e, exc_info=True)
+        if RENDER_PNG:
+            try:
+                run_command("python3 ../scripts/convertGraph.py C")
+            except Exception as e:
+                logger.error("convertGraph C outputs error: %s", e, exc_info=True)
 
     # 3.5) create Rust map
     try:
@@ -477,10 +530,11 @@ def main():
     except Exception as e:
         logger.error("deduplicate rust error: %s", e, exc_info=True)
 
-    try:
-        run_command("python3 ../scripts/convertGraph.py Rust")
-    except Exception as e:
-        logger.error("convertGraph rust error: %s", e, exc_info=True)
+    if RENDER_PNG:
+        try:
+            run_command("python3 ../scripts/convertGraph.py Rust")
+        except Exception as e:
+            logger.error("convertGraph rust error: %s", e, exc_info=True)
 
 
     # Run distance.py

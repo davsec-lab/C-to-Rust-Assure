@@ -89,6 +89,7 @@ fail() { say "❌ $*"; echo "FAILED: $*" > "$OUT/STATUS"; exit 1; }
 cd "$ROOT/src/python"
 say "run_eval start  id=$RUN_ID mode=$MODE model=$LLM_MODE codebase=$CODEBASE"
 say "  KLEE max-time: C=${ASSURE_KLEE_MAX_TIME_C:-default 7200} Rust=${ASSURE_KLEE_MAX_TIME_RUST:-default 10800}"
+say "  KLEE extra flags: ${ASSURE_KLEE_EXTRA_FLAGS-default --single-object-resolution}"
 case "$LLM_MODE" in opencode:*) say "  agent: opencode $(opencode --version 2>/dev/null || echo NOT-INSTALLED) max-steps=${ASSURE_AGENT_MAX_STEPS:-default} host=${ASSURE_OPENROUTER_PROVIDER:-unpinned}" ;; esac
 
 # ── 1. frontend ───────────────────────────────────────────────────────────

@@ -46,7 +46,8 @@ COPY --from=typedefextractor / ${HOST_HOME}/typedefextractor-target/
 # The LLVM 14 shared libraries KLEE depends on (confirmed via ldd: libLLVMipo.so.14 and a dozen others)
 COPY --from=llvmtarget / ${HOST_HOME}/llvm-target/
 
-# Modified KLEE (davsec-lab/rustify-klee @ d880ceb4).
+# Modified KLEE (davsec-lab/rustify-klee @ fae6e1b7 = d880ceb4 + SOR base-mapping
+# propagation, -base-object-resolution, -debug-sor; see TOOLCHAIN.md §3).
 # The binary contains custom output like [DEBUG][state_dumps] / Base Address is;
 # the backend's coverage.py and countKleeTerminate.py parse exactly these — upstream KLEE would break them.
 # Copying only the klee binary is not enough — evaluationScripts/coverage.py calls klee-stats

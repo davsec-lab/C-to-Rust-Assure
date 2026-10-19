@@ -240,9 +240,9 @@ unchanged) and `runs/libcsv-mem2reg` (mem2reg on both sides; expect csv_fini 8/8
 
 ---
 
-## Appendix: Two Designs That Are Not Defects
+## Appendix: Designs That Are Not Defects
 
-The following two points were confirmed to be **intentional** during the investigation; recorded to avoid re-investigating later.
+The following points were confirmed to be **intentional** during the investigation; recorded to avoid re-investigating later.
 
 ### A. C / Rust Symbol-Count Asymmetry
 
@@ -271,3 +271,25 @@ the number of paths explored differs per round).
 `best_edit_distances.csv` in the same rounds has zero per-argument differences, showing the fluctuation only affects exploration depth and
 **does not affect the expression structure of already-symbolized arguments**. For metric regressions, use `edit_distance` as the reference;
 coverage requires tolerating small jitter.
+
+### C. The Harness Object Graph Ends at the Recursion Boundary (2026-09-15)
+
+`SymbolizerPass` expands a self-referential struct once; at the node it stops at, pointers to
+structs are NULL and pointers to data get symbolic buffers (`assure_design.md` §2.3b). Two
+per-argument results follow from that design and are not translation divergences:
+
+- **skiplist `jrsl_search` `ret_value`** prints on both sides a read through pointer arithmetic
+  whose formula carries a concrete per-side address constant
+  (`Read w8 (Extract w32 0 (Add w64 18446611604372979712 ...))` vs `...18446616714918494208...`).
+  The target indexes `x->forward[i - 1]` with a symbolic level, the harness allocated a single
+  `struct link`, and the resulting pointer is base-plus-symbolic-offset; the comparator sees the
+  base address, which differs between the two KLEE runs. Before the boundary rules it printed
+  NULL on both sides and scored 0 without proving anything.
+- **cjson `tree_checksum` `ret_value`** halts at the KLEE budget on both sides once the boundary
+  leaves are real buffers (C 560k completed paths, Rust 52k); Rust's 127 distinct return values
+  are a strict subset of C's 201. Budget asymmetry (Rust is 10-15x slower per path here), not a
+  divergence.
+
+Measured on the same translations at 600 s per side, the three boundary rules together move
+skiplist 24/30 -> 26/30 and cjson_parse 69/79 -> 73/80 with no argument regressing; libcsv,
+pageRank and libbmp_parse have no boundary nodes and are unchanged.

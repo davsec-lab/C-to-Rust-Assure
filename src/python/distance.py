@@ -405,6 +405,13 @@ def compare_and_export_csv(c_dict,
                            model):
     rust_base = "graph_output/Rust"
     c_base = "graph_output/C"
+    # Which functions produced ANY Rust symbol directory. "Rust Empty!" used to conflate two
+    # unrelated failures: (a) the Rust state died inside the function body, so main never reached
+    # a single klee_print_expr -> the function has no directory at all; (b) the function ran and
+    # dumped symbols, but no Rust label matched THIS C label (a dump-coverage / field-path miss).
+    # Triage routed on the wrong half for about a third of the rows; both markers keep the
+    # substring "Empty" so every existing consumer ("Empty" in v) is unaffected.
+    rust_functions_with_symbols = {k.split('/', 1)[0] for k in rust_dict}
 
     results_best = []
     free_counts = []
@@ -541,7 +548,10 @@ def compare_and_export_csv(c_dict,
                                                        only_consider_struct))
             results_best.append((function_name, argument_name, str(edit_distance)))
         else:
-            results_best.append((function_name, argument_name, "Rust Empty!"))
+            results_best.append((function_name, argument_name,
+                                 "Rust Empty! (arg absent)"
+                                 if function_name in rust_functions_with_symbols
+                                 else "Rust Empty!"))
 
     os.makedirs(output_csv_path, exist_ok=True)
 

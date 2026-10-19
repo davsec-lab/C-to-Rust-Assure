@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Split struct-fn-replay's merged_funcs.rs back into per-function self-contained .rs (DESIGN.md §4.7).
 
-    python3 split_merged.py <individual-funcs directory>
+    python3 split_merged.py <individual-funcs directory> [--no-file-adapter]
 
 Input (written to disk by the frontend's _dumpSplitBlock/_dumpSplitManifest):
     split_blocks/<block>.rs    the raw translation block of each function (or SCC group, name contains "@")
@@ -30,6 +30,7 @@ import sys
 import tempfile
 
 import backend_libc
+from file_adapter import wrap_file_params, enabled_by_env
 
 RUST_EDITION = os.environ.get("ASSURE_RUST_EDITION", "2021")
 
@@ -163,7 +164,9 @@ def main():
 
     topo = manifest["topo_sccs"]          # block names, callees first
     funcs = sorted(os.path.splitext(f)[0] for f in os.listdir(d) if f.endswith(".i"))
-    stats = {"split": 0, "fallback_merge": 0, "merge_failed": 0}
+    stats = {"split": 0, "fallback_merge": 0, "merge_failed": 0, "adapted": 0}
+    use_adapter = enabled_by_env() and "--no-file-adapter" not in sys.argv[2:]
+    print(f"[split] FILE* adapter: {'on' if use_adapter else 'off'}")
 
     for fn in funcs:
         if manifest["block_of"].get(fn) is None or blockText(manifest["block_of"][fn]) is None:
@@ -173,11 +176,25 @@ def main():
             continue
         need = closure_blocks(fn, manifest)
         parts = [structs] + [blockText(b) for b in topo if b in need]
-        content = dedupe_top_level(("\n".join(p for p in parts if p)).splitlines())
+        plain = dedupe_top_level(("\n".join(p for p in parts if p)).splitlines())
         out = os.path.join(d, f"{fn}.rs")
+        # FILE* adapter (file_adapter.py): dyn/impl Read|Write|Seek standing for a C FILE*
+        # get a concrete CFile wrapper, else the backend cannot measure the function at all.
+        content, n_wrapped = plain, 0
+        if use_adapter:
+            content, n_wrapped = wrap_file_params(plain, fn, open(os.path.join(d, f"{fn}.i"), "rb").read())
         with open(out, "w") as f:
             f.write(content)
         ok, err = rustc_ok(out)
+        if ok and n_wrapped:
+            stats["adapted"] += 1
+            print(f"[split] {fn}: FILE* adapter on {n_wrapped} parameter(s)")
+        if not ok and n_wrapped:
+            firstErr = next((l for l in err.splitlines() if l.startswith("error")), "?")
+            print(f"[split] {fn}: adapter does not compile ({firstErr[:80]}) -> plain split")
+            with open(out, "w") as f:
+                f.write(plain)
+            ok, err = rustc_ok(out)
         if ok:
             stats["split"] += 1
         else:
@@ -218,7 +235,8 @@ def main():
             if f.endswith(".rs"):
                 os.rename(os.path.join(root, f), os.path.join(root, f + ".block"))
 
-    print(f"[split] done: closure-split {stats['split']} / whole-merge fallback {stats['fallback_merge']}"
+    print(f"[split] done: closure-split {stats['split']} (FILE* adapter on {stats['adapted']})"
+          f" / whole-merge fallback {stats['fallback_merge']}"
           f" / merge-stage failures {stats['merge_failed']}  ({len(funcs)} functions total)")
     return 0
 
