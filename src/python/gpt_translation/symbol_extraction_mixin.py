@@ -1,8 +1,6 @@
 import re
 from collections import deque
 
-from more_itertools import unique_everseen
-
 
 class SymbolExtractionMixin:
     def _find_brace_delimited_block_end(self, code, braceIndex):
@@ -628,15 +626,6 @@ class SymbolExtractionMixin:
 
         return structDefinition + "\n\n" + "\n\n".join(includedAliases)
 
-    def toPascalCaseIdentifier(self, name):
-        if not name:
-            return name
-        parts = re.split(r'[_\s]+', name.strip("_"))
-        parts = [p for p in parts if p]
-        if not parts:
-            return name
-        return "".join(p[:1].upper() + p[1:] for p in parts)
-
     def extractFunctionDefinitionByName(self, code, functionName):
         code = code or ""
         if not functionName:
@@ -1234,13 +1223,3 @@ class SymbolExtractionMixin:
                 return extracted
 
         return ""
-
-    def extractIncludeBlock(self, code):
-        code = code or ""
-        includeLines = re.findall(r'(?m)^\s*#\s*include[^\n]*$', code)
-        rustUseLines = re.findall(r'(?m)^\s*(?:pub\s+)?use\s+[^\n;]+;\s*$', code)
-        externCrateLines = re.findall(r'(?m)^\s*extern\s+crate\s+[^\n;]+;\s*$', code)
-        importLines = list(unique_everseen(includeLines + rustUseLines + externCrateLines))
-        if not importLines:
-            return ""
-        return "\n".join(importLines).strip()

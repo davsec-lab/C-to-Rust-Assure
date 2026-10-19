@@ -976,15 +976,11 @@ class PerformanceMixin:
         )
 
         with _callKindContext(self, "performance_main"):
-            # An agent translator checks its draft against rust/context.rs, so
-            # it needs the dependency code there, not only quoted in the task:
-            # with an empty context it pastes the dependencies into its answer
-            # to make the check pass, and every name is then defined twice.
-            agentRequest = getattr(self, "agentRequest", None)
-            if callable(agentRequest):
-                response = agentRequest("performance_main", request, inputCode)
-            else:
-                response = self.chunkAndSend("performance_main", request)
+            # The agent checks its draft against rust/context.rs, so it needs
+            # the dependency code there, not only quoted in the task: with an
+            # empty context it pastes the dependencies into its answer to make
+            # the check pass, and every name is then defined twice.
+            response = self.agentRequest("performance_main", request, inputCode)
         extractedPerformanceCode = self.extractTargetCode(response, [languageHint]).strip()
         if not extractedPerformanceCode:
             extractedPerformanceCode = (response or "").strip()

@@ -314,8 +314,7 @@ class AgentTranslationTest(unittest.TestCase):
         probe = self._probe([{"out": rust}], compileResults=[(False, "error")] * 20)
         probe.agentFile = "pub type T = i32;\n"
         probe._translateTypeBatchWithLlm([node], "", [], [], None)
-        # The agent used its whole repair budget inside one session; the
-        # single-request path's six fresh trials are not stacked on top.
+        # The agent used its whole repair budget inside one session.
         self.assertEqual(len(self._calls()), agent_mixin.COMPILATION_RETRIES + 1)
         self.assertEqual(probe.agentFile, "pub type T = i32;\n")
 
@@ -332,15 +331,14 @@ class AgentTranslationTest(unittest.TestCase):
         files = self._calls()[0]["files"]
         self.assertEqual(files["rust/out.rs"], before)
         self.assertIn("typedef __builtin_va_list va_list;", files["task.md"])
-        # Instructions for laying out a reply are for the single-request path.
+        # The agent writes rust/out.rs: no instructions for laying out a reply.
         self.assertNotIn("Final result code", files["task.md"])
         self.assertNotIn("header files", files["task.md"])
         self.assertEqual(probe.compiled, [edited])
         self.assertEqual(probe.agentFile, edited)
 
     def test_type_batch_gives_no_usage_examples(self):
-        # The agent greps c/ for how a field is used; the pipeline's examples
-        # are for the single-request path.
+        # The agent greps c/ for how a field is used.
         node = FunctionAndDependencies.upsertTypeNode(
             TypeKind.STRUCT, "s_buf", c_code="struct s_buf { void *buffer; };",
             translation_mode=TranslationMode.RICH_STRUCT)
@@ -504,7 +502,11 @@ class AgentTranslationTest(unittest.TestCase):
     def test_opencode_mode_string_selects_the_agent_translator(self):
         self.assertEqual(Translator.getLLMModel("opencode:openrouter/vendor/some-model"), LLMModels.OPENCODE)
         self.assertEqual(Translator.openCodeModel, "openrouter/vendor/some-model")
-        self.assertEqual(Translator.getLLMModel("gpt-5-mini"), LLMModels.GPT_5_MINI)
+
+    def test_a_mode_string_without_opencode_is_refused(self):
+        for mode in ("gpt-5-mini", "claude-sonnet", "opencode:"):
+            with self.assertRaises(SystemExit):
+                Translator.getLLMModel(mode)
 
 
 if __name__ == "__main__":

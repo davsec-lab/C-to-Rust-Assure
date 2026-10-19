@@ -32,7 +32,7 @@ except ImportError:
 
 from functionAndDeps import FunctionAndDependencies
 from translationResultManager import TranslationResultManager
-from type_registry import TranslationMode, TypeKind
+from type_registry import TypeKind
 
 from gpt_translation._call_kind_helper import callKindContext as _callKindContext
 from gpt_translation.byte_buffer_classifier import _TAG_CORE as _BYTE_BUFFER_TAG
@@ -65,14 +65,10 @@ _FILE_IO_RE = re.compile(
 
 
 class TranslationPipelineMixin:
-    # The model answers a request with the code in its reply, which the
-    # pipeline then parses: the prompts tell it how to lay the reply out and
-    # to answer with nothing but the unit. An agent translator writes files
-    # under rules of its own (AgentTranslationMixin) and sets this False.
-    answersInReply = True
-    # Type prompts carry examples of how each field is used, found by the
-    # pipeline. An agent translator greps the codebase for usage itself.
-    promptGivesUsage = True
+    # Every unit is translated by an agent (AgentTranslationMixin): it writes
+    # rust/out.rs under the rules of its AGENTS.md, so the prompts carry no
+    # instructions for laying out a reply, and it greps the codebase for how
+    # a type is used, so type prompts carry no usage examples.
 
 
 
@@ -206,11 +202,9 @@ class TranslationPipelineMixin:
         """Drop ``#include <...>`` / ``#include "..."`` lines from a
         translated-type code blob.
 
-        ``_extractTypeDefinitionFromResult`` attaches the LLM's include
-        block to the first node of each type batch so the final
-        merged file gets the includes ordered before the definitions.
-        That's correct for ``merged_funcs.{cpp,rs}`` assembly. But the
-        same ``rustCode`` field is also read by
+        A type node's ``rustCode`` can carry include lines ahead of its
+        definitions, which ``merged_funcs.{cpp,rs}`` assembly wants. But
+        the same ``rustCode`` field is also read by
         ``_collectTranslatedTypeCodes`` when rendering the
         "translated dependency definitions for reference only" block
         of *later* prompts. Includes are noise in that block — they
@@ -829,39 +823,13 @@ class TranslationPipelineMixin:
 
     def _buildTypeBatchBasePrompt(self, batchNodes):
         kinds = {node.kind for node in batchNodes}
-        hasRichStruct = any(node.translation_mode == TranslationMode.RICH_STRUCT for node in batchNodes)
         prompt = "Please translate the following C definitions to " + self.dstLang + ".\n"
-        if self.answersInReply:
-            prompt = prompt + "Please add any necessary header files, include statements, imports, or use statements required for the translated code to compile.\n"
         if kinds == {TypeKind.STATIC}:
             prompt = prompt + "The definitions are file-scope variable definitions.\n"
         elif kinds == {TypeKind.EXTERN}:
             prompt = prompt + "The definitions are file-scope external variable declarations.\n"
         elif kinds.issubset({TypeKind.STATIC, TypeKind.EXTERN}):
             prompt = prompt + "The definitions are file-scope variable declarations or definitions.\n"
-        elif hasRichStruct and self.promptGivesUsage:
-            #
-            # The phrasing here is deliberately NOT "translate to a more
-            # idiomatic type". The previous open-ended wording, combined
-            # with the unscoped example-usage block, was getting an earlier pass
-            # to also do an earlier pass's job (e.g. converting char* fields to
-            # std::string because the usage looked string-like, even
-            # though an earlier pass's only mandate is to remove the custom
-            # allocator). The STAGE-EXCLUSIVITY block already enumerates
-            # what each future stage owns; this sentence's job is just
-            # to tell the model what the example block is FOR.
-            prompt = prompt + "\n"
-            prompt = prompt + (
-                "I will provide the example usage of each field below. Use "
-                "it to understand how the field is read/written in the "
-                "surrounding code, so that any type change you do make "
-                "(within this stage's scope as defined above) propagates "
-                "consistently to its call sites. The example-usage block "
-                "is NOT a license to change a field's type just because "
-                "its usage looks like a good fit for a future stage's "
-                "transformation — those changes belong to those stages, "
-                "see STAGE-EXCLUSIVITY above.\n"
-            )
         if TypeKind.UNION in kinds and self.dstLang == "Rust":
             prompt = prompt + (
                 "Each union must be emitted as `#[repr(C)] pub union <Name> { ... }`. "
@@ -874,8 +842,6 @@ class TranslationPipelineMixin:
                 "`#[derive(Copy, Clone)]` only on the union itself, not on its fields' "
                 "owning types unless they are already trivially copyable.\n"
             )
-        if self.answersInReply:
-            prompt = prompt + '\nFor the final code result, please response with "Final result code" is : \n'
         return prompt
 
     def _buildTypeBatchPrompt(self, batchNodes, predecessorContext, err="", lastTimeResult=""):
@@ -909,151 +875,18 @@ class TranslationPipelineMixin:
             request = request + "Do not repeat these dependency definitions in your response. Translate only the target definitions listed above.\n"
             request = request + predecessorContext + "\n\n"
 
-        usageBlock = self._formatTypeUsageExamples(batchNodes) if self.promptGivesUsage else ""
-        if usageBlock:
-            request = request + usageBlock
-            # On-demand: only spell out the BYTE BUFFER tag rule to the
-
         if err:
             request = request + "In the previous translation, I got an compile error \n" + err + "\n"
             request = request + "This is the previous translation result : \n" + lastTimeResult
         return request
 
-    @staticmethod
-    def _formatTypeUsageExamples(nodes):
-        """Render the "example usage:" block shown to both the translation
-        prompt and the stage_check judge. Returns "" when there is nothing
-        worth showing.
-
-        Single source of truth: callers/translators and the yes/no judge
-        used to disagree on whether usage was available — the type-batch
-        prompt rendered it from ``node.usageList`` while the judge
-        rendered nothing at all. That asymmetry let cases like the
-        an earlier pass ``char* → std::string`` slip past the judge (which saw
-        only the type definitions) even though the actual translation
-        prompt had usage evidence (``item->valuestring = (char*)output;``
-        / ``free(item->valuestring)``) that would have flagged the
-        conversion as unsafe. Routing both through this helper guarantees
-        they see byte-identical evidence.
-
-        the Rust pass (Rust) intentionally returns "" — the mechanical mapping
-        hint covers what to do without per-field usage, and dangling
-        promises of examples we don't deliver mislead the model into
-        "guess what's idiomatic" mode (see _buildTypeBatchBasePrompt).
-        """
-        richNodes = [
-            n for n in nodes
-            if getattr(n, "translation_mode", None) == TranslationMode.RICH_STRUCT
-        ]
-        if not richNodes:
-            return ""
-        lines = []
-        for node in richNodes:
-            for fieldName, usageList in node.usageList.items():
-                for usage in usageList:
-                    lines.append(f"{node.name}: {fieldName}: {usage}")
-        if not lines:
-            return ""
-        return "example usage:\n" + "\n".join(lines) + "\n\n"
-
-    def _extractTypeDefinitionFromResult(self, result, typeNode, includeBlock="", attachInclude=False):
-        splitResult = ""
-        helperDefinitions = []
-        if typeNode.kind == TypeKind.STRUCT:
-            splitResult = self.extractStructDefinitionByName(result, typeNode.name)
-            if not splitResult:
-                structCode = self.stringifyCodeBlock(typeNode.cCode)
-                candidateNames = self.extractStructIdentifiers(typeNode.name, structCode)
-                candidateNames.add(self.toPascalCaseIdentifier(typeNode.name))
-                for candidateName in list(candidateNames):
-                    candidateNames.add(self.toPascalCaseIdentifier(candidateName))
-                for candidateName in candidateNames:
-                    if not candidateName:
-                        continue
-                    splitResult = self.extractStructDefinitionByName(result, candidateName)
-                    if splitResult:
-                        break
-            helperDefinitions = self.extractReferencedRustTypeAliasDefinitions(result, splitResult)
-            helperDefinitions.extend(self.extractReferencedRustConstDefinitions(result, splitResult))
-        elif typeNode.kind == TypeKind.UNION:
-            splitResult = self.extractUnionDefinitionByName(result, typeNode.name)
-            if not splitResult:
-                unionCode = self.stringifyCodeBlock(typeNode.cCode)
-                candidateNames = self.extractUnionIdentifiers(typeNode.name, unionCode)
-                candidateNames.add(self.toPascalCaseIdentifier(typeNode.name))
-                for candidateName in list(candidateNames):
-                    candidateNames.add(self.toPascalCaseIdentifier(candidateName))
-                for candidateName in candidateNames:
-                    if not candidateName:
-                        continue
-                    splitResult = self.extractUnionDefinitionByName(result, candidateName)
-                    if splitResult:
-                        break
-            helperDefinitions = self.extractReferencedRustTypeAliasDefinitions(result, splitResult)
-            helperDefinitions.extend(self.extractReferencedRustConstDefinitions(result, splitResult))
-        elif typeNode.kind == TypeKind.ENUM:
-            splitResult = self.extractEnumDefinitionByName(result, typeNode.name)
-        elif typeNode.kind == TypeKind.TYPEDEF:
-            splitResult = self._extractTypedefDefinitionForDstLang(result, typeNode.name)
-            if not splitResult and getattr(self, "dstLang", "") == "Rust":
-                # LLMs habitually rename C typedef aliases to PascalCase
-                # (e.g. ``comparator_t`` -> ``ComparatorT``, especially common
-                # for function-pointer typedefs because PascalCase is idiomatic
-                # Rust for type aliases). The exact-name extractor above then
-                # returns "", and downstream ``_collectTranslatedTypeCodes``
-                # silently drops the typedef from every dependent struct /
-                # function prompt while ``_stripProvidedDependencyDefinitions``
-                # still treats its key as "already translated" and strips any
-                # re-emitted definition. Net effect: every struct that
-                # references the typedef compiles into a half-defined Rust
-                # form that fails E0412 in all downstream per-function checks.
-                #
-                # Mirror the PascalCase fallback the STRUCT / UNION branches
-                # above already do, then rename the alias back to the original
-                # C identifier so the rest of the pipeline (which keys off the
-                # C name throughout) stays consistent.
-                #
-                # PascalCase renaming is a Rust-idiom problem; C++ keeps the
-                # original snake_case name so we skip this branch for C++.
-                pascalName = self.toPascalCaseIdentifier(typeNode.name)
-                if pascalName and pascalName != typeNode.name:
-                    splitResult = self.extractTypeAliasDefinitionByName(result, pascalName)
-                    if splitResult:
-                        splitResult = re.sub(
-                            r'\b' + re.escape(pascalName) + r'\b',
-                            typeNode.name,
-                            splitResult,
-                        )
-        elif typeNode.kind == TypeKind.EXTERN:
-            splitResult = self.extractExternDefinitionByName(result, typeNode.name)
-        elif typeNode.kind == TypeKind.STATIC:
-            splitResult = self.extractStaticDefinitionByName(result, typeNode.name)
-
-        if not splitResult:
-            if typeNode.kind == TypeKind.TYPEDEF:
-                return ""
-            finalCode = result
-        else:
-            finalCode = splitResult
-            if helperDefinitions:
-                finalCode = "\n\n".join(helperDefinitions + [splitResult])
-            if includeBlock and attachInclude:
-                finalCode = includeBlock + "\n\n" + finalCode
-        if finalCode and typeNode.kind in (TypeKind.STATIC, TypeKind.EXTERN):
-            finalCode = self.stripTypeOnlyAttributesFromValueDefinition(finalCode)
-        if finalCode:
-            finalCode = self.cleanCode(finalCode)
-        return finalCode
-
     def _translateDeterministicTypedefBatch(self, batchNodes, translationManager):
         unresolvedNodes = []
-        agentAppendType = getattr(self, "agentAppendType", None)
         for node in batchNodes:
             node.rustCode = self.translateSimpleTypedefDefinition(node.cCode)
             if node.rustCode:
                 self._logStoredTypeResult(node)
-                if callable(agentAppendType):
-                    agentAppendType(node)
+                self.agentAppendType(node)
             else:
                 unresolvedNodes.append(node)
         return unresolvedNodes
@@ -1075,84 +908,16 @@ class TranslationPipelineMixin:
                     )
 
     def _mergedFileText(self, assembled):
-        """merged_funcs: ``assembled`` from the pipeline's pieces, or the file
-        an agent translator edited unit by unit (agentMergedFile)."""
-        agentMergedFile = getattr(self, "agentMergedFile", None)
-        return agentMergedFile(assembled) if callable(agentMergedFile) else assembled
-
-    def _splitTypeBatchResult(self, result, batchNodes):
-        """Cut a batch translation into the definition stored for each node.
-        Returns ``[(node, code)]``. Only what is returned here survives: an
-        item of ``result`` that belongs to no node is dropped."""
-        includeBlock = self.extractIncludeBlock(result)
-        includeAttached = False
-        split = []
-        for node in batchNodes:
-            attachInclude = False
-            if includeBlock and not includeAttached:
-                attachInclude = True
-                includeAttached = True
-            finalCode = self._extractTypeDefinitionFromResult(result, node, includeBlock, attachInclude)
-            if node.kind == TypeKind.TYPEDEF and not finalCode:
-                finalCode = self.translateSimpleTypedefDefinition(node.cCode)
-            # Fix A: normalize comment-only LLM output to "" so later
-            # stages don't see a "// X removed: ..." placeholder and
-            # mistakenly try to translate / re-translate it.
-            if self._isEmptyOrCommentOnly(finalCode):
-                if finalCode and finalCode.strip():
-                    self.logger.info(
-                        "[type normalize] %s: comment-only output normalized to empty (was %r)",
-                        getattr(node, "name", "?"), finalCode[:80],
-                    )
-                finalCode = ""
-            split.append((node, finalCode))
-        return split
+        """merged_funcs: the file the agent edited unit by unit
+        (agentMergedFile), not ``assembled`` from the pipeline's pieces."""
+        return self.agentMergedFile(assembled)
 
     def _translateTypeBatchWithLlm(self, batchNodes, predecessorContext, dependencyCodes, dependencyKeys, translationManager):
-        # An agent translator adds the batch to the one translation file it
-        # edits (AgentTranslationMixin), compiling and repairing it inside its
-        # own session; the predecessors are in that file.
-        agentTranslateTypeBatch = getattr(self, "agentTranslateTypeBatch", None)
-        if callable(agentTranslateTypeBatch):
-            agentTranslateTypeBatch("+".join(node.name for node in batchNodes),
-                                    self._buildTypeBatchPrompt(batchNodes, ""), batchNodes)
-            return
-
-        trialCount = 0
-        err = ""
-        lastTimeResult = ""
-
-        while True:
-            request = self._buildTypeBatchPrompt(
-                batchNodes, predecessorContext, err, lastTimeResult,
-            )
-            reusePreviousResult = False
-
-            if not reusePreviousResult:
-                batchName = "+".join(node.name for node in batchNodes)
-                with _callKindContext(self, "type_batch"):
-                    result = self.chunkAndSend(batchName, request)
-                result = self._sanitizeResultAgainstDependencies(result, dependencyCodes, dependencyKeys)
-                self.logger.debug("[type batch %s] sanitized result: %s", batchName, result)
-                lastTimeResult = result
-                trialCount = trialCount + 1
-                combinedResult = predecessorContext + "\n" + result if predecessorContext else result
-                # Predecessor types and the new batch each carry their own
-                # `use` / `#[derive]` / include lines. cleanCode dedupes them
-                # before the compile-check so we don't trip E0252/E0255 on
-                # duplicate imports (which previously dominated retry loops).
-                combinedResult = self.cleanCode(combinedResult)
-                (successFlag, err) = self.compile(combinedResult)
-                for node, finalCode in self._splitTypeBatchResult(result, batchNodes):
-                    node.rustCode = finalCode
-                    self._logStoredTypeResult(node)
-
-                if successFlag or trialCount > 5:
-                    break
-            else:
-                for node in batchNodes:
-                    self._logStoredTypeResult(node)
-                break
+        # The agent adds the batch to the one translation file it edits
+        # (AgentTranslationMixin), compiling and repairing it inside its own
+        # session; the predecessors are in that file.
+        self.agentTranslateTypeBatch("+".join(node.name for node in batchNodes),
+                                     self._buildTypeBatchPrompt(batchNodes, ""), batchNodes)
 
     def preTranslateComplexStructs(self):
         """Translate all complex type definitions for the current stage.
@@ -1216,9 +981,7 @@ class TranslationPipelineMixin:
                 translationManager,
             )
 
-        agentFinishTypes = getattr(self, "agentFinishTypes", None)
-        if callable(agentFinishTypes):
-            agentFinishTypes()
+        self.agentFinishTypes()
 
         # After all type batches finish: cascade-delete any entry that
         # still references a struct whose translation came out empty
@@ -1488,16 +1251,6 @@ class TranslationPipelineMixin:
         )
 
         prompt = sccPreamble
-        if self.answersInReply:
-            prompt = (
-                prompt
-                + "Translate " + self.srcLang + " to " + self.dstLang
-                + ". If the source code does not have a main function, please do not add a main function. "
-                + "If the source code does not have a called function defined, please do NOT add a dummy definition. "
-                + "Translate ONLY the provided functions.\n"
-                + "Please use standard library functions if a C function has been implemented by the target standard library.\n"
-                + 'For the final code result, please respond with "Final result code" is :\n'
-            )
 
         previouslyTranslatedPrompt = ""
         if previouslyTranslatedFunctions:
@@ -1680,8 +1433,6 @@ class TranslationPipelineMixin:
 
     def compileWithFeedback(self, funcName, funcDepsObj, contextStructs, dependencyTranslate=False):
         prompt = ""
-        if self.answersInReply:
-            prompt = "Translate " + self.srcLang + " to " + self.dstLang + ". If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function." + "\n Please use standard library function if a C function has been implemented by Rust standard library" + "\n For the final code result, please response with \"Final result code\" is : \n"
         callbackContract = self._buildCallbackContractSection(funcDepsObj)
         if callbackContract:
             prompt = prompt + callbackContract
@@ -1788,249 +1539,11 @@ class TranslationPipelineMixin:
                                       dependencyKeys,
                                                                             funcSrc,
                                       targetFunctions=None):
-        # An agent translator (AgentTranslationMixin) replaces the
-        # request-then-retry procedure below.
-        agentTranslate = getattr(self, "agentTranslate", None)
-        if callable(agentTranslate):
-            return agentTranslate(funcName, prompt, contextStructs,
-                                  translatedStructPrompt, translatedStructs,
-                                  translatedFuncPrompt, translatedFuncsSignatures, translatedFuncs,
-                                  dependencyFunctionNames, dependencyCodes, dependencyKeys,
-                                  funcSrc, targetFunctions=targetFunctions)
-        # When this is a perf retry, fence the actual source code with explicit
-        # SOURCE-TO-TRANSFORM markers. Without these, the prompt has two C++
-        # snippets back-to-back — the rejected attempt in PERFORMANCE CONTEXT
-        # and the prior-stage source as funcSrc — and the model has been
-        # observed to apply the stage transformation to the wrong one.
-        request = prompt + "\n" + funcSrc + "\n"
-        if len(translatedStructs) > 0:
-            request = request + "\n" + translatedStructPrompt + "\n" + translatedStructs + "\n"
-
-        request = request + "\n" + translatedFuncPrompt + "/* \n" + translatedFuncsSignatures + "*/\n"
-
-        result = self.chunkAndSend(funcName, request)
-        result = self._sanitizeResultAgainstDependencies(
-            result,
-            dependencyCodes,
-            dependencyKeys,
-            dependencyFunctionNames,
-        )
-        completeResult = self.cleanCode(contextStructs + "\n" + translatedFuncs + "\n" + result)
-        (successFlag, err) = self.compile(completeResult)
-        self.logger.debug("[%s], complete result : %s", funcName, completeResult)
-        # rustc import-hint auto-fix: free attempt that doesn't burn an
-        # LLM retry slot. When rustc reports E0433 ("unresolved module")
-        # or similar, it emits a "help: consider importing this module"
-        # block whose suggested `use ...;` lines are exact. The LLM
-        # sometimes ignores that hint and rewrites unrelated code
-        # (observed on jrsl_center_string in run 16-48-26:
-        # 5 retries on identical `io::stdout()` calls with no
-        # `use std::io;`). Apply the hint deterministically here; if it
-        # fixes the build, skip the retry loop entirely. Only relevant
-        # for Rust output — clang's "missing header" hints are surfaced
-        # through inferMissingPerformanceIncludes elsewhere.
-        if (not successFlag
-                and self.dstLang == "Rust"):
-            patched, appliedUses = self.applyRustcImportAutoFix(result, err)
-            if appliedUses:
-                self.logger.info(
-                    "[COMPILE AND LINK] auto-applied rustc import hint(s) to %s: %s",
-                    funcName, ", ".join(appliedUses),
-                )
-                result = patched
-                completeResult = self.cleanCode(contextStructs + "\n" + translatedFuncs + "\n" + result)
-                (successFlag, err) = self.compile(completeResult)
-        # C++ POSIX-collision auto-fix. clang reports "template argument
-        # for template type parameter must be a type" when a libc /
-        # POSIX function name (typically ``link()`` from ``<unistd.h>``,
-        # pulled in via ``<memory>``) shadows a user struct of the same
-        # tag in template-argument position
-        # (``std::vector<link>`` -> ``std::vector<struct link>``).
-        # an earlier pass's introduction of ``std::unique_ptr<...>`` was
-        # observed (run 17-23-48) to trigger this exact bug on
-        # ``skip_node_t.forward``, and the LLM cannot fix it because the
-        # broken code lives in the dependency block, not the function it
-        # is being asked to rewrite. We rewrite the dep block AND
-        # persist the elaborated form back to the type registry so
-        # later compiles in the same stage don't re-trigger.
-        if not successFlag and self.dstLang != "Rust":
-            patched_struct_names = self._autoElaborateStructTemplateArgs(err)
-            if patched_struct_names:
-                # Heal the in-flight context string directly. A registry
-                # rebuild keyed on dependencyKeys goes stale here: the
-                # stage loop computes contextStructs once, so after the
-                # first function patches the registry, later functions
-                # still hold the bare-<link> text while the helper sees
-                # nothing left to patch (run 18-16-41).
-                updatedContext = contextStructs
-                for name in patched_struct_names:
-                    updatedContext = self.rewriteUnelaboratedTemplateArg(updatedContext, name)
-                if updatedContext != contextStructs:
-                    self.logger.info(
-                        "[COMPILE AND LINK] auto-elaborated struct tag(s) in template args for %s: %s",
-                        funcName, ", ".join(patched_struct_names),
-                    )
-                    contextStructs = updatedContext
-                    completeResult = self.cleanCode(contextStructs + "\n" + translatedFuncs + "\n" + result)
-                    (successFlag, err) = self.compile(completeResult)
-        # Same family of dep-block damage, different shape: the stage's
-        # struct rewrite can strip the elaborated ``struct`` keyword from
-        # a member referencing a later-defined struct
-        # (``struct skip_node_t *node;`` -> ``skip_node_t *node;``),
-        # losing the implicit forward declaration. Observed twice on
-        # an earlier pass skiplist (runs 17-04-00 and 17-54-38); the LLM repeats
-        # it deterministically, so retries are wasted. Heal the in-flight
-        # context string directly (prepended forward declarations fix any
-        # use-before-definition regardless of struct order, and unlike a
-        # dependency-keyed registry rebuild they also work when this
-        # function has no type dependencies of its own — run 18-05-56's
-        # jrsl_max_level). The helper persists the same fix to the
-        # registry for the merged file and later stages.
-        if not successFlag and self.dstLang != "Rust":
-            forward_declared = self._autoForwardDeclareStructs(err)
-            missingDecls = [
-                n for n in forward_declared
-                if ("struct %s;" % n) not in contextStructs
-            ]
-            if missingDecls:
-                self.logger.info(
-                    "[COMPILE AND LINK] auto-forward-declared struct(s) for %s: %s",
-                    funcName, ", ".join(missingDecls),
-                )
-                contextStructs = (
-                    "\n".join("struct %s;" % n for n in missingDecls)
-                    + "\n" + contextStructs
-                )
-                completeResult = self.cleanCode(contextStructs + "\n" + translatedFuncs + "\n" + result)
-                (successFlag, err) = self.compile(completeResult)
-        attempts = 0
-        while not successFlag and attempts < COMPILATION_RETRIES:
-            self.logger.info("[COMPILE AND LINK]Trying to recompile translated function %s, attempt # %d", funcName, attempts + 1)
-            # Try the import-hint auto-fix at the start of every retry
-            # too. If the LLM's previous attempt re-introduced the same
-            # missing-`use` problem (a common failure mode), patch it
-            # before paying for another LLM round.
-            if self.dstLang == "Rust":
-                patched, appliedUses = self.applyRustcImportAutoFix(result, err)
-                if appliedUses:
-                    self.logger.info(
-                        "[COMPILE AND LINK] auto-applied rustc import hint(s) to %s on attempt %d: %s",
-                        funcName, attempts + 1, ", ".join(appliedUses),
-                    )
-                    result = patched
-                    completeResult = self.cleanCode(contextStructs + "\n" + translatedFuncs + "\n" + result)
-                    (successFlag, err) = self.compile(completeResult)
-                    if successFlag:
-                        break
-            # C++ POSIX struct collision can also surface on a later
-            # retry round (e.g. the LLM emits the same dep code shape
-            # back into a re-translation). Same handling: rewrite the
-            # dep block, persist to registry, recompile.
-            if self.dstLang != "Rust":
-                patched_struct_names = self._autoElaborateStructTemplateArgs(err)
-                if patched_struct_names:
-                    updatedContext = contextStructs
-                    for name in patched_struct_names:
-                        updatedContext = self.rewriteUnelaboratedTemplateArg(updatedContext, name)
-                    if updatedContext != contextStructs:
-                        self.logger.info(
-                            "[COMPILE AND LINK] auto-elaborated struct tag(s) for %s on attempt %d: %s",
-                            funcName, attempts + 1, ", ".join(patched_struct_names),
-                        )
-                        contextStructs = updatedContext
-                        completeResult = self.cleanCode(contextStructs + "\n" + translatedFuncs + "\n" + result)
-                        (successFlag, err) = self.compile(completeResult)
-                        if successFlag:
-                            break
-            if self.dstLang != "Rust":
-                forward_declared = self._autoForwardDeclareStructs(err)
-                missingDecls = [
-                    n for n in forward_declared
-                    if ("struct %s;" % n) not in contextStructs
-                ]
-                if missingDecls:
-                    self.logger.info(
-                        "[COMPILE AND LINK] auto-forward-declared struct(s) for %s on attempt %d: %s",
-                        funcName, attempts + 1, ", ".join(missingDecls),
-                    )
-                    contextStructs = (
-                        "\n".join("struct %s;" % n for n in missingDecls)
-                        + "\n" + contextStructs
-                    )
-                    completeResult = self.cleanCode(contextStructs + "\n" + translatedFuncs + "\n" + result)
-                    (successFlag, err) = self.compile(completeResult)
-                    if successFlag:
-                        break
-            errorStr = self.extractError(err)
-            compilerHints = self.extractCompilerHints(err)
-            # Delimiter-balance hint surfaces the exact missing-brace count
-            # when rustc/clang report an unclosed delimiter — a class of error
-            # the model cannot fix from a generic message because it has no
-            # line number (rustc reports at EOF). See
-            # buildDelimiterBalanceHint for the patterns it triggers on.
-            delimiterHint = self.buildDelimiterBalanceHint(err, result)
-            hintEmphasis = ""
-            if delimiterHint:
-                hintEmphasis = delimiterHint
-            if compilerHints:
-                hintEmphasis += (
-                    "IMPORTANT: the compiler gave specific fix suggestions below. "
-                    "Apply them DIRECTLY before considering any other rewrite:\n"
-                    + "\n".join(f"  - {h}" for h in compilerHints)
-                    + "\n\n"
-                )
-            basicFeedback = "I got compilation error. Please help me fix or rewrite the target function" + "\n"
-
-            inputInformation = "The code is in the following :" + "\n" + self.cleanCode(result) + "\n"
-            inputInformation = inputInformation + "The function signature of the dependency functions is : " + "/* \n" + translatedFuncsSignatures + "*/\n"
-            inputInformation = inputInformation + "The dependency structs definition is  " + "/* \n" + contextStructs + "*/\n"
-
-            targetFunction = "target function is " + funcName + "\n" + "Please do not change or modify any other functions" + "\n"
-
-            # The "add missing include files" hint is appropriate for C/C++
-            # but actively harmful for Rust: in past the Rust pass perf-retries the
-            # model took the suggestion literally and emitted `#include
-            # <cstddef>` at the top of a .rs file, producing
-            #   `error: expected one of `!` or `[`, found `include``
-            # on every attempt — burning all 5 inner retries on the same
-            # trivial bug. Gate the hint on dstLang.
-            if self.dstLang == "Rust":
-                dependencyHint = (
-                    "Do NOT add C/C++ preprocessor directives "
-                    "(`#include`, `#define`, etc.) — this is Rust. "
-                    "If a new dependency is needed, add a `use` statement."
-                )
-            else:
-                dependencyHint = "You can also add missing include files."
-            correctInformation = "Please only reply with the modified or re-generated version of the target function: " + funcName + "\n" + dependencyHint
-
-            compileErrorInformation = "The compile error information : " + errorStr + "\n"
-
-            compilefix = "If the compile error is caused by missing dependency such as no member named, please fix try to generate code with the missing dependency \n"
-            otherInformation = "\n For the final code result, please response with \"Final result code\" is : \n"
-            # Preserve perf-retry context across compile-fix iterations so the
-            # model does not forget WHY it is being retried (perf regression),
-            # and so it does not regenerate the slow pattern just to satisfy
-            # clang. Without this, fixing the compile can silently produce the
-            # same slow idiom and the perf retry burns an attempt for nothing.
-            perfContextSuffix = ""
-            request = hintEmphasis + basicFeedback + inputInformation + targetFunction + correctInformation + compileErrorInformation + compilefix + otherInformation + perfContextSuffix
-            with _callKindContext(self, "function_retry"):
-                result = self.chunkAndSend(funcName, request)
-            result = self._sanitizeResultAgainstDependencies(
-                result,
-                dependencyCodes,
-                dependencyKeys,
-                dependencyFunctionNames,
-            )
-            completeResult = self.cleanCode(contextStructs + "\n" + translatedFuncs + "\n" + result)
-            self.logger.debug("[%s], complete result : %s", funcName, completeResult)
-            (successFlag, err) = self.compile(completeResult)
-            attempts = attempts + 1
-        if attempts != 0:
-            self.logger.debug("[COMPILE AND LINK] After %d retranslation attempts result, complete result: %s, %s", attempts, result, completeResult)
-
-        return (successFlag, result)
+        return self.agentTranslate(funcName, prompt, contextStructs,
+                                   translatedStructPrompt, translatedStructs,
+                                   translatedFuncPrompt, translatedFuncsSignatures, translatedFuncs,
+                                   dependencyFunctionNames, dependencyCodes, dependencyKeys,
+                                   funcSrc, targetFunctions=targetFunctions)
 
     def compileAndRetryLoop(self, funcName, prompt, translatedStructPrompt, translatedStructs, translatedFuncPrompt, translatedFuncs, funcSrc, funcDepsObj=None):
         request = prompt + "\n" + funcSrc + "\n"
@@ -2260,110 +1773,6 @@ class TranslationPipelineMixin:
 
 
 
-    def _autoElaborateStructTemplateArgs(self, errStr):
-        """When clang stderr contains the
-        "template argument for template type parameter must be a type"
-        diagnostic on a name that matches a registered struct, rewrite
-        the struct's stored ``rustCode`` (and any other type node whose
-        rustCode references the same name in template-argument
-        position) to use the elaborated ``struct NAME`` form. This
-        unblocks downstream compiles in the same stage and survives
-        across the rest of the run.
-
-        Returns the registered-struct names the diagnostic names; empty
-        list means no actionable diagnostic was found (or the diagnosed
-        name wasn't a registered struct, so we don't risk spurious
-        rewrites). The registry rewrite is idempotent — a non-empty
-        return only guarantees the registry is now elaborated. Callers
-        must apply ``rewriteUnelaboratedTemplateArg`` to their own
-        in-flight ``contextStructs`` as well: the stage translate loop
-        computes that string once, so after the first function patches
-        the registry every later function re-hits the same diagnostic
-        on stale context while the helper sees nothing left to patch
-        (run 18-16-41, every function after jrsl_node_at)."""
-        names = self.extractCppTemplateNotATypeNames(errStr)
-        if not names:
-            return []
-
-        # Only act on names that match a registered struct tag — the
-        # rewrite is unambiguously correct only when an entity called
-        # `struct NAME` actually exists. If clang complained about a
-        # name that isn't a struct, the fix would be a hallucination.
-        registered_structs = set()
-        for typeKey in FunctionAndDependencies.typeRegistry.all_keys():
-            if typeKey.kind == TypeKind.STRUCT:
-                registered_structs.add(typeKey.name)
-        actionable = [n for n in names if n in registered_structs]
-        if not actionable:
-            return []
-
-        # Rewrite every type node's rustCode that references one of
-        # the actionable names as a bare template arg. The rewrite is
-        # idempotent (``<struct link>`` doesn't match ``<link>``).
-        for typeNode in FunctionAndDependencies.typeRegistry.all_nodes():
-            if not typeNode.rustCode:
-                continue
-            updated = typeNode.rustCode
-            for name in actionable:
-                updated = self.rewriteUnelaboratedTemplateArg(updated, name)
-            if updated != typeNode.rustCode:
-                typeNode.rustCode = updated
-        return actionable
-
-    def _autoForwardDeclareStructs(self, errStr):
-        """When clang stderr contains "unknown type name 'NAME'" for a
-        name that matches a registered struct, prepend a ``struct NAME;``
-        forward declaration to every other type node whose stored
-        ``rustCode`` references NAME, and persist it to the registry.
-
-        Companion to ``_autoElaborateStructTemplateArgs`` for the other
-        shape of stage-rewrite damage: the LLM strips the elaborated
-        ``struct`` keyword from a member referencing a later-defined
-        struct (``struct skip_node_t *node;`` -> ``skip_node_t *node;``),
-        silently losing the implicit forward declaration. The LLM cannot
-        repair this from the function retry loop because the broken code
-        lives in the dependency block, so every dependent function burns
-        all its retries on the same diagnostic (observed on skiplist, runs 17-04-00 and 17-54-38). Forward declarations are
-        order-independent, idempotent, and legal even when the definition
-        later appears via ``typedef struct``.
-
-        Returns the list of registered-struct names the diagnostic names
-        (empty when the diagnosed name isn't a registered struct, so we
-        don't risk spurious rewrites). The registry patch is idempotent;
-        a non-empty return only guarantees the registry now carries the
-        forward declarations. Callers must heal their own in-flight
-        ``contextStructs`` string as well — the stage translate loop
-        computes that string ONCE (``createSccTopoQueue``), so a later
-        function's compile can fail on stale context even after an
-        earlier function's failure already patched the registry."""
-        names = re.findall(r"unknown type name '([A-Za-z_]\w*)'", errStr or "")
-        if not names:
-            return []
-
-        registered_structs = set()
-        for typeKey in FunctionAndDependencies.typeRegistry.all_keys():
-            if typeKey.kind == TypeKind.STRUCT:
-                registered_structs.add(typeKey.name)
-        actionable = [n for n in unique_everseen(names) if n in registered_structs]
-        if not actionable:
-            return []
-
-        for typeNode in FunctionAndDependencies.typeRegistry.all_nodes():
-            if not typeNode.rustCode:
-                continue
-            updated = typeNode.rustCode
-            for name in actionable:
-                if typeNode.name == name:
-                    continue
-                forwardDecl = f"struct {name};"
-                if forwardDecl in updated:
-                    continue
-                if re.search(r"\b%s\b" % re.escape(name), updated):
-                    updated = forwardDecl + "\n" + updated
-            if updated != typeNode.rustCode:
-                typeNode.rustCode = updated
-        return actionable
-
     def _healContextStructsBlob(self, blob):
         """Syntax-check the assembled struct/typedef context snapshot and
         repair the two an earlier pass dep-block regressions IN THE STRING, so the
@@ -2416,25 +1825,6 @@ class TranslationPipelineMixin:
             if not changed:
                 break
         return healed
-
-    def _rebuildContextStructsFromRegistry(self, dependencyKeys, fallbackContext):
-        """Recompute the contextStructs blob from the current
-        ``rustCode`` of each type node in ``dependencyKeys``.
-
-        After ``_autoElaborateStructTemplateArgs`` mutates rustCode in
-        place, the in-flight ``contextStructs`` string the function
-        retry loop is holding is stale. We rebuild it by concatenating
-        the updated rustCode in the same order
-        ``_collectTranslatedTypeCodes`` would. Falls back to the
-        unchanged ``fallbackContext`` if the registry has no
-        rustCode for any key (which shouldn't happen at this point in
-        the pipeline but is treated as a safe no-op)."""
-        if not dependencyKeys:
-            return fallbackContext
-        codes = self._collectTranslatedTypeCodes(dependencyKeys)
-        if not codes:
-            return fallbackContext
-        return "\n".join(codes)
 
     def _buildCallbackContractSection(self, funcDepsObj):
         """Render the "Callback contracts" section that tells the LLM
@@ -2714,9 +2104,7 @@ class TranslationPipelineMixin:
         return performanceCheckPassed
 
     def translateAll(self, funcMap, individualFuncPath, multiThreading):
-        agentSetup = getattr(self, "agentSetup", None)
-        if callable(agentSetup):
-            agentSetup(funcMap, individualFuncPath)
+        self.agentSetup(funcMap, individualFuncPath)
         self.preTranslateComplexStructs()
         if self.translatorMode in [TranslatorModes.BASIC_CHUNK_CHAIN, TranslatorModes.COMPILATION_FEEDBACK, TranslatorModes.CF_STRUCT_REPLAY]:
             if multiThreading:

@@ -762,54 +762,6 @@ class CodeUtilsMixin:
 
         return filteredUses
 
-    def stripTypeOnlyAttributesFromValueDefinition(self, code):
-        lines = (code or "").splitlines()
-        if not lines:
-            return code
-
-        headerLines = []
-        index = 0
-        while index < len(lines):
-            strippedLine = lines[index].strip()
-            if (
-                strippedLine == ""
-                or strippedLine.startswith("use ")
-                or strippedLine.startswith("extern crate ")
-                or strippedLine.startswith("#include ")
-            ):
-                headerLines.append(lines[index])
-                index += 1
-                continue
-            break
-
-        attrStart = index
-        attrLines = []
-        while index < len(lines):
-            strippedLine = lines[index].strip()
-            if re.match(r"^#\[(?:repr|derive)\b", strippedLine):
-                attrLines.append(lines[index])
-                index += 1
-                continue
-            if attrLines and strippedLine == "":
-                attrLines.append(lines[index])
-                index += 1
-                continue
-            break
-
-        if not attrLines:
-            return code
-
-        remainder = lines[index:]
-        nextSignificantLine = next((line.strip() for line in remainder if line.strip()), "")
-        if not re.match(
-            r"^(?:pub(?:\s*\([^)]*\))?\s+)?(?:unsafe\s+)?(?:static(?:\s+mut)?|const)\b|^extern\b",
-            nextSignificantLine,
-        ):
-            return code
-
-        cleanedLines = headerLines + remainder
-        return "\n".join(cleanedLines).strip()
-
     def _tempFixSelfRefLifetimeSigs(self, code):
         """TEMP FIX: decouple the self-referential `&'a mut ParseBuffer<'a>`
         into `<'a, 'b>` for buffer_skip_whitespace / skip_utf8_bom (see

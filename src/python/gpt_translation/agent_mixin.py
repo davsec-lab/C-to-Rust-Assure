@@ -111,7 +111,7 @@ exec {command} "$(cd "$(dirname "$0")" && pwd)"
 
 
 class AgentTranslationMixin:
-    """Translate with OpenCode instead of with direct model requests.
+    """Translate with OpenCode, the pipeline's only way of translating.
 
     Every unit - a type batch, a function, a mutual-recursion group - is one
     OpenCode session in a workspace that holds the C sources, the Rust produced
@@ -126,15 +126,10 @@ class AgentTranslationMixin:
 
     # The agent adds every import its code needs; see compileWithCargoProject.
     injectLibcPrelude = False
-    # The agent edits rust/out.rs under the rules of AGENTS.md; the prompts'
-    # instructions for laying out a reply do not apply.
-    answersInReply = False
-    promptGivesUsage = False
     # Every unit is translated by editing one file, the final translation
     # (merged_funcs.rs), as ORBIT's agents edit the crate. What is checked is
     # what is shipped: no type is cut out of its batch and reassembled, and
     # no unit is compiled with a context it will not be used in.
-    agentEditsMergedFile = True
 
     # ── workspace ──────────────────────────────────────────────────────────
 
@@ -403,9 +398,8 @@ class AgentTranslationMixin:
 
         ``check(code) -> (successFlag, errorText, result)`` is the pipeline's
         own verdict on ``rust/out.rs``. A rejection is sent back into the same
-        session, at most COMPILATION_RETRIES times - the budget the
-        single-request path has for compile-error retries. With no ``check``
-        the first result is returned as is. ``outInitial`` is what
+        session, at most COMPILATION_RETRIES times. With no ``check`` the
+        first result is returned as is. ``outInitial`` is what
         ``rust/out.rs`` holds when the agent starts, for a task that edits it
         in place; without it the agent writes the file from nothing.
         """

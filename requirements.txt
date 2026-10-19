@@ -3,7 +3,6 @@
 # the venv shebangs are baked to that path). Python 3.12.7.
 # Regenerate:  ~/venv/bin/pip freeze
 annotated-types==0.7.0
-anthropic==0.51.0
 antlr4-python3-runtime==4.13.2
 anyio==4.9.0
 argon2-cffi==23.1.0
@@ -32,8 +31,6 @@ google-api-core==2.25.1
 google-api-python-client==2.177.0
 google-auth==2.53.0
 google-auth-httplib2==0.2.0
-google-genai==2.8.0
-google-generativeai==0.8.5
 googleapis-common-protos==1.70.0
 grpcio==1.73.1
 grpcio-status==1.71.2

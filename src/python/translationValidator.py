@@ -4,7 +4,6 @@ import sys
 import re
 import glob
 import json
-from openai import OpenAI
 import subprocess
 import traceback
 import tiktoken
@@ -15,7 +14,7 @@ import threading
 from datetime import datetime
 
 from loggerFactory import getLogger
-from gptTranslation import LLMModels, Translator, Claude_Opus_Translator, Claude_Sonnet_Translator, Claude_Haiku_Translator, TranslatorModes, Gpt5Translator, Gpt5MiniTranslator, Gpt5NanoTranslator, Gemini_Flash_Translator, Gemini_Pro_Translator, OpenCodeTranslator
+from gptTranslation import Translator, TranslatorModes, OpenCodeTranslator
 from functionAndDeps import FunctionAndDependencies
 from functionAndDepsExtractor import FunctionAndDepsExtractor
 from typedefFilter import TypedefFilter
@@ -77,82 +76,21 @@ def _systemPromptFileForMode(translatorMode):
 def createTranslator(logger,
                      llmmodel,
                      translatorMode,
-                     fineTunedModel,
                      srcLang,
                      dstLang):
-    # url = http://172.31.224.1:12345/v1 for LMStudio
     # The system prompt is a file in this repository. A candidate that wants to
     # change it edits the file on its own branch (SOURCE_CANDIDATE.md §6).
     with open(_systemPromptFileForMode(translatorMode)) as f:
         systemPrompt = f.read()
     logger.info("Using system prompt: %s", systemPrompt)
-    if llmmodel == llmmodel.GPT_5:
-        translator = Gpt5Translator(logger,
-                                    os.environ.get('OPENAI_KEY'),
-                                    srcLang,
-                                    dstLang,
-                                    systemPrompt,
-                                    translatorMode)
-    elif llmmodel == llmmodel.GPT_5_MINI:
-        translator = Gpt5MiniTranslator(logger,
-                                        os.environ.get('OPENAI_KEY'),
-                                        srcLang,
-                                        dstLang,
-                                        systemPrompt,
-                                        translatorMode)
-    elif llmmodel == llmmodel.GPT_5_NANO:
-        translator = Gpt5NanoTranslator(logger,
-                                        os.environ.get('OPENAI_KEY'),
-                                        srcLang,
-                                        dstLang,
-                                        systemPrompt,
-                                        translatorMode)
-    elif llmmodel == llmmodel.CLAUDE_OPUS:
-        translator = Claude_Opus_Translator(logger,
-                                            os.environ.get('ANTHROPIC_API_KEY'),
-                                            srcLang,
-                                            dstLang,
-                                            systemPrompt,
-                                            translatorMode)
-    elif llmmodel == llmmodel.CLAUDE_SONNET:
-        translator = Claude_Sonnet_Translator(logger,
-                                              os.environ.get('ANTHROPIC_API_KEY'),
-                                              srcLang,
-                                              dstLang,
-                                              systemPrompt,
-                                              translatorMode)
-    elif llmmodel == llmmodel.CLAUDE_HAIKU:
-        translator = Claude_Haiku_Translator(logger,
-                                             os.environ.get('ANTHROPIC_API_KEY'),
-                                             srcLang,
-                                             dstLang,
-                                             systemPrompt,
-                                             translatorMode)
-    elif llmmodel == llmmodel.GEMINI_FLASH:
-        translator = Gemini_Flash_Translator(logger,
-                                             os.environ.get('GEMINI_API_KEY'),
-                                             srcLang,
-                                             dstLang,
-                                             systemPrompt,
-                                             translatorMode)
-    elif llmmodel == llmmodel.GEMINI_PRO:
-        translator = Gemini_Pro_Translator(logger,
-                                           os.environ.get('GEMINI_API_KEY'),
-                                           srcLang,
-                                           dstLang,
-                                           systemPrompt,
-                                           translatorMode)
-    elif llmmodel == llmmodel.OPENCODE:
-        translator = OpenCodeTranslator(logger,
-                                        Translator.openCodeModel,
-                                        srcLang,
-                                        dstLang,
-                                        systemPrompt,
-                                        translatorMode)
-    else:
-        logger.error("Unsupported llm mode: %s", llmmodel)
-        raise ValueError(f"Unsupported llm mode: {llmmodel}")
-    return translator
+    # llmmodel is always LLMModels.OPENCODE: Translator.getLLMModel accepts
+    # nothing else and parks the model id in Translator.openCodeModel.
+    return OpenCodeTranslator(logger,
+                              Translator.openCodeModel,
+                              srcLang,
+                              dstLang,
+                              systemPrompt,
+                              translatorMode)
 
 def getFunctions(logger, extractor, srcPath, singleFileName, fileList, functionOrderList = [], oldmap = None): # The second time getFunctions is called fileList is empty
     fileFuncMap = {}
@@ -712,7 +650,7 @@ def _captureToolchainInfo():
 
 
 def dumpRunConfig(individualFuncPath, codebasePath, translator, llmmodel, translatorMode,
-                  fineTunedModel, preanalysisOnly, singleFileName, dirPrefix, fileListFile,
+                  preanalysisOnly, singleFileName, dirPrefix, fileListFile,
                   multiThreading, perfDegradeThresholdPct, perfDegradeRetryCount,
                   perfDegradeDiscardOnFail, perfDegradeSkipRetry, skipCBaseline,
                   formattedDateTime, logger):
@@ -728,7 +666,6 @@ def dumpRunConfig(individualFuncPath, codebasePath, translator, llmmodel, transl
             "model": getattr(translator, "model", None),
             "src_lang": getattr(translator, "srcLang", None),
             "dst_lang": getattr(translator, "dstLang", None),
-            "fine_tuned_model": fineTunedModel or None,
         },
         "translator_mode": str(translatorMode),
         "preanalysis_only": preanalysisOnly,
@@ -793,7 +730,6 @@ def dumpRunConfig(individualFuncPath, codebasePath, translator, llmmodel, transl
 
 def processCodebase(codebasePath,
                     llmmodel,
-                    fineTunedModel,
                     preanalysisOnly,
                     translatorMode,
                     singleFileName,
@@ -817,7 +753,7 @@ def processCodebase(codebasePath,
     formattedDateTime = currentDatetime.strftime("%Y-%m-%d_%H-%M-%S")
     
     extractor = FunctionAndDepsExtractor(logger)
-    translator = createTranslator(logger, llmmodel, translatorMode, fineTunedModel, "C", "Rust")
+    translator = createTranslator(logger, llmmodel, translatorMode, "C", "Rust")
     translator.perfDegradeThresholdPct = perfDegradeThresholdPct
     translator.perfDegradeRetryCount = perfDegradeRetryCount
     translator.perfDegradeDiscardOnFail = perfDegradeDiscardOnFail
@@ -827,9 +763,6 @@ def processCodebase(codebasePath,
 
 
     performanceOnlyFunctions = loadPerformanceOnlyFunctions(codebasePath, logger)
-
-    # TODO : @gabe Do we still need this?
-    # fingerPrintModel(logger, codebasePath, translator)
 
     # An OpenCode model id is <provider>/<model>; "/" must not reach the path.
     modelDirName = translator.model.replace("/", "_")
@@ -866,7 +799,7 @@ def processCodebase(codebasePath,
     # Persist the run configuration so each result directory is self-describing.
     dumpRunConfig(
         individualFuncPath, codebasePath, translator, llmmodel, translatorMode,
-        fineTunedModel, preanalysisOnly, singleFileName, dirPrefix, fileListFile,
+        preanalysisOnly, singleFileName, dirPrefix, fileListFile,
         multiThreading, perfDegradeThresholdPct, perfDegradeRetryCount,
         perfDegradeDiscardOnFail, perfDegradeSkipRetry, skipCBaseline,
         formattedDateTime, logger,
@@ -980,37 +913,6 @@ def processCodebase(codebasePath,
 
 
 
-def fingerPrintModel(logger, srcDir, translator):
-    # We check both the full model name and the fingerprint
-    fingerPrintFileName = os.path.join(srcDir, "finger.print__" + translator.model + ".txt")
-    oldFingerPrint = ""
-    oldModelName = ""
-    if os.path.exists(fingerPrintFileName):
-        with open(fingerPrintFileName) as f:
-            oldModelName = f.readline().strip()
-            oldFingerPrint = f.readline().strip()
-    else:
-        logger.info("No previous fingerprint found...")
-
-    (newModelName, newFingerPrint) = translator.getFingerPrint()
-    newModelName = str(newModelName)
-    newFingerPrint = str(newFingerPrint)
-    logger.info("Fingerprinting details: model name: %s, finger print: %s", newModelName, newFingerPrint)
-    if len(oldFingerPrint) == 0:
-        with open(fingerPrintFileName, 'w') as f:
-            f.write(newModelName+"\n")
-            f.write(newFingerPrint+"\n")
-    else:
-        # Compare!!
-        if oldFingerPrint == newFingerPrint and oldModelName == newModelName:
-            logger.info("Finger print check succeeded...")
-        else:
-            if oldModelName != newModelName:
-                logger.warning("The model aliases have diverged. You should try to run with the older model's full name, if it's still available.")
-                input("Enter any key to continue...")
-            logger.info("Finger print check mismatched (%s, %s) and (%s, %s). The results can potentially be very different from the previous run. Or it could just be that a different hardware was used to run the request!", oldModelName, oldFingerPrint, newModelName, newFingerPrint)
-
-
 BENCHMARK_MENU_BLACKLIST = {"archive"}
 
 
@@ -1073,17 +975,14 @@ if __name__ == "__main__":
     # parser.add_argument("--src", type=str, default="./inputs-complex/url.h", help="The source directory that contains the preprocessed C files")
 
     parser.add_argument("--preanalysis-only", type=bool, default=False, help="Only run the preanalysis")
-    parser.add_argument("--llm-mode", type=str, default="claude-sonnet", help="The GPT model used for transpilation. Options: claude / claude-opus (= claude-opus-4-6), claude-sonnet / sonnet (= claude-sonnet-4-6, cheaper for debug), claude-haiku / haiku (= claude-haiku-4-5, cheapest; 200K context / 64K max output), gpt-5.")
-    # parser.add_argument("--llm-mode", type=str, default="claude", help="The GPT model used for transpilation. Options: claude / claude-opus (= claude-opus-4-6), claude-sonnet / sonnet (= claude-sonnet-4-6, cheaper for debug), claude-haiku / haiku (= claude-haiku-4-5, cheapest; 200K context / 64K max output), gemini / gemini-flash (= gemini-3.5-flash, 1M context / 64K max output, requires GEMINI_API_KEY), gemini-pro (= gemini-3.1-pro-preview, same caps as flash, requires GEMINI_API_KEY), gpt-5.")
-    # parser.add_argument("--llm-mode", type=str, default="gemini-3.1-pro", help="The GPT model used for transpilation. Options: claude / claude-opus (= claude-opus-4-6), claude-sonnet / sonnet (= claude-sonnet-4-6, cheaper for debug), claude-haiku / haiku (= claude-haiku-4-5, cheapest; 200K context / 64K max output), gpt-5.")
-    # --llm-mode=gemini-3.5-flash
-    # parser.add_argument("--llm-mode", type=str, default="gpt-5", help="The GPT model used for transpilation.")
+    parser.add_argument("--llm-mode", type=str, default="opencode:openrouter/deepseek/deepseek-v4-flash-0731",
+                        help="opencode:<provider/model>: the OpenCode model that translates every type "
+                             "batch and every function. Default: %(default)s")
     parser.add_argument("--translator-mode", type=str, default="struct-fn-replay", help="Controls how the input file and its dependencies are chunked to fit into the LLM model context window. Options: basic, feedback, cf-struct-replay, struct-fn-replay, single-request-merge.")
-    parser.add_argument("--fine-tuned-model", type=str, default="", help="The source directory that contains the preprocessed C files")
     parser.add_argument("--single-file-name", type=str, default="", help="The name of the single file that should be analyzed")
     parser.add_argument("--dir-prefix", type=str, default="", help="Add a prefix to the individual-funcs directory name")
     parser.add_argument("--file-list-file", type=str, default="", help="File containing list oft files to consider in the source directory")
-    parser.add_argument("--multithreading", type=bool, default=True, help="Multithreading with 10 threads when sending OpenAI requests")
+    parser.add_argument("--multithreading", type=bool, default=True, help="Translate functions on several threads (basic, feedback and cf-struct-replay modes)")
     parser.add_argument("--interactive-fix-on-fail", type=parseBoolArg, default=False,
                         help="When a function's compile-retry loop is exhausted, drop into an "
                              "interactive prompt: open the dumped per-function (or SCC) file in "
@@ -1137,8 +1036,6 @@ if __name__ == "__main__":
     logger = getLogger(loggerFileName)
 
 
-    if Translator.getLLMModel(args.llm_mode) in (LLMModels.CLAUDE_OPUS, LLMModels.CLAUDE_SONNET, LLMModels.CLAUDE_HAIKU, LLMModels.GEMINI_FLASH, LLMModels.GEMINI_PRO):
-        args.multithreading = False
     if args.interactive_fix_on_fail:
         args.multithreading = False
 
@@ -1148,7 +1045,6 @@ if __name__ == "__main__":
 
     processCodebase(args.src,
                     Translator.getLLMModel(args.llm_mode),
-                    args.fine_tuned_model,
                     args.preanalysis_only,
                     Translator.getTranslatorMode(args.translator_mode),
                     args.single_file_name,

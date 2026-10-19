@@ -206,7 +206,7 @@ Rewritten on top of the rustassure frontend, roughly 40x larger:
 - **CROWN unsafe analysis**
 - callback contracts, typedef signature-change propagation, byte-buffer classification, compilation retry self-repair
 - token statistics (`tokenUsageTracker.py`)
-- modern models: claude-opus / sonnet / haiku, gpt-5, gemini
+- translation by an OpenCode agent (`--llm-mode=opencode:<provider/model>`), the only translation mode
 - complete unit test suite
 
 ### 3.2 The Key Mode Dichotomy
@@ -235,7 +235,7 @@ else:                                  # CF_STRUCT_FN_REPLAY / NEW_MODE*
 
 ```bash
 python3 translationValidator.py --src=<codebase> \
-    --translator-mode=cf-struct-replay --llm-mode=<model>
+    --translator-mode=cf-struct-replay --llm-mode=opencode:<provider/model>
 python3 performSymbolExecution.py --src=<individual-funcs_...>
 ```
 

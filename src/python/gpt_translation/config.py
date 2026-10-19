@@ -1,16 +1,6 @@
 from enum import Enum
 
 
-GPT5_MODEL = "gpt-5.4-2026-03-05"
-GPT5_MODEL_CTX_WINDOW_LEN = 400000
-GPT5_MODEL_MAX_COMPLETION_TOKENS = 128000
-
-# Budget-tier OpenAI models. Same generation as GPT5_MODEL, used for dev
-# iteration / getting the pipeline flowing; use GPT5_MODEL when producing
-# official data. Context and max output follow the same-generation specs.
-GPT5_MINI_MODEL = "gpt-5.4-mini"
-GPT5_NANO_MODEL = "gpt-5-nano"
-
 # libc version constraint for the Cargo compile check.
 #
 # The version must be pinned: libc 0.2.189+ has an MSRV of rustc 1.65, while
@@ -35,10 +25,10 @@ COMPILATION_RETRIES = int(_os.environ.get("ASSURE_COMPILATION_RETRIES", "5"))
 STRUCT_RETRIES = int(_os.environ.get("ASSURE_STRUCT_RETRIES", "5"))
 MAX_THREADS = 40
 
-# Agent translation (gpt_translation/agent_mixin.py), selected with
-# --llm-mode=opencode:<provider/model>: every type batch and every function is
-# translated by an OpenCode session that greps the C sources for how the unit
-# is used, instead of by one model request followed by compile-error retries.
+# Agent translation (gpt_translation/agent_mixin.py), the only translation
+# mode, --llm-mode=opencode:<provider/model>: every type batch and every
+# function is translated by an OpenCode session that greps the C sources for
+# how the unit is used.
 OPENCODE_BIN = _os.environ.get("ASSURE_OPENCODE_BIN", "opencode")
 # Model round-trips per OpenCode invocation, tool calls included.
 AGENT_MAX_STEPS = int(_os.environ.get("ASSURE_AGENT_MAX_STEPS", "40"))
@@ -76,39 +66,8 @@ PERF_DEGRADE_SKIP_RETRY = False
 
 PERF_DEGRADE_THRESHOLD_PCT_PER_STAGE: dict = {}
 
-# https://docs.anthropic.com/en/docs/models-overview
-CLAUDE_OPUS_4_1_MODEL = "claude-opus-4-6"
-CLAUDE_SONNET_4_6_MODEL = "claude-sonnet-4-6"
-CLAUDE_HAIKU_4_5_MODEL = "claude-haiku-4-5"
-CLAUDE_CTX_WINDOW_LEN = 1000 * 1000
-CLAUDE_MAX_COMPLETION_TOKENS = 128 * 1000
-# Haiku 4.5 has a 200K context window and a 64K max-output cap (vs
-# Opus/Sonnet's 1M/128K). Kept on dedicated constants so preanalysis
-# fit-checks reflect Haiku's actual capacity instead of silently
-# over-reporting and triggering a 400 "prompt too long" at request time.
-CLAUDE_HAIKU_CTX_WINDOW_LEN = 200 * 1000
-CLAUDE_HAIKU_MAX_COMPLETION_TOKENS = 64 * 1000
-
-# Gemini 3.5 Flash. Output price ($9/1M) is billed including thinking
-# tokens, so the translator pins thinking_budget=0.
-# https://ai.google.dev/gemini-api/docs/models
-GEMINI_FLASH_MODEL = "gemini-3.5-flash"
-GEMINI_PRO_MODEL = "gemini-3.1-pro-preview"
-GEMINI_CTX_WINDOW_LEN = 1000 * 1000
-GEMINI_MAX_COMPLETION_TOKENS = 64 * 1000
-
-
-
 
 class LLMModels(Enum):
-    GPT_5 = 0
-    GPT_5_MINI = 6
-    GPT_5_NANO = 7
-    CLAUDE_OPUS = 1
-    CLAUDE_SONNET = 2
-    CLAUDE_HAIKU = 3
-    GEMINI_FLASH = 4
-    GEMINI_PRO = 5
     OPENCODE = 8
 
 

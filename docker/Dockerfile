@@ -145,7 +145,7 @@ RUN set -eux; \
     unused-typedef-extractor --help >/dev/null 2>&1 || true; \
     rustc --version | grep -q "1.64.0"; \
     RUSTUP_TOOLCHAIN=nightly-2023-01-26 rustc --version | grep -q nightly; \
-    python3 -c "import tree_sitter_c, tree_sitter_rust, tree_sitter_cpp, networkx, pandas, sympy, openai, anthropic"; \
+    python3 -c "import tree_sitter_c, tree_sitter_rust, tree_sitter_cpp, networkx, pandas, sympy, openai"; \
     test -f ${HOST_HOME}/crown/analyse.sh; \
     test -f /work/assure/env.sh; \
     test -x /work/assure/prepare_and_run.sh; \

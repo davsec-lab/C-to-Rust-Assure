@@ -5,9 +5,9 @@
 #   KLEE max-time          controlled by run_eval's --fast/--full, part of the metric definition
 #   scoring script score.py  metric definitions, root-owned
 
-# Inner translation model. opencode:<provider/model> translates every type batch
-# and every function with an OpenCode agent that greps the C for how it is used;
-# any other value (gpt-5-mini, claude-sonnet, ...) is one model request per unit.
+# Inner translation model, opencode:<provider/model>: an OpenCode agent translates
+# every type batch and every function, grepping the C for how it is used. Agent
+# translation is the only mode.
 # Open-model roster: openrouter/deepseek/deepseek-v4-pro-0813, .../deepseek-v4-flash-0731,
 #                    openrouter/qwen/qwen3.8-2.4t-a95b, openrouter/qwen/qwen3.8-27b
 llm_mode: opencode:openrouter/deepseek/deepseek-v4-flash-0731

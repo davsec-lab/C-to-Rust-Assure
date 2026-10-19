@@ -48,9 +48,8 @@ class PerformanceProbe(CodeUtilsMixin, SymbolExtractionMixin, PerformanceMixin):
         self.response = ""
         self.requests = []
 
-    def chunkAndSend(self, *_args, **_kwargs):
-        if len(_args) >= 2:
-            self.requests.append(_args[1])
+    def agentRequest(self, name, request, contextRust=""):
+        self.requests.append(request)
         return self.response
 
 
@@ -74,6 +73,12 @@ class PerformancePipelineProbe(CodeUtilsMixin, SymbolExtractionMixin, Performanc
 
     def updateFuncMap(self, funcMap):
         self.updated_func_maps.append(funcMap)
+
+    def agentSetup(self, funcMap, outputDir):
+        pass
+
+    def agentMergedFile(self, assembled):
+        return assembled
 
     def runCrownAnalysisForOutput(self, outputPath, label=None, crownRoot=None):
         self.crown_analyses.append((outputPath, label))

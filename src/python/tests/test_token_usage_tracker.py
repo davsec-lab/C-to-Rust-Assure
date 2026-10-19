@@ -201,74 +201,19 @@ def test_thread_safety():
     print(f"PASS: thread-safe ({len(snap)} records from {NUM_THREADS} threads)")
 
 
-def test_send_integration_records():
-    """Use a fake LLMUtilsMixin host and verify send() records via the tracker."""
-    from llm_utils_mixin import LLMUtilsMixin
-
-    class _FakeHost(LLMUtilsMixin):
-        def __init__(self):
-            self.logger = logging.getLogger("test_send_integration")
-            self.tokenTracker = TokenUsageTracker(self.logger)
-            self.currentCallKind = "function"
-            self.stage = "an earlier pass"
-            self.model = "claude-opus-4-1"
-            self.dstLang = "Rust"
-            self._completionCounter = 0
-
-        def getResponse(self, request):
-            self._completionCounter += 1
-            return (_anthropicCompletion(in_=42, out=11), "ok-response")
-
-        def isResponseTruncated(self, completion, name):
-            return False
-
-        def extractTargetCode(self, *a, **k):
-            return ""
-
-    h = _FakeHost()
-    h.send("nsvg__pushAttr", "translate this")
-    snap = h.tokenTracker.snapshot()
-    assert len(snap) == 1
-    assert snap[0]["name"] == "nsvg__pushAttr"
-    assert snap[0]["kind"] == "function"
-    assert snap[0]["stage"] == "an earlier pass"
-    assert snap[0]["input_tokens"] == 42
-    assert snap[0]["output_tokens"] == 11
-    print("PASS: send() emits a token-usage record automatically")
-
-
 def test_setCallKind_overrides_label():
-    """When setCallKind is in scope, recorded `kind` should reflect it."""
+    """setCallKind sets the label agent requests record under, and restores
+    the previous one on exit."""
     from llm_utils_mixin import LLMUtilsMixin
 
-    class _FakeHost(LLMUtilsMixin):
+    class _Host(LLMUtilsMixin):
         def __init__(self):
-            self.logger = logging.getLogger("test_setCallKind")
-            self.tokenTracker = TokenUsageTracker(self.logger)
             self.currentCallKind = "function"
-            self.stage = ""
-            self.model = "claude-opus-4-1"
-            self.dstLang = "Rust"
 
-        def getResponse(self, request):
-            return (_anthropicCompletion(in_=10, out=5), "")
-
-        def isResponseTruncated(self, c, n):
-            return False
-
-        def extractTargetCode(self, *a, **k):
-            return ""
-
-    h = _FakeHost()
+    h = _Host()
     with h.setCallKind("type_batch"):
-        h.send("NSVGparser+NSVGattrib", "translate")
-    # After the with-block exits, we revert to function
-    h.send("nsvg__pushAttr", "translate")
-
-    snap = h.tokenTracker.snapshot()
-    assert len(snap) == 2
-    assert snap[0]["kind"] == "type_batch", snap[0]
-    assert snap[1]["kind"] == "function", snap[1]
+        assert h.currentCallKind == "type_batch", h.currentCallKind
+    assert h.currentCallKind == "function", h.currentCallKind
     print("PASS: setCallKind labels nested calls correctly and resets on exit")
 
 
@@ -306,7 +251,6 @@ if __name__ == "__main__":
     test_record_and_summarize()
     test_dump_writes_jsonl_and_summary()
     test_thread_safety()
-    test_send_integration_records()
     test_setCallKind_overrides_label()
     test_setCallKind_resets_on_exception()
     print("\nAll tests passed.")

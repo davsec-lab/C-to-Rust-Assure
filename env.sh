@@ -37,7 +37,7 @@ export PATH="$ASSURE_LLVM_DIR/bin:$PATH"
 export RUSTUP_TOOLCHAIN="1.64.0"
 
 # 5. API keys — defined in ~/.zshrc, which non-interactive shells do not load automatically.
-#    Extract only the three variables needed; do not source the whole file (avoids pulling in unrelated interactive config).
+#    Extract only the variables needed; do not source the whole file (avoids pulling in unrelated interactive config).
 #    Note: no ${!var} indirect expansion — that is bash-only syntax and errors under zsh.
 _assure_load_key() {
     # $1 = variable name. If currently unset, extract it from the export line in ~/.zshrc.
@@ -48,11 +48,12 @@ _assure_load_key() {
 }
 # All in ${VAR:-} form — callers often run with `set -u` (run_eval / the P1 scripts both do),
 # and a bare $VAR reference to an undefined variable would fail the whole source and silently abort the caller.
-[ -z "${ANTHROPIC_API_KEY:-}" ] && _assure_load_key ANTHROPIC_API_KEY
-[ -z "${OPENAI_KEY:-}" ]        && _assure_load_key OPENAI_KEY
-[ -z "${GEMINI_API_KEY:-}" ]    && _assure_load_key GEMINI_API_KEY
+# OpenCode reads the OpenRouter key from the environment (llm_mode opencode:openrouter/...);
+# the backend's argument-map generator (generateCToRustArgumentMap.py) reads OPENAI_KEY.
+[ -z "${OPENROUTER_API_KEY:-}" ] && _assure_load_key OPENROUTER_API_KEY
+[ -z "${OPENAI_KEY:-}" ]         && _assure_load_key OPENAI_KEY
 
-# PerfAssure reads OPENAI_KEY; the openai SDK reads OPENAI_API_KEY. Align the two.
+# The openai SDK reads OPENAI_API_KEY. Align the two.
 [ -n "${OPENAI_KEY:-}" ] && [ -z "${OPENAI_API_KEY:-}" ] && export OPENAI_API_KEY="$OPENAI_KEY"
 
 # 6. KLEE time caps (for development iteration; unset both variables to return to 7200/10800 when producing official data)
@@ -74,8 +75,7 @@ _assure_show_key() {
     if [ -n "$_v" ]; then echo "[env.sh] $1 : loaded (${#_v} chars)"; else echo "[env.sh] $1 : not set"; fi
     unset _v
 }
-_assure_show_key ANTHROPIC_API_KEY
+_assure_show_key OPENROUTER_API_KEY
 _assure_show_key OPENAI_KEY
-_assure_show_key GEMINI_API_KEY
 echo "[env.sh] klee max-time : C=${ASSURE_KLEE_MAX_TIME_C:-default}s Rust=${ASSURE_KLEE_MAX_TIME_RUST:-default}s"
 echo "[env.sh] cargo   : offline=${CARGO_NET_OFFLINE} libc=${ASSURE_CARGO_LIBC_REQ:-=0.2.149}"

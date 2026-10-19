@@ -80,7 +80,6 @@ class TestTranslationValidatorCli(unittest.TestCase):
                         output_path = processCodebase(
                             temp_dir,
                             object(),
-                            "",
                             False,
                             TranslatorModes.CF_STRUCT_FN_REPLAY,
                             "",

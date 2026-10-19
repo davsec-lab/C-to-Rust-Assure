@@ -104,6 +104,11 @@ class _ScriptedTranslatorProbe(
                 return []
         return _NoopGraph()
 
+    def agentMergedFile(self, assembled):
+        # The agent's file would replace ``assembled``; the loop's own
+        # bookkeeping is what these tests look at.
+        return assembled
+
     def compileWithFeedback(self, funcName, funcDepsObj, contextStructs, dependencyTranslate=False, stage=None):
         self.singleCalls.append((funcName, stage))
         return self.singleResults.get(funcName, (True, f"pub fn {funcName}() {{ }}\n"))

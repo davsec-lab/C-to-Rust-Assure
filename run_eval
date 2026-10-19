@@ -52,7 +52,7 @@ export OPENAI_API_KEY="${OPENAI_API_KEY:-${OPENAI_KEY:-}}"
 cfgGet() { grep -E "^[[:space:]]*$1[[:space:]]*:" "$CONFIG" 2>/dev/null \
              | head -1 | sed 's/^[^:]*:[[:space:]]*//; s/[[:space:]]*#.*//; s/"//g' ; }
 # ASSURE_LLM_MODE overrides config.yaml so one checkout can run a roster of models.
-LLM_MODE="${ASSURE_LLM_MODE:-$(cfgGet llm_mode)}"; LLM_MODE="${LLM_MODE:-gpt-5-mini}"
+LLM_MODE="${ASSURE_LLM_MODE:-$(cfgGet llm_mode)}"
 COMPILATION_RETRIES="$(cfgGet compilation_retries)"
 STRUCT_RETRIES="$(cfgGet struct_retries)"
 AGENT_MAX_STEPS="$(cfgGet agent_max_steps)"
@@ -90,7 +90,9 @@ cd "$ROOT/src/python"
 say "run_eval start  id=$RUN_ID mode=$MODE model=$LLM_MODE codebase=$CODEBASE"
 say "  KLEE max-time: C=${ASSURE_KLEE_MAX_TIME_C:-default 7200} Rust=${ASSURE_KLEE_MAX_TIME_RUST:-default 10800}"
 say "  KLEE extra flags: ${ASSURE_KLEE_EXTRA_FLAGS-default --single-object-resolution}"
-case "$LLM_MODE" in opencode:*) say "  agent: opencode $(opencode --version 2>/dev/null || echo NOT-INSTALLED) max-steps=${ASSURE_AGENT_MAX_STEPS:-default} host=${ASSURE_OPENROUTER_PROVIDER:-unpinned}" ;; esac
+# Translation is agent-only: every unit goes through OpenCode.
+case "$LLM_MODE" in opencode:?*) ;; *) fail "llm_mode must be opencode:<provider/model>, got '$LLM_MODE'" ;; esac
+say "  agent: opencode $(opencode --version 2>/dev/null || echo NOT-INSTALLED) max-steps=${ASSURE_AGENT_MAX_STEPS:-default} host=${ASSURE_OPENROUTER_PROVIDER:-unpinned}"
 
 # ── 1. frontend ───────────────────────────────────────────────────────────
 say "[1/5] frontend translation ..."
