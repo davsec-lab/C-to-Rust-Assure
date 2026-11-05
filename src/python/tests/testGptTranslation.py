@@ -8,7 +8,8 @@ from unittest import mock
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "gpt_translation"))
 
-from gptTranslation import Translator, Claude_Opus_Translator, LLMModels, TranslatorModes, CLAUDE_OPUS_4_1_MODEL
+from gptTranslation import (Translator, Claude_Opus_Translator, LLMModels, TranslatorModes, CLAUDE_OPUS_4_1_MODEL,
+                            Gpt6LunaTranslator, GPT6_LUNA_MODEL, GPT6_CTX_WINDOW_LEN, GPT6_MAX_COMPLETION_TOKENS)
 
 # Use a retained OpenAI model in tests.
 GPT_MODEL="gpt-5.2-2025-12-11"
@@ -179,6 +180,58 @@ yes"""
                 TranslatorModes.BASIC_CHUNK_CHAIN,
             )
         self.assertEqual(translator.model, CLAUDE_OPUS_4_1_MODEL)
+
+    def testGetLLMModelGpt6Luna(self):
+        for name in ("gpt-6-luna", "gpt6-luna", "luna"):
+            self.assertEqual(Translator.getLLMModel(name), LLMModels.GPT_6_LUNA)
+
+    def _gpt6LunaTranslator(self):
+        # Other test modules replace the openai package with a stub, so the
+        # client is faked here rather than built from whatever OpenAI is.
+        import gpt_translation.translator as translator_module
+        with mock.patch.object(translator_module, "OpenAI", lambda **_kwargs: mock.Mock()):
+            return Gpt6LunaTranslator(
+                self.getLogger("./test-translator.log"),
+                "dummy-api-key",
+                "C",
+                "Rust",
+                "You are an expert programmer in C and Rust.",
+                TranslatorModes.CF_STRUCT_REPLAY,
+            )
+
+    def testGpt6LunaTranslatorUsesExpectedModelAndLimits(self):
+        translator = self._gpt6LunaTranslator()
+        self.assertEqual(translator.model, GPT6_LUNA_MODEL)
+        self.assertEqual(translator.ctxWindow, GPT6_CTX_WINDOW_LEN)
+        self.assertEqual(translator.maxCompletionTokens, GPT6_MAX_COMPLETION_TOKENS)
+
+    def testGpt6LunaRequestIsAReasoningRequest(self):
+        # gpt-6-luna rejects temperature with a 400; it takes reasoning.effort.
+        translator = self._gpt6LunaTranslator()
+        completion = types.SimpleNamespace(output_text="```rust\nfn f() {}\n```")
+        translator.client = mock.Mock()
+        translator.client.responses.create.return_value = completion
+        translator.getResponse("translate this")
+        sent = translator.client.responses.create.call_args.kwargs
+        self.assertEqual(sent["model"], GPT6_LUNA_MODEL)
+        self.assertEqual(sent["reasoning"], {"effort": "low", "summary": "auto"})
+        self.assertNotIn("temperature", sent)
+        self.assertNotIn("top_p", sent)
+
+    def testCreateTranslatorBuildsGpt6Luna(self):
+        import translationValidator
+        import gpt_translation.translator as translator_module
+        with mock.patch.dict(os.environ, {"OPENAI_KEY": "dummy-api-key"}), \
+                mock.patch.object(translator_module, "OpenAI", lambda **_kwargs: mock.Mock()):
+            translator = translationValidator.createTranslator(
+                self.getLogger("./test-translator.log"),
+                LLMModels.GPT_6_LUNA,
+                TranslatorModes.CF_STRUCT_REPLAY,
+                "",
+                "C",
+                "Rust",
+            )
+        self.assertIsInstance(translator, Gpt6LunaTranslator)
 
 
 if __name__ == '__main__':

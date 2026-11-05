@@ -6,7 +6,7 @@
 #   scoring script score.py  metric definitions, root-owned
 
 # Inner translation model. This is the llm-based branch: the default is one model
-# request per unit (gpt-5-mini, claude-sonnet, gpt-5, gemini-flash, ...).
+# request per unit (gpt-5-mini, gpt-6-luna, claude-sonnet, gpt-5, gemini-flash, ...).
 # opencode:<provider/model> still works and translates every type batch and every
 # function with an OpenCode agent that greps the C for how it is used; main is
 # the agent-only line.

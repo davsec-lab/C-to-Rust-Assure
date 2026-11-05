@@ -15,7 +15,7 @@ import threading
 from datetime import datetime
 
 from loggerFactory import getLogger
-from gptTranslation import LLMModels, Translator, Claude_Opus_Translator, Claude_Sonnet_Translator, Claude_Haiku_Translator, TranslatorModes, Gpt5Translator, Gpt5MiniTranslator, Gpt5NanoTranslator, Gemini_Flash_Translator, Gemini_Pro_Translator, OpenCodeTranslator
+from gptTranslation import LLMModels, Translator, Claude_Opus_Translator, Claude_Sonnet_Translator, Claude_Haiku_Translator, TranslatorModes, Gpt5Translator, Gpt5MiniTranslator, Gpt5NanoTranslator, Gpt6LunaTranslator, Gemini_Flash_Translator, Gemini_Pro_Translator, OpenCodeTranslator
 from functionAndDeps import FunctionAndDependencies
 from functionAndDepsExtractor import FunctionAndDepsExtractor
 from typedefFilter import TypedefFilter
@@ -102,6 +102,13 @@ def createTranslator(logger,
                                         translatorMode)
     elif llmmodel == llmmodel.GPT_5_NANO:
         translator = Gpt5NanoTranslator(logger,
+                                        os.environ.get('OPENAI_KEY'),
+                                        srcLang,
+                                        dstLang,
+                                        systemPrompt,
+                                        translatorMode)
+    elif llmmodel == llmmodel.GPT_6_LUNA:
+        translator = Gpt6LunaTranslator(logger,
                                         os.environ.get('OPENAI_KEY'),
                                         srcLang,
                                         dstLang,
@@ -1073,7 +1080,7 @@ if __name__ == "__main__":
     # parser.add_argument("--src", type=str, default="./inputs-complex/url.h", help="The source directory that contains the preprocessed C files")
 
     parser.add_argument("--preanalysis-only", type=bool, default=False, help="Only run the preanalysis")
-    parser.add_argument("--llm-mode", type=str, default="claude-sonnet", help="The GPT model used for transpilation. Options: claude / claude-opus (= claude-opus-4-6), claude-sonnet / sonnet (= claude-sonnet-4-6, cheaper for debug), claude-haiku / haiku (= claude-haiku-4-5, cheapest; 200K context / 64K max output), gpt-5.")
+    parser.add_argument("--llm-mode", type=str, default="claude-sonnet", help="The GPT model used for transpilation. Options: claude / claude-opus (= claude-opus-4-6), claude-sonnet / sonnet (= claude-sonnet-4-6, cheaper for debug), claude-haiku / haiku (= claude-haiku-4-5, cheapest; 200K context / 64K max output), gpt-5 (= gpt-5.4), gpt-5-mini (= gpt-5.4-mini), gpt-5-nano, gpt-6-luna / luna (cheapest GPT-6 tier), opencode:<provider/model> (agent).")
     # parser.add_argument("--llm-mode", type=str, default="claude", help="The GPT model used for transpilation. Options: claude / claude-opus (= claude-opus-4-6), claude-sonnet / sonnet (= claude-sonnet-4-6, cheaper for debug), claude-haiku / haiku (= claude-haiku-4-5, cheapest; 200K context / 64K max output), gemini / gemini-flash (= gemini-3.5-flash, 1M context / 64K max output, requires GEMINI_API_KEY), gemini-pro (= gemini-3.1-pro-preview, same caps as flash, requires GEMINI_API_KEY), gpt-5.")
     # parser.add_argument("--llm-mode", type=str, default="gemini-3.1-pro", help="The GPT model used for transpilation. Options: claude / claude-opus (= claude-opus-4-6), claude-sonnet / sonnet (= claude-sonnet-4-6, cheaper for debug), claude-haiku / haiku (= claude-haiku-4-5, cheapest; 200K context / 64K max output), gpt-5.")
     # --llm-mode=gemini-3.5-flash

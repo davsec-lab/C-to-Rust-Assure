@@ -40,6 +40,8 @@ _DEFAULT_PRICING = {
     "claude-haiku-4-5":    {"input":  1.0, "output":  5.0, "cache_read":  0.10, "cache_write":  1.25},
     "gpt-5.4":             {"input":  2.50, "output": 15.0, "cache_read":  0.25,  "cache_write": 0.0},
     "gpt-5":               {"input":  1.25, "output": 10.0, "cache_read":  0.125, "cache_write": 0.0},
+    # Short-context rate; input above 272K tokens bills at double.
+    "gpt-6-luna":          {"input":  0.10, "output":  0.50, "cache_read":  0.01,  "cache_write": 0.0},
     # Gemini 3.5 Flash: output rate covers any thinking tokens too,
     # so cost projections stay honest only when the translator pins
     # thinking_budget=0 (see Gemini_Flash_Translator.getResponse).

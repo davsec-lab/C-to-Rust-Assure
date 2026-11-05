@@ -11,6 +11,13 @@ GPT5_MODEL_MAX_COMPLETION_TOKENS = 128000
 GPT5_MINI_MODEL = "gpt-5.4-mini"
 GPT5_NANO_MODEL = "gpt-5-nano"
 
+# GPT-6 Luna, the cheapest GPT-6 tier ($0.10 in / $0.50 out per 1M tokens).
+# A reasoning model like GPT-5: it takes reasoning.effort and rejects
+# temperature / top_p. Input above 272K tokens is billed at double rate.
+GPT6_LUNA_MODEL = "gpt-6-luna"
+GPT6_CTX_WINDOW_LEN = 1050000
+GPT6_MAX_COMPLETION_TOKENS = 128000
+
 # libc version constraint for the Cargo compile check.
 #
 # The version must be pinned: libc 0.2.189+ has an MSRV of rustc 1.65, while
@@ -110,6 +117,7 @@ class LLMModels(Enum):
     GEMINI_FLASH = 4
     GEMINI_PRO = 5
     OPENCODE = 8
+    GPT_6_LUNA = 9
 
 
 class TranslatorModes(Enum):

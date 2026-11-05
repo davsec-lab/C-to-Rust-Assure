@@ -47,6 +47,9 @@ from gpt_translation.config import (
     GPT5_MODEL_CTX_WINDOW_LEN,
     GPT5_MODEL_MAX_COMPLETION_TOKENS,
     GPT5_NANO_MODEL,
+    GPT6_CTX_WINDOW_LEN,
+    GPT6_LUNA_MODEL,
+    GPT6_MAX_COMPLETION_TOKENS,
     LLMModels,
     OPENCODE_CTX_WINDOW_LEN,
     OPENCODE_MAX_COMPLETION_TOKENS,
@@ -97,6 +100,8 @@ class Translator(
             return LLMModels.GPT_5_MINI
         elif LLMModeStr in ("gpt-5-nano", "nano"):
             return LLMModels.GPT_5_NANO
+        elif LLMModeStr in ("gpt-6-luna", "gpt6-luna", "luna"):
+            return LLMModels.GPT_6_LUNA
         else:
             print("Invalid Mode Str")
             sys.exit(-1)
@@ -230,11 +235,13 @@ class Gpt5Translator(Translator):
 
     # Budget-tier subclass: only the model name changes; all other behavior (cleanCode's timespec handling etc.) is fully inherited.
     @classmethod
-    def _makeCheapVariant(cls, modelName):
+    def _makeCheapVariant(cls, modelName,
+                          ctxWindow=GPT5_MODEL_CTX_WINDOW_LEN,
+                          maxCompletionTokens=GPT5_MODEL_MAX_COMPLETION_TOKENS):
         class _Variant(cls):
             def __init__(self, logger, apiKey, srcLang, dstLang, systemPrompt, translatorMode):
                 Translator.__init__(self, logger, "", apiKey,
-                                    GPT5_MODEL_CTX_WINDOW_LEN, GPT5_MODEL_MAX_COMPLETION_TOKENS,
+                                    ctxWindow, maxCompletionTokens,
                                     srcLang, dstLang, modelName, systemPrompt, translatorMode)
         _Variant.__name__ = f"Gpt5Translator_{modelName.replace('-', '_').replace('.', '_')}"
         return _Variant
@@ -495,6 +502,10 @@ if __name__ == "__main__":
 # Budget-tier concrete classes (module-level, for easy import)
 Gpt5MiniTranslator = Gpt5Translator._makeCheapVariant(GPT5_MINI_MODEL)
 Gpt5NanoTranslator = Gpt5Translator._makeCheapVariant(GPT5_NANO_MODEL)
+# Another generation with its own limits, but the same OpenAI Responses API
+# request, so it shares Gpt5Translator's behaviour.
+Gpt6LunaTranslator = Gpt5Translator._makeCheapVariant(
+    GPT6_LUNA_MODEL, GPT6_CTX_WINDOW_LEN, GPT6_MAX_COMPLETION_TOKENS)
 
 
 class OpenCodeTranslator(AgentTranslationMixin, Translator):

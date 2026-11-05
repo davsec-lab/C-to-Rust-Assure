@@ -3,6 +3,11 @@ try:
 except ImportError:
     tiktoken = None
 
+# GPT generations that are reasoning models: they take reasoning.effort and
+# reject temperature / top_p (gpt-6-luna answers 400 "Unsupported parameter:
+# 'temperature'"), and they tokenize with o200k_base.
+_GPT_REASONING_PREFIXES = ("gpt-5", "gpt-6")
+
 
 class LLMUtilsMixin:
     def isResponseTruncated(self, completion, funcOrStructName):
@@ -32,10 +37,10 @@ class LLMUtilsMixin:
             "max_output_tokens": self.maxCompletionTokens
         }
 
-        if self.model.startswith("gpt-5") or self.model.startswith("o"):
+        if self.model.startswith(_GPT_REASONING_PREFIXES) or self.model.startswith("o"):
             requestArgs["reasoning"] = {"effort": "low", "summary": "auto"}
 
-        if not self.model.startswith("gpt-5"):
+        if not self.model.startswith(_GPT_REASONING_PREFIXES):
             requestArgs["temperature"] = 0.0
             requestArgs["top_p"] = 0.1
 
@@ -118,7 +123,7 @@ class LLMUtilsMixin:
         try:
             if self.model.startswith("claude") or self.model.startswith("gemini"):
                 tokenizer = tiktoken.get_encoding("cl100k_base")
-            elif self.model.startswith("gpt-5") or self.model.startswith("o"):
+            elif self.model.startswith(_GPT_REASONING_PREFIXES) or self.model.startswith("o"):
                 tokenizer = tiktoken.get_encoding("o200k_base")
             else:
                 tokenizer = tiktoken.get_encoding(tiktoken.encoding_name_for_model(self.model))
