@@ -36,6 +36,7 @@ from type_registry import TranslationMode, TypeKind
 
 from gpt_translation._call_kind_helper import callKindContext as _callKindContext
 from gpt_translation.byte_buffer_classifier import _TAG_CORE as _BYTE_BUFFER_TAG
+from gpt_translation.code_utils_mixin import _withLibcPreludeImports
 from gpt_translation.config import (
     COMPILATION_RETRIES,
     MAX_THREADS,
@@ -1076,9 +1077,19 @@ class TranslationPipelineMixin:
 
     def _mergedFileText(self, assembled):
         """merged_funcs: ``assembled`` from the pipeline's pieces, or the file
-        an agent translator edited unit by unit (agentMergedFile)."""
+        an agent translator edited unit by unit (agentMergedFile).
+
+        Each unit passed a compile check that prepends the libc prelude, so a
+        unit may call ``free`` / ``realloc`` bare. The file is what
+        performance.rs and the backend build from, so it imports those names
+        itself; otherwise the merge that passed every check fails to compile.
+        """
         agentMergedFile = getattr(self, "agentMergedFile", None)
-        return agentMergedFile(assembled) if callable(agentMergedFile) else assembled
+        if callable(agentMergedFile):
+            return agentMergedFile(assembled)
+        if getattr(self, "dstLang", "") == "Rust" and getattr(self, "injectLibcPrelude", True):
+            return _withLibcPreludeImports(assembled)
+        return assembled
 
     def _splitTypeBatchResult(self, result, batchNodes):
         """Cut a batch translation into the definition stored for each node.

@@ -135,6 +135,71 @@ def _prepend_rust_libc_prelude(codeSnippet):
     return _RUST_LIBC_ALLOW_LINE + mergedLine + cleaned
 
 
+# What the code says once comments and literals are gone, for finding the
+# prelude names it calls bare. Char literals go first so that `b'"'` does not
+# open a string.
+_RUST_CHAR_LITERAL_RE = re.compile(r"b?'(?:\\.|[^'\\\n])'")
+_RUST_STRING_LITERAL_RE = re.compile(r'b?"(?:\\.|[^"\\])*"')
+_RUST_BLOCK_COMMENT_RE = re.compile(r"/\*.*?\*/", re.S)
+_RUST_LINE_COMMENT_RE = re.compile(r"//[^\n]*")
+_RUST_USE_STATEMENT_RE = re.compile(r"\buse\s[^;]*;")
+# Module-level items that would collide with a `use libc::<name>` (E0255).
+_RUST_MODULE_ITEM_RE = re.compile(
+    r"(?m)^(?:#\[[^\]]*\]\s*)*(?:pub(?:\([^)]*\))?\s+)?"
+    r"(?:(?:const|async|unsafe|extern\s+\"[^\"]*\")\s+)*"
+    r"(?:fn|static(?:\s+mut)?|const|type|struct|union|enum|trait)\s+(\w+)"
+)
+_RUST_EXTERN_BLOCK_RE = re.compile(r"\bextern\s*(?:\"[^\"]*\")?\s*\{([^}]*)\}")
+_RUST_EXTERN_ITEM_RE = re.compile(r"\b(?:fn|static(?:\s+mut)?)\s+(\w+)")
+_LEADING_INNER_ATTRIBUTES_RE = re.compile(r"(?:[ \t]*#!\[[^\]]*\][ \t]*\n)*")
+
+
+def _missingLibcPreludeImport(code):
+    """The ``use libc::{...};`` line ``code`` needs outside the compile check.
+
+    The check prepends the prelude, so a translation that calls ``free`` or
+    ``realloc`` bare passes it. merged_funcs.rs, the split files and
+    performance.rs are assembled from the stored translation, which does not
+    carry the prelude, and there the bare name is E0425. This names the
+    prelude functions ``code`` calls bare and neither defines nor imports
+    itself, or returns "" when there are none. A name it adds that the code
+    does not really use is only an unused import.
+    """
+    if not code or _USE_LIBC_WILDCARD_RE.search(code):
+        return ""
+    body = _RUST_CHAR_LITERAL_RE.sub("' '", code)
+    body = _RUST_STRING_LITERAL_RE.sub('""', body)
+    body = _RUST_BLOCK_COMMENT_RE.sub(" ", body)
+    body = _RUST_LINE_COMMENT_RE.sub("", body)
+
+    useStatements = " ".join(_RUST_USE_STATEMENT_RE.findall(body))
+    localItems = set(_RUST_MODULE_ITEM_RE.findall(body))
+    for externBlock in _RUST_EXTERN_BLOCK_RE.findall(body):
+        localItems.update(_RUST_EXTERN_ITEM_RE.findall(externBlock))
+    bodyWithoutUses = _RUST_USE_STATEMENT_RE.sub(" ", body)
+
+    missing = []
+    for name in _RUST_LIBC_PRELUDE_NAMES:
+        if name in localItems or re.search(r"\b" + name + r"\b", useStatements):
+            continue
+        # Bare means not a path segment (`libc::free`) or a method (`.free()`).
+        if re.search(r"(?<![\w.:])" + name + r"\b", bodyWithoutUses):
+            missing.append(name)
+    if not missing:
+        return ""
+    return "use libc::{" + ", ".join(missing) + "};\n"
+
+
+def _withLibcPreludeImports(code):
+    """``code`` with the prelude names it relies on imported, placed after any
+    leading inner attributes (which must stay first in the file)."""
+    importLine = _missingLibcPreludeImport(code)
+    if not importLine:
+        return code
+    cut = _LEADING_INNER_ATTRIBUTES_RE.match(code).end()
+    return code[:cut] + importLine + code[cut:]
+
+
 class CodeUtilsMixin:
     def _find_brace_delimited_block_end(self, code, braceIndex):
         if braceIndex < 0 or braceIndex >= len(code) or code[braceIndex] != "{":

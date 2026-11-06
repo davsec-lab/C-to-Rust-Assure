@@ -1,0 +1,35 @@
+
+use std::ffi::c_void;
+
+type _IO_lock_t = c_void;
+type __off64_t = i64;
+type __off_t = i64;
+pub type size_t = usize;
+use core::ffi::c_void;
+
+pub struct csv_parser {
+    pub pstate: i32,
+    pub quoted: i32,
+    pub spaces: size_t,
+    pub entry_buf: *mut u8,
+    pub entry_pos: size_t,
+    pub entry_size: size_t,
+    pub status: i32,
+    pub options: u8,
+    pub quote_char: u8,
+    pub delim_char: u8,
+    pub is_space: Option<unsafe extern "C" fn(u8) -> i32>,
+    pub is_term: Option<unsafe extern "C" fn(u8) -> i32>,
+    pub blk_size: size_t,
+    pub malloc_func: Option<unsafe extern "C" fn(size_t) -> *mut c_void>,
+    pub realloc_func:
+        Option<unsafe extern "C" fn(*mut c_void, size_t) -> *mut c_void>,
+    pub free_func: Option<unsafe extern "C" fn(*mut c_void)>,
+}
+static CSV_ERRORS: [&str; 5] = [
+    "success",
+    "error parsing data while strict checking enabled",
+    "memory exhausted while increasing buffer size",
+    "data size too large",
+    "invalid status code",
+];

@@ -1,0 +1,47 @@
+{
+  "argv": [
+    "translationValidator.py",
+    "--src=./inputs-complex/libcsv",
+    "--translator-mode=struct-fn-replay",
+    "--llm-mode=gpt-6-luna",
+    "--dir-prefix=gpt6luna_fix_20261106_11-01-29"
+  ],
+  "dir_prefix": "gpt6luna_fix_20261106_11-01-29",
+  "file_list_file": null,
+  "git": {
+    "dirty": true,
+    "dirty_files": 4,
+    "head": "87635eb9e7c71f08c6ffea55c39b99475a6e87ad"
+  },
+  "llm": {
+    "dst_lang": "Rust",
+    "fine_tuned_model": null,
+    "mode": "LLMModels.GPT_6_LUNA",
+    "model": "gpt-6-luna",
+    "src_lang": "C"
+  },
+  "multithreading": true,
+  "perf_degrade": {
+    "discard_on_fail": true,
+    "retry_count": 0,
+    "skip_retry": false,
+    "threshold_pct": 30.0
+  },
+  "preanalysis_only": false,
+  "python_version": "3.12.7 (main, Jun 18 2025, 13:16:51) [GCC 14.2.0]",
+  "single_file_name": null,
+  "single_stage": {},
+  "skip_c_baseline": false,
+  "src": "./inputs-complex/libcsv",
+  "system_prompt": "You are an expert programmer in both C and Rust. You are great at translating C code to safe Rust. If the C code contains any libc functions, you automatically use the Rust equivalents.\n",
+  "system_prompt_file": "system_rust.prompt",
+  "timestamp": "2026-11-06_11-01-31",
+  "toolchain": {
+    "cargo_version": "cargo 1.64.0 (387270bc7 2022-09-16)",
+    "clang_version": "clang version 14.0.0 (git@github.com:davsec-lab/typedefextractor.git b9f11c52040c387bbb748e2eed04075b3f5c32ad)",
+    "compile_check_flags": "-std=c++20 -w -emit-llvm -c (no optimization)",
+    "perf_opt_level": "-O3",
+    "rustc_version": "rustc 1.64.0 (a55dd71d5 2022-09-19)"
+  },
+  "translator_mode": "TranslatorModes.CF_STRUCT_FN_REPLAY"
+}

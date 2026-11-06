@@ -31,6 +31,7 @@ import tempfile
 
 import backend_libc
 from file_adapter import wrap_file_params, enabled_by_env
+from gpt_translation.code_utils_mixin import _withLibcPreludeImports
 
 RUST_EDITION = os.environ.get("ASSURE_RUST_EDITION", "2021")
 
@@ -177,6 +178,9 @@ def main():
         need = closure_blocks(fn, manifest)
         parts = [structs] + [blockText(b) for b in topo if b in need]
         plain = dedupe_top_level(("\n".join(p for p in parts if p)).splitlines())
+        # The blocks are the stored translations, checked with the libc prelude
+        # prepended; a block that calls `free` bare needs the import here too.
+        plain = _withLibcPreludeImports(plain)
         out = os.path.join(d, f"{fn}.rs")
         # FILE* adapter (file_adapter.py): dyn/impl Read|Write|Seek standing for a C FILE*
         # get a concrete CFile wrapper, else the backend cannot measure the function at all.

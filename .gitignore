@@ -15,7 +15,6 @@ src/python/inputs-complex/c2rust/metadata.csv
 src/python/inputs-complex/url.h/
 src/python/inputs-complex/libbmp_write/file/
 src/python/inputs-complex/pageRank/com-lj.ungraph.txt
-results/
 # ── added after the consolidation (assure) ──────────────────────
 # LLVM pass build artifacts
 src/Symbolizer/build/
