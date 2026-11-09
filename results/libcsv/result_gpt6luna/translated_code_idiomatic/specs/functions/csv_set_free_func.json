@@ -1,0 +1,47 @@
+{
+  "function_name": "csv_set_free_func",
+  "fields": [
+    {
+      "u_field": {
+        "name": "p",
+        "type": "*mut csv_parser",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "p",
+        "type": "Option<&mut CsvParser<'_>>"
+      },
+      "ownership": "owning",
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "f",
+        "type": "Option<unsafe extern \"C\" fn(*mut c_void)>",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "f",
+        "type": "Option<unsafe extern \"C\" fn(*mut c_void)>"
+      },
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "()",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "()"
+      }
+    }
+  ],
+  "idiomatic_name": "csv_set_free_func"
+}

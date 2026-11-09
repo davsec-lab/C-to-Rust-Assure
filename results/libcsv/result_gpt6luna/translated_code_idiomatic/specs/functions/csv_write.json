@@ -1,0 +1,77 @@
+{
+  "function_name": "csv_write",
+  "fields": [
+    {
+      "u_field": {
+        "name": "dest",
+        "type": "*mut libc::c_void",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_from": "dest_size",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "dest",
+        "type": "Option<&mut [u8]>"
+      },
+      "ownership": "owning",
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "dest_size",
+        "type": "usize",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "dest.len",
+        "type": "usize"
+      }
+    },
+    {
+      "u_field": {
+        "name": "src",
+        "type": "*const libc::c_void",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_from": "src_size",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "src",
+        "type": "Option<&[u8]>"
+      },
+      "ownership": "transient",
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "src_size",
+        "type": "usize",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "src.len",
+        "type": "usize"
+      }
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "usize",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "usize"
+      }
+    }
+  ],
+  "idiomatic_name": "csv_write"
+}

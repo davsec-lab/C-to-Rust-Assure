@@ -1,0 +1,109 @@
+{
+  "function_name": "csv_parse",
+  "fields": [
+    {
+      "u_field": {
+        "name": "p",
+        "type": "*mut csv_parser",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "p",
+        "type": "&mut CsvParser<'_>"
+      },
+      "ownership": "owning",
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "s",
+        "type": "*const c_void",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_from": "len",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "s",
+        "type": "&[u8]"
+      },
+      "ownership": "transient",
+      "compare": "by_slice"
+    },
+    {
+      "u_field": {
+        "name": "len",
+        "type": "size_t",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "s.len",
+        "type": "usize"
+      },
+      "compare": "by_value"
+    },
+    {
+      "u_field": {
+        "name": "cb1",
+        "type": "Option<unsafe extern \"C\" fn(*mut c_void, size_t, *mut c_void)>",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "cb1",
+        "type": "Option<unsafe extern \"C\" fn(*mut c_void, usize, *mut c_void)>"
+      },
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "cb2",
+        "type": "Option<unsafe extern \"C\" fn(c_int, *mut c_void)>",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "cb2",
+        "type": "Option<unsafe extern \"C\" fn(i32, *mut c_void)>"
+      },
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "data",
+        "type": "*mut c_void",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "data",
+        "type": "Option<&mut c_void>"
+      },
+      "ownership": "transient",
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "size_t",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "usize"
+      },
+      "compare": "by_value"
+    }
+  ],
+  "idiomatic_name": "csv_parse"
+}

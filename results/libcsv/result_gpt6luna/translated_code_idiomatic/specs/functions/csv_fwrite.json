@@ -1,0 +1,65 @@
+{
+  "function_name": "csv_fwrite",
+  "fields": [
+    {
+      "u_field": {
+        "name": "fp",
+        "type": "*mut libc::FILE",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "writer",
+        "type": "Option<&mut impl std::io::Write>"
+      },
+      "ownership": "owning",
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "src",
+        "type": "*const libc::c_void",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_from": "src_size",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "src",
+        "type": "Option<&[u8]>"
+      },
+      "ownership": "transient",
+      "compare": "by_slice"
+    },
+    {
+      "u_field": {
+        "name": "src_size",
+        "type": "usize",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "src.len",
+        "type": "usize"
+      }
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "i32"
+      }
+    }
+  ],
+  "idiomatic_name": "csv_fwrite"
+}

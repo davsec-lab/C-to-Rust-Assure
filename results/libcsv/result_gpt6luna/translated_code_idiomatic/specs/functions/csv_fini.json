@@ -1,0 +1,79 @@
+{
+  "function_name": "csv_fini",
+  "fields": [
+    {
+      "u_field": {
+        "name": "p",
+        "type": "*mut csv_parser",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "p",
+        "type": "Option<&mut CsvParser<'_>>"
+      },
+      "ownership": "owning",
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "cb1",
+        "type": "Option<unsafe extern \"C\" fn(*mut c_void, size_t, *mut c_void)>",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "cb1",
+        "type": "Option<extern \"C\" fn(*mut c_void, usize, *mut c_void)>"
+      },
+      "compare": "skip",
+      "llm_note": "Translated callback type is safe extern C so it can be invoked without an unsafe block."
+    },
+    {
+      "u_field": {
+        "name": "cb2",
+        "type": "Option<unsafe extern \"C\" fn(c_int, *mut c_void)>",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "cb2",
+        "type": "Option<extern \"C\" fn(i32, *mut c_void)>"
+      },
+      "compare": "skip",
+      "llm_note": "Translated callback type is safe extern C so it can be invoked without an unsafe block."
+    },
+    {
+      "u_field": {
+        "name": "data",
+        "type": "*mut c_void",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "data",
+        "type": "Option<&mut core::ffi::c_void>"
+      },
+      "ownership": "transient",
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "i32"
+      }
+    }
+  ],
+  "idiomatic_name": "csv_fini"
+}

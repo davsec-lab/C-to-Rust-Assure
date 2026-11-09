@@ -1,0 +1,33 @@
+{
+  "function_name": "csv_free",
+  "fields": [
+    {
+      "u_field": {
+        "name": "p",
+        "type": "*mut csv_parser",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "parser",
+        "type": "Option<&mut CsvParser<'_>>"
+      }
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "void",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "()"
+      }
+    }
+  ],
+  "idiomatic_name": "csv_free"
+}

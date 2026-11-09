@@ -1,0 +1,45 @@
+{
+  "function_name": "csv_set_space_func",
+  "fields": [
+    {
+      "u_field": {
+        "name": "p",
+        "type": "*mut csv_parser",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "p",
+        "type": "Option<&mut CsvParser<'_>>"
+      },
+      "ownership": "owning"
+    },
+    {
+      "u_field": {
+        "name": "f",
+        "type": "Option<unsafe extern \"C\" fn(libc::c_uchar) -> libc::c_int>",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "f",
+        "type": "Option<unsafe extern \"C\" fn(u8) -> i32>"
+      }
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "()",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "()"
+      }
+    }
+  ],
+  "idiomatic_name": "csv_set_space_func"
+}

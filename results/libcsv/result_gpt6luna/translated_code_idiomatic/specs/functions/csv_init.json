@@ -1,0 +1,49 @@
+{
+  "function_name": "csv_init",
+  "fields": [
+    {
+      "u_field": {
+        "name": "p",
+        "type": "*mut csv_parser",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "p",
+        "type": "Option<&mut CsvParser<'_>>"
+      },
+      "ownership": "owning",
+      "compare": "skip",
+      "llm_note": "Crown identifies the pointer as owning, but the function does not transfer or free the parser. It is represented as a mutable borrow; the nullable raw pointer maps to Option."
+    },
+    {
+      "u_field": {
+        "name": "options",
+        "type": "libc::c_uchar",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "options",
+        "type": "u8"
+      },
+      "compare": "by_value"
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "i32"
+      },
+      "compare": "by_value"
+    }
+  ],
+  "idiomatic_name": "csv_init"
+}

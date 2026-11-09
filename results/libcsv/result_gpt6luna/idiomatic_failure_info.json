@@ -1,0 +1,200 @@
+{
+    "csv_parser": {
+        "type": "struct",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            0
+        ]
+    },
+    "csv_error": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            0
+        ]
+    },
+    "csv_strerror": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            0
+        ]
+    },
+    "csv_get_opts": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            0
+        ]
+    },
+    "csv_set_opts": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            0
+        ]
+    },
+    "csv_init": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            0
+        ]
+    },
+    "csv_free": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            0
+        ]
+    },
+    "csv_fini": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            0
+        ]
+    },
+    "csv_set_delim": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            0
+        ]
+    },
+    "csv_set_quote": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            0
+        ]
+    },
+    "csv_get_delim": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            0
+        ]
+    },
+    "csv_get_quote": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            0
+        ]
+    },
+    "csv_set_space_func": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            0
+        ]
+    },
+    "csv_set_term_func": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            0
+        ]
+    },
+    "csv_set_realloc_func": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            0
+        ]
+    },
+    "csv_set_free_func": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            0
+        ]
+    },
+    "csv_set_blk_size": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            0
+        ]
+    },
+    "csv_get_buffer_size": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            0
+        ]
+    },
+    "csv_increase_buffer": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            0
+        ]
+    },
+    "csv_write2": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            0
+        ]
+    },
+    "csv_fwrite2": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            0
+        ]
+    },
+    "csv_parse": {
+        "type": "function",
+        "errors": [
+            {
+                "type": "COMPILE_ERROR",
+                "message": "    Updating crates.io index\n     Locking 1 package to latest compatible version\n   Compiling libc v0.2.191\n   Compiling build_attempt v0.1.0 (/home/gabe/sactor_forklift/tmp/sactor/tmp4znhxivs/build/build_attempt)\nerror[E0425]: cannot find value `quoted` in this scope\n  --> src/lib.rs:47:24\n   |\n47 |             p.quoted = quoted;\n   |                        ^^^^^^ not found in this scope\n...\n96 |         save_state!();\n   |         ------------- in this macro invocation\n   |\n   = note: this error originates in the macro `save_state` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `pstate` in this scope\n  --> src/lib.rs:48:24\n   |\n48 |             p.pstate = pstate;\n   |                        ^^^^^^ not found in this scope\n...\n96 |         save_state!();\n   |         ------------- in this macro invocation\n   |\n   = note: this error originates in the macro `save_state` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `spaces` in this scope\n  --> src/lib.rs:49:24\n   |\n49 |             p.spaces = spaces;\n   |                        ^^^^^^ not found in this scope\n...\n96 |         save_state!();\n   |         ------------- in this macro invocation\n   |\n   = note: this error originates in the macro `save_state` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `entry_pos` in this scope\n  --> src/lib.rs:50:27\n   |\n50 |             p.entry_pos = entry_pos;\n   |                           ^^^^^^^^^ not found in this scope\n...\n96 |         save_state!();\n   |         ------------- in this macro invocation\n   |\n   = note: this error originates in the macro `save_state` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `quoted` in this scope\n   --> src/lib.rs:47:24\n    |\n47  |             p.quoted = quoted;\n    |                        ^^^^^^ not found in this scope\n...\n106 |             save_state!();\n    |             ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `save_state` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `pstate` in this scope\n   --> src/lib.rs:48:24\n    |\n48  |             p.pstate = pstate;\n    |                        ^^^^^^ not found in this scope\n...\n106 |             save_state!();\n    |             ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `save_state` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `spaces` in this scope\n   --> src/lib.rs:49:24\n    |\n49  |             p.spaces = spaces;\n    |                        ^^^^^^ not found in this scope\n...\n106 |             save_state!();\n    |             ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `save_state` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `entry_pos` in this scope\n   --> src/lib.rs:50:27\n    |\n50  |             p.entry_pos = entry_pos;\n    |                           ^^^^^^^^^ not found in this scope\n...\n106 |             save_state!();\n    |             ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `save_state` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `quoted` in this scope\n   --> src/lib.rs:56:59\n    |\n56  |                 let field_ptr = if p.options & 16 != 0 && quoted == 0 && entry_pos == 0 {\n    |                                                           ^^^^^^ not found in this scope\n...\n131 |                         emit_entry!();\n    |                         ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `emit_entry` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `entry_pos` in this scope\n   --> src/lib.rs:56:74\n    |\n56  |                 let field_ptr = if p.options & 16 != 0 && quoted == 0 && entry_pos == 0 {\n    |                                                                          ^^^^^^^^^ not found in this scope\n...\n131 |                         emit_entry!();\n    |                         ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `emit_entry` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `entry_pos` in this scope\n   --> src/lib.rs:69:34\n    |\n69  |                     f(field_ptr, entry_pos, data_ptr);\n    |                                  ^^^^^^^^^ not found in this scope\n...\n131 |                         emit_entry!();\n    |                         ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `emit_entry` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `quoted` in this scope\n   --> src/lib.rs:56:59\n    |\n56  |                 let field_ptr = if p.options & 16 != 0 && quoted == 0 && entry_pos == 0 {\n    |                                                           ^^^^^^ not found in this scope\n...\n156 |                     emit_entry!();\n    |                     ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `emit_entry` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `entry_pos` in this scope\n   --> src/lib.rs:56:74\n    |\n56  |                 let field_ptr = if p.options & 16 != 0 && quoted == 0 && entry_pos == 0 {\n    |                                                                          ^^^^^^^^^ not found in this scope\n...\n156 |                     emit_entry!();\n    |                     ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `emit_entry` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `entry_pos` in this scope\n   --> src/lib.rs:69:34\n    |\n69  |                     f(field_ptr, entry_pos, data_ptr);\n    |                                  ^^^^^^^^^ not found in this scope\n...\n156 |                     emit_entry!();\n    |                     ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `emit_entry` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `quoted` in this scope\n   --> src/lib.rs:47:24\n    |\n47  |             p.quoted = quoted;\n    |                        ^^^^^^ not found in this scope\n...\n180 |                             save_state!();\n    |                             ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `save_state` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `pstate` in this scope\n   --> src/lib.rs:48:24\n    |\n48  |             p.pstate = pstate;\n    |                        ^^^^^^ not found in this scope\n...\n180 |                             save_state!();\n    |                             ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `save_state` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `spaces` in this scope\n   --> src/lib.rs:49:24\n    |\n49  |             p.spaces = spaces;\n    |                        ^^^^^^ not found in this scope\n...\n180 |                             save_state!();\n    |                             ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `save_state` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `entry_pos` in this scope\n   --> src/lib.rs:50:27\n    |\n50  |             p.entry_pos = entry_pos;\n    |                           ^^^^^^^^^ not found in this scope\n...\n180 |                             save_state!();\n    |                             ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `save_state` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `quoted` in this scope\n   --> src/lib.rs:56:59\n    |\n56  |                 let field_ptr = if p.options & 16 != 0 && quoted == 0 && entry_pos == 0 {\n    |                                                           ^^^^^^ not found in this scope\n...\n196 |                         emit_entry!();\n    |                         ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `emit_entry` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `entry_pos` in this scope\n   --> src/lib.rs:56:74\n    |\n56  |                 let field_ptr = if p.options & 16 != 0 && quoted == 0 && entry_pos == 0 {\n    |                                                                          ^^^^^^^^^ not found in this scope\n...\n196 |                         emit_entry!();\n    |                         ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `emit_entry` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `entry_pos` in this scope\n   --> src/lib.rs:69:34\n    |\n69  |                     f(field_ptr, entry_pos, data_ptr);\n    |                                  ^^^^^^^^^ not found in this scope\n...\n196 |                         emit_entry!();\n    |                         ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `emit_entry` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `quoted` in this scope\n   --> src/lib.rs:56:59\n    |\n56  |                 let field_ptr = if p.options & 16 != 0 && quoted == 0 && entry_pos == 0 {\n    |                                                           ^^^^^^ not found in this scope\n...\n217 |                             emit_entry!();\n    |                             ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `emit_entry` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `entry_pos` in this scope\n   --> src/lib.rs:56:74\n    |\n56  |                 let field_ptr = if p.options & 16 != 0 && quoted == 0 && entry_pos == 0 {\n    |                                                                          ^^^^^^^^^ not found in this scope\n...\n217 |                             emit_entry!();\n    |                             ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `emit_entry` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `entry_pos` in this scope\n   --> src/lib.rs:69:34\n    |\n69  |                     f(field_ptr, entry_pos, data_ptr);\n    |                                  ^^^^^^^^^ not found in this scope\n...\n217 |                             emit_entry!();\n    |                             ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `emit_entry` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `quoted` in this scope\n   --> src/lib.rs:56:59\n    |\n56  |                 let field_ptr = if p.options & 16 != 0 && quoted == 0 && entry_pos == 0 {\n    |                                                           ^^^^^^ not found in this scope\n...\n252 |                     emit_entry!();\n    |                     ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `emit_entry` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `entry_pos` in this scope\n   --> src/lib.rs:56:74\n    |\n56  |                 let field_ptr = if p.options & 16 != 0 && quoted == 0 && entry_pos == 0 {\n    |                                                                          ^^^^^^^^^ not found in this scope\n...\n252 |                     emit_entry!();\n    |                     ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `emit_entry` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `entry_pos` in this scope\n   --> src/lib.rs:69:34\n    |\n69  |                     f(field_ptr, entry_pos, data_ptr);\n    |                                  ^^^^^^^^^ not found in this scope\n...\n252 |                     emit_entry!();\n    |                     ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `emit_entry` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `quoted` in this scope\n   --> src/lib.rs:56:59\n    |\n56  |                 let field_ptr = if p.options & 16 != 0 && quoted == 0 && entry_pos == 0 {\n    |                                                           ^^^^^^ not found in this scope\n...\n262 |                     emit_entry!();\n    |                     ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `emit_entry` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `entry_pos` in this scope\n   --> src/lib.rs:56:74\n    |\n56  |                 let field_ptr = if p.options & 16 != 0 && quoted == 0 && entry_pos == 0 {\n    |                                                                          ^^^^^^^^^ not found in this scope\n...\n262 |                     emit_entry!();\n    |                     ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `emit_entry` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `entry_pos` in this scope\n   --> src/lib.rs:69:34\n    |\n69  |                     f(field_ptr, entry_pos, data_ptr);\n    |                                  ^^^^^^^^^ not found in this scope\n...\n262 |                     emit_entry!();\n    |                     ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `emit_entry` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `quoted` in this scope\n   --> src/lib.rs:47:24\n    |\n47  |             p.quoted = quoted;\n    |                        ^^^^^^ not found in this scope\n...\n285 |                                 save_state!();\n    |                                 ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `save_state` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `pstate` in this scope\n   --> src/lib.rs:48:24\n    |\n48  |             p.pstate = pstate;\n    |                        ^^^^^^ not found in this scope\n...\n285 |                                 save_state!();\n    |                                 ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `save_state` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `spaces` in this scope\n   --> src/lib.rs:49:24\n    |\n49  |             p.spaces = spaces;\n    |                        ^^^^^^ not found in this scope\n...\n285 |                                 save_state!();\n    |                                 ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `save_state` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `entry_pos` in this scope\n   --> src/lib.rs:50:27\n    |\n50  |             p.entry_pos = entry_pos;\n    |                           ^^^^^^^^^ not found in this scope\n...\n285 |                                 save_state!();\n    |                                 ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `save_state` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `quoted` in this scope\n   --> src/lib.rs:47:24\n    |\n47  |             p.quoted = quoted;\n    |                        ^^^^^^ not found in this scope\n...\n297 |                             save_state!();\n    |                             ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `save_state` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `pstate` in this scope\n   --> src/lib.rs:48:24\n    |\n48  |             p.pstate = pstate;\n    |                        ^^^^^^ not found in this scope\n...\n297 |                             save_state!();\n    |                             ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `save_state` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `spaces` in this scope\n   --> src/lib.rs:49:24\n    |\n49  |             p.spaces = spaces;\n    |                        ^^^^^^ not found in this scope\n...\n297 |                             save_state!();\n    |                             ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `save_state` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `entry_pos` in this scope\n   --> src/lib.rs:50:27\n    |\n50  |             p.entry_pos = entry_pos;\n    |                           ^^^^^^^^^ not found in this scope\n...\n297 |                             save_state!();\n    |                             ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `save_state` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `quoted` in this scope\n   --> src/lib.rs:47:24\n    |\n47  |             p.quoted = quoted;\n    |                        ^^^^^^ not found in this scope\n...\n310 |     save_state!();\n    |     ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `save_state` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `pstate` in this scope\n   --> src/lib.rs:48:24\n    |\n48  |             p.pstate = pstate;\n    |                        ^^^^^^ not found in this scope\n...\n310 |     save_state!();\n    |     ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `save_state` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `spaces` in this scope\n   --> src/lib.rs:49:24\n    |\n49  |             p.spaces = spaces;\n    |                        ^^^^^^ not found in this scope\n...\n310 |     save_state!();\n    |     ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `save_state` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror[E0425]: cannot find value `entry_pos` in this scope\n   --> src/lib.rs:50:27\n    |\n50  |             p.entry_pos = entry_pos;\n    |                           ^^^^^^^^^ not found in this scope\n...\n310 |     save_state!();\n    |     ------------- in this macro invocation\n    |\n    = note: this error originates in the macro `save_state` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nFor more information about this error, try `rustc --explain E0425`.\nerror: could not compile `build_attempt` (lib) due to 42 previous errors\n",
+                "translation": "pub fn csv_parse(\n    p: &mut CsvParser<'_>,\n    s: &[u8],\n    cb1: Option<unsafe extern \"C\" fn(*mut c_void, usize, *mut c_void)>,\n    cb2: Option<unsafe extern \"C\" fn(i32, *mut c_void)>,\n    mut data: Option<&mut c_void>,\n) -> usize {\n    macro_rules! save_state {\n        () => {\n            p.quoted = quoted; p.pstate = pstate; p.spaces = spaces; p.entry_pos =\n            entry_pos;\n        };\n    }\n    macro_rules! emit_entry {\n        () => {\n            if let Some(f) = cb1 { let field_ptr = if p.options & 16 != 0 && quoted == 0\n            && entry_pos == 0 { std::ptr::null_mut() } else { p.entry_buf.as_deref_mut()\n            .map_or(std::ptr::null_mut(), | buf | { buf.as_mut_ptr().cast::< c_void > ()\n            }) }; let data_ptr = data.as_deref_mut().map_or(std::ptr::null_mut(), | value\n            | value as * mut c_void); unsafe { f(field_ptr, entry_pos, data_ptr); } }\n        };\n    }\n    macro_rules! emit_row {\n        ($c:expr) => {\n            if let Some(f) = cb2 { let data_ptr = data.as_deref_mut()\n            .map_or(std::ptr::null_mut(), | value | value as * mut c_void); unsafe { f($c\n            as i32, data_ptr); } }\n        };\n    }\n    let mut pos = 0usize;\n    let delim = p.delim_char;\n    let quote = p.quote_char;\n    let is_space = p.is_space;\n    let is_term = p.is_term;\n    let mut quoted = p.quoted;\n    let mut pstate = p.pstate;\n    let mut spaces = p.spaces;\n    let mut entry_pos = p.entry_pos;\n    if p.entry_buf.is_none() && pos < s.len() && csv_increase_buffer(Some(&mut *p)) != 0\n    {\n        save_state!();\n        return pos;\n    }\n    while pos < s.len() {\n        let entry_limit = if p.options & 8 != 0 {\n            p.entry_size.wrapping_sub(1)\n        } else {\n            p.entry_size\n        };\n        if entry_pos == entry_limit && csv_increase_buffer(Some(&mut *p)) != 0 {\n            save_state!();\n            return pos;\n        }\n        let c = s[pos];\n        pos += 1;\n        match pstate {\n            0 | 1 => {\n                let is_space_char = match is_space {\n                    Some(f) => unsafe { f(c) != 0 }\n                    None => c == 0x20 || c == 0x09,\n                };\n                let is_term_char = match is_term {\n                    Some(f) => unsafe { f(c) != 0 }\n                    None => c == 0x0d || c == 0x0a,\n                };\n                if is_space_char && c != delim {\n                    continue;\n                } else if is_term_char {\n                    if pstate == 1 {\n                        if quoted == 0 {\n                            entry_pos = entry_pos.wrapping_sub(spaces);\n                        }\n                        if p.options & 8 != 0 {\n                            p.entry_buf.as_deref_mut().unwrap()[entry_pos] = 0;\n                        }\n                        emit_entry!();\n                        pstate = 1;\n                        entry_pos = 0;\n                        quoted = 0;\n                        spaces = 0;\n                        emit_row!(c);\n                        pstate = 0;\n                        entry_pos = 0;\n                        quoted = 0;\n                        spaces = 0;\n                    } else if p.options & 2 != 0 {\n                        emit_row!(c);\n                        pstate = 0;\n                        entry_pos = 0;\n                        quoted = 0;\n                        spaces = 0;\n                    }\n                    continue;\n                } else if c == delim {\n                    if quoted == 0 {\n                        entry_pos = entry_pos.wrapping_sub(spaces);\n                    }\n                    if p.options & 8 != 0 {\n                        p.entry_buf.as_deref_mut().unwrap()[entry_pos] = 0;\n                    }\n                    emit_entry!();\n                    pstate = 1;\n                    entry_pos = 0;\n                    quoted = 0;\n                    spaces = 0;\n                } else if c == quote {\n                    pstate = 2;\n                    quoted = 1;\n                } else {\n                    pstate = 2;\n                    quoted = 0;\n                    p.entry_buf.as_deref_mut().unwrap()[entry_pos] = c;\n                    entry_pos = entry_pos.wrapping_add(1);\n                }\n            }\n            2 => {\n                if c == quote {\n                    if quoted != 0 {\n                        p.entry_buf.as_deref_mut().unwrap()[entry_pos] = c;\n                        entry_pos = entry_pos.wrapping_add(1);\n                        pstate = 3;\n                    } else {\n                        if p.options & 1 != 0 {\n                            p.status = 1;\n                            save_state!();\n                            return pos.wrapping_sub(1);\n                        }\n                        p.entry_buf.as_deref_mut().unwrap()[entry_pos] = c;\n                        entry_pos = entry_pos.wrapping_add(1);\n                        spaces = 0;\n                    }\n                } else if c == delim {\n                    if quoted != 0 {\n                        p.entry_buf.as_deref_mut().unwrap()[entry_pos] = c;\n                        entry_pos = entry_pos.wrapping_add(1);\n                    } else {\n                        entry_pos = entry_pos.wrapping_sub(spaces);\n                        if p.options & 8 != 0 {\n                            p.entry_buf.as_deref_mut().unwrap()[entry_pos] = 0;\n                        }\n                        emit_entry!();\n                        pstate = 1;\n                        entry_pos = 0;\n                        quoted = 0;\n                        spaces = 0;\n                    }\n                } else {\n                    let is_term_char = match is_term {\n                        Some(f) => unsafe { f(c) != 0 }\n                        None => c == 0x0d || c == 0x0a,\n                    };\n                    let is_space_char = match is_space {\n                        Some(f) => unsafe { f(c) != 0 }\n                        None => c == 0x20 || c == 0x09,\n                    };\n                    if is_term_char {\n                        if quoted == 0 {\n                            entry_pos = entry_pos.wrapping_sub(spaces);\n                            if p.options & 8 != 0 {\n                                p.entry_buf.as_deref_mut().unwrap()[entry_pos] = 0;\n                            }\n                            emit_entry!();\n                            pstate = 1;\n                            entry_pos = 0;\n                            quoted = 0;\n                            spaces = 0;\n                            emit_row!(c);\n                            pstate = 0;\n                            entry_pos = 0;\n                            quoted = 0;\n                            spaces = 0;\n                        } else {\n                            p.entry_buf.as_deref_mut().unwrap()[entry_pos] = c;\n                            entry_pos = entry_pos.wrapping_add(1);\n                        }\n                    } else if quoted == 0 && is_space_char {\n                        p.entry_buf.as_deref_mut().unwrap()[entry_pos] = c;\n                        entry_pos = entry_pos.wrapping_add(1);\n                        spaces = spaces.wrapping_add(1);\n                    } else {\n                        p.entry_buf.as_deref_mut().unwrap()[entry_pos] = c;\n                        entry_pos = entry_pos.wrapping_add(1);\n                        spaces = 0;\n                    }\n                }\n            }\n            3 => {\n                let is_term_char = match is_term {\n                    Some(f) => unsafe { f(c) != 0 }\n                    None => c == 0x0d || c == 0x0a,\n                };\n                if c == delim {\n                    entry_pos = entry_pos.wrapping_sub(spaces).wrapping_sub(1);\n                    if p.options & 8 != 0 {\n                        p.entry_buf.as_deref_mut().unwrap()[entry_pos] = 0;\n                    }\n                    emit_entry!();\n                    pstate = 1;\n                    entry_pos = 0;\n                    quoted = 0;\n                    spaces = 0;\n                } else if is_term_char {\n                    entry_pos = entry_pos.wrapping_sub(spaces).wrapping_sub(1);\n                    if p.options & 8 != 0 {\n                        p.entry_buf.as_deref_mut().unwrap()[entry_pos] = 0;\n                    }\n                    emit_entry!();\n                    pstate = 1;\n                    entry_pos = 0;\n                    quoted = 0;\n                    spaces = 0;\n                    emit_row!(c);\n                    pstate = 0;\n                    entry_pos = 0;\n                    quoted = 0;\n                    spaces = 0;\n                } else {\n                    let is_space_char = match is_space {\n                        Some(f) => unsafe { f(c) != 0 }\n                        None => c == 0x20 || c == 0x09,\n                    };\n                    if is_space_char {\n                        p.entry_buf.as_deref_mut().unwrap()[entry_pos] = c;\n                        entry_pos = entry_pos.wrapping_add(1);\n                        spaces = spaces.wrapping_add(1);\n                    } else if c == quote {\n                        if spaces != 0 {\n                            if p.options & 1 != 0 {\n                                p.status = 1;\n                                save_state!();\n                                return pos.wrapping_sub(1);\n                            }\n                            spaces = 0;\n                            p.entry_buf.as_deref_mut().unwrap()[entry_pos] = c;\n                            entry_pos = entry_pos.wrapping_add(1);\n                        } else {\n                            pstate = 2;\n                        }\n                    } else {\n                        if p.options & 1 != 0 {\n                            p.status = 1;\n                            save_state!();\n                            return pos.wrapping_sub(1);\n                        }\n                        pstate = 2;\n                        spaces = 0;\n                        p.entry_buf.as_deref_mut().unwrap()[entry_pos] = c;\n                        entry_pos = entry_pos.wrapping_add(1);\n                    }\n                }\n            }\n            _ => {}\n        }\n    }\n    save_state!();\n    pos\n}\n"
+            }
+        ],
+        "status": "success",
+        "attempts": [
+            2
+        ]
+    },
+    "csv_write": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            0
+        ]
+    },
+    "csv_fwrite": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            0
+        ]
+    }
+}

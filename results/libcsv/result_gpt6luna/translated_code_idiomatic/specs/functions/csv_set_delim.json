@@ -1,0 +1,36 @@
+{
+  "function_name": "csv_set_delim",
+  "fields": [
+    {
+      "u_field": {
+        "name": "p",
+        "type": "*mut csv_parser",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "p",
+        "type": "Option<&mut CsvParser<'_>>"
+      },
+      "ownership": "owning",
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "c",
+        "type": "c_uchar",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "c",
+        "type": "u8"
+      },
+      "compare": "by_value"
+    }
+  ],
+  "idiomatic_name": "csv_set_delim"
+}

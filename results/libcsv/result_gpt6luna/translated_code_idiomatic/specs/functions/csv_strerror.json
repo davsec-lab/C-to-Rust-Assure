@@ -1,0 +1,33 @@
+{
+  "function_name": "csv_strerror",
+  "fields": [
+    {
+      "u_field": {
+        "name": "status",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "status",
+        "type": "i32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "CsvErrorPtr",
+        "shape": {
+          "ptr": {
+            "kind": "cstring",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "&'static CStr"
+      }
+    }
+  ],
+  "idiomatic_name": "csv_strerror"
+}

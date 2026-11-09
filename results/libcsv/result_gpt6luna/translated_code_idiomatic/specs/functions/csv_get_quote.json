@@ -1,0 +1,36 @@
+{
+  "function_name": "csv_get_quote",
+  "fields": [
+    {
+      "u_field": {
+        "name": "p",
+        "type": "*const csv_parser",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "p",
+        "type": "&CsvParser<'_>"
+      },
+      "ownership": "transient",
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "libc::c_uchar",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "u8"
+      },
+      "compare": "by_value"
+    }
+  ],
+  "idiomatic_name": "csv_get_quote"
+}

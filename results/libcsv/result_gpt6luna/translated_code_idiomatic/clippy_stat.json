@@ -1,0 +1,13 @@
+{
+    "total_warnings": 18,
+    "total_errors": 0,
+    "warnings": {
+        "unused_unsafe": 5,
+        "unused_assignments": 12,
+        "clippy::result_unit_err": 1
+    },
+    "errors": {},
+    "total_tokens": 2431,
+    "unsafe_tokens": 35,
+    "unsafe_fraction": 0.014397367338543809
+}
