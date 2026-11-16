@@ -1,0 +1,19 @@
+--- by stage ---
+section            calls  input  output  cache_r  cache_w  cost_usd
+-----------------  -----  -----  ------  -------  -------  --------
+(none)                29  52172   30007        0        0   $0.4044
+
+--- by model ---
+section            calls  input  output  cache_r  cache_w  cost_usd
+-----------------  -----  -----  ------  -------  -------  --------
+claude-sonnet-5-5     29  52172   30007        0        0   $0.4044
+
+--- total ---
+section            calls  input  output  cache_r  cache_w  cost_usd
+-----------------  -----  -----  ------  -------  -------  --------
+TOTAL                 29  52172   30007        0        0   $0.4044
+
+--- retries ---
+compile retries :   3 calls  $0.0865
+struct retries  :   0 calls  $0.0000
+perf retries    :   0 calls  $0.0000

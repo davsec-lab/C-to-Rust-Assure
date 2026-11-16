@@ -1,0 +1,22 @@
+{
+  "block_of": {
+    "fft_transform": "fft_transform",
+    "fft_transform_bluestein": "fft_transform_bluestein",
+    "fft_transform_radix2": "fft_transform_radix2"
+  },
+  "deps": {
+    "fft_transform": [
+      "fft_transform_bluestein",
+      "fft_transform_radix2"
+    ],
+    "fft_transform_bluestein": [
+      "fft_transform_radix2"
+    ],
+    "fft_transform_radix2": []
+  },
+  "topo_sccs": [
+    "fft_transform_radix2",
+    "fft_transform_bluestein",
+    "fft_transform"
+  ]
+}

@@ -1,0 +1,11 @@
+Function: Tokens -> Full-Fits-Request : Full-Fits-Response: Function-Fits-Request: Function-Fits-Response: Decls-Fit-Request: Decls-Fit-Response 
+update_centroids: 41 -> True : True: True: True: True: True 
+distance: 35 -> True : True: True: True: True: True 
+kmeans: 69 -> True : True: True: True: True: True 
+assign_clusters: 42 -> True : True: True: True: True: True 
+diff_timespec: 37 -> True : True: True: True: True: True 
+Summary:
+Total function: 5
+Full function + decls -> 5 fits in request limit, 5 fits in response limit
+Function only -> 5 fits in request limit, 5 fits in response limit
+Decls only -> 5 fits in request limit, 5 fits in response limit

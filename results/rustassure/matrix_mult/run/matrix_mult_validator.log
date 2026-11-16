@@ -1,0 +1,1189 @@
+2026-11-12 22:26:34,291 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Command line options: Namespace(src='./inputs-oxivolve/matrix_mult', preanalysis_only=False, llm_mode='claude-sonnet-5-5', translator_mode='struct-fn-replay', fine_tuned_model='', single_file_name='', dir_prefix='sonnet55_20261112_22-23-19', file_list_file='', multithreading=False, interactive_fix_on_fail=False, perf_degrade_threshold_pct=30.0, perf_degrade_retry_count=0, perf_degrade_discard_on_fail=True, perf_degrade_skip_retry=False, skip_c_baseline=False)
+2026-11-12 22:26:34,304 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Using system prompt: You are an expert programmer in both C and Rust. You are great at translating C code to safe Rust. If the C code contains any libc functions, you automatically use the Rust equivalents.
+
+2026-11-12 22:26:34,329 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Skipping normal translation for performance-only functions: main
+2026-11-12 22:26:34,419 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Wrote run config to ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/run_config.json
+2026-11-12 22:26:34,420 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Extracting function bodies for file: ./inputs-oxivolve/matrix_mult/matrix_mult.i
+2026-11-12 22:26:34,420 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - (Re-)extracting functions from file ./inputs-oxivolve/matrix_mult/matrix_mult.i
+2026-11-12 22:26:34,479 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Skipping function __bswap_16 from ./inputs-oxivolve/matrix_mult/matrix_mult.i because it is not defined in the original source file
+2026-11-12 22:26:34,479 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Skipping function __bswap_32 from ./inputs-oxivolve/matrix_mult/matrix_mult.i because it is not defined in the original source file
+2026-11-12 22:26:34,479 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Skipping function __bswap_64 from ./inputs-oxivolve/matrix_mult/matrix_mult.i because it is not defined in the original source file
+2026-11-12 22:26:34,479 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Skipping function __uint16_identity from ./inputs-oxivolve/matrix_mult/matrix_mult.i because it is not defined in the original source file
+2026-11-12 22:26:34,479 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Skipping function __uint32_identity from ./inputs-oxivolve/matrix_mult/matrix_mult.i because it is not defined in the original source file
+2026-11-12 22:26:34,480 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Skipping function __uint64_identity from ./inputs-oxivolve/matrix_mult/matrix_mult.i because it is not defined in the original source file
+2026-11-12 22:26:34,488 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Skipping translation for helper functions: main
+2026-11-12 22:26:34,489 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Skipping translation for helper functions: main
+2026-11-12 22:26:34,489 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Extracted  06 functions
+2026-11-12 22:26:36,054 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Removed dead helper definitions from ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/diff_timespec.i: __bswap_16, __bswap_32, __bswap_64, __uint16_identity, __uint32_identity, __uint64_identity
+2026-11-12 22:26:36,055 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Running: unused-typedef-extractor --root-function=diff_timespec /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/diff_timespec.i
+2026-11-12 22:26:36,069 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Removed dead helper definitions from ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/allocate_matrix.i: __bswap_16, __bswap_32, __bswap_64, __uint16_identity, __uint32_identity, __uint64_identity
+2026-11-12 22:26:36,070 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Running: unused-typedef-extractor --root-function=allocate_matrix /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/allocate_matrix.i
+2026-11-12 22:26:36,071 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Removed dead helper definitions from ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/multiply_matrices.i: __bswap_16, __bswap_32, __bswap_64, __uint16_identity, __uint32_identity, __uint64_identity
+2026-11-12 22:26:36,072 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Running: unused-typedef-extractor --root-function=multiply_matrices /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/multiply_matrices.i
+2026-11-12 22:26:36,073 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Removed dead helper definitions from ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/fill_matrix.i: __bswap_16, __bswap_32, __bswap_64, __uint16_identity, __uint32_identity, __uint64_identity
+2026-11-12 22:26:36,073 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Removed dead helper definitions from ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/print_matrix.i: __bswap_16, __bswap_32, __bswap_64, __uint16_identity, __uint32_identity, __uint64_identity
+2026-11-12 22:26:36,073 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Removed dead helper definitions from ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/free_matrix.i: __bswap_16, __bswap_32, __bswap_64, __uint16_identity, __uint32_identity, __uint64_identity
+2026-11-12 22:26:36,074 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Running: unused-typedef-extractor --root-function=fill_matrix /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/fill_matrix.i
+2026-11-12 22:26:36,075 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Running: unused-typedef-extractor --root-function=print_matrix /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/print_matrix.i
+2026-11-12 22:26:36,076 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Running: unused-typedef-extractor --root-function=free_matrix /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/free_matrix.i
+2026-11-12 22:26:36,107 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - successfuly run cmd, unused-typedef-extractor --root-function=diff_timespec /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/diff_timespec.i
+2026-11-12 22:26:36,117 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - successfuly run cmd, unused-typedef-extractor --root-function=multiply_matrices /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/multiply_matrices.i
+2026-11-12 22:26:36,120 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - successfuly run cmd, unused-typedef-extractor --root-function=fill_matrix /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/fill_matrix.i
+2026-11-12 22:26:36,121 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - successfuly run cmd, unused-typedef-extractor --root-function=free_matrix /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/free_matrix.i
+2026-11-12 22:26:36,124 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - successfuly run cmd, unused-typedef-extractor --root-function=allocate_matrix /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/allocate_matrix.i
+2026-11-12 22:26:36,133 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - successfuly run cmd, unused-typedef-extractor --root-function=print_matrix /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/print_matrix.i
+2026-11-12 22:26:36,157 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Extracting function bodies for file: ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/multiply_matrices.i
+2026-11-12 22:26:36,157 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - (Re-)extracting functions from file ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/multiply_matrices.i
+2026-11-12 22:26:36,174 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Extracting function bodies for file: ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/free_matrix.i
+2026-11-12 22:26:36,174 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - (Re-)extracting functions from file ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/free_matrix.i
+2026-11-12 22:26:36,193 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Extracting function bodies for file: ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/fill_matrix.i
+2026-11-12 22:26:36,194 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - (Re-)extracting functions from file ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/fill_matrix.i
+2026-11-12 22:26:36,213 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Extracting function bodies for file: ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/diff_timespec.i
+2026-11-12 22:26:36,213 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - (Re-)extracting functions from file ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/diff_timespec.i
+2026-11-12 22:26:36,231 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Extracting function bodies for file: ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/allocate_matrix.i
+2026-11-12 22:26:36,231 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - (Re-)extracting functions from file ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/allocate_matrix.i
+2026-11-12 22:26:36,248 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Extracting function bodies for file: ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/print_matrix.i
+2026-11-12 22:26:36,248 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - (Re-)extracting functions from file ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/print_matrix.i
+2026-11-12 22:26:36,264 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Extracting char*/void* fields from 6 functions
+2026-11-12 22:26:36,264 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Extracting char*/void* field pointers from structs for file multiply_matrices
+2026-11-12 22:26:36,272 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - struct-with-generic-pointer-printer produced no output for ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/multiply_matrices.i (rc=0). stderr head: 
+2026-11-12 22:26:36,272 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Extracting char*/void* field pointers from structs for file free_matrix
+2026-11-12 22:26:36,280 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - struct-with-generic-pointer-printer produced no output for ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/free_matrix.i (rc=0). stderr head: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/free_matrix.i:5:9: warning: implicitly declaring library function 'free' with type 'void (void *)' [-Wimplicit-function-declaration]
+        
+2026-11-12 22:26:36,280 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Extracting char*/void* field pointers from structs for file fill_matrix
+2026-11-12 22:26:36,291 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - struct-with-generic-pointer-printer produced no output for ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/fill_matrix.i (rc=0). stderr head: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/fill_matrix.i:7:28: warning: implicit declaration of function 'rand' is invalid in C99 [-Wimplicit-function-declaration]
+            matrix[i
+2026-11-12 22:26:36,291 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Extracting char*/void* field pointers from structs for file diff_timespec
+2026-11-12 22:26:36,299 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - struct-with-generic-pointer-printer produced no output for ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/diff_timespec.i (rc=0). stderr head: 
+2026-11-12 22:26:36,299 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Extracting char*/void* field pointers from structs for file allocate_matrix
+2026-11-12 22:26:36,316 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - struct-with-generic-pointer-printer produced no output for ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/allocate_matrix.i (rc=0). stderr head: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/allocate_matrix.i:4:28: warning: implicitly declaring library function 'malloc' with type 'void *(unsigned long)' [-Wimplicit-function-declar
+2026-11-12 22:26:36,316 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Extracting char*/void* field pointers from structs for file print_matrix
+2026-11-12 22:26:36,332 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - struct-with-generic-pointer-printer produced no output for ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/print_matrix.i (rc=0). stderr head: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/print_matrix.i:3:5: warning: implicitly declaring library function 'printf' with type 'int (const char *, ...)' [-Wimplicit-function-declarat
+2026-11-12 22:26:36,332 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Extracting normal structs from 6 functions
+2026-11-12 22:26:36,332 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Extracting normal structs from for file multiply_matrices
+2026-11-12 22:26:36,346 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - static-and-struct-def produced no output for ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/multiply_matrices.i (rc=0). stderr head: 
+2026-11-12 22:26:36,346 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Extracting normal structs from for file free_matrix
+2026-11-12 22:26:36,362 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - static-and-struct-def produced no output for ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/free_matrix.i (rc=0). stderr head: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/free_matrix.i:5:9: warning: implicitly declaring library function 'free' with type 'void (void *)' [-Wimplicit-function-declaration]
+        
+2026-11-12 22:26:36,363 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Extracting normal structs from for file fill_matrix
+2026-11-12 22:26:36,379 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - static-and-struct-def produced no output for ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/fill_matrix.i (rc=0). stderr head: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/fill_matrix.i:7:28: warning: implicit declaration of function 'rand' is invalid in C99 [-Wimplicit-function-declaration]
+            matrix[i
+2026-11-12 22:26:36,379 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Extracting normal structs from for file diff_timespec
+2026-11-12 22:26:36,452 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Extracting normal structs from for file allocate_matrix
+2026-11-12 22:26:36,485 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Extracting normal structs from for file print_matrix
+2026-11-12 22:26:36,497 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - static-and-struct-def produced no output for ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/print_matrix.i (rc=0). stderr head: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/print_matrix.i:3:5: warning: implicitly declaring library function 'printf' with type 'int (const char *, ...)' [-Wimplicit-function-declarat
+2026-11-12 22:26:36,497 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Extracting enums from 6 functions
+2026-11-12 22:26:36,497 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Extracting enums for file multiply_matrices
+2026-11-12 22:26:36,499 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Extracting enums for file free_matrix
+2026-11-12 22:26:36,499 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Extracting enums for file fill_matrix
+2026-11-12 22:26:36,500 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Extracting enums for file diff_timespec
+2026-11-12 22:26:36,500 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Extracting enums for file allocate_matrix
+2026-11-12 22:26:36,500 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Extracting enums for file print_matrix
+2026-11-12 22:26:36,501 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Extracting struct field usages across 6 functions
+2026-11-12 22:26:36,593 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - [type-registry] collected 3 definitions
+2026-11-12 22:26:36,594 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - [type-registry] typedef:__syscall_slong_t extracted_by=['normal'] depends_on=[]
+typedef long int __syscall_slong_t;
+2026-11-12 22:26:36,594 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - [type-registry] typedef:__time_t extracted_by=['normal'] depends_on=[]
+typedef long int __time_t;
+2026-11-12 22:26:36,594 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - [type-registry] typedef:size_t extracted_by=['normal'] depends_on=[]
+typedef long unsigned int size_t;
+2026-11-12 22:26:36,786 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - [type stored typedef:__syscall_slong_t]: type __syscall_slong_t = i64;
+2026-11-12 22:26:36,787 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - [type stored typedef:__time_t]: type __time_t = i64;
+2026-11-12 22:26:36,787 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Sending request: Please translate the following C definitions to Rust.
+Please add any necessary header files, include statements, imports, or use statements required for the translated code to compile.
+
+For the final code result, please response with "Final result code" is : 
+definitions:
+typedef long unsigned int size_t;
+
+
+2026-11-12 22:26:39,101 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Rust raw response: Final result code:
+
+```rust
+#![allow(non_camel_case_types)]
+
+// C: typedef long unsigned int size_t;
+// On the C side this is an unsigned long (64-bit on LP64 targets).
+// The Rust equivalent is `usize` (pointer-sized unsigned integer),
+// or `std::os::raw::c_ulong` if exact C ABI width matching is needed.
+pub type size_t = usize;
+```
+2026-11-12 22:26:39,103 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Finish reason for function/struct size_t: end_turn
+2026-11-12 22:26:39,103 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Sent request in 1 chunks
+2026-11-12 22:26:39,104 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - [type batch size_t] sanitized result: #![allow(non_camel_case_types)]
+
+// C: typedef long unsigned int size_t;
+// On the C side this is an unsigned long (64-bit on LP64 targets).
+// The Rust equivalent is `usize` (pointer-sized unsigned integer),
+// or `std::os::raw::c_ulong` if exact C ABI width matching is needed.
+pub type size_t = usize;
+2026-11-12 22:26:39,104 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_s4d5_2wo, source=lib.rs)
+2026-11-12 22:26:40,331 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - [type stored typedef:size_t]: pub type size_t = usize;
+2026-11-12 22:26:40,333 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Sending request: Please translate the following C definitions to Rust.
+Please add any necessary header files, include statements, imports, or use statements required for the translated code to compile.
+
+For the final code result, please response with "Final result code" is : 
+definitions:
+typedef long unsigned int size_t;
+
+In the previous translation, I got an compile error 
+error: an inner attribute is not permitted in this context
+ --> src/lib.rs:3:1
+  |
+3 | #![allow(non_camel_case_types)]
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+9 | pub type size_t = usize;
+  | ------------------------ the inner attribute doesn't annotate this type alias
+  |
+  = note: inner attributes, like `#![no_std]`, annotate the item enclosing them, and are usually found at the beginning of source files
+help: to annotate the type alias, change the attribute from inner to outer style
+  |
+3 - #![allow(non_camel_case_types)]
+3 + #[allow(non_camel_case_types)]
+  |
+
+warning: unused imports: `fclose`, `fopen`, `fread`, `free`, `fseek`, `ftell`, `malloc`, `memcpy`, `memset`, `realloc`, `strcmp`
+ --> src/lib.rs:1:12
+  |
+1 | use libc::{free, malloc, realloc, strcmp, memcpy, memset, fclose, fopen, fread, fseek, ftell};
+  |            ^^^^  ^^^^^^  ^^^^^^^  ^^^^^^  ^^^^^^  ^^^^^^  ^^^^^^  ^^^^^  ^^^^^  ^^^^^  ^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: type `size_t` should have an upper camel case name
+ --> src/lib.rs:9:10
+  |
+9 | pub type size_t = usize;
+  |          ^^^^^^ help: convert the identifier to upper camel case: `SizeT`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+error: could not compile `translation_compile_check` due to previous error; 2 warnings emitted
+
+This is the previous translation result : 
+#![allow(non_camel_case_types)]
+
+// C: typedef long unsigned int size_t;
+// On the C side this is an unsigned long (64-bit on LP64 targets).
+// The Rust equivalent is `usize` (pointer-sized unsigned integer),
+// or `std::os::raw::c_ulong` if exact C ABI width matching is needed.
+pub type size_t = usize;
+2026-11-12 22:26:42,857 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Rust raw response: The error came from the inner attribute `#![...]` appearing after other items. This is likely because the file is embedded in a larger context where it isn't at the top of the crate. Using an outer attribute `#[allow(non_camel_case_types)]` on the item fixes it. I also removed the unused `libc` imports, since the definition doesn't need them.
+
+Final result code:
+```rust
+#[allow(non_camel_case_types)]
+pub type size_t = usize;
+```
+2026-11-12 22:26:42,858 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Finish reason for function/struct size_t: end_turn
+2026-11-12 22:26:42,859 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Sent request in 1 chunks
+2026-11-12 22:26:42,859 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - [type batch size_t] sanitized result: #[allow(non_camel_case_types)]
+pub type size_t = usize;
+2026-11-12 22:26:42,860 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_qz7l9ue5, source=lib.rs)
+2026-11-12 22:26:43,951 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - [type stored typedef:size_t]: pub type size_t = usize;
+2026-11-12 22:26:43,951 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Sending request: Translate C to Rust. If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function.
+ For the final code result, please response with "Final result code" is : 
+
+
+void multiply_matrices(int **A, int **B, int **C, int size)
+{
+    for (int i = 0; i < size; i++)
+    {
+        for (int j = 0; j < size; j++)
+        {
+            C[i][j] = 0;
+            for (int k = 0; k < size; k++)
+            {
+                C[i][j] += A[i][k] * B[k][j];
+            }
+        }
+    }
+}
+
+
+/* 
+*/
+
+2026-11-12 22:26:46,831 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Rust raw response: The C function takes three `int **` matrices. In safe Rust, the natural equivalent is `&[Vec<i32>]` for the inputs and `&mut [Vec<i32>]` for the output.
+
+C `int` overflow is undefined behavior for signed values, so I use plain arithmetic, which panics on overflow in debug builds and wraps in release. This keeps the translation direct.
+
+Final result code is:
+
+```rust
+pub fn multiply_matrices(a: &[Vec<i32>], b: &[Vec<i32>], c: &mut [Vec<i32>], size: usize) {
+    for i in 0..size {
+        for j in 0..size {
+            c[i][j] = 0;
+            for k in 0..size {
+                c[i][j] += a[i][k] * b[k][j];
+            }
+        }
+    }
+}
+```
+2026-11-12 22:26:46,833 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Finish reason for function/struct multiply_matrices: end_turn
+2026-11-12 22:26:46,834 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Sent request in 1 chunks
+2026-11-12 22:26:46,836 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_5bos9jm2, source=lib.rs)
+2026-11-12 22:26:48,093 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - [multiply_matrices], complete result : type __syscall_slong_t = i64;
+type __time_t = i64;
+pub type size_t = usize;
+
+pub fn multiply_matrices(a: &[Vec<i32>], b: &[Vec<i32>], c: &mut [Vec<i32>], size: usize) {
+    for i in 0..size {
+        for j in 0..size {
+            c[i][j] = 0;
+            for k in 0..size {
+                c[i][j] += a[i][k] * b[k][j];
+            }
+        }
+    }
+}
+2026-11-12 22:26:48,095 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - WARNING - Successfully added multiply_matrices to the merged file.
+2026-11-12 22:26:48,098 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Sending request: Translate C to Rust. If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function.
+ For the final code result, please response with "Final result code" is : 
+
+
+void free_matrix(int **matrix, int size)
+{
+    for (int i = 0; i < size; i++)
+    {
+        free(matrix[i]);
+    }
+    free(matrix);
+}
+
+
+For the dependency functions, I will provide the translation of Rust included in /*// and //*/. These dependency functions are available for reference. Call them only when they are still required by the generated code; if the current stage has made a dependency unnecessary, do not call it. 
+/* 
+*/
+
+2026-11-12 22:26:50,811 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Rust raw response: In safe Rust, a matrix of `int**` is owned as `Vec<Vec<i32>>`, and the memory is freed automatically when the value is dropped. The `free_matrix` function therefore only needs to take ownership of the matrix and drop it. The `size` parameter is kept so the signature stays the same, but it isn't needed.
+
+Final result code:
+
+```rust
+pub fn free_matrix(matrix: Vec<Vec<i32>>, size: usize) {
+    let mut matrix = matrix;
+    // Free each row explicitly (mirrors the C loop), then the outer container.
+    for i in 0..size.min(matrix.len()) {
+        matrix[i] = Vec::new();
+    }
+    drop(matrix);
+}
+```
+2026-11-12 22:26:50,814 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Finish reason for function/struct free_matrix: end_turn
+2026-11-12 22:26:50,814 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Sent request in 1 chunks
+2026-11-12 22:26:50,822 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_mel6c6aj, source=lib.rs)
+2026-11-12 22:26:52,639 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - [free_matrix], complete result : type __syscall_slong_t = i64;
+type __time_t = i64;
+pub type size_t = usize;
+
+pub fn multiply_matrices(a: &[Vec<i32>], b: &[Vec<i32>], c: &mut [Vec<i32>], size: usize) {
+    for i in 0..size {
+        for j in 0..size {
+            c[i][j] = 0;
+            for k in 0..size {
+                c[i][j] += a[i][k] * b[k][j];
+            }
+        }
+    }
+}
+pub fn free_matrix(matrix: Vec<Vec<i32>>, size: usize) {
+    let mut matrix = matrix;
+    // Free each row explicitly (mirrors the C loop), then the outer container.
+    for i in 0..size.min(matrix.len()) {
+        matrix[i] = Vec::new();
+    }
+    drop(matrix);
+}
+2026-11-12 22:26:52,640 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - WARNING - Successfully added free_matrix to the merged file.
+2026-11-12 22:26:52,642 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Sending request: Translate C to Rust. If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function.
+ For the final code result, please response with "Final result code" is : 
+
+
+void fill_matrix(int **matrix, int size)
+{
+    for (int i = 0; i < size; i++)
+    {
+        for (int j = 0; j < size; j++)
+        {
+            matrix[i][j] = rand();
+        }
+    }
+}
+
+
+For the dependency functions, I will provide the translation of Rust included in /*// and //*/. These dependency functions are available for reference. Call them only when they are still required by the generated code; if the current stage has made a dependency unnecessary, do not call it. 
+/* 
+*/
+
+2026-11-12 22:26:55,220 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Rust raw response: I translated `fill_matrix` using a `Vec<Vec<i32>>` in place of `int **`. The `size` parameter is kept so the loop bounds match the C code. Since `rand()` is a libc function, I used the `rand` crate's `random` function as its Rust equivalent. I did not add a `main` function or any dummy dependency definitions.
+
+Final result code is:
+
+```rust
+use rand::Rng;
+
+pub fn fill_matrix(matrix: &mut Vec<Vec<i32>>, size: usize) {
+    let mut rng = rand::thread_rng();
+    for i in 0..size {
+        for j in 0..size {
+            // rand() returns a non-negative int in [0, RAND_MAX]
+            matrix[i][j] = rng.gen_range(0..=i32::MAX);
+        }
+    }
+}
+```
+2026-11-12 22:26:55,221 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Finish reason for function/struct fill_matrix: end_turn
+2026-11-12 22:26:55,221 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Sent request in 1 chunks
+2026-11-12 22:26:55,224 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_7_84yd2j, source=lib.rs)
+2026-11-12 22:26:57,549 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - [fill_matrix], complete result : type __syscall_slong_t = i64;
+type __time_t = i64;
+pub type size_t = usize;
+
+pub fn multiply_matrices(a: &[Vec<i32>], b: &[Vec<i32>], c: &mut [Vec<i32>], size: usize) {
+    for i in 0..size {
+        for j in 0..size {
+            c[i][j] = 0;
+            for k in 0..size {
+                c[i][j] += a[i][k] * b[k][j];
+            }
+        }
+    }
+}
+pub fn free_matrix(matrix: Vec<Vec<i32>>, size: usize) {
+    let mut matrix = matrix;
+    // Free each row explicitly (mirrors the C loop), then the outer container.
+    for i in 0..size.min(matrix.len()) {
+        matrix[i] = Vec::new();
+    }
+    drop(matrix);
+}
+pub fn fill_matrix(matrix: &mut Vec<Vec<i32>>, size: usize) {
+    let mut rng = rand::thread_rng();
+    for i in 0..size {
+        for j in 0..size {
+            // rand() returns a non-negative int in [0, RAND_MAX]
+            matrix[i][j] = rng.gen_range(0..=i32::MAX);
+        }
+    }
+}
+2026-11-12 22:26:57,550 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - [COMPILE AND LINK]Trying to recompile translated function fill_matrix, attempt # 1
+2026-11-12 22:26:57,550 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Full compilation error: error[E0433]: failed to resolve: use of undeclared crate or module `rand`
+  --> src/lib.rs:27:19
+   |
+27 |     let mut rng = rand::thread_rng();
+   |                   ^^^^ use of undeclared crate or module `rand`
+
+For more information about this error, try `rustc --explain E0433`.
+error: could not compile `translation_compile_check` due to previous error
+
+2026-11-12 22:26:57,552 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Sending request: I got compilation error. Please help me fix or rewrite the target function
+The code is in the following :
+pub fn fill_matrix(matrix: &mut Vec<Vec<i32>>, size: usize) {
+    let mut rng = rand::thread_rng();
+    for i in 0..size {
+        for j in 0..size {
+            // rand() returns a non-negative int in [0, RAND_MAX]
+            matrix[i][j] = rng.gen_range(0..=i32::MAX);
+        }
+    }
+}
+The function signature of the dependency functions is : /* 
+*/
+The dependency structs definition is  /* 
+
+type __syscall_slong_t = i64;
+type __time_t = i64;
+pub type size_t = usize;*/
+target function is fill_matrix
+Please do not change or modify any other functions
+Please only reply with the modified or re-generated version of the target function: fill_matrix
+Do NOT add C/C++ preprocessor directives (`#include`, `#define`, etc.) — this is Rust. If a new dependency is needed, add a `use` statement.The compile error information : error[E0433]: failed to resolve: use of undeclared crate or module `rand`
+  --> src/lib.rs:27:19
+   |
+27 |     let mut rng = rand::thread_rng();
+   |                   ^^^^ use of undeclared crate or module `rand`
+
+For more information about this error, try `rustc --explain E0433`.
+error: could not compile `translation_compile_check` due to previous error
+
+If the compile error is caused by missing dependency such as no member named, please fix try to generate code with the missing dependency 
+
+ For the final code result, please response with "Final result code" is : 
+
+2026-11-12 22:27:01,361 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Rust raw response: The `rand` crate isn't available in the project, so the function can't depend on it. I replaced it with a small pseudo-random generator built only from the standard library. It is a xorshift generator seeded from `SystemTime`, which matches the `__time_t` and `__syscall_slong_t` types in the dependency list. The values land in `[0, i32::MAX]`, like C's `rand()`.
+
+Final result code:
+
+```rust
+pub fn fill_matrix(matrix: &mut Vec<Vec<i32>>, size: usize) {
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    // Seed from the current time (similar to srand(time(NULL)))
+    let seed = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|d| d.as_nanos() as u64)
+        .unwrap_or(0x9E3779B97F4A7C15);
+    let mut state: u64 = seed ^ 0x9E3779B97F4A7C15;
+    if state == 0 {
+        state = 0x9E3779B97F4A7C15;
+    }
+
+    for i in 0..size {
+        for j in 0..size {
+            // xorshift64* pseudo-random generator
+            state ^= state >> 12;
+            state ^= state << 25;
+            state ^= state >> 27;
+            let r = state.wrapping_mul(0x2545F4914F6CDD1D);
+            // rand() returns a non-negative int in [0, RAND_MAX]
+            matrix[i][j] = ((r >> 33) as u32 & 0x7FFF_FFFF) as i32;
+        }
+    }
+}
+```
+2026-11-12 22:27:01,362 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Finish reason for function/struct fill_matrix: end_turn
+2026-11-12 22:27:01,363 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Sent request in 1 chunks
+2026-11-12 22:27:01,364 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - [fill_matrix], complete result : use std::time::{SystemTime, UNIX_EPOCH};
+
+type __syscall_slong_t = i64;
+type __time_t = i64;
+pub type size_t = usize;
+
+pub fn multiply_matrices(a: &[Vec<i32>], b: &[Vec<i32>], c: &mut [Vec<i32>], size: usize) {
+    for i in 0..size {
+        for j in 0..size {
+            c[i][j] = 0;
+            for k in 0..size {
+                c[i][j] += a[i][k] * b[k][j];
+            }
+        }
+    }
+}
+pub fn free_matrix(matrix: Vec<Vec<i32>>, size: usize) {
+    let mut matrix = matrix;
+    // Free each row explicitly (mirrors the C loop), then the outer container.
+    for i in 0..size.min(matrix.len()) {
+        matrix[i] = Vec::new();
+    }
+    drop(matrix);
+}
+
+pub fn fill_matrix(matrix: &mut Vec<Vec<i32>>, size: usize) {
+
+    // Seed from the current time (similar to srand(time(NULL)))
+    let seed = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|d| d.as_nanos() as u64)
+        .unwrap_or(0x9E3779B97F4A7C15);
+    let mut state: u64 = seed ^ 0x9E3779B97F4A7C15;
+    if state == 0 {
+        state = 0x9E3779B97F4A7C15;
+    }
+
+    for i in 0..size {
+        for j in 0..size {
+            // xorshift64* pseudo-random generator
+            state ^= state >> 12;
+            state ^= state << 25;
+            state ^= state >> 27;
+            let r = state.wrapping_mul(0x2545F4914F6CDD1D);
+            // rand() returns a non-negative int in [0, RAND_MAX]
+            matrix[i][j] = ((r >> 33) as u32 & 0x7FFF_FFFF) as i32;
+        }
+    }
+}
+2026-11-12 22:27:01,365 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_63j4znff, source=lib.rs)
+2026-11-12 22:27:02,509 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - [COMPILE AND LINK] After 1 retranslation attempts result, complete result: use std::time::{SystemTime, UNIX_EPOCH};
+
+pub fn fill_matrix(matrix: &mut Vec<Vec<i32>>, size: usize) {
+
+    // Seed from the current time (similar to srand(time(NULL)))
+    let seed = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|d| d.as_nanos() as u64)
+        .unwrap_or(0x9E3779B97F4A7C15);
+    let mut state: u64 = seed ^ 0x9E3779B97F4A7C15;
+    if state == 0 {
+        state = 0x9E3779B97F4A7C15;
+    }
+
+    for i in 0..size {
+        for j in 0..size {
+            // xorshift64* pseudo-random generator
+            state ^= state >> 12;
+            state ^= state << 25;
+            state ^= state >> 27;
+            let r = state.wrapping_mul(0x2545F4914F6CDD1D);
+            // rand() returns a non-negative int in [0, RAND_MAX]
+            matrix[i][j] = ((r >> 33) as u32 & 0x7FFF_FFFF) as i32;
+        }
+    }
+}, use std::time::{SystemTime, UNIX_EPOCH};
+
+type __syscall_slong_t = i64;
+type __time_t = i64;
+pub type size_t = usize;
+
+pub fn multiply_matrices(a: &[Vec<i32>], b: &[Vec<i32>], c: &mut [Vec<i32>], size: usize) {
+    for i in 0..size {
+        for j in 0..size {
+            c[i][j] = 0;
+            for k in 0..size {
+                c[i][j] += a[i][k] * b[k][j];
+            }
+        }
+    }
+}
+pub fn free_matrix(matrix: Vec<Vec<i32>>, size: usize) {
+    let mut matrix = matrix;
+    // Free each row explicitly (mirrors the C loop), then the outer container.
+    for i in 0..size.min(matrix.len()) {
+        matrix[i] = Vec::new();
+    }
+    drop(matrix);
+}
+
+pub fn fill_matrix(matrix: &mut Vec<Vec<i32>>, size: usize) {
+
+    // Seed from the current time (similar to srand(time(NULL)))
+    let seed = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|d| d.as_nanos() as u64)
+        .unwrap_or(0x9E3779B97F4A7C15);
+    let mut state: u64 = seed ^ 0x9E3779B97F4A7C15;
+    if state == 0 {
+        state = 0x9E3779B97F4A7C15;
+    }
+
+    for i in 0..size {
+        for j in 0..size {
+            // xorshift64* pseudo-random generator
+            state ^= state >> 12;
+            state ^= state << 25;
+            state ^= state >> 27;
+            let r = state.wrapping_mul(0x2545F4914F6CDD1D);
+            // rand() returns a non-negative int in [0, RAND_MAX]
+            matrix[i][j] = ((r >> 33) as u32 & 0x7FFF_FFFF) as i32;
+        }
+    }
+}
+2026-11-12 22:27:02,511 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - WARNING - Successfully added fill_matrix to the merged file.
+2026-11-12 22:27:02,514 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Sending request: Translate C to Rust. If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function.
+ For the final code result, please response with "Final result code" is : 
+
+
+
+struct timespec
+{
+  __time_t tv_sec;
+  __syscall_slong_t tv_nsec;
+};
+
+static double diff_timespec(struct timespec *time1, struct timespec *time0)
+{
+    return (time1->tv_sec - time0->tv_sec) + (time1->tv_nsec - time0->tv_nsec) / 1000000000.0;
+}
+
+
+Please use the following Rust translations of dependency definitions enclosed in /* Rust definitions ... */. Please do not include this translation in your response. 
+
+/* Rust definitions
+type __syscall_slong_t = i64;
+*/
+/* Rust definitions
+type __time_t = i64;
+*/
+
+
+For the dependency functions, I will provide the translation of Rust included in /*// and //*/. These dependency functions are available for reference. Call them only when they are still required by the generated code; if the current stage has made a dependency unnecessary, do not call it. 
+/* 
+*/
+
+2026-11-12 22:27:04,714 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Rust raw response: Final result code" is :
+
+```rust
+#[derive(Debug, Clone, Copy, Default)]
+pub struct timespec {
+    pub tv_sec: __time_t,
+    pub tv_nsec: __syscall_slong_t,
+}
+
+fn diff_timespec(time1: &timespec, time0: &timespec) -> f64 {
+    (time1.tv_sec - time0.tv_sec) as f64
+        + (time1.tv_nsec - time0.tv_nsec) as f64 / 1000000000.0
+}
+```
+2026-11-12 22:27:04,715 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Finish reason for function/struct diff_timespec: end_turn
+2026-11-12 22:27:04,715 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Sent request in 1 chunks
+2026-11-12 22:27:04,718 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_rdaj7sg6, source=lib.rs)
+2026-11-12 22:27:06,084 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - [diff_timespec], complete result : use std::time::{SystemTime, UNIX_EPOCH};
+
+type __syscall_slong_t = i64;
+type __time_t = i64;
+pub type size_t = usize;
+
+pub fn multiply_matrices(a: &[Vec<i32>], b: &[Vec<i32>], c: &mut [Vec<i32>], size: usize) {
+    for i in 0..size {
+        for j in 0..size {
+            c[i][j] = 0;
+            for k in 0..size {
+                c[i][j] += a[i][k] * b[k][j];
+            }
+        }
+    }
+}
+pub fn free_matrix(matrix: Vec<Vec<i32>>, size: usize) {
+    let mut matrix = matrix;
+    // Free each row explicitly (mirrors the C loop), then the outer container.
+    for i in 0..size.min(matrix.len()) {
+        matrix[i] = Vec::new();
+    }
+    drop(matrix);
+}
+
+pub fn fill_matrix(matrix: &mut Vec<Vec<i32>>, size: usize) {
+
+    // Seed from the current time (similar to srand(time(NULL)))
+    let seed = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|d| d.as_nanos() as u64)
+        .unwrap_or(0x9E3779B97F4A7C15);
+    let mut state: u64 = seed ^ 0x9E3779B97F4A7C15;
+    if state == 0 {
+        state = 0x9E3779B97F4A7C15;
+    }
+
+    for i in 0..size {
+        for j in 0..size {
+            // xorshift64* pseudo-random generator
+            state ^= state >> 12;
+            state ^= state << 25;
+            state ^= state >> 27;
+            let r = state.wrapping_mul(0x2545F4914F6CDD1D);
+            // rand() returns a non-negative int in [0, RAND_MAX]
+            matrix[i][j] = ((r >> 33) as u32 & 0x7FFF_FFFF) as i32;
+        }
+    }
+}
+#[derive(Debug, Clone, Copy, Default)]
+pub struct timespec {
+    pub tv_sec: __time_t,
+    pub tv_nsec: __syscall_slong_t,
+}
+
+fn diff_timespec(time1: &timespec, time0: &timespec) -> f64 {
+    (time1.tv_sec - time0.tv_sec) as f64
+        + (time1.tv_nsec - time0.tv_nsec) as f64 / 1000000000.0
+}
+2026-11-12 22:27:06,086 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - WARNING - Successfully added diff_timespec to the merged file.
+2026-11-12 22:27:06,088 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Sending request: Translate C to Rust. If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function.
+ For the final code result, please response with "Final result code" is : 
+
+
+
+int **allocate_matrix(int size)
+{
+    int **matrix = (int **)malloc(size * sizeof(int *));
+    if (!matrix)
+    {
+        printf("Error: Memory allocation failed.\n");
+        exit(1);
+    }
+    for (int i = 0; i < size; i++)
+    {
+        matrix[i] = (int *)malloc(size * sizeof(int));
+        if (!matrix[i])
+        {
+            printf("Error: Memory allocation failed.\n");
+            exit(1);
+        }
+    }
+    return matrix;
+}
+
+
+Please use the following Rust translations of dependency definitions enclosed in /* Rust definitions ... */. Please do not include this translation in your response. 
+
+/* Rust definitions
+pub type size_t = usize;
+*/
+
+
+For the dependency functions, I will provide the translation of Rust included in /*// and //*/. These dependency functions are available for reference. Call them only when they are still required by the generated code; if the current stage has made a dependency unnecessary, do not call it. 
+/* 
+*/
+
+2026-11-12 22:27:08,712 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Rust raw response: The C function allocates a `size × size` matrix of `int`. In safe Rust, `Vec<Vec<i32>>` replaces the `malloc` calls. Rust's allocator aborts on allocation failure, so the C error-handling branches are not needed. Each row is zero-initialized, whereas the C `malloc` leaves it uninitialized.
+
+Final result code:
+
+```rust
+pub fn allocate_matrix(size: i32) -> Vec<Vec<i32>> {
+    let n = if size > 0 { size as usize } else { 0 };
+    let mut matrix: Vec<Vec<i32>> = Vec::with_capacity(n);
+    for _ in 0..n {
+        matrix.push(vec![0; n]);
+    }
+    matrix
+}
+```
+2026-11-12 22:27:08,713 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Finish reason for function/struct allocate_matrix: end_turn
+2026-11-12 22:27:08,713 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Sent request in 1 chunks
+2026-11-12 22:27:08,715 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_d64pkg0r, source=lib.rs)
+2026-11-12 22:27:10,059 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - [allocate_matrix], complete result : use std::time::{SystemTime, UNIX_EPOCH};
+
+type __syscall_slong_t = i64;
+type __time_t = i64;
+pub type size_t = usize;
+
+pub fn multiply_matrices(a: &[Vec<i32>], b: &[Vec<i32>], c: &mut [Vec<i32>], size: usize) {
+    for i in 0..size {
+        for j in 0..size {
+            c[i][j] = 0;
+            for k in 0..size {
+                c[i][j] += a[i][k] * b[k][j];
+            }
+        }
+    }
+}
+pub fn free_matrix(matrix: Vec<Vec<i32>>, size: usize) {
+    let mut matrix = matrix;
+    // Free each row explicitly (mirrors the C loop), then the outer container.
+    for i in 0..size.min(matrix.len()) {
+        matrix[i] = Vec::new();
+    }
+    drop(matrix);
+}
+
+pub fn fill_matrix(matrix: &mut Vec<Vec<i32>>, size: usize) {
+
+    // Seed from the current time (similar to srand(time(NULL)))
+    let seed = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|d| d.as_nanos() as u64)
+        .unwrap_or(0x9E3779B97F4A7C15);
+    let mut state: u64 = seed ^ 0x9E3779B97F4A7C15;
+    if state == 0 {
+        state = 0x9E3779B97F4A7C15;
+    }
+
+    for i in 0..size {
+        for j in 0..size {
+            // xorshift64* pseudo-random generator
+            state ^= state >> 12;
+            state ^= state << 25;
+            state ^= state >> 27;
+            let r = state.wrapping_mul(0x2545F4914F6CDD1D);
+            // rand() returns a non-negative int in [0, RAND_MAX]
+            matrix[i][j] = ((r >> 33) as u32 & 0x7FFF_FFFF) as i32;
+        }
+    }
+}
+#[derive(Debug, Clone, Copy, Default)]
+pub struct timespec {
+    pub tv_sec: __time_t,
+    pub tv_nsec: __syscall_slong_t,
+}
+
+fn diff_timespec(time1: &timespec, time0: &timespec) -> f64 {
+    (time1.tv_sec - time0.tv_sec) as f64
+        + (time1.tv_nsec - time0.tv_nsec) as f64 / 1000000000.0
+}
+pub fn allocate_matrix(size: i32) -> Vec<Vec<i32>> {
+    let n = if size > 0 { size as usize } else { 0 };
+    let mut matrix: Vec<Vec<i32>> = Vec::with_capacity(n);
+    for _ in 0..n {
+        matrix.push(vec![0; n]);
+    }
+    matrix
+}
+2026-11-12 22:27:10,061 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - WARNING - Successfully added allocate_matrix to the merged file.
+2026-11-12 22:27:10,064 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Sending request: Translate C to Rust. If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function.
+ For the final code result, please response with "Final result code" is : 
+
+
+void print_matrix(int **matrix, int size, const char *name)
+{
+    printf("Matrix %s:\n", name);
+    for (int i = 0; i < size; i++)
+    {
+        for (int j = 0; j < size; j++)
+        {
+            printf("%5d ", matrix[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+
+For the dependency functions, I will provide the translation of Rust included in /*// and //*/. These dependency functions are available for reference. Call them only when they are still required by the generated code; if the current stage has made a dependency unnecessary, do not call it. 
+/* 
+*/
+
+2026-11-12 22:27:12,530 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Rust raw response: The C function takes a matrix as `int **`, so the safe Rust equivalent is a slice of rows, `&[Vec<i32>]`. The name is a `&str`. `printf("%5d ")` becomes `print!("{:5} ", ...)`, which right-aligns integers by default with a width of 5. `size` is kept as a parameter and cast to `usize` to preserve the original loop bounds.
+
+Final result code:
+```rust
+pub fn print_matrix(matrix: &[Vec<i32>], size: i32, name: &str) {
+    println!("Matrix {}:", name);
+    for i in 0..size as usize {
+        for j in 0..size as usize {
+            print!("{:5} ", matrix[i][j]);
+        }
+        println!();
+    }
+    println!();
+}
+```
+2026-11-12 22:27:12,531 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Finish reason for function/struct print_matrix: end_turn
+2026-11-12 22:27:12,531 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Sent request in 1 chunks
+2026-11-12 22:27:12,534 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_d5_6tmu9, source=lib.rs)
+2026-11-12 22:27:13,690 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - [print_matrix], complete result : use std::time::{SystemTime, UNIX_EPOCH};
+
+type __syscall_slong_t = i64;
+type __time_t = i64;
+pub type size_t = usize;
+
+pub fn multiply_matrices(a: &[Vec<i32>], b: &[Vec<i32>], c: &mut [Vec<i32>], size: usize) {
+    for i in 0..size {
+        for j in 0..size {
+            c[i][j] = 0;
+            for k in 0..size {
+                c[i][j] += a[i][k] * b[k][j];
+            }
+        }
+    }
+}
+pub fn free_matrix(matrix: Vec<Vec<i32>>, size: usize) {
+    let mut matrix = matrix;
+    // Free each row explicitly (mirrors the C loop), then the outer container.
+    for i in 0..size.min(matrix.len()) {
+        matrix[i] = Vec::new();
+    }
+    drop(matrix);
+}
+
+pub fn fill_matrix(matrix: &mut Vec<Vec<i32>>, size: usize) {
+
+    // Seed from the current time (similar to srand(time(NULL)))
+    let seed = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|d| d.as_nanos() as u64)
+        .unwrap_or(0x9E3779B97F4A7C15);
+    let mut state: u64 = seed ^ 0x9E3779B97F4A7C15;
+    if state == 0 {
+        state = 0x9E3779B97F4A7C15;
+    }
+
+    for i in 0..size {
+        for j in 0..size {
+            // xorshift64* pseudo-random generator
+            state ^= state >> 12;
+            state ^= state << 25;
+            state ^= state >> 27;
+            let r = state.wrapping_mul(0x2545F4914F6CDD1D);
+            // rand() returns a non-negative int in [0, RAND_MAX]
+            matrix[i][j] = ((r >> 33) as u32 & 0x7FFF_FFFF) as i32;
+        }
+    }
+}
+#[derive(Debug, Clone, Copy, Default)]
+pub struct timespec {
+    pub tv_sec: __time_t,
+    pub tv_nsec: __syscall_slong_t,
+}
+
+fn diff_timespec(time1: &timespec, time0: &timespec) -> f64 {
+    (time1.tv_sec - time0.tv_sec) as f64
+        + (time1.tv_nsec - time0.tv_nsec) as f64 / 1000000000.0
+}
+pub fn allocate_matrix(size: i32) -> Vec<Vec<i32>> {
+    let n = if size > 0 { size as usize } else { 0 };
+    let mut matrix: Vec<Vec<i32>> = Vec::with_capacity(n);
+    for _ in 0..n {
+        matrix.push(vec![0; n]);
+    }
+    matrix
+}
+pub fn print_matrix(matrix: &[Vec<i32>], size: i32, name: &str) {
+    println!("Matrix {}:", name);
+    for i in 0..size as usize {
+        for j in 0..size as usize {
+            print!("{:5} ", matrix[i][j]);
+        }
+        println!();
+    }
+    println!();
+}
+2026-11-12 22:27:13,691 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - WARNING - Successfully added print_matrix to the merged file.
+2026-11-12 22:27:13,696 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Copied struct-fn-replay output to temporary performance directory /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/temp before performance check
+2026-11-12 22:27:13,696 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Loaded performance information from /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/performance_information.json
+2026-11-12 22:27:13,696 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - [Performance check start] : struct-fn-replay
+2026-11-12 22:27:13,697 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Sending request: Please generate Rust performance entry code according to the original C main function I provide below.
+The generated main function must preserve the same logic, control flow, validation, side effects, output, and timing behavior as the original C main function.
+The generated entry code must be self-contained in the performance runner environment: preserve relative file paths from the original C main, but create any missing parent directories before writing output files.
+If the original C main function uses srand and rand, generate performance code that calls those same C libc srand and rand functions via FFI so the generated performance runner preserves the C random sequence and seeding behavior exactly. Do not introduce FFI requirements for other C library functions just for this random-number rule.
+Do not use platform-specific or external crypto headers/libraries such as CommonCrypto, OpenSSL, or CryptoAPI; if a C++ print_file_md5 helper is missing, implement it with the md5sum command and standard headers only.
+Reply with the generated main function, any directly required include/import/use statements, and any missing helper functions required by that main function.
+I will provide dependency functions, structs, and type definitions below. Use them as already-existing context.
+Do NOT repeat, restate, redefine, wrap, or translate dependency functions, structs, enums, typedefs, type aliases, or helper functions that are already fully defined in the provided dependency code.
+Use existing scope functions directly, including when passing them as function pointers / callbacks (e.g. comparators, destructors, visitors). Do NOT generate wrapper closures or shim functions that merely re-call an already-defined dependency function; reference the dependency symbol directly, and if its signature differs from the expected callback type, bridge it with a single `std::mem::transmute` (Rust) or a C-style cast (C++) instead of redefining the logic.
+If the generated main function calls a helper that is not fully defined in the provided dependency code, add a compatible helper implementation in your output.
+For Rust: NEVER use `std::mem::zeroed::<T>()` or `MaybeUninit::zeroed().assume_init()` to construct a struct that contains non-nullable function pointers (plain `fn(...)` / `extern "C" fn(...)` fields), references, `NonNull`, or other types whose all-zero bit pattern is invalid — doing so causes an immediate runtime panic ("attempted to zero-initialize type ..."). Instead, allocate the object with `std::mem::MaybeUninit::<T>::uninit()`, pass `.as_mut_ptr()` into the initializer function (which writes every field through the raw pointer), and then call `.assume_init()` once initialization is complete. Only fall back to a field-by-field struct literal if no initializer function exists.
+Your output must contain exactly one main function, plus only the minimal include/import/use statements and missing helper functions required by that main function.
+Return only the generated main function and missing helpers. Do not return a full translation unit.
+For the final result, please reply with, the final code is : 
+// original C function : 
+int main(int argc, char *argv[])
+{
+    if (argc != 2)
+    {
+        printf("Usage: %s <matrix_size>\n", argv[0]);
+        return 1;
+    }
+
+    int size = atoi(argv[1]);
+    if (size <= 0)
+    {
+        printf("Error: matrix size must be a positive integer.\n");
+        return 1;
+    }
+
+    srand(10000);
+
+    // Allocate matrices
+    int **A = allocate_matrix(size);
+    int **B = allocate_matrix(size);
+    int **C = allocate_matrix(size);
+
+    fill_matrix(A, size);
+    fill_matrix(B, size);
+
+    // print_matrix(A, size, "A");
+
+    struct timespec start_time, end_time;
+    double time_elapsed = 0;
+    clock_gettime(CLOCK_MONOTONIC, &start_time);
+
+    // MAIN COMPUTATION BEGIN
+    multiply_matrices(A, B, C, size);
+    // MAIN COMPUTATION END
+
+    clock_gettime(CLOCK_MONOTONIC, &end_time);
+    time_elapsed = diff_timespec(&end_time, &start_time);
+
+    printf("Time taken for matrix multiplication of size %d x %d: %f seconds\n", size, size, time_elapsed);
+
+    // Optionally print result matrix
+    // print_matrix(C, size, "C");
+
+    free_matrix(A, size);
+    free_matrix(B, size);
+    free_matrix(C, size);
+
+    return 0;
+}
+// the dependency functions :
+```rust
+use std::time::{SystemTime, UNIX_EPOCH};
+
+type __syscall_slong_t = i64;
+type __time_t = i64;
+pub type size_t = usize;
+
+pub fn multiply_matrices(a: &[Vec<i32>], b: &[Vec<i32>], c: &mut [Vec<i32>], size: usize) {
+    for i in 0..size {
+        for j in 0..size {
+            c[i][j] = 0;
+            for k in 0..size {
+                c[i][j] += a[i][k] * b[k][j];
+            }
+        }
+    }
+}
+pub fn free_matrix(matrix: Vec<Vec<i32>>, size: usize) {
+    let mut matrix = matrix;
+    // Free each row explicitly (mirrors the C loop), then the outer container.
+    for i in 0..size.min(matrix.len()) {
+        matrix[i] = Vec::new();
+    }
+    drop(matrix);
+}
+
+pub fn fill_matrix(matrix: &mut Vec<Vec<i32>>, size: usize) {
+
+    // Seed from the current time (similar to srand(time(NULL)))
+    let seed = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|d| d.as_nanos() as u64)
+        .unwrap_or(0x9E3779B97F4A7C15);
+    let mut state: u64 = seed ^ 0x9E3779B97F4A7C15;
+    if state == 0 {
+        state = 0x9E3779B97F4A7C15;
+    }
+
+    for i in 0..size {
+        for j in 0..size {
+            // xorshift64* pseudo-random generator
+            state ^= state >> 12;
+            state ^= state << 25;
+            state ^= state >> 27;
+            let r = state.wrapping_mul(0x2545F4914F6CDD1D);
+            // rand() returns a non-negative int in [0, RAND_MAX]
+            matrix[i][j] = ((r >> 33) as u32 & 0x7FFF_FFFF) as i32;
+        }
+    }
+}
+#[derive(Debug, Clone, Copy, Default)]
+pub struct timespec {
+    pub tv_sec: __time_t,
+    pub tv_nsec: __syscall_slong_t,
+}
+
+fn diff_timespec(time1: &timespec, time0: &timespec) -> f64 {
+    (time1.tv_sec - time0.tv_sec) as f64
+        + (time1.tv_nsec - time0.tv_nsec) as f64 / 1000000000.0
+}
+pub fn allocate_matrix(size: i32) -> Vec<Vec<i32>> {
+    let n = if size > 0 { size as usize } else { 0 };
+    let mut matrix: Vec<Vec<i32>> = Vec::with_capacity(n);
+    for _ in 0..n {
+        matrix.push(vec![0; n]);
+    }
+    matrix
+}
+pub fn print_matrix(matrix: &[Vec<i32>], size: i32, name: &str) {
+    println!("Matrix {}:", name);
+    for i in 0..size as usize {
+        for j in 0..size as usize {
+            print!("{:5} ", matrix[i][j]);
+        }
+        println!();
+    }
+    println!();
+}
+```
+2026-11-12 22:27:21,708 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Rust raw response: // original C function : translated entry point
+```rust
+use std::time::Instant;
+
+extern "C" {
+    fn srand(seed: u32);
+}
+
+fn atoi(s: &str) -> i32 {
+    let bytes = s.as_bytes();
+    let mut i = 0;
+    while i < bytes.len() && (bytes[i] == b' ' || (bytes[i] >= 9 && bytes[i] <= 13)) {
+        i += 1;
+    }
+    let mut neg = false;
+    if i < bytes.len() && (bytes[i] == b'+' || bytes[i] == b'-') {
+        neg = bytes[i] == b'-';
+        i += 1;
+    }
+    let mut val: i64 = 0;
+    while i < bytes.len() && bytes[i].is_ascii_digit() {
+        val = val.wrapping_mul(10).wrapping_add((bytes[i] - b'0') as i64);
+        i += 1;
+    }
+    if neg {
+        val = val.wrapping_neg();
+    }
+    val as i32
+}
+
+fn to_timespec(d: std::time::Duration) -> timespec {
+    timespec {
+        tv_sec: d.as_secs() as __time_t,
+        tv_nsec: d.subsec_nanos() as __syscall_slong_t,
+    }
+}
+
+fn main() {
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() != 2 {
+        let prog = args.get(0).map(|s| s.as_str()).unwrap_or("");
+        println!("Usage: {} <matrix_size>", prog);
+        std::process::exit(1);
+    }
+
+    let size = atoi(&args[1]);
+    if size <= 0 {
+        println!("Error: matrix size must be a positive integer.");
+        std::process::exit(1);
+    }
+
+    unsafe {
+        srand(10000);
+    }
+
+    // Allocate matrices
+    let mut a = allocate_matrix(size);
+    let mut b = allocate_matrix(size);
+    let mut c = allocate_matrix(size);
+
+    fill_matrix(&mut a, size as usize);
+    fill_matrix(&mut b, size as usize);
+
+    let base = Instant::now();
+    let start_time = to_timespec(base.elapsed());
+
+    // MAIN COMPUTATION BEGIN
+    multiply_matrices(&a, &b, &mut c, size as usize);
+    // MAIN COMPUTATION END
+
+    let end_time = to_timespec(base.elapsed());
+    let time_elapsed = diff_timespec(&end_time, &start_time);
+
+    println!(
+        "Time taken for matrix multiplication of size {} x {}: {:.6} seconds",
+        size, size, time_elapsed
+    );
+
+    free_matrix(a, size as usize);
+    free_matrix(b, size as usize);
+    free_matrix(c, size as usize);
+}
+```
+2026-11-12 22:27:21,709 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - DEBUG - Finish reason for function/struct performance_main: end_turn
+2026-11-12 22:27:21,710 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Sent request in 1 chunks
+2026-11-12 22:27:21,716 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Created performance entry file at /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/temp/performance.rs
+2026-11-12 22:27:21,716 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Compiling performance binary: cargo build --release --quiet
+2026-11-12 22:27:23,177 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Using performance arguments for /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/temp/performance.rs: ['2000']
+2026-11-12 22:27:23,178 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Running performance binary (1/5) in /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/temp/performance.out 2000
+2026-11-12 22:28:01,741 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Running performance binary (2/5) in /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/temp/performance.out 2000
+2026-11-12 22:28:39,711 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Running performance binary (3/5) in /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/temp/performance.out 2000
+2026-11-12 22:29:16,117 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Running performance binary (4/5) in /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/temp/performance.out 2000
+2026-11-12 22:29:48,127 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Running performance binary (5/5) in /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/temp/performance.out 2000
+2026-11-12 22:30:22,136 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Average elapsed_ms across 5 runs: 35735.829
+2026-11-12 22:30:22,136 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - WARNING - [Correctness check skipped] : temp (no parsable Checksum line in run output)
+2026-11-12 22:30:22,137 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Recorded performance result 35735.829 ms at /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/temp/performance_metrics.json
+2026-11-12 22:30:22,138 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - [Performance check pass] : struct-fn-replay
+2026-11-12 22:30:22,145 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Removed temporary performance directory /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/temp
+2026-11-12 22:30:22,146 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Running Crown analysis [struct-fn-replay] for ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/merged_funcs.rs: bash ./analyse.sh buffer
+2026-11-12 22:30:22,346 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - Saved Crown statistics for ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/merged_funcs.rs at ./inputs-oxivolve/matrix_mult/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-34/crown_statistics.json
+2026-11-12 22:30:22,349 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - [token-usage] --- by stage ---
+2026-11-12 22:30:22,349 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - [token-usage] section            calls  input  output  cache_r  cache_w  cost_usd
+2026-11-12 22:30:22,349 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - [token-usage] -----------------  -----  -----  ------  -------  -------  --------
+2026-11-12 22:30:22,349 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - [token-usage] (none)                10   6621    3669        0        0   $0.0499
+2026-11-12 22:30:22,349 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - [token-usage] 
+2026-11-12 22:30:22,350 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - [token-usage] --- by model ---
+2026-11-12 22:30:22,350 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - [token-usage] section            calls  input  output  cache_r  cache_w  cost_usd
+2026-11-12 22:30:22,350 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - [token-usage] -----------------  -----  -----  ------  -------  -------  --------
+2026-11-12 22:30:22,350 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - [token-usage] claude-sonnet-5-5     10   6621    3669        0        0   $0.0499
+2026-11-12 22:30:22,350 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - [token-usage] 
+2026-11-12 22:30:22,350 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - [token-usage] --- total ---
+2026-11-12 22:30:22,350 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - [token-usage] section            calls  input  output  cache_r  cache_w  cost_usd
+2026-11-12 22:30:22,350 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - [token-usage] -----------------  -----  -----  ------  -------  -------  --------
+2026-11-12 22:30:22,351 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - [token-usage] TOTAL                 10   6621    3669        0        0   $0.0499
+2026-11-12 22:30:22,351 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - [token-usage] 
+2026-11-12 22:30:22,351 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - [token-usage] --- retries ---
+2026-11-12 22:30:22,351 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - [token-usage] compile retries :   1 calls  $0.0067
+2026-11-12 22:30:22,351 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - [token-usage] struct retries  :   0 calls  $0.0000
+2026-11-12 22:30:22,351 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/matrix_mult_validator.log - INFO - [token-usage] perf retries    :   0 calls  $0.0000

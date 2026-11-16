@@ -1,0 +1,68 @@
+{
+  "by_kind": {
+    "function": {
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "calls": 2,
+      "estimated_cost_usd": 0.009603999999999998,
+      "input_tokens": 1167,
+      "output_tokens": 727
+    },
+    "performance_main": {
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "calls": 1,
+      "estimated_cost_usd": 0.047616,
+      "input_tokens": 4433,
+      "output_tokens": 3875
+    },
+    "type_batch": {
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "calls": 1,
+      "estimated_cost_usd": 0.0020220000000000004,
+      "input_tokens": 151,
+      "output_tokens": 172
+    }
+  },
+  "by_model": {
+    "claude-sonnet-5-5": {
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "calls": 4,
+      "estimated_cost_usd": 0.059242,
+      "input_tokens": 5751,
+      "output_tokens": 4774
+    }
+  },
+  "by_stage": {
+    "(none)": {
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "calls": 4,
+      "estimated_cost_usd": 0.059242,
+      "input_tokens": 5751,
+      "output_tokens": 4774
+    }
+  },
+  "record_count": 4,
+  "retries": {
+    "compile_retry_calls": 0,
+    "compile_retry_cost_usd": 0.0,
+    "perf_retry_calls_by_attempt": {},
+    "perf_retry_calls_total": 0,
+    "perf_retry_cost_usd": 0.0,
+    "struct_retry_calls": 0,
+    "struct_retry_cost_usd": 0.0
+  },
+  "total_calls": 4,
+  "total_price_usd": 0.059242,
+  "totals": {
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "calls": 4,
+    "estimated_cost_usd": 0.059242,
+    "input_tokens": 5751,
+    "output_tokens": 4774
+  }
+}

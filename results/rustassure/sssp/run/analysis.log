@@ -1,0 +1,13 @@
+Function: Tokens -> Full-Fits-Request : Full-Fits-Response: Function-Fits-Request: Function-Fits-Response: Decls-Fit-Request: Decls-Fit-Response 
+generateRandomGraph: 1821 -> True : True: True: True: True: True 
+createGraph: 1812 -> True : True: True: True: True: True 
+sssp: 1812 -> True : True: True: True: True: True 
+freeGraph: 1805 -> True : True: True: True: True: True 
+diff_timespec: 1765 -> True : True: True: True: True: True 
+parallelBellmanFord: 1728 -> True : True: True: True: True: True 
+addEdge: 1812 -> True : True: True: True: True: True 
+Summary:
+Total function: 7
+Full function + decls -> 7 fits in request limit, 7 fits in response limit
+Function only -> 7 fits in request limit, 7 fits in response limit
+Decls only -> 7 fits in request limit, 7 fits in response limit

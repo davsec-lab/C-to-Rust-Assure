@@ -1,0 +1,8 @@
+Function: Tokens -> Full-Fits-Request : Full-Fits-Response: Function-Fits-Request: Function-Fits-Response: Decls-Fit-Request: Decls-Fit-Response 
+detect_indexing: 62 -> True : True: True: True: True: True 
+diff_timespec: 37 -> True : True: True: True: True: True 
+Summary:
+Total function: 2
+Full function + decls -> 2 fits in request limit, 2 fits in response limit
+Function only -> 2 fits in request limit, 2 fits in response limit
+Decls only -> 2 fits in request limit, 2 fits in response limit

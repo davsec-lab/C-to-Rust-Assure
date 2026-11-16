@@ -1,0 +1,25 @@
+Function: Tokens -> Full-Fits-Request : Full-Fits-Response: Function-Fits-Request: Function-Fits-Response: Decls-Fit-Request: Decls-Fit-Response 
+parse_object: 253 -> True : True: True: True: True: True 
+parse_number: 133 -> True : True: True: True: True: True 
+cJSON_GetErrorPtr: 37 -> True : True: True: True: True: True 
+parse_array: 235 -> True : True: True: True: True: True 
+skip_utf8_bom: 92 -> True : True: True: True: True: True 
+utf16_literal_to_utf8: 12 -> True : True: True: True: True: True 
+cJSON_ParseWithLength: 87 -> True : True: True: True: True: True 
+tree_checksum: 43 -> True : True: True: True: True: True 
+parse_hex4: 7 -> True : True: True: True: True: True 
+cJSON_ParseWithOpts: 87 -> True : True: True: True: True: True 
+parse_value: 251 -> True : True: True: True: True: True 
+diff_timespec: 37 -> True : True: True: True: True: True 
+cJSON_ParseWithLengthOpts: 294 -> True : True: True: True: True: True 
+get_decimal_point: 0 -> True : True: True: True: True: True 
+buffer_skip_whitespace: 90 -> True : True: True: True: True: True 
+cJSON_Delete: 115 -> True : True: True: True: True: True 
+cJSON_Parse: 74 -> True : True: True: True: True: True 
+parse_string: 156 -> True : True: True: True: True: True 
+cJSON_New_Item: 90 -> True : True: True: True: True: True 
+Summary:
+Total function: 19
+Full function + decls -> 19 fits in request limit, 19 fits in response limit
+Function only -> 19 fits in request limit, 19 fits in response limit
+Decls only -> 19 fits in request limit, 19 fits in response limit

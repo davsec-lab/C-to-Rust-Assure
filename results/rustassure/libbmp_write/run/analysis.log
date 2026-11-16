@@ -1,0 +1,22 @@
+Function: Tokens -> Full-Fits-Request : Full-Fits-Response: Function-Fits-Request: Function-Fits-Response: Decls-Fit-Request: Decls-Fit-Response 
+md5_update: 98 -> True : True: True: True: True: True 
+bmp_header_init_df: 130 -> True : True: True: True: True: True 
+bmp_pixel_init: 47 -> True : True: True: True: True: True 
+bmp_header_read: 206 -> True : True: True: True: True: True 
+bmp_img_init_df: 211 -> True : True: True: True: True: True 
+md5_final: 101 -> True : True: True: True: True: True 
+md5_transform: 100 -> True : True: True: True: True: True 
+bmp_img_write: 307 -> True : True: True: True: True: True 
+bmp_img_free: 149 -> True : True: True: True: True: True 
+print_file_md5: 195 -> True : True: True: True: True: True 
+bmp_row_index: 96 -> True : True: True: True: True: True 
+bmp_img_read: 323 -> True : True: True: True: True: True 
+md5_init: 78 -> True : True: True: True: True: True 
+md5_left_rotate: 17 -> True : True: True: True: True: True 
+bmp_header_write: 207 -> True : True: True: True: True: True 
+bmp_img_alloc: 149 -> True : True: True: True: True: True 
+Summary:
+Total function: 16
+Full function + decls -> 16 fits in request limit, 16 fits in response limit
+Function only -> 16 fits in request limit, 16 fits in response limit
+Decls only -> 16 fits in request limit, 16 fits in response limit

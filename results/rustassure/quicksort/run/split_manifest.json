@@ -1,0 +1,24 @@
+{
+  "block_of": {
+    "diff_timespec": "diff_timespec",
+    "partition": "partition",
+    "quicksort": "quicksort",
+    "swap": "swap"
+  },
+  "deps": {
+    "diff_timespec": [],
+    "partition": [
+      "swap"
+    ],
+    "quicksort": [
+      "partition"
+    ],
+    "swap": []
+  },
+  "topo_sccs": [
+    "swap",
+    "partition",
+    "quicksort",
+    "diff_timespec"
+  ]
+}

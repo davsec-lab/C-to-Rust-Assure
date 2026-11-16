@@ -1,0 +1,31 @@
+{
+  "block_of": {
+    "addEdge": "addEdge",
+    "createGraph": "createGraph",
+    "diff_timespec": "diff_timespec",
+    "freeGraph": "freeGraph",
+    "generateRandomGraph": "generateRandomGraph",
+    "parallelBellmanFord": "parallelBellmanFord",
+    "sssp": "sssp"
+  },
+  "deps": {
+    "addEdge": [],
+    "createGraph": [],
+    "diff_timespec": [],
+    "freeGraph": [],
+    "generateRandomGraph": [
+      "addEdge"
+    ],
+    "parallelBellmanFord": [],
+    "sssp": []
+  },
+  "topo_sccs": [
+    "addEdge",
+    "generateRandomGraph",
+    "createGraph",
+    "sssp",
+    "freeGraph",
+    "diff_timespec",
+    "parallelBellmanFord"
+  ]
+}

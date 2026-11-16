@@ -1,0 +1,49 @@
+{
+  "performance.rs": {
+    "average_elapsed_ms": 3249.6948,
+    "performance_check_passed": true,
+    "runs": [
+      {
+        "args": [
+          "/home/gabe/page_rank/com-lj.ungraph.txt"
+        ],
+        "checksum": null,
+        "elapsed_ms": 3494.074,
+        "run_index": 1
+      },
+      {
+        "args": [
+          "/home/gabe/page_rank/com-lj.ungraph.txt"
+        ],
+        "checksum": null,
+        "elapsed_ms": 2996.663,
+        "run_index": 2
+      },
+      {
+        "args": [
+          "/home/gabe/page_rank/com-lj.ungraph.txt"
+        ],
+        "checksum": null,
+        "elapsed_ms": 3105.538,
+        "run_index": 3
+      },
+      {
+        "args": [
+          "/home/gabe/page_rank/com-lj.ungraph.txt"
+        ],
+        "checksum": null,
+        "elapsed_ms": 3460.849,
+        "run_index": 4
+      },
+      {
+        "args": [
+          "/home/gabe/page_rank/com-lj.ungraph.txt"
+        ],
+        "checksum": null,
+        "elapsed_ms": 3191.35,
+        "run_index": 5
+      }
+    ],
+    "source_file": "/home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/pagerank/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/temp/performance.rs"
+  }
+}

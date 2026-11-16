@@ -1,0 +1,15 @@
+Function: Tokens -> Full-Fits-Request : Full-Fits-Response: Function-Fits-Request: Function-Fits-Response: Decls-Fit-Request: Decls-Fit-Response 
+bmp_header_init_df: 112 -> True : True: True: True: True: True 
+bmp_pixel_init: 23 -> True : True: True: True: True: True 
+bmp_header_read: 192 -> True : True: True: True: True: True 
+bmp_img_init_df: 167 -> True : True: True: True: True: True 
+bmp_img_write: 257 -> True : True: True: True: True: True 
+bmp_img_free: 141 -> True : True: True: True: True: True 
+bmp_img_read: 267 -> True : True: True: True: True: True 
+bmp_header_write: 192 -> True : True: True: True: True: True 
+bmp_img_alloc: 141 -> True : True: True: True: True: True 
+Summary:
+Total function: 9
+Full function + decls -> 9 fits in request limit, 9 fits in response limit
+Function only -> 9 fits in request limit, 9 fits in response limit
+Decls only -> 9 fits in request limit, 9 fits in response limit

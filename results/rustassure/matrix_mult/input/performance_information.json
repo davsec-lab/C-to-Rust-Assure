@@ -1,0 +1,6 @@
+{
+    "prompt": "int main(int argc, char *argv[])\n{\n    if (argc != 2)\n    {\n        printf(\"Usage: %s <matrix_size>\\n\", argv[0]);\n        return 1;\n    }\n\n    int size = atoi(argv[1]);\n    if (size <= 0)\n    {\n        printf(\"Error: matrix size must be a positive integer.\\n\");\n        return 1;\n    }\n\n    srand(10000);\n\n    // Allocate matrices\n    int **A = allocate_matrix(size);\n    int **B = allocate_matrix(size);\n    int **C = allocate_matrix(size);\n\n    fill_matrix(A, size);\n    fill_matrix(B, size);\n\n    // print_matrix(A, size, \"A\");\n\n    struct timespec start_time, end_time;\n    double time_elapsed = 0;\n    clock_gettime(CLOCK_MONOTONIC, &start_time);\n\n    // MAIN COMPUTATION BEGIN\n    multiply_matrices(A, B, C, size);\n    // MAIN COMPUTATION END\n\n    clock_gettime(CLOCK_MONOTONIC, &end_time);\n    time_elapsed = diff_timespec(&end_time, &start_time);\n\n    printf(\"Time taken for matrix multiplication of size %d x %d: %f seconds\\n\", size, size, time_elapsed);\n\n    // Optionally print result matrix\n    // print_matrix(C, size, \"C\");\n\n    free_matrix(A, size);\n    free_matrix(B, size);\n    free_matrix(C, size);\n\n    return 0;\n}",
+    "input_arguments": [
+        "2000"
+    ]
+}

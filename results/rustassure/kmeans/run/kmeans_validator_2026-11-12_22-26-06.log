@@ -1,0 +1,1135 @@
+2026-11-12 22:26:06,266 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Command line options: Namespace(src='./inputs-oxivolve/kmeans', preanalysis_only=False, llm_mode='claude-sonnet-5-5', translator_mode='struct-fn-replay', fine_tuned_model='', single_file_name='', dir_prefix='sonnet55_20261112_22-23-19', file_list_file='', multithreading=False, interactive_fix_on_fail=False, perf_degrade_threshold_pct=30.0, perf_degrade_retry_count=0, perf_degrade_discard_on_fail=True, perf_degrade_skip_retry=False, skip_c_baseline=False)
+2026-11-12 22:26:06,277 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Using system prompt: You are an expert programmer in both C and Rust. You are great at translating C code to safe Rust. If the C code contains any libc functions, you automatically use the Rust equivalents.
+
+2026-11-12 22:26:06,301 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Skipping normal translation for performance-only functions: main
+2026-11-12 22:26:06,381 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Wrote run config to ./inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/run_config.json
+2026-11-12 22:26:06,382 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Extracting function bodies for file: ./inputs-oxivolve/kmeans/kmeans.i
+2026-11-12 22:26:06,382 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - (Re-)extracting functions from file ./inputs-oxivolve/kmeans/kmeans.i
+2026-11-12 22:26:06,441 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Skipping function __bswap_16 from ./inputs-oxivolve/kmeans/kmeans.i because it is not defined in the original source file
+2026-11-12 22:26:06,441 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Skipping function __bswap_32 from ./inputs-oxivolve/kmeans/kmeans.i because it is not defined in the original source file
+2026-11-12 22:26:06,441 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Skipping function __bswap_64 from ./inputs-oxivolve/kmeans/kmeans.i because it is not defined in the original source file
+2026-11-12 22:26:06,442 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Skipping function __uint16_identity from ./inputs-oxivolve/kmeans/kmeans.i because it is not defined in the original source file
+2026-11-12 22:26:06,442 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Skipping function __uint32_identity from ./inputs-oxivolve/kmeans/kmeans.i because it is not defined in the original source file
+2026-11-12 22:26:06,442 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Skipping function __uint64_identity from ./inputs-oxivolve/kmeans/kmeans.i because it is not defined in the original source file
+2026-11-12 22:26:06,451 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Skipping translation for helper functions: main
+2026-11-12 22:26:06,451 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Skipping translation for helper functions: main
+2026-11-12 22:26:06,451 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Extracted  05 functions
+2026-11-12 22:26:06,487 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Removed dead helper definitions from ./inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/diff_timespec.i: __bswap_16, __bswap_32, __bswap_64, __uint16_identity, __uint32_identity, __uint64_identity
+2026-11-12 22:26:06,487 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Running: unused-typedef-extractor --root-function=diff_timespec /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/diff_timespec.i
+2026-11-12 22:26:06,492 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Removed dead helper definitions from ./inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/assign_clusters.i: __bswap_16, __bswap_32, __bswap_64, __uint16_identity, __uint32_identity, __uint64_identity
+2026-11-12 22:26:06,492 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Running: unused-typedef-extractor --root-function=assign_clusters /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/assign_clusters.i
+2026-11-12 22:26:06,494 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Removed dead helper definitions from ./inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/distance.i: __bswap_16, __bswap_32, __bswap_64, __uint16_identity, __uint32_identity, __uint64_identity
+2026-11-12 22:26:06,494 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Removed dead helper definitions from ./inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/update_centroids.i: __bswap_16, __bswap_32, __bswap_64, __uint16_identity, __uint32_identity, __uint64_identity
+2026-11-12 22:26:06,494 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Running: unused-typedef-extractor --root-function=distance /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/distance.i
+2026-11-12 22:26:06,495 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Removed dead helper definitions from ./inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/kmeans.i: __bswap_16, __bswap_32, __bswap_64, __uint16_identity, __uint32_identity, __uint64_identity
+2026-11-12 22:26:06,495 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Running: unused-typedef-extractor --root-function=update_centroids /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/update_centroids.i
+2026-11-12 22:26:06,495 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Running: unused-typedef-extractor --root-function=kmeans /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/kmeans.i
+2026-11-12 22:26:06,528 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - successfuly run cmd, unused-typedef-extractor --root-function=diff_timespec /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/diff_timespec.i
+2026-11-12 22:26:06,532 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - successfuly run cmd, unused-typedef-extractor --root-function=kmeans /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/kmeans.i
+2026-11-12 22:26:06,535 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - successfuly run cmd, unused-typedef-extractor --root-function=assign_clusters /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/assign_clusters.i
+2026-11-12 22:26:06,536 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - successfuly run cmd, unused-typedef-extractor --root-function=update_centroids /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/update_centroids.i
+2026-11-12 22:26:06,537 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - successfuly run cmd, unused-typedef-extractor --root-function=distance /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/distance.i
+2026-11-12 22:26:06,560 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Extracting function bodies for file: ./inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/update_centroids.i
+2026-11-12 22:26:06,560 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - (Re-)extracting functions from file ./inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/update_centroids.i
+2026-11-12 22:26:06,577 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Extracting function bodies for file: ./inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/distance.i
+2026-11-12 22:26:06,577 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - (Re-)extracting functions from file ./inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/distance.i
+2026-11-12 22:26:06,595 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Extracting function bodies for file: ./inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/kmeans.i
+2026-11-12 22:26:06,595 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - (Re-)extracting functions from file ./inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/kmeans.i
+2026-11-12 22:26:06,612 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Extracting function bodies for file: ./inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/assign_clusters.i
+2026-11-12 22:26:06,612 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - (Re-)extracting functions from file ./inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/assign_clusters.i
+2026-11-12 22:26:06,631 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Extracting function bodies for file: ./inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/diff_timespec.i
+2026-11-12 22:26:06,631 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - (Re-)extracting functions from file ./inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/diff_timespec.i
+2026-11-12 22:26:06,650 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Extracting char*/void* fields from 5 functions
+2026-11-12 22:26:06,650 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Extracting char*/void* field pointers from structs for file update_centroids
+2026-11-12 22:26:06,666 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - struct-with-generic-pointer-printer produced no output for ./inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/update_centroids.i (rc=0). stderr head: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/update_centroids.i:11:18: warning: implicitly declaring library function 'calloc' with type 'void *(unsigned long, unsigned long)' [-Wimplicit-fun
+2026-11-12 22:26:06,666 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Extracting char*/void* field pointers from structs for file distance
+2026-11-12 22:26:06,682 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - struct-with-generic-pointer-printer produced no output for ./inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/distance.i (rc=0). stderr head: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/distance.i:11:12: warning: implicitly declaring library function 'sqrt' with type 'double (double)' [-Wimplicit-function-declaration]
+    return s
+2026-11-12 22:26:06,683 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Extracting char*/void* field pointers from structs for file kmeans
+2026-11-12 22:26:06,699 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - struct-with-generic-pointer-printer produced no output for ./inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/kmeans.i (rc=0). stderr head: 
+2026-11-12 22:26:06,699 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Extracting char*/void* field pointers from structs for file assign_clusters
+2026-11-12 22:26:06,713 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - struct-with-generic-pointer-printer produced no output for ./inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/assign_clusters.i (rc=0). stderr head: 
+2026-11-12 22:26:06,714 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Extracting char*/void* field pointers from structs for file diff_timespec
+2026-11-12 22:26:06,729 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - struct-with-generic-pointer-printer produced no output for ./inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/diff_timespec.i (rc=0). stderr head: 
+2026-11-12 22:26:06,729 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Extracting normal structs from 5 functions
+2026-11-12 22:26:06,730 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Extracting normal structs from for file update_centroids
+2026-11-12 22:26:06,784 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Extracting normal structs from for file distance
+2026-11-12 22:26:06,832 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Extracting normal structs from for file kmeans
+2026-11-12 22:26:06,886 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Extracting normal structs from for file assign_clusters
+2026-11-12 22:26:06,927 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Extracting normal structs from for file diff_timespec
+2026-11-12 22:26:06,971 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Extracting enums from 5 functions
+2026-11-12 22:26:06,971 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Extracting enums for file update_centroids
+2026-11-12 22:26:06,973 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Extracting enums for file distance
+2026-11-12 22:26:06,973 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Extracting enums for file kmeans
+2026-11-12 22:26:06,974 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Extracting enums for file assign_clusters
+2026-11-12 22:26:06,974 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Extracting enums for file diff_timespec
+2026-11-12 22:26:06,974 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Extracting struct field usages across 5 functions
+2026-11-12 22:26:07,049 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - [type-registry] collected 5 definitions
+2026-11-12 22:26:07,050 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - [type-registry] typedef:__syscall_slong_t extracted_by=['normal'] depends_on=[]
+typedef long int __syscall_slong_t;
+2026-11-12 22:26:07,050 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - [type-registry] typedef:__time_t extracted_by=['normal'] depends_on=[]
+typedef long int __time_t;
+2026-11-12 22:26:07,050 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - [type-registry] typedef:size_t extracted_by=['normal'] depends_on=[]
+typedef long unsigned int size_t;
+2026-11-12 22:26:07,050 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - [type-registry] struct:Cluster extracted_by=['normal'] depends_on=[]
+typedef struct {
+    double x, y;
+} Cluster;
+2026-11-12 22:26:07,050 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - [type-registry] struct:Point extracted_by=['normal'] depends_on=['typedef:size_t']
+typedef long unsigned int size_t;
+typedef struct {
+    double x, y;
+    int cluster_id;
+    double cluster_distance;
+} Point;
+2026-11-12 22:26:07,201 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - [type stored typedef:__syscall_slong_t]: type __syscall_slong_t = i64;
+2026-11-12 22:26:07,201 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - [type stored typedef:__time_t]: type __time_t = i64;
+2026-11-12 22:26:07,201 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Sending request: Please translate the following C definitions to Rust.
+Please add any necessary header files, include statements, imports, or use statements required for the translated code to compile.
+
+For the final code result, please response with "Final result code" is : 
+definitions:
+typedef long unsigned int size_t;
+
+
+2026-11-12 22:26:10,216 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Rust raw response: Final result code:
+
+```rust
+#![allow(non_camel_case_types)]
+
+// C: typedef long unsigned int size_t;
+// On the C side this is an unsigned long, which is 64 bits on LP64 targets.
+// The Rust equivalent is `usize` (pointer-width unsigned), or `u64` for a
+// strict one-to-one match with `unsigned long` on LP64.
+pub type size_t = usize;
+```
+
+I chose `usize` because it matches `size_t` on every target Rust supports. If you need the literal `unsigned long` width on LP64 platforms, `u64` or `std::os::raw::c_ulong` would also work. On those platforms all three have the same size.
+2026-11-12 22:26:10,219 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Finish reason for function/struct size_t: end_turn
+2026-11-12 22:26:10,219 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Sent request in 1 chunks
+2026-11-12 22:26:10,220 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - [type batch size_t] sanitized result: #![allow(non_camel_case_types)]
+
+// C: typedef long unsigned int size_t;
+// On the C side this is an unsigned long, which is 64 bits on LP64 targets.
+// The Rust equivalent is `usize` (pointer-width unsigned), or `u64` for a
+// strict one-to-one match with `unsigned long` on LP64.
+pub type size_t = usize;
+2026-11-12 22:26:10,220 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_h0hcyeos, source=lib.rs)
+2026-11-12 22:26:11,175 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - [type stored typedef:size_t]: pub type size_t = usize;
+2026-11-12 22:26:11,177 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Sending request: Please translate the following C definitions to Rust.
+Please add any necessary header files, include statements, imports, or use statements required for the translated code to compile.
+
+For the final code result, please response with "Final result code" is : 
+definitions:
+typedef long unsigned int size_t;
+
+In the previous translation, I got an compile error 
+error: an inner attribute is not permitted in this context
+ --> src/lib.rs:3:1
+  |
+3 | #![allow(non_camel_case_types)]
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+9 | pub type size_t = usize;
+  | ------------------------ the inner attribute doesn't annotate this type alias
+  |
+  = note: inner attributes, like `#![no_std]`, annotate the item enclosing them, and are usually found at the beginning of source files
+help: to annotate the type alias, change the attribute from inner to outer style
+  |
+3 - #![allow(non_camel_case_types)]
+3 + #[allow(non_camel_case_types)]
+  |
+
+warning: unused imports: `fclose`, `fopen`, `fread`, `free`, `fseek`, `ftell`, `malloc`, `memcpy`, `memset`, `realloc`, `strcmp`
+ --> src/lib.rs:1:12
+  |
+1 | use libc::{free, malloc, realloc, strcmp, memcpy, memset, fclose, fopen, fread, fseek, ftell};
+  |            ^^^^  ^^^^^^  ^^^^^^^  ^^^^^^  ^^^^^^  ^^^^^^  ^^^^^^  ^^^^^  ^^^^^  ^^^^^  ^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: type `size_t` should have an upper camel case name
+ --> src/lib.rs:9:10
+  |
+9 | pub type size_t = usize;
+  |          ^^^^^^ help: convert the identifier to upper camel case: `SizeT`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+error: could not compile `translation_compile_check` due to previous error; 2 warnings emitted
+
+This is the previous translation result : 
+#![allow(non_camel_case_types)]
+
+// C: typedef long unsigned int size_t;
+// On the C side this is an unsigned long, which is 64 bits on LP64 targets.
+// The Rust equivalent is `usize` (pointer-width unsigned), or `u64` for a
+// strict one-to-one match with `unsigned long` on LP64.
+pub type size_t = usize;
+2026-11-12 22:26:12,940 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Rust raw response: The error came from the inner attribute `#![allow(...)]` appearing after other items, or after an import line. Inner attributes must come first in the file, before any items. The fix is to use an outer attribute, `#[allow(non_camel_case_types)]`, directly on the type alias. I also removed the unused `libc` imports, since the definition doesn't use them.
+
+Final result code:
+
+```rust
+#[allow(non_camel_case_types)]
+pub type size_t = usize;
+```
+2026-11-12 22:26:12,941 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Finish reason for function/struct size_t: end_turn
+2026-11-12 22:26:12,941 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Sent request in 1 chunks
+2026-11-12 22:26:12,942 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - [type batch size_t] sanitized result: #[allow(non_camel_case_types)]
+pub type size_t = usize;
+2026-11-12 22:26:12,942 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_2cjj9k1s, source=lib.rs)
+2026-11-12 22:26:13,888 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - [type stored typedef:size_t]: pub type size_t = usize;
+2026-11-12 22:26:13,888 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Sending request: Please translate the following C definitions to Rust.
+Please add any necessary header files, include statements, imports, or use statements required for the translated code to compile.
+Please try to use safe and idiomatic Rust.
+
+For the final code result, please response with "Final result code" is : 
+definitions:
+typedef struct {
+    double x, y;
+} Cluster;
+
+
+2026-11-12 22:26:16,606 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Rust raw response: Final result code:
+
+```rust
+#[derive(Debug, Clone, Copy, Default, PartialEq)]
+pub struct Cluster {
+    pub x: f64,
+    pub y: f64,
+}
+```
+
+The C `typedef struct { double x, y; } Cluster;` becomes a plain Rust struct with two `f64` fields. No imports are required.
+
+- **Derives:** `Debug`, `Clone`, `Copy`, `Default` and `PartialEq` are added because the C struct is a plain value type that is copied by assignment. `Default` zero-initializes it, like `Cluster c = {0};` in C.
+- **Layout:** if the struct has to cross an FFI boundary and match C's memory layout exactly, add `#[repr(C)]`. I left it out because you asked for safe, idiomatic Rust.
+2026-11-12 22:26:16,607 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Finish reason for function/struct Cluster: end_turn
+2026-11-12 22:26:16,607 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Sent request in 1 chunks
+2026-11-12 22:26:16,608 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - [type batch Cluster] sanitized result: #[derive(Debug, Clone, Copy, Default, PartialEq)]
+pub struct Cluster {
+    pub x: f64,
+    pub y: f64,
+}
+2026-11-12 22:26:16,609 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_hvvxjdkp, source=lib.rs)
+2026-11-12 22:26:17,690 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - [type stored struct:Cluster]: pub struct Cluster {
+    pub x: f64,
+    pub y: f64,
+}
+2026-11-12 22:26:17,691 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Sending request: Please translate the following C definitions to Rust.
+Please add any necessary header files, include statements, imports, or use statements required for the translated code to compile.
+Please try to use safe and idiomatic Rust.
+
+For the final code result, please response with "Final result code" is : 
+definitions:
+typedef long unsigned int size_t;
+typedef struct {
+    double x, y;
+    int cluster_id;
+    double cluster_distance;
+} Point;
+
+translated dependency definitions for reference only:
+Do not repeat these dependency definitions in your response. Translate only the target definitions listed above.
+pub type size_t = usize;
+
+
+2026-11-12 22:26:19,731 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Rust raw response: Final result code:
+
+```rust
+#[derive(Debug, Clone, Copy, Default, PartialEq)]
+pub struct Point {
+    pub x: f64,
+    pub y: f64,
+    pub cluster_id: i32,
+    pub cluster_distance: f64,
+}
+```
+
+The `size_t` typedef is already provided as a dependency (`pub type size_t = usize;`), so I did not repeat it. `Point` is an anonymous typedef'd struct in C, so it becomes a named struct in Rust. `double` maps to `f64` and `int` maps to `i32`. The derives give copy semantics and default initialization, matching how C structs are typically used.
+2026-11-12 22:26:19,732 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Finish reason for function/struct Point: end_turn
+2026-11-12 22:26:19,733 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Sent request in 1 chunks
+2026-11-12 22:26:19,733 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - [type batch Point] sanitized result: #[derive(Debug, Clone, Copy, Default, PartialEq)]
+pub struct Point {
+    pub x: f64,
+    pub y: f64,
+    pub cluster_id: i32,
+    pub cluster_distance: f64,
+}
+2026-11-12 22:26:19,734 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_s64j3y4e, source=lib.rs)
+2026-11-12 22:26:21,406 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - [type stored struct:Point]: pub struct Point {
+    pub x: f64,
+    pub y: f64,
+    pub cluster_id: i32,
+    pub cluster_distance: f64,
+}
+2026-11-12 22:26:21,407 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Sending request: Translate C to Rust. If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function.
+ For the final code result, please response with "Final result code" is : 
+
+
+typedef struct {
+    double x, y;
+    int cluster_id;
+    double cluster_distance;
+} Point;
+
+
+void update_centroids(Point *points, int n, Cluster *clusters, int k) {
+    int *count = calloc(k, sizeof(int));
+    double *sum_x = calloc(k, sizeof(double));
+    double *sum_y = calloc(k, sizeof(double));
+    for (int i = 0; i < n; i++) {
+        int cid = points[i].cluster_id;
+        count[cid]++;
+        sum_x[cid] += points[i].x;
+        sum_y[cid] += points[i].y;
+    }
+    for (int j = 0; j < k; j++) {
+        if (count[j] > 0) {
+            clusters[j].x = sum_x[j] / count[j];
+            clusters[j].y = sum_y[j] / count[j];
+        }
+    }
+    free(count);
+    free(sum_x);
+    free(sum_y);
+}
+
+
+Please use the following Rust translations of dependency definitions enclosed in /* Rust definitions ... */. Please do not include this translation in your response. 
+
+/* Rust definitions
+pub type size_t = usize;
+*/
+/* Rust definitions
+pub struct Cluster {
+    pub x: f64,
+    pub y: f64,
+}
+*/
+/* Rust definitions
+pub struct Point {
+    pub x: f64,
+    pub y: f64,
+    pub cluster_id: i32,
+    pub cluster_distance: f64,
+}
+*/
+
+
+/* 
+*/
+
+2026-11-12 22:26:23,754 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Rust raw response: Final result code:
+
+```rust
+pub fn update_centroids(points: &[Point], n: i32, clusters: &mut [Cluster], k: i32) {
+    let k_us = k as usize;
+    let mut count: Vec<i32> = vec![0; k_us];
+    let mut sum_x: Vec<f64> = vec![0.0; k_us];
+    let mut sum_y: Vec<f64> = vec![0.0; k_us];
+    for i in 0..(n as usize) {
+        let cid = points[i].cluster_id as usize;
+        count[cid] += 1;
+        sum_x[cid] += points[i].x;
+        sum_y[cid] += points[i].y;
+    }
+    for j in 0..k_us {
+        if count[j] > 0 {
+            clusters[j].x = sum_x[j] / count[j] as f64;
+            clusters[j].y = sum_y[j] / count[j] as f64;
+        }
+    }
+}
+```
+2026-11-12 22:26:23,755 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Finish reason for function/struct update_centroids: end_turn
+2026-11-12 22:26:23,755 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Sent request in 1 chunks
+2026-11-12 22:26:23,758 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_ymvjnbc1, source=lib.rs)
+2026-11-12 22:26:26,602 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - [update_centroids], complete result : type __syscall_slong_t = i64;
+type __time_t = i64;
+pub type size_t = usize;
+pub struct Cluster {
+    pub x: f64,
+    pub y: f64,
+}
+pub struct Point {
+    pub x: f64,
+    pub y: f64,
+    pub cluster_id: i32,
+    pub cluster_distance: f64,
+}
+
+pub fn update_centroids(points: &[Point], n: i32, clusters: &mut [Cluster], k: i32) {
+    let k_us = k as usize;
+    let mut count: Vec<i32> = vec![0; k_us];
+    let mut sum_x: Vec<f64> = vec![0.0; k_us];
+    let mut sum_y: Vec<f64> = vec![0.0; k_us];
+    for i in 0..(n as usize) {
+        let cid = points[i].cluster_id as usize;
+        count[cid] += 1;
+        sum_x[cid] += points[i].x;
+        sum_y[cid] += points[i].y;
+    }
+    for j in 0..k_us {
+        if count[j] > 0 {
+            clusters[j].x = sum_x[j] / count[j] as f64;
+            clusters[j].y = sum_y[j] / count[j] as f64;
+        }
+    }
+}
+2026-11-12 22:26:26,605 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - WARNING - Successfully added update_centroids to the merged file.
+2026-11-12 22:26:26,608 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Sending request: Translate C to Rust. If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function.
+ For the final code result, please response with "Final result code" is : 
+
+ 
+typedef struct {
+    double x, y;
+    int cluster_id;
+    double cluster_distance;
+} Point;
+
+
+double distance(Point p, Cluster c) {
+    return sqrt((p.x - c.x) * (p.x - c.x) + (p.y - c.y) * (p.y - c.y));
+}
+
+
+Please use the following Rust translations of dependency definitions enclosed in /* Rust definitions ... */. Please do not include this translation in your response. 
+
+/* Rust definitions
+pub type size_t = usize;
+*/
+/* Rust definitions
+pub struct Cluster {
+    pub x: f64,
+    pub y: f64,
+}
+*/
+/* Rust definitions
+pub struct Point {
+    pub x: f64,
+    pub y: f64,
+    pub cluster_id: i32,
+    pub cluster_distance: f64,
+}
+*/
+
+
+For the dependency functions, I will provide the translation of Rust included in /*// and //*/. These dependency functions are available for reference. Call them only when they are still required by the generated code; if the current stage has made a dependency unnecessary, do not call it. 
+/* 
+*/
+
+2026-11-12 22:26:29,099 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Rust raw response: The function takes `Point` and `Cluster` by value, as in the C code, and uses `f64::sqrt` in place of libc `sqrt`. I did not derive `Copy` on the structs since those definitions were provided and should not be repeated here.
+
+Final result code:
+
+```rust
+pub fn distance(p: Point, c: Cluster) -> f64 {
+    ((p.x - c.x) * (p.x - c.x) + (p.y - c.y) * (p.y - c.y)).sqrt()
+}
+```
+2026-11-12 22:26:29,099 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Finish reason for function/struct distance: end_turn
+2026-11-12 22:26:29,099 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Sent request in 1 chunks
+2026-11-12 22:26:29,101 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_0w3by39y, source=lib.rs)
+2026-11-12 22:26:30,088 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - [distance], complete result : type __syscall_slong_t = i64;
+type __time_t = i64;
+pub type size_t = usize;
+pub struct Cluster {
+    pub x: f64,
+    pub y: f64,
+}
+pub struct Point {
+    pub x: f64,
+    pub y: f64,
+    pub cluster_id: i32,
+    pub cluster_distance: f64,
+}
+
+pub fn update_centroids(points: &[Point], n: i32, clusters: &mut [Cluster], k: i32) {
+    let k_us = k as usize;
+    let mut count: Vec<i32> = vec![0; k_us];
+    let mut sum_x: Vec<f64> = vec![0.0; k_us];
+    let mut sum_y: Vec<f64> = vec![0.0; k_us];
+    for i in 0..(n as usize) {
+        let cid = points[i].cluster_id as usize;
+        count[cid] += 1;
+        sum_x[cid] += points[i].x;
+        sum_y[cid] += points[i].y;
+    }
+    for j in 0..k_us {
+        if count[j] > 0 {
+            clusters[j].x = sum_x[j] / count[j] as f64;
+            clusters[j].y = sum_y[j] / count[j] as f64;
+        }
+    }
+}
+pub fn distance(p: Point, c: Cluster) -> f64 {
+    ((p.x - c.x) * (p.x - c.x) + (p.y - c.y) * (p.y - c.y)).sqrt()
+}
+2026-11-12 22:26:30,089 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - WARNING - Successfully added distance to the merged file.
+2026-11-12 22:26:30,091 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Sending request: Translate C to Rust. If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function.
+ For the final code result, please response with "Final result code" is : 
+
+
+
+struct timespec
+{
+  __time_t tv_sec;
+  __syscall_slong_t tv_nsec;
+};
+
+static double diff_timespec(struct timespec *time1, struct timespec *time0)
+{
+    return (time1->tv_sec - time0->tv_sec) + (time1->tv_nsec - time0->tv_nsec) / 1000000000.0;
+}
+
+
+Please use the following Rust translations of dependency definitions enclosed in /* Rust definitions ... */. Please do not include this translation in your response. 
+
+/* Rust definitions
+type __syscall_slong_t = i64;
+*/
+/* Rust definitions
+type __time_t = i64;
+*/
+
+
+For the dependency functions, I will provide the translation of Rust included in /*// and //*/. These dependency functions are available for reference. Call them only when they are still required by the generated code; if the current stage has made a dependency unnecessary, do not call it. 
+/* 
+*/
+
+2026-11-12 22:26:32,813 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Rust raw response: The struct is defined in the C source, so I translate it along with the function, using the provided type aliases. The function takes references instead of raw pointers, and the integer differences are cast to `f64` as C's arithmetic conversions would do.
+
+Final result code:
+
+```rust
+#[derive(Debug, Clone, Copy, Default)]
+pub struct timespec {
+    pub tv_sec: __time_t,
+    pub tv_nsec: __syscall_slong_t,
+}
+
+fn diff_timespec(time1: &timespec, time0: &timespec) -> f64 {
+    (time1.tv_sec - time0.tv_sec) as f64
+        + (time1.tv_nsec - time0.tv_nsec) as f64 / 1000000000.0
+}
+```
+2026-11-12 22:26:32,813 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Finish reason for function/struct diff_timespec: end_turn
+2026-11-12 22:26:32,814 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Sent request in 1 chunks
+2026-11-12 22:26:32,816 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_bgfed8zg, source=lib.rs)
+2026-11-12 22:26:33,945 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - [diff_timespec], complete result : type __syscall_slong_t = i64;
+type __time_t = i64;
+pub type size_t = usize;
+pub struct Cluster {
+    pub x: f64,
+    pub y: f64,
+}
+pub struct Point {
+    pub x: f64,
+    pub y: f64,
+    pub cluster_id: i32,
+    pub cluster_distance: f64,
+}
+
+pub fn update_centroids(points: &[Point], n: i32, clusters: &mut [Cluster], k: i32) {
+    let k_us = k as usize;
+    let mut count: Vec<i32> = vec![0; k_us];
+    let mut sum_x: Vec<f64> = vec![0.0; k_us];
+    let mut sum_y: Vec<f64> = vec![0.0; k_us];
+    for i in 0..(n as usize) {
+        let cid = points[i].cluster_id as usize;
+        count[cid] += 1;
+        sum_x[cid] += points[i].x;
+        sum_y[cid] += points[i].y;
+    }
+    for j in 0..k_us {
+        if count[j] > 0 {
+            clusters[j].x = sum_x[j] / count[j] as f64;
+            clusters[j].y = sum_y[j] / count[j] as f64;
+        }
+    }
+}
+pub fn distance(p: Point, c: Cluster) -> f64 {
+    ((p.x - c.x) * (p.x - c.x) + (p.y - c.y) * (p.y - c.y)).sqrt()
+}
+#[derive(Debug, Clone, Copy, Default)]
+pub struct timespec {
+    pub tv_sec: __time_t,
+    pub tv_nsec: __syscall_slong_t,
+}
+
+fn diff_timespec(time1: &timespec, time0: &timespec) -> f64 {
+    (time1.tv_sec - time0.tv_sec) as f64
+        + (time1.tv_nsec - time0.tv_nsec) as f64 / 1000000000.0
+}
+2026-11-12 22:26:33,946 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - WARNING - Successfully added diff_timespec to the merged file.
+2026-11-12 22:26:33,950 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Sending request: Translate C to Rust. If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function.
+ For the final code result, please response with "Final result code" is : 
+
+typedef struct {
+    double x, y;
+    int cluster_id;
+    double cluster_distance;
+} Point;
+
+
+void assign_clusters(Point *points, int n, Cluster *clusters, int k) {
+    for (int i = 0; i < n; i++) {
+        double min_dist = 1.7976931348623157e+308;
+        int best_cluster = -1;
+        for (int j = 0; j < k; j++) {
+            double d = distance(points[i], clusters[j]);
+            if (d < min_dist) {
+                min_dist = d;
+                best_cluster = j;
+            }
+        }
+        points[i].cluster_id = best_cluster;
+        points[i].cluster_distance = min_dist;
+    }
+}
+
+
+Please use the following Rust translations of dependency definitions enclosed in /* Rust definitions ... */. Please do not include this translation in your response. 
+
+/* Rust definitions
+pub type size_t = usize;
+*/
+/* Rust definitions
+pub struct Cluster {
+    pub x: f64,
+    pub y: f64,
+}
+*/
+/* Rust definitions
+pub struct Point {
+    pub x: f64,
+    pub y: f64,
+    pub cluster_id: i32,
+    pub cluster_distance: f64,
+}
+*/
+
+
+For the dependency functions, I will provide the function signature of Rust included in /*// and //*/. These dependency functions are available for reference. Call them only when they are still required by the generated code; if the current stage has made a dependency unnecessary, do not call it. 
+/* 
+distance(p: Point, c: Cluster) -> f64
+*/
+
+2026-11-12 22:26:38,432 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Rust raw response: The `distance` function takes `Point` and `Cluster` by value. The definitions shown don't derive `Clone` or `Copy`, so I can't assume they are `Copy`. To be safe, I build the arguments by copying their fields into new values, which compiles whether or not the structs derive anything.
+
+The C `double min_dist = 1.797e308` becomes `f64::MAX`. The pointer plus length `n` becomes a slice, and the pointer plus length `k` for the clusters becomes a slice as well. I keep `n` and `k` as parameters to match the signature and use them to bound the loops.
+
+Final result code:
+
+```rust
+pub fn assign_clusters(points: &mut [Point], n: i32, clusters: &[Cluster], k: i32) {
+    for i in 0..(n as usize) {
+        let mut min_dist = f64::MAX;
+        let mut best_cluster: i32 = -1;
+        for j in 0..(k as usize) {
+            let p = Point {
+                x: points[i].x,
+                y: points[i].y,
+                cluster_id: points[i].cluster_id,
+                cluster_distance: points[i].cluster_distance,
+            };
+            let c = Cluster {
+                x: clusters[j].x,
+                y: clusters[j].y,
+            };
+            let d = distance(p, c);
+            if d < min_dist {
+                min_dist = d;
+                best_cluster = j as i32;
+            }
+        }
+        points[i].cluster_id = best_cluster;
+        points[i].cluster_distance = min_dist;
+    }
+}
+```
+2026-11-12 22:26:38,434 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Finish reason for function/struct assign_clusters: end_turn
+2026-11-12 22:26:38,434 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Sent request in 1 chunks
+2026-11-12 22:26:38,438 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_uvjhv5pu, source=lib.rs)
+2026-11-12 22:26:39,650 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - [assign_clusters], complete result : type __syscall_slong_t = i64;
+type __time_t = i64;
+pub type size_t = usize;
+pub struct Cluster {
+    pub x: f64,
+    pub y: f64,
+}
+pub struct Point {
+    pub x: f64,
+    pub y: f64,
+    pub cluster_id: i32,
+    pub cluster_distance: f64,
+}
+
+pub fn update_centroids(points: &[Point], n: i32, clusters: &mut [Cluster], k: i32) {
+    let k_us = k as usize;
+    let mut count: Vec<i32> = vec![0; k_us];
+    let mut sum_x: Vec<f64> = vec![0.0; k_us];
+    let mut sum_y: Vec<f64> = vec![0.0; k_us];
+    for i in 0..(n as usize) {
+        let cid = points[i].cluster_id as usize;
+        count[cid] += 1;
+        sum_x[cid] += points[i].x;
+        sum_y[cid] += points[i].y;
+    }
+    for j in 0..k_us {
+        if count[j] > 0 {
+            clusters[j].x = sum_x[j] / count[j] as f64;
+            clusters[j].y = sum_y[j] / count[j] as f64;
+        }
+    }
+}
+pub fn distance(p: Point, c: Cluster) -> f64 {
+    ((p.x - c.x) * (p.x - c.x) + (p.y - c.y) * (p.y - c.y)).sqrt()
+}
+#[derive(Debug, Clone, Copy, Default)]
+pub struct timespec {
+    pub tv_sec: __time_t,
+    pub tv_nsec: __syscall_slong_t,
+}
+
+fn diff_timespec(time1: &timespec, time0: &timespec) -> f64 {
+    (time1.tv_sec - time0.tv_sec) as f64
+        + (time1.tv_nsec - time0.tv_nsec) as f64 / 1000000000.0
+}
+pub fn assign_clusters(points: &mut [Point], n: i32, clusters: &[Cluster], k: i32) {
+    for i in 0..(n as usize) {
+        let mut min_dist = f64::MAX;
+        let mut best_cluster: i32 = -1;
+        for j in 0..(k as usize) {
+            let p = Point {
+                x: points[i].x,
+                y: points[i].y,
+                cluster_id: points[i].cluster_id,
+                cluster_distance: points[i].cluster_distance,
+            };
+            let c = Cluster {
+                x: clusters[j].x,
+                y: clusters[j].y,
+            };
+            let d = distance(p, c);
+            if d < min_dist {
+                min_dist = d;
+                best_cluster = j as i32;
+            }
+        }
+        points[i].cluster_id = best_cluster;
+        points[i].cluster_distance = min_dist;
+    }
+}
+2026-11-12 22:26:39,653 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - WARNING - Successfully added assign_clusters to the merged file.
+2026-11-12 22:26:39,656 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Sending request: Translate C to Rust. If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function.
+ For the final code result, please response with "Final result code" is : 
+
+typedef struct {
+    double x, y;
+    int cluster_id;
+    double cluster_distance;
+} Point;
+
+
+void kmeans(Point *points, int n, Cluster *clusters, int k, int max_iter) {
+    for (int j = 0; j < k; j++) {
+        clusters[j].x = points[j].x;
+        clusters[j].y = points[j].y;
+    }
+    for (int iter = 0; iter < max_iter; iter++) {
+        assign_clusters(points, n, clusters, k);
+        update_centroids(points, n, clusters, k);
+    }
+}
+
+
+Please use the following Rust translations of dependency definitions enclosed in /* Rust definitions ... */. Please do not include this translation in your response. 
+
+/* Rust definitions
+pub type size_t = usize;
+*/
+/* Rust definitions
+pub struct Cluster {
+    pub x: f64,
+    pub y: f64,
+}
+*/
+/* Rust definitions
+pub struct Point {
+    pub x: f64,
+    pub y: f64,
+    pub cluster_id: i32,
+    pub cluster_distance: f64,
+}
+*/
+
+
+For the dependency functions, I will provide the function signature of Rust included in /*// and //*/. These dependency functions are available for reference. Call them only when they are still required by the generated code; if the current stage has made a dependency unnecessary, do not call it. 
+/* 
+update_centroids(points: &[Point], n: i32, clusters: &mut [Cluster], k: i32)
+assign_clusters(points: &mut [Point], n: i32, clusters: &[Cluster], k: i32)
+*/
+
+2026-11-12 22:26:41,662 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Rust raw response: Final result code" is :
+
+```rust
+pub fn kmeans(points: &mut [Point], n: i32, clusters: &mut [Cluster], k: i32, max_iter: i32) {
+    for j in 0..k as usize {
+        clusters[j].x = points[j].x;
+        clusters[j].y = points[j].y;
+    }
+    for _iter in 0..max_iter {
+        assign_clusters(points, n, clusters, k);
+        update_centroids(points, n, clusters, k);
+    }
+}
+```
+2026-11-12 22:26:41,663 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Finish reason for function/struct kmeans: end_turn
+2026-11-12 22:26:41,663 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Sent request in 1 chunks
+2026-11-12 22:26:41,667 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_3r0h6ppz, source=lib.rs)
+2026-11-12 22:26:43,022 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - [kmeans], complete result : type __syscall_slong_t = i64;
+type __time_t = i64;
+pub type size_t = usize;
+pub struct Cluster {
+    pub x: f64,
+    pub y: f64,
+}
+pub struct Point {
+    pub x: f64,
+    pub y: f64,
+    pub cluster_id: i32,
+    pub cluster_distance: f64,
+}
+
+pub fn update_centroids(points: &[Point], n: i32, clusters: &mut [Cluster], k: i32) {
+    let k_us = k as usize;
+    let mut count: Vec<i32> = vec![0; k_us];
+    let mut sum_x: Vec<f64> = vec![0.0; k_us];
+    let mut sum_y: Vec<f64> = vec![0.0; k_us];
+    for i in 0..(n as usize) {
+        let cid = points[i].cluster_id as usize;
+        count[cid] += 1;
+        sum_x[cid] += points[i].x;
+        sum_y[cid] += points[i].y;
+    }
+    for j in 0..k_us {
+        if count[j] > 0 {
+            clusters[j].x = sum_x[j] / count[j] as f64;
+            clusters[j].y = sum_y[j] / count[j] as f64;
+        }
+    }
+}
+pub fn distance(p: Point, c: Cluster) -> f64 {
+    ((p.x - c.x) * (p.x - c.x) + (p.y - c.y) * (p.y - c.y)).sqrt()
+}
+#[derive(Debug, Clone, Copy, Default)]
+pub struct timespec {
+    pub tv_sec: __time_t,
+    pub tv_nsec: __syscall_slong_t,
+}
+
+fn diff_timespec(time1: &timespec, time0: &timespec) -> f64 {
+    (time1.tv_sec - time0.tv_sec) as f64
+        + (time1.tv_nsec - time0.tv_nsec) as f64 / 1000000000.0
+}
+pub fn assign_clusters(points: &mut [Point], n: i32, clusters: &[Cluster], k: i32) {
+    for i in 0..(n as usize) {
+        let mut min_dist = f64::MAX;
+        let mut best_cluster: i32 = -1;
+        for j in 0..(k as usize) {
+            let p = Point {
+                x: points[i].x,
+                y: points[i].y,
+                cluster_id: points[i].cluster_id,
+                cluster_distance: points[i].cluster_distance,
+            };
+            let c = Cluster {
+                x: clusters[j].x,
+                y: clusters[j].y,
+            };
+            let d = distance(p, c);
+            if d < min_dist {
+                min_dist = d;
+                best_cluster = j as i32;
+            }
+        }
+        points[i].cluster_id = best_cluster;
+        points[i].cluster_distance = min_dist;
+    }
+}
+pub fn kmeans(points: &mut [Point], n: i32, clusters: &mut [Cluster], k: i32, max_iter: i32) {
+    for j in 0..k as usize {
+        clusters[j].x = points[j].x;
+        clusters[j].y = points[j].y;
+    }
+    for _iter in 0..max_iter {
+        assign_clusters(points, n, clusters, k);
+        update_centroids(points, n, clusters, k);
+    }
+}
+2026-11-12 22:26:43,024 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - WARNING - Successfully added kmeans to the merged file.
+2026-11-12 22:26:43,033 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Copied struct-fn-replay output to temporary performance directory /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/temp before performance check
+2026-11-12 22:26:43,033 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Loaded performance information from /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/kmeans/performance_information.json
+2026-11-12 22:26:43,033 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - [Performance check start] : struct-fn-replay
+2026-11-12 22:26:43,034 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Sending request: Please generate Rust performance entry code according to the original C main function I provide below.
+The generated main function must preserve the same logic, control flow, validation, side effects, output, and timing behavior as the original C main function.
+The generated entry code must be self-contained in the performance runner environment: preserve relative file paths from the original C main, but create any missing parent directories before writing output files.
+If the original C main function uses srand and rand, generate performance code that calls those same C libc srand and rand functions via FFI so the generated performance runner preserves the C random sequence and seeding behavior exactly. Do not introduce FFI requirements for other C library functions just for this random-number rule.
+Do not use platform-specific or external crypto headers/libraries such as CommonCrypto, OpenSSL, or CryptoAPI; if a C++ print_file_md5 helper is missing, implement it with the md5sum command and standard headers only.
+Reply with the generated main function, any directly required include/import/use statements, and any missing helper functions required by that main function.
+I will provide dependency functions, structs, and type definitions below. Use them as already-existing context.
+Do NOT repeat, restate, redefine, wrap, or translate dependency functions, structs, enums, typedefs, type aliases, or helper functions that are already fully defined in the provided dependency code.
+Use existing scope functions directly, including when passing them as function pointers / callbacks (e.g. comparators, destructors, visitors). Do NOT generate wrapper closures or shim functions that merely re-call an already-defined dependency function; reference the dependency symbol directly, and if its signature differs from the expected callback type, bridge it with a single `std::mem::transmute` (Rust) or a C-style cast (C++) instead of redefining the logic.
+If the generated main function calls a helper that is not fully defined in the provided dependency code, add a compatible helper implementation in your output.
+For Rust: NEVER use `std::mem::zeroed::<T>()` or `MaybeUninit::zeroed().assume_init()` to construct a struct that contains non-nullable function pointers (plain `fn(...)` / `extern "C" fn(...)` fields), references, `NonNull`, or other types whose all-zero bit pattern is invalid — doing so causes an immediate runtime panic ("attempted to zero-initialize type ..."). Instead, allocate the object with `std::mem::MaybeUninit::<T>::uninit()`, pass `.as_mut_ptr()` into the initializer function (which writes every field through the raw pointer), and then call `.assume_init()` once initialization is complete. Only fall back to a field-by-field struct literal if no initializer function exists.
+Your output must contain exactly one main function, plus only the minimal include/import/use statements and missing helper functions required by that main function.
+Return only the generated main function and missing helpers. Do not return a full translation unit.
+For the final result, please reply with, the final code is : 
+// original C function : 
+int main(int argc, char *argv[]) {
+    if (argc < 3) {
+        printf("Usage: %s <num_points> <k> [max_iter]\n", argv[0]);
+        return 1;
+    }
+
+    int num_points = atoi(argv[1]);
+    int k = atoi(argv[2]);
+    int max_iter = (argc >= 4) ? atoi(argv[3]) : 100;
+
+    if (num_points <= 0 || k <= 0 || k > num_points) {
+        printf("Error: num_points > 0, k > 0, and k <= num_points required.\n");
+        return 1;
+    }
+
+    srand(42);
+    Point *points = malloc(num_points * sizeof(Point));
+    for (int i = 0; i < num_points; i++) {
+        points[i].x = (double)rand() / RAND_MAX * 100.0;
+        points[i].y = (double)rand() / RAND_MAX * 100.0;
+        points[i].cluster_id = -1;
+        points[i].cluster_distance = DBL_MAX;
+    }
+
+    Cluster *clusters = malloc(k * sizeof(Cluster));
+
+    struct timespec start_time, end_time;
+    double time_elapsed = 0;
+    clock_gettime(CLOCK_MONOTONIC, &start_time);
+
+    // MAIN COMPUTATION BEGIN
+    kmeans(points, num_points, clusters, k, max_iter);
+    // MAIN COMPUTATION END
+
+    clock_gettime(CLOCK_MONOTONIC, &end_time);
+    time_elapsed = diff_timespec(&end_time, &start_time);
+
+    printf("Time taken for k-means clustering of %d points into %d clusters: %f seconds\n", num_points, k, time_elapsed);
+
+    free(points);
+    free(clusters);
+    return 0;
+}
+// the dependency functions :
+```rust
+type __syscall_slong_t = i64;
+type __time_t = i64;
+pub type size_t = usize;
+pub struct Cluster {
+    pub x: f64,
+    pub y: f64,
+}
+pub struct Point {
+    pub x: f64,
+    pub y: f64,
+    pub cluster_id: i32,
+    pub cluster_distance: f64,
+}
+
+pub fn update_centroids(points: &[Point], n: i32, clusters: &mut [Cluster], k: i32) {
+    let k_us = k as usize;
+    let mut count: Vec<i32> = vec![0; k_us];
+    let mut sum_x: Vec<f64> = vec![0.0; k_us];
+    let mut sum_y: Vec<f64> = vec![0.0; k_us];
+    for i in 0..(n as usize) {
+        let cid = points[i].cluster_id as usize;
+        count[cid] += 1;
+        sum_x[cid] += points[i].x;
+        sum_y[cid] += points[i].y;
+    }
+    for j in 0..k_us {
+        if count[j] > 0 {
+            clusters[j].x = sum_x[j] / count[j] as f64;
+            clusters[j].y = sum_y[j] / count[j] as f64;
+        }
+    }
+}
+pub fn distance(p: Point, c: Cluster) -> f64 {
+    ((p.x - c.x) * (p.x - c.x) + (p.y - c.y) * (p.y - c.y)).sqrt()
+}
+#[derive(Debug, Clone, Copy, Default)]
+pub struct timespec {
+    pub tv_sec: __time_t,
+    pub tv_nsec: __syscall_slong_t,
+}
+
+fn diff_timespec(time1: &timespec, time0: &timespec) -> f64 {
+    (time1.tv_sec - time0.tv_sec) as f64
+        + (time1.tv_nsec - time0.tv_nsec) as f64 / 1000000000.0
+}
+pub fn assign_clusters(points: &mut [Point], n: i32, clusters: &[Cluster], k: i32) {
+    for i in 0..(n as usize) {
+        let mut min_dist = f64::MAX;
+        let mut best_cluster: i32 = -1;
+        for j in 0..(k as usize) {
+            let p = Point {
+                x: points[i].x,
+                y: points[i].y,
+                cluster_id: points[i].cluster_id,
+                cluster_distance: points[i].cluster_distance,
+            };
+            let c = Cluster {
+                x: clusters[j].x,
+                y: clusters[j].y,
+            };
+            let d = distance(p, c);
+            if d < min_dist {
+                min_dist = d;
+                best_cluster = j as i32;
+            }
+        }
+        points[i].cluster_id = best_cluster;
+        points[i].cluster_distance = min_dist;
+    }
+}
+pub fn kmeans(points: &mut [Point], n: i32, clusters: &mut [Cluster], k: i32, max_iter: i32) {
+    for j in 0..k as usize {
+        clusters[j].x = points[j].x;
+        clusters[j].y = points[j].y;
+    }
+    for _iter in 0..max_iter {
+        assign_clusters(points, n, clusters, k);
+        update_centroids(points, n, clusters, k);
+    }
+}
+```
+2026-11-12 22:26:52,726 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Rust raw response: // original C function : main
+```rust
+use std::time::Instant;
+
+extern "C" {
+    fn srand(seed: u32);
+    fn rand() -> i32;
+}
+
+fn atoi(s: &str) -> i32 {
+    let b = s.as_bytes();
+    let mut i = 0;
+    while i < b.len() && (b[i] == b' ' || (b[i] >= 9 && b[i] <= 13)) {
+        i += 1;
+    }
+    let mut neg = false;
+    if i < b.len() && (b[i] == b'+' || b[i] == b'-') {
+        neg = b[i] == b'-';
+        i += 1;
+    }
+    let mut v: i32 = 0;
+    while i < b.len() && b[i].is_ascii_digit() {
+        v = v.wrapping_mul(10).wrapping_add((b[i] - b'0') as i32);
+        i += 1;
+    }
+    if neg { v.wrapping_neg() } else { v }
+}
+
+fn main() {
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() < 3 {
+        println!("Usage: {} <num_points> <k> [max_iter]", args[0]);
+        std::process::exit(1);
+    }
+
+    let num_points = atoi(&args[1]);
+    let k = atoi(&args[2]);
+    let max_iter = if args.len() >= 4 { atoi(&args[3]) } else { 100 };
+
+    if num_points <= 0 || k <= 0 || k > num_points {
+        println!("Error: num_points > 0, k > 0, and k <= num_points required.");
+        std::process::exit(1);
+    }
+
+    const RAND_MAX: f64 = 2147483647.0;
+    let mut points: Vec<Point> = Vec::with_capacity(num_points as usize);
+    unsafe {
+        srand(42);
+        for _ in 0..num_points {
+            let x = (rand() as f64) / RAND_MAX * 100.0;
+            let y = (rand() as f64) / RAND_MAX * 100.0;
+            points.push(Point {
+                x,
+                y,
+                cluster_id: -1,
+                cluster_distance: f64::MAX,
+            });
+        }
+    }
+
+    let mut clusters: Vec<Cluster> = (0..k).map(|_| Cluster { x: 0.0, y: 0.0 }).collect();
+
+    let start_time = timespec { tv_sec: 0, tv_nsec: 0 };
+    let t0 = Instant::now();
+
+    // MAIN COMPUTATION BEGIN
+    kmeans(&mut points, num_points, &mut clusters, k, max_iter);
+    // MAIN COMPUTATION END
+
+    let el = t0.elapsed();
+    let end_time = timespec {
+        tv_sec: el.as_secs() as __time_t,
+        tv_nsec: el.subsec_nanos() as __syscall_slong_t,
+    };
+    let time_elapsed = diff_timespec(&end_time, &start_time);
+
+    println!(
+        "Time taken for k-means clustering of {} points into {} clusters: {:.6} seconds",
+        num_points, k, time_elapsed
+    );
+}
+```
+2026-11-12 22:26:52,728 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - DEBUG - Finish reason for function/struct performance_main: end_turn
+2026-11-12 22:26:52,728 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Sent request in 1 chunks
+2026-11-12 22:26:52,734 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Created performance entry file at /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/temp/performance.rs
+2026-11-12 22:26:52,735 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Compiling performance binary: cargo build --release --quiet
+2026-11-12 22:26:54,510 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Using performance arguments for /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/temp/performance.rs: ['1000000', '10']
+2026-11-12 22:26:54,511 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Running performance binary (1/5) in /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/temp/performance.out 1000000 10
+2026-11-12 22:26:57,147 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Running performance binary (2/5) in /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/temp/performance.out 1000000 10
+2026-11-12 22:26:59,786 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Running performance binary (3/5) in /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/temp/performance.out 1000000 10
+2026-11-12 22:27:02,389 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Running performance binary (4/5) in /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/temp/performance.out 1000000 10
+2026-11-12 22:27:05,020 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Running performance binary (5/5) in /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/temp/performance.out 1000000 10
+2026-11-12 22:27:07,705 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Average elapsed_ms across 5 runs: 2565.961
+2026-11-12 22:27:07,706 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - WARNING - [Correctness check skipped] : temp (no parsable Checksum line in run output)
+2026-11-12 22:27:07,707 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Recorded performance result 2565.961 ms at /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/temp/performance_metrics.json
+2026-11-12 22:27:07,707 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - [Performance check pass] : struct-fn-replay
+2026-11-12 22:27:07,716 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Removed temporary performance directory /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/temp
+2026-11-12 22:27:07,717 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Running Crown analysis [struct-fn-replay] for ./inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/merged_funcs.rs: bash ./analyse.sh buffer
+2026-11-12 22:27:07,916 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - Saved Crown statistics for ./inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/merged_funcs.rs at ./inputs-oxivolve/kmeans/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-06/crown_statistics.json
+2026-11-12 22:27:07,918 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - [token-usage] --- by stage ---
+2026-11-12 22:27:07,919 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - [token-usage] section            calls  input  output  cache_r  cache_w  cost_usd
+2026-11-12 22:27:07,919 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - [token-usage] -----------------  -----  -----  ------  -------  -------  --------
+2026-11-12 22:27:07,919 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - [token-usage] (none)                10   7337    3811        0        0   $0.0528
+2026-11-12 22:27:07,919 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - [token-usage] 
+2026-11-12 22:27:07,919 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - [token-usage] --- by model ---
+2026-11-12 22:27:07,919 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - [token-usage] section            calls  input  output  cache_r  cache_w  cost_usd
+2026-11-12 22:27:07,919 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - [token-usage] -----------------  -----  -----  ------  -------  -------  --------
+2026-11-12 22:27:07,920 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - [token-usage] claude-sonnet-5-5     10   7337    3811        0        0   $0.0528
+2026-11-12 22:27:07,920 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - [token-usage] 
+2026-11-12 22:27:07,920 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - [token-usage] --- total ---
+2026-11-12 22:27:07,920 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - [token-usage] section            calls  input  output  cache_r  cache_w  cost_usd
+2026-11-12 22:27:07,920 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - [token-usage] -----------------  -----  -----  ------  -------  -------  --------
+2026-11-12 22:27:07,920 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - [token-usage] TOTAL                 10   7337    3811        0        0   $0.0528
+2026-11-12 22:27:07,920 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - [token-usage] 
+2026-11-12 22:27:07,920 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - [token-usage] --- retries ---
+2026-11-12 22:27:07,921 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - [token-usage] compile retries :   0 calls  $0.0000
+2026-11-12 22:27:07,921 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - [token-usage] struct retries  :   0 calls  $0.0000
+2026-11-12 22:27:07,921 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/kmeans_validator_2026-11-12_22-26-06.log - INFO - [token-usage] perf retries    :   0 calls  $0.0000

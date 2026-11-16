@@ -1,0 +1,9 @@
+Function: Tokens -> Full-Fits-Request : Full-Fits-Response: Function-Fits-Request: Function-Fits-Response: Decls-Fit-Request: Decls-Fit-Response 
+fft_transform: 104 -> True : True: True: True: True: True 
+fft_transform_bluestein: 69 -> True : True: True: True: True: True 
+fft_transform_radix2: 28 -> True : True: True: True: True: True 
+Summary:
+Total function: 3
+Full function + decls -> 3 fits in request limit, 3 fits in response limit
+Function only -> 3 fits in request limit, 3 fits in response limit
+Decls only -> 3 fits in request limit, 3 fits in response limit

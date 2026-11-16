@@ -1,0 +1,1192 @@
+2026-11-12 22:26:19,593 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Command line options: Namespace(src='./inputs-oxivolve/rfft', preanalysis_only=False, llm_mode='claude-sonnet-5-5', translator_mode='struct-fn-replay', fine_tuned_model='', single_file_name='', dir_prefix='sonnet55_20261112_22-23-19', file_list_file='', multithreading=False, interactive_fix_on_fail=False, perf_degrade_threshold_pct=30.0, perf_degrade_retry_count=0, perf_degrade_discard_on_fail=True, perf_degrade_skip_retry=False, skip_c_baseline=False)
+2026-11-12 22:26:19,605 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Using system prompt: You are an expert programmer in both C and Rust. You are great at translating C code to safe Rust. If the C code contains any libc functions, you automatically use the Rust equivalents.
+
+2026-11-12 22:26:19,630 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Skipping normal translation for performance-only functions: main
+2026-11-12 22:26:19,718 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Wrote run config to ./inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/run_config.json
+2026-11-12 22:26:19,719 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Extracting function bodies for file: ./inputs-oxivolve/rfft/rfft.i
+2026-11-12 22:26:19,719 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - (Re-)extracting functions from file ./inputs-oxivolve/rfft/rfft.i
+2026-11-12 22:26:19,786 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Skipping function __bswap_16 from ./inputs-oxivolve/rfft/rfft.i because it is not defined in the original source file
+2026-11-12 22:26:19,786 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Skipping function __bswap_32 from ./inputs-oxivolve/rfft/rfft.i because it is not defined in the original source file
+2026-11-12 22:26:19,786 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Skipping function __bswap_64 from ./inputs-oxivolve/rfft/rfft.i because it is not defined in the original source file
+2026-11-12 22:26:19,786 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Skipping function __uint16_identity from ./inputs-oxivolve/rfft/rfft.i because it is not defined in the original source file
+2026-11-12 22:26:19,786 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Skipping function __uint32_identity from ./inputs-oxivolve/rfft/rfft.i because it is not defined in the original source file
+2026-11-12 22:26:19,787 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Skipping function __uint64_identity from ./inputs-oxivolve/rfft/rfft.i because it is not defined in the original source file
+2026-11-12 22:26:19,793 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Skipping translation for helper functions: main
+2026-11-12 22:26:19,793 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Skipping translation for helper functions: main
+2026-11-12 22:26:19,793 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Extracted  03 functions
+2026-11-12 22:26:20,481 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Removed dead helper definitions from ./inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/fft_transform.i: __bswap_16, __bswap_32, __bswap_64, __uint16_identity, __uint32_identity, __uint64_identity
+2026-11-12 22:26:20,481 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Running: unused-typedef-extractor --root-function=fft_transform /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/fft_transform.i
+2026-11-12 22:26:20,498 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Removed dead helper definitions from ./inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/fft_transform_radix2.i: __bswap_16, __bswap_32, __bswap_64, __uint16_identity, __uint32_identity, __uint64_identity
+2026-11-12 22:26:20,498 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Running: unused-typedef-extractor --root-function=fft_transform_radix2 /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/fft_transform_radix2.i
+2026-11-12 22:26:20,499 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Removed dead helper definitions from ./inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/fft_transform_bluestein.i: __bswap_16, __bswap_32, __bswap_64, __uint16_identity, __uint32_identity, __uint64_identity
+2026-11-12 22:26:20,499 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Running: unused-typedef-extractor --root-function=fft_transform_bluestein /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/fft_transform_bluestein.i
+2026-11-12 22:26:20,526 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - successfuly run cmd, unused-typedef-extractor --root-function=fft_transform /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/fft_transform.i
+2026-11-12 22:26:20,548 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - successfuly run cmd, unused-typedef-extractor --root-function=fft_transform_bluestein /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/fft_transform_bluestein.i
+2026-11-12 22:26:20,548 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - successfuly run cmd, unused-typedef-extractor --root-function=fft_transform_radix2 /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/fft_transform_radix2.i
+2026-11-12 22:26:20,577 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Extracting function bodies for file: ./inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/fft_transform.i
+2026-11-12 22:26:20,577 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - (Re-)extracting functions from file ./inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/fft_transform.i
+2026-11-12 22:26:20,594 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Extracting function bodies for file: ./inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/fft_transform_bluestein.i
+2026-11-12 22:26:20,594 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - (Re-)extracting functions from file ./inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/fft_transform_bluestein.i
+2026-11-12 22:26:20,613 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Extracting function bodies for file: ./inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/fft_transform_radix2.i
+2026-11-12 22:26:20,614 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - (Re-)extracting functions from file ./inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/fft_transform_radix2.i
+2026-11-12 22:26:20,634 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Extracting char*/void* fields from 3 functions
+2026-11-12 22:26:20,634 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Extracting char*/void* field pointers from structs for file fft_transform
+2026-11-12 22:26:20,647 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - struct-with-generic-pointer-printer produced no output for ./inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/fft_transform.i (rc=0). stderr head: 
+2026-11-12 22:26:20,647 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Extracting char*/void* field pointers from structs for file fft_transform_bluestein
+2026-11-12 22:26:20,665 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - struct-with-generic-pointer-printer produced no output for ./inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/fft_transform_bluestein.i (rc=0). stderr head: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/fft_transform_bluestein.i:13:26: warning: implicitly declaring library function 'calloc' with type 'void *(unsigned long, unsigned long)' [-Wimplici
+2026-11-12 22:26:20,665 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Extracting char*/void* field pointers from structs for file fft_transform_radix2
+2026-11-12 22:26:20,680 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - struct-with-generic-pointer-printer produced no output for ./inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/fft_transform_radix2.i (rc=0). stderr head: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/fft_transform_radix2.i:26:28: warning: implicitly declaring library function 'cos' with type 'double (double)' [-Wimplicit-function-declaration]
+   
+2026-11-12 22:26:20,680 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Extracting normal structs from 3 functions
+2026-11-12 22:26:20,680 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Extracting normal structs from for file fft_transform
+2026-11-12 22:26:20,696 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Extracting normal structs from for file fft_transform_bluestein
+2026-11-12 22:26:20,712 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Extracting normal structs from for file fft_transform_radix2
+2026-11-12 22:26:20,733 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Extracting enums from 3 functions
+2026-11-12 22:26:20,733 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Extracting enums for file fft_transform
+2026-11-12 22:26:20,734 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Extracting enums for file fft_transform_bluestein
+2026-11-12 22:26:20,734 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Extracting enums for file fft_transform_radix2
+2026-11-12 22:26:20,734 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Extracting struct field usages across 3 functions
+2026-11-12 22:26:20,778 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - [type-registry] collected 1 definitions
+2026-11-12 22:26:20,778 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - [type-registry] typedef:size_t extracted_by=['normal'] depends_on=[]
+typedef long unsigned int size_t;
+2026-11-12 22:26:20,936 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Sending request: Please translate the following C definitions to Rust.
+Please add any necessary header files, include statements, imports, or use statements required for the translated code to compile.
+
+For the final code result, please response with "Final result code" is : 
+definitions:
+typedef long unsigned int size_t;
+
+
+2026-11-12 22:26:23,881 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Rust raw response: Final result code:
+
+```rust
+#![allow(non_camel_case_types)]
+
+// C: typedef long unsigned int size_t;
+// On the C target this is an unsigned long (64-bit on LP64 platforms).
+// The Rust equivalent is `usize` on such targets, or `std::os::raw::c_ulong`
+// if the exact C type must be preserved.
+pub type size_t = std::os::raw::c_ulong;
+```
+
+This is a direct translation of the typedef. `c_ulong` matches `long unsigned int` exactly, and it is 64 bits on LP64 targets. If you prefer idiomatic Rust and do not need FFI-exact layout, you could use `pub type size_t = usize;` instead.
+2026-11-12 22:26:23,883 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Finish reason for function/struct size_t: end_turn
+2026-11-12 22:26:23,883 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Sent request in 1 chunks
+2026-11-12 22:26:23,884 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - [type batch size_t] sanitized result: #![allow(non_camel_case_types)]
+
+// C: typedef long unsigned int size_t;
+// On the C target this is an unsigned long (64-bit on LP64 platforms).
+// The Rust equivalent is `usize` on such targets, or `std::os::raw::c_ulong`
+// if the exact C type must be preserved.
+pub type size_t = std::os::raw::c_ulong;
+2026-11-12 22:26:23,885 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_x_jp7hy_, source=lib.rs)
+2026-11-12 22:26:26,584 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - [type stored typedef:size_t]: pub type size_t = std::os::raw::c_ulong;
+2026-11-12 22:26:26,585 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Sending request: Please translate the following C definitions to Rust.
+Please add any necessary header files, include statements, imports, or use statements required for the translated code to compile.
+
+For the final code result, please response with "Final result code" is : 
+definitions:
+typedef long unsigned int size_t;
+
+In the previous translation, I got an compile error 
+error: an inner attribute is not permitted in this context
+ --> src/lib.rs:3:1
+  |
+3 | #![allow(non_camel_case_types)]
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+9 | pub type size_t = std::os::raw::c_ulong;
+  | ---------------------------------------- the inner attribute doesn't annotate this type alias
+  |
+  = note: inner attributes, like `#![no_std]`, annotate the item enclosing them, and are usually found at the beginning of source files
+help: to annotate the type alias, change the attribute from inner to outer style
+  |
+3 - #![allow(non_camel_case_types)]
+3 + #[allow(non_camel_case_types)]
+  |
+
+warning: unused imports: `fclose`, `fopen`, `fread`, `free`, `fseek`, `ftell`, `malloc`, `memcpy`, `memset`, `realloc`, `strcmp`
+ --> src/lib.rs:1:12
+  |
+1 | use libc::{free, malloc, realloc, strcmp, memcpy, memset, fclose, fopen, fread, fseek, ftell};
+  |            ^^^^  ^^^^^^  ^^^^^^^  ^^^^^^  ^^^^^^  ^^^^^^  ^^^^^^  ^^^^^  ^^^^^  ^^^^^  ^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: type `size_t` should have an upper camel case name
+ --> src/lib.rs:9:10
+  |
+9 | pub type size_t = std::os::raw::c_ulong;
+  |          ^^^^^^ help: convert the identifier to upper camel case: `SizeT`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+error: could not compile `translation_compile_check` due to previous error; 2 warnings emitted
+
+This is the previous translation result : 
+#![allow(non_camel_case_types)]
+
+// C: typedef long unsigned int size_t;
+// On the C target this is an unsigned long (64-bit on LP64 platforms).
+// The Rust equivalent is `usize` on such targets, or `std::os::raw::c_ulong`
+// if the exact C type must be preserved.
+pub type size_t = std::os::raw::c_ulong;
+2026-11-12 22:26:28,671 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Rust raw response: The compile error came from the inner attribute `#![allow(non_camel_case_types)]`. It was placed after other items, and inner attributes are only allowed at the very top of a file. I switched to an outer attribute (`#[allow(...)]`) placed directly on the type alias, which fixes it. I also removed the unused `libc` imports, since this snippet only defines a type alias and needs no imports.
+
+Final result code:
+
+```rust
+#[allow(non_camel_case_types)]
+pub type size_t = std::os::raw::c_ulong;
+```
+2026-11-12 22:26:28,671 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Finish reason for function/struct size_t: end_turn
+2026-11-12 22:26:28,672 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Sent request in 1 chunks
+2026-11-12 22:26:28,672 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - [type batch size_t] sanitized result: #[allow(non_camel_case_types)]
+pub type size_t = std::os::raw::c_ulong;
+2026-11-12 22:26:28,672 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_kqq3cnbj, source=lib.rs)
+2026-11-12 22:26:29,715 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - [type stored typedef:size_t]: pub type size_t = std::os::raw::c_ulong;
+2026-11-12 22:26:29,716 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Sending request: Translate C to Rust. If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function.
+ For the final code result, please response with "Final result code" is : 
+
+ 
+ 
+
+void fft_transform_radix2(double _Complex* vec, size_t n, _Bool inverse);
+
+void fft_transform_radix2(double _Complex* vec, size_t n, _Bool inverse) {
+ int levels = 0;
+ for (size_t k = 1; (k & n) == 0; k <<= 1)
+  levels++;
+ for (size_t i = 0; i < n; i++) {
+  size_t j = 0, ii = i;
+  for (int k = 0; k < levels; k++) {
+   j = (j << 1) | (ii & 1);
+   ii >>= 1;
+  }
+  if (j > i) {
+   double _Complex tmp = vec[i];
+   vec[i] = vec[j];
+   vec[j] = tmp;
+  }
+ }
+ for (size_t half = 1; half < n; half *= 2) {
+  size_t size = 2 * half;
+  size_t step = n / size;
+  for (size_t j = 0, k = 0; j < half; j++, k += step) {
+   double angle = (inverse ? 2 : -2) * 3.14159265358979323846 * k / n;
+   double _Complex omega = cos(angle) + ( 1.0iF) * sin(angle);
+          for (size_t i = 0; i < n; i += size) {
+    double _Complex tmp = vec[i + j + half] * omega;
+    vec[i + j + half] = vec[i + j] - tmp;
+    vec[i + j] += tmp;
+   }
+  }
+ }
+}
+
+
+Please use the following Rust translations of dependency definitions enclosed in /* Rust definitions ... */. Please do not include this translation in your response. 
+
+/* Rust definitions
+pub type size_t = std::os::raw::c_ulong;
+*/
+
+
+/* 
+*/
+
+2026-11-12 22:26:37,998 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Rust raw response: Final result code:
+
+```rust
+use num_complex::Complex;
+
+pub fn fft_transform_radix2(vec: &mut [Complex<f64>], n: size_t, inverse: bool) {
+    let n = n as usize;
+    let mut levels: i32 = 0;
+    let mut k: usize = 1;
+    while (k & n) == 0 {
+        levels += 1;
+        k <<= 1;
+    }
+    for i in 0..n {
+        let mut j: usize = 0;
+        let mut ii = i;
+        for _ in 0..levels {
+            j = (j << 1) | (ii & 1);
+            ii >>= 1;
+        }
+        if j > i {
+            vec.swap(i, j);
+        }
+    }
+    let mut half: usize = 1;
+    while half < n {
+        let size = 2 * half;
+        let step = n / size;
+        let mut j: usize = 0;
+        let mut k: usize = 0;
+        while j < half {
+            let angle = (if inverse { 2.0 } else { -2.0 }) * 3.14159265358979323846_f64 * (k as f64) / (n as f64);
+            let omega = Complex::new(angle.cos(), angle.sin());
+            let mut i: usize = 0;
+            while i < n {
+                let tmp = vec[i + j + half] * omega;
+                vec[i + j + half] = vec[i + j] - tmp;
+                vec[i + j] += tmp;
+                i += size;
+            }
+            j += 1;
+            k += step;
+        }
+        half *= 2;
+    }
+}
+```
+2026-11-12 22:26:38,000 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Finish reason for function/struct fft_transform_radix2: end_turn
+2026-11-12 22:26:38,000 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Sent request in 1 chunks
+2026-11-12 22:26:38,004 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_o4y2rpzk, source=lib.rs)
+2026-11-12 22:26:39,260 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - [fft_transform_radix2], complete result : use num_complex::Complex;
+
+pub type size_t = std::os::raw::c_ulong;
+
+pub fn fft_transform_radix2(vec: &mut [Complex<f64>], n: size_t, inverse: bool) {
+    let n = n as usize;
+    let mut levels: i32 = 0;
+    let mut k: usize = 1;
+    while (k & n) == 0 {
+        levels += 1;
+        k <<= 1;
+    }
+    for i in 0..n {
+        let mut j: usize = 0;
+        let mut ii = i;
+        for _ in 0..levels {
+            j = (j << 1) | (ii & 1);
+            ii >>= 1;
+        }
+        if j > i {
+            vec.swap(i, j);
+        }
+    }
+    let mut half: usize = 1;
+    while half < n {
+        let size = 2 * half;
+        let step = n / size;
+        let mut j: usize = 0;
+        let mut k: usize = 0;
+        while j < half {
+            let angle = (if inverse { 2.0 } else { -2.0 }) * 3.14159265358979323846_f64 * (k as f64) / (n as f64);
+            let omega = Complex::new(angle.cos(), angle.sin());
+            let mut i: usize = 0;
+            while i < n {
+                let tmp = vec[i + j + half] * omega;
+                vec[i + j + half] = vec[i + j] - tmp;
+                vec[i + j] += tmp;
+                i += size;
+            }
+            j += 1;
+            k += step;
+        }
+        half *= 2;
+    }
+}
+2026-11-12 22:26:39,260 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - [COMPILE AND LINK]Trying to recompile translated function fft_transform_radix2, attempt # 1
+2026-11-12 22:26:39,261 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Full compilation error: error[E0432]: unresolved import `num_complex`
+ --> src/lib.rs:4:5
+  |
+4 | use num_complex::Complex;
+  |     ^^^^^^^^^^^ use of undeclared crate or module `num_complex`
+
+For more information about this error, try `rustc --explain E0432`.
+error: could not compile `translation_compile_check` due to previous error
+
+2026-11-12 22:26:39,263 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Sending request: I got compilation error. Please help me fix or rewrite the target function
+The code is in the following :
+use num_complex::Complex;
+
+pub fn fft_transform_radix2(vec: &mut [Complex<f64>], n: size_t, inverse: bool) {
+    let n = n as usize;
+    let mut levels: i32 = 0;
+    let mut k: usize = 1;
+    while (k & n) == 0 {
+        levels += 1;
+        k <<= 1;
+    }
+    for i in 0..n {
+        let mut j: usize = 0;
+        let mut ii = i;
+        for _ in 0..levels {
+            j = (j << 1) | (ii & 1);
+            ii >>= 1;
+        }
+        if j > i {
+            vec.swap(i, j);
+        }
+    }
+    let mut half: usize = 1;
+    while half < n {
+        let size = 2 * half;
+        let step = n / size;
+        let mut j: usize = 0;
+        let mut k: usize = 0;
+        while j < half {
+            let angle = (if inverse { 2.0 } else { -2.0 }) * 3.14159265358979323846_f64 * (k as f64) / (n as f64);
+            let omega = Complex::new(angle.cos(), angle.sin());
+            let mut i: usize = 0;
+            while i < n {
+                let tmp = vec[i + j + half] * omega;
+                vec[i + j + half] = vec[i + j] - tmp;
+                vec[i + j] += tmp;
+                i += size;
+            }
+            j += 1;
+            k += step;
+        }
+        half *= 2;
+    }
+}
+The function signature of the dependency functions is : /* 
+*/
+The dependency structs definition is  /* 
+
+pub type size_t = std::os::raw::c_ulong;*/
+target function is fft_transform_radix2
+Please do not change or modify any other functions
+Please only reply with the modified or re-generated version of the target function: fft_transform_radix2
+Do NOT add C/C++ preprocessor directives (`#include`, `#define`, etc.) — this is Rust. If a new dependency is needed, add a `use` statement.The compile error information : error[E0432]: unresolved import `num_complex`
+ --> src/lib.rs:4:5
+  |
+4 | use num_complex::Complex;
+  |     ^^^^^^^^^^^ use of undeclared crate or module `num_complex`
+
+For more information about this error, try `rustc --explain E0432`.
+error: could not compile `translation_compile_check` due to previous error
+
+If the compile error is caused by missing dependency such as no member named, please fix try to generate code with the missing dependency 
+
+ For the final code result, please response with "Final result code" is : 
+
+2026-11-12 22:26:48,628 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Rust raw response: Final result code:
+
+```rust
+pub fn fft_transform_radix2(vec: &mut [(f64, f64)], n: size_t, inverse: bool) {
+    // Each element is (real, imag). This avoids the external `num_complex` crate.
+    let n = n as usize;
+    if n == 0 {
+        return;
+    }
+    let mut levels: i32 = 0;
+    let mut k: usize = 1;
+    while k != 0 && (k & n) == 0 {
+        levels += 1;
+        k <<= 1;
+    }
+    for i in 0..n {
+        let mut j: usize = 0;
+        let mut ii = i;
+        for _ in 0..levels {
+            j = (j << 1) | (ii & 1);
+            ii >>= 1;
+        }
+        if j > i {
+            vec.swap(i, j);
+        }
+    }
+    let mut half: usize = 1;
+    while half < n {
+        let size = 2 * half;
+        let step = n / size;
+        let mut j: usize = 0;
+        let mut k: usize = 0;
+        while j < half {
+            let angle = (if inverse { 2.0 } else { -2.0 })
+                * 3.14159265358979323846_f64
+                * (k as f64)
+                / (n as f64);
+            let (wr, wi) = (angle.cos(), angle.sin());
+            let mut i: usize = 0;
+            while i < n {
+                let (br, bi) = vec[i + j + half];
+                // tmp = vec[i + j + half] * omega
+                let tr = br * wr - bi * wi;
+                let ti = br * wi + bi * wr;
+                let (ar, ai) = vec[i + j];
+                vec[i + j + half] = (ar - tr, ai - ti);
+                vec[i + j] = (ar + tr, ai + ti);
+                i += size;
+            }
+            j += 1;
+            k += step;
+        }
+        half *= 2;
+    }
+}
+```
+
+The `num_complex` crate isn't available, so I removed it and represent each complex number as an `(f64, f64)` tuple of (real, imag). The complex multiply, add and subtract are written out by hand. I also added a guard for `n == 0` so the level-counting loop can't run forever.
+2026-11-12 22:26:48,630 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Finish reason for function/struct fft_transform_radix2: end_turn
+2026-11-12 22:26:48,630 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Sent request in 1 chunks
+2026-11-12 22:26:48,632 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - [fft_transform_radix2], complete result : pub type size_t = std::os::raw::c_ulong;
+
+pub fn fft_transform_radix2(vec: &mut [(f64, f64)], n: size_t, inverse: bool) {
+    // Each element is (real, imag). This avoids the external `num_complex` crate.
+    let n = n as usize;
+    if n == 0 {
+        return;
+    }
+    let mut levels: i32 = 0;
+    let mut k: usize = 1;
+    while k != 0 && (k & n) == 0 {
+        levels += 1;
+        k <<= 1;
+    }
+    for i in 0..n {
+        let mut j: usize = 0;
+        let mut ii = i;
+        for _ in 0..levels {
+            j = (j << 1) | (ii & 1);
+            ii >>= 1;
+        }
+        if j > i {
+            vec.swap(i, j);
+        }
+    }
+    let mut half: usize = 1;
+    while half < n {
+        let size = 2 * half;
+        let step = n / size;
+        let mut j: usize = 0;
+        let mut k: usize = 0;
+        while j < half {
+            let angle = (if inverse { 2.0 } else { -2.0 })
+                * 3.14159265358979323846_f64
+                * (k as f64)
+                / (n as f64);
+            let (wr, wi) = (angle.cos(), angle.sin());
+            let mut i: usize = 0;
+            while i < n {
+                let (br, bi) = vec[i + j + half];
+                // tmp = vec[i + j + half] * omega
+                let tr = br * wr - bi * wi;
+                let ti = br * wi + bi * wr;
+                let (ar, ai) = vec[i + j];
+                vec[i + j + half] = (ar - tr, ai - ti);
+                vec[i + j] = (ar + tr, ai + ti);
+                i += size;
+            }
+            j += 1;
+            k += step;
+        }
+        half *= 2;
+    }
+}
+2026-11-12 22:26:48,633 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_5y4gi1m0, source=lib.rs)
+2026-11-12 22:26:52,719 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - [COMPILE AND LINK] After 1 retranslation attempts result, complete result: pub fn fft_transform_radix2(vec: &mut [(f64, f64)], n: size_t, inverse: bool) {
+    // Each element is (real, imag). This avoids the external `num_complex` crate.
+    let n = n as usize;
+    if n == 0 {
+        return;
+    }
+    let mut levels: i32 = 0;
+    let mut k: usize = 1;
+    while k != 0 && (k & n) == 0 {
+        levels += 1;
+        k <<= 1;
+    }
+    for i in 0..n {
+        let mut j: usize = 0;
+        let mut ii = i;
+        for _ in 0..levels {
+            j = (j << 1) | (ii & 1);
+            ii >>= 1;
+        }
+        if j > i {
+            vec.swap(i, j);
+        }
+    }
+    let mut half: usize = 1;
+    while half < n {
+        let size = 2 * half;
+        let step = n / size;
+        let mut j: usize = 0;
+        let mut k: usize = 0;
+        while j < half {
+            let angle = (if inverse { 2.0 } else { -2.0 })
+                * 3.14159265358979323846_f64
+                * (k as f64)
+                / (n as f64);
+            let (wr, wi) = (angle.cos(), angle.sin());
+            let mut i: usize = 0;
+            while i < n {
+                let (br, bi) = vec[i + j + half];
+                // tmp = vec[i + j + half] * omega
+                let tr = br * wr - bi * wi;
+                let ti = br * wi + bi * wr;
+                let (ar, ai) = vec[i + j];
+                vec[i + j + half] = (ar - tr, ai - ti);
+                vec[i + j] = (ar + tr, ai + ti);
+                i += size;
+            }
+            j += 1;
+            k += step;
+        }
+        half *= 2;
+    }
+}, pub type size_t = std::os::raw::c_ulong;
+
+pub fn fft_transform_radix2(vec: &mut [(f64, f64)], n: size_t, inverse: bool) {
+    // Each element is (real, imag). This avoids the external `num_complex` crate.
+    let n = n as usize;
+    if n == 0 {
+        return;
+    }
+    let mut levels: i32 = 0;
+    let mut k: usize = 1;
+    while k != 0 && (k & n) == 0 {
+        levels += 1;
+        k <<= 1;
+    }
+    for i in 0..n {
+        let mut j: usize = 0;
+        let mut ii = i;
+        for _ in 0..levels {
+            j = (j << 1) | (ii & 1);
+            ii >>= 1;
+        }
+        if j > i {
+            vec.swap(i, j);
+        }
+    }
+    let mut half: usize = 1;
+    while half < n {
+        let size = 2 * half;
+        let step = n / size;
+        let mut j: usize = 0;
+        let mut k: usize = 0;
+        while j < half {
+            let angle = (if inverse { 2.0 } else { -2.0 })
+                * 3.14159265358979323846_f64
+                * (k as f64)
+                / (n as f64);
+            let (wr, wi) = (angle.cos(), angle.sin());
+            let mut i: usize = 0;
+            while i < n {
+                let (br, bi) = vec[i + j + half];
+                // tmp = vec[i + j + half] * omega
+                let tr = br * wr - bi * wi;
+                let ti = br * wi + bi * wr;
+                let (ar, ai) = vec[i + j];
+                vec[i + j + half] = (ar - tr, ai - ti);
+                vec[i + j] = (ar + tr, ai + ti);
+                i += size;
+            }
+            j += 1;
+            k += step;
+        }
+        half *= 2;
+    }
+}
+2026-11-12 22:26:52,723 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - WARNING - Successfully added fft_transform_radix2 to the merged file.
+2026-11-12 22:26:52,728 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Sending request: Translate C to Rust. If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function.
+ For the final code result, please response with "Final result code" is : 
+
+ 
+ 
+ 
+
+void fft_transform_bluestein(double _Complex* vec, size_t n, _Bool inverse);
+
+void fft_transform_bluestein(double _Complex* vec, size_t n, _Bool inverse) {
+ size_t m = 1;
+ while (m <= 2 * n) {
+  m *= 2;
+ }
+ double _Complex* avec = calloc(m, sizeof(double _Complex));
+ double _Complex* bvec = calloc(m, sizeof(double _Complex));
+ avec[0] = vec[0];
+ bvec[0] = 1.0;
+ for (size_t i = 1; i < n; i++) {
+  size_t k = (i * i) % (2 * n);
+  double angle = (inverse ? 3.14159265358979323846 : -3.14159265358979323846) * k / n;
+  double _Complex omega = cos(angle) + ( 1.0iF) * sin(angle);
+  avec[i] = vec[i] * omega;
+  bvec[i] = bvec[m - i] = conj(omega);
+ }
+ fft_transform_radix2(avec, m, 0);
+ fft_transform_radix2(bvec, m, 0);
+ for (size_t i = 0; i < m; i++) {
+  avec[i] *= bvec[i];
+ }
+ fft_transform_radix2(avec, m, 1);
+ for (size_t i = 0; i < n; i++) {
+  size_t k = (i * i) % (2 * n);
+  double angle = (inverse ? 3.14159265358979323846 : -3.14159265358979323846) * k / n;
+  double _Complex omega = cos(angle) + ( 1.0iF) * sin(angle);
+  vec[i] = avec[i] * omega / m;
+ }
+ free(avec);
+ free(bvec);
+}
+
+
+Please use the following Rust translations of dependency definitions enclosed in /* Rust definitions ... */. Please do not include this translation in your response. 
+
+/* Rust definitions
+pub type size_t = std::os::raw::c_ulong;
+*/
+
+
+For the dependency functions, I will provide the function signature of Rust included in /*// and //*/. These dependency functions are available for reference. Call them only when they are still required by the generated code; if the current stage has made a dependency unnecessary, do not call it. 
+/* 
+fft_transform_radix2(vec: &mut [(f64, f64)], n: size_t, inverse: bool)
+*/
+
+2026-11-12 22:26:58,569 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Rust raw response: Complex numbers are represented as `(f64, f64)` tuples, matching the `fft_transform_radix2` signature. Because no complex type is available, I wrote the multiply, conjugate and divide operations by hand. The `calloc`/`free` pairs become zero-initialized `Vec`s.
+
+Final result code:
+
+```rust
+pub type size_t = std::os::raw::c_ulong;
+
+fn cmul(a: (f64, f64), b: (f64, f64)) -> (f64, f64) {
+    (a.0 * b.0 - a.1 * b.1, a.0 * b.1 + a.1 * b.0)
+}
+
+pub fn fft_transform_bluestein(vec: &mut [(f64, f64)], n: size_t, inverse: bool) {
+    let nn = n as usize;
+    let mut m: usize = 1;
+    while m <= 2 * nn {
+        m *= 2;
+    }
+    let mut avec: Vec<(f64, f64)> = vec![(0.0, 0.0); m];
+    let mut bvec: Vec<(f64, f64)> = vec![(0.0, 0.0); m];
+    avec[0] = vec[0];
+    bvec[0] = (1.0, 0.0);
+    let pi = 3.14159265358979323846_f64;
+    for i in 1..nn {
+        let k = (i * i) % (2 * nn);
+        let angle = (if inverse { pi } else { -pi }) * (k as f64) / (nn as f64);
+        let omega = (angle.cos(), angle.sin());
+        avec[i] = cmul(vec[i], omega);
+        let c = (omega.0, -omega.1);
+        bvec[m - i] = c;
+        bvec[i] = c;
+    }
+    fft_transform_radix2(&mut avec, m as size_t, false);
+    fft_transform_radix2(&mut bvec, m as size_t, false);
+    for i in 0..m {
+        avec[i] = cmul(avec[i], bvec[i]);
+    }
+    fft_transform_radix2(&mut avec, m as size_t, true);
+    for i in 0..nn {
+        let k = (i * i) % (2 * nn);
+        let angle = (if inverse { pi } else { -pi }) * (k as f64) / (nn as f64);
+        let omega = (angle.cos(), angle.sin());
+        let p = cmul(avec[i], omega);
+        vec[i] = (p.0 / (m as f64), p.1 / (m as f64));
+    }
+}
+```
+2026-11-12 22:26:58,570 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Finish reason for function/struct fft_transform_bluestein: end_turn
+2026-11-12 22:26:58,571 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Sent request in 1 chunks
+2026-11-12 22:26:58,575 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_yv0sjikc, source=lib.rs)
+2026-11-12 22:26:59,724 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - [fft_transform_bluestein], complete result : pub type size_t = std::os::raw::c_ulong;
+
+pub fn fft_transform_radix2(vec: &mut [(f64, f64)], n: size_t, inverse: bool) {
+    // Each element is (real, imag). This avoids the external `num_complex` crate.
+    let n = n as usize;
+    if n == 0 {
+        return;
+    }
+    let mut levels: i32 = 0;
+    let mut k: usize = 1;
+    while k != 0 && (k & n) == 0 {
+        levels += 1;
+        k <<= 1;
+    }
+    for i in 0..n {
+        let mut j: usize = 0;
+        let mut ii = i;
+        for _ in 0..levels {
+            j = (j << 1) | (ii & 1);
+            ii >>= 1;
+        }
+        if j > i {
+            vec.swap(i, j);
+        }
+    }
+    let mut half: usize = 1;
+    while half < n {
+        let size = 2 * half;
+        let step = n / size;
+        let mut j: usize = 0;
+        let mut k: usize = 0;
+        while j < half {
+            let angle = (if inverse { 2.0 } else { -2.0 })
+                * 3.14159265358979323846_f64
+                * (k as f64)
+                / (n as f64);
+            let (wr, wi) = (angle.cos(), angle.sin());
+            let mut i: usize = 0;
+            while i < n {
+                let (br, bi) = vec[i + j + half];
+                // tmp = vec[i + j + half] * omega
+                let tr = br * wr - bi * wi;
+                let ti = br * wi + bi * wr;
+                let (ar, ai) = vec[i + j];
+                vec[i + j + half] = (ar - tr, ai - ti);
+                vec[i + j] = (ar + tr, ai + ti);
+                i += size;
+            }
+            j += 1;
+            k += step;
+        }
+        half *= 2;
+    }
+}
+fn cmul(a: (f64, f64), b: (f64, f64)) -> (f64, f64) {
+    (a.0 * b.0 - a.1 * b.1, a.0 * b.1 + a.1 * b.0)
+}
+
+pub fn fft_transform_bluestein(vec: &mut [(f64, f64)], n: size_t, inverse: bool) {
+    let nn = n as usize;
+    let mut m: usize = 1;
+    while m <= 2 * nn {
+        m *= 2;
+    }
+    let mut avec: Vec<(f64, f64)> = vec![(0.0, 0.0); m];
+    let mut bvec: Vec<(f64, f64)> = vec![(0.0, 0.0); m];
+    avec[0] = vec[0];
+    bvec[0] = (1.0, 0.0);
+    let pi = 3.14159265358979323846_f64;
+    for i in 1..nn {
+        let k = (i * i) % (2 * nn);
+        let angle = (if inverse { pi } else { -pi }) * (k as f64) / (nn as f64);
+        let omega = (angle.cos(), angle.sin());
+        avec[i] = cmul(vec[i], omega);
+        let c = (omega.0, -omega.1);
+        bvec[m - i] = c;
+        bvec[i] = c;
+    }
+    fft_transform_radix2(&mut avec, m as size_t, false);
+    fft_transform_radix2(&mut bvec, m as size_t, false);
+    for i in 0..m {
+        avec[i] = cmul(avec[i], bvec[i]);
+    }
+    fft_transform_radix2(&mut avec, m as size_t, true);
+    for i in 0..nn {
+        let k = (i * i) % (2 * nn);
+        let angle = (if inverse { pi } else { -pi }) * (k as f64) / (nn as f64);
+        let omega = (angle.cos(), angle.sin());
+        let p = cmul(avec[i], omega);
+        vec[i] = (p.0 / (m as f64), p.1 / (m as f64));
+    }
+}
+2026-11-12 22:26:59,729 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - WARNING - Successfully added fft_transform_bluestein to the merged file.
+2026-11-12 22:26:59,733 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Sending request: Translate C to Rust. If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function.
+ For the final code result, please response with "Final result code" is : 
+
+
+void fft_transform(double _Complex* vec, size_t n, _Bool inverse);
+
+void fft_transform(double _Complex* vec, size_t n, _Bool inverse) {
+ if (n <= 1)
+  return;
+ else if ((n & (n - 1)) == 0)
+  fft_transform_radix2(vec, n, inverse);
+ else
+  fft_transform_bluestein(vec, n, inverse);
+}
+
+
+Please use the following Rust translations of dependency definitions enclosed in /* Rust definitions ... */. Please do not include this translation in your response. 
+
+/* Rust definitions
+pub type size_t = std::os::raw::c_ulong;
+*/
+
+
+For the dependency functions, I will provide the function signature of Rust included in /*// and //*/. These dependency functions are available for reference. Call them only when they are still required by the generated code; if the current stage has made a dependency unnecessary, do not call it. 
+/* 
+fft_transform_bluestein(vec: &mut [(f64, f64)], n: size_t, inverse: bool)
+fft_transform_radix2(vec: &mut [(f64, f64)], n: size_t, inverse: bool)
+*/
+
+2026-11-12 22:27:01,977 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Rust raw response: Final result code:
+
+```rust
+pub fn fft_transform(vec: &mut [(f64, f64)], n: size_t, inverse: bool) {
+    if n <= 1 {
+        return;
+    } else if (n & (n - 1)) == 0 {
+        fft_transform_radix2(vec, n, inverse);
+    } else {
+        fft_transform_bluestein(vec, n, inverse);
+    }
+}
+```
+2026-11-12 22:27:01,978 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Finish reason for function/struct fft_transform: end_turn
+2026-11-12 22:27:01,978 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Sent request in 1 chunks
+2026-11-12 22:27:01,981 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_dbkkl1wz, source=lib.rs)
+2026-11-12 22:27:03,179 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - [fft_transform], complete result : pub type size_t = std::os::raw::c_ulong;
+
+pub fn fft_transform_radix2(vec: &mut [(f64, f64)], n: size_t, inverse: bool) {
+    // Each element is (real, imag). This avoids the external `num_complex` crate.
+    let n = n as usize;
+    if n == 0 {
+        return;
+    }
+    let mut levels: i32 = 0;
+    let mut k: usize = 1;
+    while k != 0 && (k & n) == 0 {
+        levels += 1;
+        k <<= 1;
+    }
+    for i in 0..n {
+        let mut j: usize = 0;
+        let mut ii = i;
+        for _ in 0..levels {
+            j = (j << 1) | (ii & 1);
+            ii >>= 1;
+        }
+        if j > i {
+            vec.swap(i, j);
+        }
+    }
+    let mut half: usize = 1;
+    while half < n {
+        let size = 2 * half;
+        let step = n / size;
+        let mut j: usize = 0;
+        let mut k: usize = 0;
+        while j < half {
+            let angle = (if inverse { 2.0 } else { -2.0 })
+                * 3.14159265358979323846_f64
+                * (k as f64)
+                / (n as f64);
+            let (wr, wi) = (angle.cos(), angle.sin());
+            let mut i: usize = 0;
+            while i < n {
+                let (br, bi) = vec[i + j + half];
+                // tmp = vec[i + j + half] * omega
+                let tr = br * wr - bi * wi;
+                let ti = br * wi + bi * wr;
+                let (ar, ai) = vec[i + j];
+                vec[i + j + half] = (ar - tr, ai - ti);
+                vec[i + j] = (ar + tr, ai + ti);
+                i += size;
+            }
+            j += 1;
+            k += step;
+        }
+        half *= 2;
+    }
+}
+fn cmul(a: (f64, f64), b: (f64, f64)) -> (f64, f64) {
+    (a.0 * b.0 - a.1 * b.1, a.0 * b.1 + a.1 * b.0)
+}
+
+pub fn fft_transform_bluestein(vec: &mut [(f64, f64)], n: size_t, inverse: bool) {
+    let nn = n as usize;
+    let mut m: usize = 1;
+    while m <= 2 * nn {
+        m *= 2;
+    }
+    let mut avec: Vec<(f64, f64)> = vec![(0.0, 0.0); m];
+    let mut bvec: Vec<(f64, f64)> = vec![(0.0, 0.0); m];
+    avec[0] = vec[0];
+    bvec[0] = (1.0, 0.0);
+    let pi = 3.14159265358979323846_f64;
+    for i in 1..nn {
+        let k = (i * i) % (2 * nn);
+        let angle = (if inverse { pi } else { -pi }) * (k as f64) / (nn as f64);
+        let omega = (angle.cos(), angle.sin());
+        avec[i] = cmul(vec[i], omega);
+        let c = (omega.0, -omega.1);
+        bvec[m - i] = c;
+        bvec[i] = c;
+    }
+    fft_transform_radix2(&mut avec, m as size_t, false);
+    fft_transform_radix2(&mut bvec, m as size_t, false);
+    for i in 0..m {
+        avec[i] = cmul(avec[i], bvec[i]);
+    }
+    fft_transform_radix2(&mut avec, m as size_t, true);
+    for i in 0..nn {
+        let k = (i * i) % (2 * nn);
+        let angle = (if inverse { pi } else { -pi }) * (k as f64) / (nn as f64);
+        let omega = (angle.cos(), angle.sin());
+        let p = cmul(avec[i], omega);
+        vec[i] = (p.0 / (m as f64), p.1 / (m as f64));
+    }
+}
+pub fn fft_transform(vec: &mut [(f64, f64)], n: size_t, inverse: bool) {
+    if n <= 1 {
+        return;
+    } else if (n & (n - 1)) == 0 {
+        fft_transform_radix2(vec, n, inverse);
+    } else {
+        fft_transform_bluestein(vec, n, inverse);
+    }
+}
+2026-11-12 22:27:03,180 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - WARNING - Successfully added fft_transform to the merged file.
+2026-11-12 22:27:03,189 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Copied struct-fn-replay output to temporary performance directory /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/temp before performance check
+2026-11-12 22:27:03,189 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Loaded performance information from /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/rfft/performance_information.json
+2026-11-12 22:27:03,189 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - [Performance check start] : struct-fn-replay
+2026-11-12 22:27:03,190 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Sending request: Please generate Rust performance entry code according to the original C main function I provide below.
+The generated main function must preserve the same logic, control flow, validation, side effects, output, and timing behavior as the original C main function.
+The generated entry code must be self-contained in the performance runner environment: preserve relative file paths from the original C main, but create any missing parent directories before writing output files.
+If the original C main function uses srand and rand, generate performance code that calls those same C libc srand and rand functions via FFI so the generated performance runner preserves the C random sequence and seeding behavior exactly. Do not introduce FFI requirements for other C library functions just for this random-number rule.
+Do not use platform-specific or external crypto headers/libraries such as CommonCrypto, OpenSSL, or CryptoAPI; if a C++ print_file_md5 helper is missing, implement it with the md5sum command and standard headers only.
+Reply with the generated main function, any directly required include/import/use statements, and any missing helper functions required by that main function.
+I will provide dependency functions, structs, and type definitions below. Use them as already-existing context.
+Do NOT repeat, restate, redefine, wrap, or translate dependency functions, structs, enums, typedefs, type aliases, or helper functions that are already fully defined in the provided dependency code.
+Use existing scope functions directly, including when passing them as function pointers / callbacks (e.g. comparators, destructors, visitors). Do NOT generate wrapper closures or shim functions that merely re-call an already-defined dependency function; reference the dependency symbol directly, and if its signature differs from the expected callback type, bridge it with a single `std::mem::transmute` (Rust) or a C-style cast (C++) instead of redefining the logic.
+If the generated main function calls a helper that is not fully defined in the provided dependency code, add a compatible helper implementation in your output.
+For Rust: NEVER use `std::mem::zeroed::<T>()` or `MaybeUninit::zeroed().assume_init()` to construct a struct that contains non-nullable function pointers (plain `fn(...)` / `extern "C" fn(...)` fields), references, `NonNull`, or other types whose all-zero bit pattern is invalid — doing so causes an immediate runtime panic ("attempted to zero-initialize type ..."). Instead, allocate the object with `std::mem::MaybeUninit::<T>::uninit()`, pass `.as_mut_ptr()` into the initializer function (which writes every field through the raw pointer), and then call `.assume_init()` once initialization is complete. Only fall back to a field-by-field struct literal if no initializer function exists.
+Your output must contain exactly one main function, plus only the minimal include/import/use statements and missing helper functions required by that main function.
+Return only the generated main function and missing helpers. Do not return a full translation unit.
+For the final result, please reply with, the final code is : 
+// original C function : 
+int main() {
+	size_t n = 8388608; // 2^23 = 8M elements for ~1-2 second runtime
+	double complex* vec = calloc(n, sizeof(double complex));
+
+	// Generate a synthetic dataset (e.g., a mix of two sine waves)
+	for (size_t i = 0; i < n; i++) {
+		double t = (double)i / n;
+		// 5 Hz wave + 20 Hz wave
+		double val = sin(2.0 * M_PI * 5.0 * t) + 0.5 * sin(2.0 * M_PI * 20.0 * t);
+		vec[i] = val + 0.0 * I;
+	}
+
+	printf("Dataset generated: %zu elements.\n", n);
+	printf("First 5 elements before FFT:\n");
+	for (size_t i = 0; i < 5; i++) {
+		printf("%.4f %s %.4fi\n", creal(vec[i]), cimag(vec[i]) >= 0 ? "+" : "-", fabs(cimag(vec[i])));
+	}
+
+	struct timespec start, end;
+	double time_taken;
+
+	// Forward FFT
+	clock_gettime(CLOCK_MONOTONIC, &start);
+	fft_transform(vec, n, false);
+	clock_gettime(CLOCK_MONOTONIC, &end);
+	time_taken = (double)(end.tv_sec - start.tv_sec) + (double)(end.tv_nsec - start.tv_nsec) / 1e9;
+	printf("rfft forward computation time: %.6f seconds\n", time_taken);
+
+	printf("First 5 elements after FFT:\n");
+	for (size_t i = 0; i < 5; i++) {
+		printf("%.4f %s %.4fi\n", creal(vec[i]), cimag(vec[i]) >= 0 ? "+" : "-", fabs(cimag(vec[i])));
+	}
+
+	// Inverse FFT
+	clock_gettime(CLOCK_MONOTONIC, &start);
+	fft_transform(vec, n, true);
+	clock_gettime(CLOCK_MONOTONIC, &end);
+	time_taken = (double)(end.tv_sec - start.tv_sec) + (double)(end.tv_nsec - start.tv_nsec) / 1e9;
+	printf("rfft inverse computation time: %.6f seconds\n", time_taken);
+	
+	printf("First 5 elements after Inverse FFT (normalized):\n");
+	for (size_t i = 0; i < 5; i++) {
+		double complex val = vec[i] / (double)n;
+		printf("Normalized: %.4f %s %.4fi\n", creal(val), cimag(val) >= 0 ? "+" : "-", fabs(cimag(val)));
+	}
+
+	free(vec);
+	return 0;
+}
+// the dependency functions :
+```rust
+pub type size_t = std::os::raw::c_ulong;
+
+pub fn fft_transform_radix2(vec: &mut [(f64, f64)], n: size_t, inverse: bool) {
+    // Each element is (real, imag). This avoids the external `num_complex` crate.
+    let n = n as usize;
+    if n == 0 {
+        return;
+    }
+    let mut levels: i32 = 0;
+    let mut k: usize = 1;
+    while k != 0 && (k & n) == 0 {
+        levels += 1;
+        k <<= 1;
+    }
+    for i in 0..n {
+        let mut j: usize = 0;
+        let mut ii = i;
+        for _ in 0..levels {
+            j = (j << 1) | (ii & 1);
+            ii >>= 1;
+        }
+        if j > i {
+            vec.swap(i, j);
+        }
+    }
+    let mut half: usize = 1;
+    while half < n {
+        let size = 2 * half;
+        let step = n / size;
+        let mut j: usize = 0;
+        let mut k: usize = 0;
+        while j < half {
+            let angle = (if inverse { 2.0 } else { -2.0 })
+                * 3.14159265358979323846_f64
+                * (k as f64)
+                / (n as f64);
+            let (wr, wi) = (angle.cos(), angle.sin());
+            let mut i: usize = 0;
+            while i < n {
+                let (br, bi) = vec[i + j + half];
+                // tmp = vec[i + j + half] * omega
+                let tr = br * wr - bi * wi;
+                let ti = br * wi + bi * wr;
+                let (ar, ai) = vec[i + j];
+                vec[i + j + half] = (ar - tr, ai - ti);
+                vec[i + j] = (ar + tr, ai + ti);
+                i += size;
+            }
+            j += 1;
+            k += step;
+        }
+        half *= 2;
+    }
+}
+fn cmul(a: (f64, f64), b: (f64, f64)) -> (f64, f64) {
+    (a.0 * b.0 - a.1 * b.1, a.0 * b.1 + a.1 * b.0)
+}
+
+pub fn fft_transform_bluestein(vec: &mut [(f64, f64)], n: size_t, inverse: bool) {
+    let nn = n as usize;
+    let mut m: usize = 1;
+    while m <= 2 * nn {
+        m *= 2;
+    }
+    let mut avec: Vec<(f64, f64)> = vec![(0.0, 0.0); m];
+    let mut bvec: Vec<(f64, f64)> = vec![(0.0, 0.0); m];
+    avec[0] = vec[0];
+    bvec[0] = (1.0, 0.0);
+    let pi = 3.14159265358979323846_f64;
+    for i in 1..nn {
+        let k = (i * i) % (2 * nn);
+        let angle = (if inverse { pi } else { -pi }) * (k as f64) / (nn as f64);
+        let omega = (angle.cos(), angle.sin());
+        avec[i] = cmul(vec[i], omega);
+        let c = (omega.0, -omega.1);
+        bvec[m - i] = c;
+        bvec[i] = c;
+    }
+    fft_transform_radix2(&mut avec, m as size_t, false);
+    fft_transform_radix2(&mut bvec, m as size_t, false);
+    for i in 0..m {
+        avec[i] = cmul(avec[i], bvec[i]);
+    }
+    fft_transform_radix2(&mut avec, m as size_t, true);
+    for i in 0..nn {
+        let k = (i * i) % (2 * nn);
+        let angle = (if inverse { pi } else { -pi }) * (k as f64) / (nn as f64);
+        let omega = (angle.cos(), angle.sin());
+        let p = cmul(avec[i], omega);
+        vec[i] = (p.0 / (m as f64), p.1 / (m as f64));
+    }
+}
+pub fn fft_transform(vec: &mut [(f64, f64)], n: size_t, inverse: bool) {
+    if n <= 1 {
+        return;
+    } else if (n & (n - 1)) == 0 {
+        fft_transform_radix2(vec, n, inverse);
+    } else {
+        fft_transform_bluestein(vec, n, inverse);
+    }
+}
+```
+2026-11-12 22:27:09,165 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Rust raw response: Here is the Rust entry code. `fft_transform` takes `&mut [(f64, f64)]` and `size_t`, so the vector is a `Vec<(f64, f64)>` and `n` is passed as `size_t`. The FFT calls are timed with `Instant`, which is monotonic like `CLOCK_MONOTONIC`. I replaced complex division by a real value with component-wise division, which gives the same result.
+
+```rust
+use std::time::Instant;
+
+fn main() {
+    let n: usize = 8388608;
+    let mut vec: Vec<(f64, f64)> = vec![(0.0, 0.0); n];
+    let pi = std::f64::consts::PI;
+
+    for i in 0..n {
+        let t = (i as f64) / (n as f64);
+        let val = (2.0 * pi * 5.0 * t).sin() + 0.5 * (2.0 * pi * 20.0 * t).sin();
+        vec[i] = (val, 0.0 * 1.0);
+    }
+
+    println!("Dataset generated: {} elements.", n);
+    println!("First 5 elements before FFT:");
+    for i in 0..5 {
+        let (re, im) = vec[i];
+        println!("{:.4} {} {:.4}i", re, if im >= 0.0 { "+" } else { "-" }, im.abs());
+    }
+
+    let start = Instant::now();
+    fft_transform(&mut vec, n as size_t, false);
+    let time_taken = start.elapsed().as_secs_f64();
+    println!("rfft forward computation time: {:.6} seconds", time_taken);
+
+    println!("First 5 elements after FFT:");
+    for i in 0..5 {
+        let (re, im) = vec[i];
+        println!("{:.4} {} {:.4}i", re, if im >= 0.0 { "+" } else { "-" }, im.abs());
+    }
+
+    let start = Instant::now();
+    fft_transform(&mut vec, n as size_t, true);
+    let time_taken = start.elapsed().as_secs_f64();
+    println!("rfft inverse computation time: {:.6} seconds", time_taken);
+
+    println!("First 5 elements after Inverse FFT (normalized):");
+    for i in 0..5 {
+        let (re, im) = vec[i];
+        let re = re / (n as f64);
+        let im = im / (n as f64);
+        println!(
+            "Normalized: {:.4} {} {:.4}i",
+            re,
+            if im >= 0.0 { "+" } else { "-" },
+            im.abs()
+        );
+    }
+}
+```
+2026-11-12 22:27:09,166 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - DEBUG - Finish reason for function/struct performance_main: end_turn
+2026-11-12 22:27:09,167 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Sent request in 1 chunks
+2026-11-12 22:27:09,172 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Created performance entry file at /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/temp/performance.rs
+2026-11-12 22:27:09,172 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Compiling performance binary: cargo build --release --quiet
+2026-11-12 22:27:10,993 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Using performance arguments for /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/temp/performance.rs: []
+2026-11-12 22:27:10,994 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Running performance binary (1/5) in /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/temp/performance.out
+2026-11-12 22:27:15,644 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Running performance binary (2/5) in /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/temp/performance.out
+2026-11-12 22:27:20,726 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Running performance binary (3/5) in /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/temp/performance.out
+2026-11-12 22:27:25,729 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Running performance binary (4/5) in /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/temp/performance.out
+2026-11-12 22:27:30,538 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Running performance binary (5/5) in /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/temp/performance.out
+2026-11-12 22:27:35,110 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Average elapsed_ms across 5 runs: 4536.477
+2026-11-12 22:27:35,110 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - WARNING - [Correctness check skipped] : temp (no parsable Checksum line in run output)
+2026-11-12 22:27:35,111 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Recorded performance result 4536.477 ms at /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/temp/performance_metrics.json
+2026-11-12 22:27:35,111 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - [Performance check pass] : struct-fn-replay
+2026-11-12 22:27:35,119 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Removed temporary performance directory /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/temp
+2026-11-12 22:27:35,120 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Running Crown analysis [struct-fn-replay] for ./inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/merged_funcs.rs: bash ./analyse.sh buffer
+2026-11-12 22:27:35,564 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - Saved Crown statistics for ./inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/merged_funcs.rs at ./inputs-oxivolve/rfft/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-26-19/crown_statistics.json
+2026-11-12 22:27:35,566 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - [token-usage] --- by stage ---
+2026-11-12 22:27:35,566 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - [token-usage] section            calls  input  output  cache_r  cache_w  cost_usd
+2026-11-12 22:27:35,566 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - [token-usage] -----------------  -----  -----  ------  -------  -------  --------
+2026-11-12 22:27:35,566 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - [token-usage] (none)                 7   7794    4487        0        0   $0.0605
+2026-11-12 22:27:35,567 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - [token-usage] 
+2026-11-12 22:27:35,567 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - [token-usage] --- by model ---
+2026-11-12 22:27:35,567 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - [token-usage] section            calls  input  output  cache_r  cache_w  cost_usd
+2026-11-12 22:27:35,567 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - [token-usage] -----------------  -----  -----  ------  -------  -------  --------
+2026-11-12 22:27:35,567 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - [token-usage] claude-sonnet-5-5      7   7794    4487        0        0   $0.0605
+2026-11-12 22:27:35,567 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - [token-usage] 
+2026-11-12 22:27:35,567 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - [token-usage] --- total ---
+2026-11-12 22:27:35,568 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - [token-usage] section            calls  input  output  cache_r  cache_w  cost_usd
+2026-11-12 22:27:35,568 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - [token-usage] -----------------  -----  -----  ------  -------  -------  --------
+2026-11-12 22:27:35,568 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - [token-usage] TOTAL                  7   7794    4487        0        0   $0.0605
+2026-11-12 22:27:35,568 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - [token-usage] 
+2026-11-12 22:27:35,568 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - [token-usage] --- retries ---
+2026-11-12 22:27:35,568 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - [token-usage] compile retries :   1 calls  $0.0138
+2026-11-12 22:27:35,568 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - [token-usage] struct retries  :   0 calls  $0.0000
+2026-11-12 22:27:35,569 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/rfft_validator.log - INFO - [token-usage] perf retries    :   0 calls  $0.0000

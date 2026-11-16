@@ -1,0 +1,12 @@
+Function: Tokens -> Full-Fits-Request : Full-Fits-Response: Function-Fits-Request: Function-Fits-Response: Decls-Fit-Request: Decls-Fit-Response 
+multiply_matrices: 0 -> True : True: True: True: True: True 
+free_matrix: 0 -> True : True: True: True: True: True 
+fill_matrix: 0 -> True : True: True: True: True: True 
+diff_timespec: 37 -> True : True: True: True: True: True 
+allocate_matrix: 7 -> True : True: True: True: True: True 
+print_matrix: 0 -> True : True: True: True: True: True 
+Summary:
+Total function: 6
+Full function + decls -> 6 fits in request limit, 6 fits in response limit
+Function only -> 6 fits in request limit, 6 fits in response limit
+Decls only -> 6 fits in request limit, 6 fits in response limit

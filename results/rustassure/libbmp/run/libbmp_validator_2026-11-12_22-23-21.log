@@ -1,0 +1,3776 @@
+2026-11-12 22:23:21,894 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Command line options: Namespace(src='./inputs-oxivolve/libbmp', preanalysis_only=False, llm_mode='claude-sonnet-5-5', translator_mode='struct-fn-replay', fine_tuned_model='', single_file_name='', dir_prefix='sonnet55_20261112_22-23-19', file_list_file='', multithreading=False, interactive_fix_on_fail=False, perf_degrade_threshold_pct=30.0, perf_degrade_retry_count=0, perf_degrade_discard_on_fail=True, perf_degrade_skip_retry=False, skip_c_baseline=False)
+2026-11-12 22:23:21,905 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Using system prompt: You are an expert programmer in both C and Rust. You are great at translating C code to safe Rust. If the C code contains any libc functions, you automatically use the Rust equivalents.
+
+2026-11-12 22:23:21,931 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Skipping normal translation for performance-only functions: main
+2026-11-12 22:23:22,011 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Wrote run config to ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/run_config.json
+2026-11-12 22:23:22,011 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Extracting function bodies for file: ./inputs-oxivolve/libbmp/libbmp.i
+2026-11-12 22:23:22,012 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - (Re-)extracting functions from file ./inputs-oxivolve/libbmp/libbmp.i
+2026-11-12 22:23:22,062 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Skipping function __bswap_16 from ./inputs-oxivolve/libbmp/libbmp.i because it is not defined in the original source file
+2026-11-12 22:23:22,062 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Skipping function __bswap_32 from ./inputs-oxivolve/libbmp/libbmp.i because it is not defined in the original source file
+2026-11-12 22:23:22,062 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Skipping function __bswap_64 from ./inputs-oxivolve/libbmp/libbmp.i because it is not defined in the original source file
+2026-11-12 22:23:22,062 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Skipping function __uint16_identity from ./inputs-oxivolve/libbmp/libbmp.i because it is not defined in the original source file
+2026-11-12 22:23:22,063 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Skipping function __uint32_identity from ./inputs-oxivolve/libbmp/libbmp.i because it is not defined in the original source file
+2026-11-12 22:23:22,063 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Skipping function __uint64_identity from ./inputs-oxivolve/libbmp/libbmp.i because it is not defined in the original source file
+2026-11-12 22:23:22,078 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Skipping translation for helper functions: main
+2026-11-12 22:23:22,078 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Skipping translation for helper functions: main
+2026-11-12 22:23:22,078 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Extracted  09 functions
+2026-11-12 22:23:22,100 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Removed dead helper definitions from ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_header_read.i: __bswap_16, __bswap_32, __bswap_64, __uint16_identity, __uint32_identity, __uint64_identity
+2026-11-12 22:23:22,100 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Running: unused-typedef-extractor --root-function=bmp_header_read /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_header_read.i
+2026-11-12 22:23:22,103 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Removed dead helper definitions from ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_header_write.i: __bswap_16, __bswap_32, __bswap_64, __uint16_identity, __uint32_identity, __uint64_identity
+2026-11-12 22:23:22,105 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Removed dead helper definitions from ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_free.i: __bswap_16, __bswap_32, __bswap_64, __uint16_identity, __uint32_identity, __uint64_identity
+2026-11-12 22:23:22,108 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Running: unused-typedef-extractor --root-function=bmp_header_write /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_header_write.i
+2026-11-12 22:23:22,109 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Removed dead helper definitions from ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_alloc.i: __bswap_16, __bswap_32, __bswap_64, __uint16_identity, __uint32_identity, __uint64_identity
+2026-11-12 22:23:22,110 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Removed dead helper definitions from ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_init_df.i: __bswap_16, __bswap_32, __bswap_64, __uint16_identity, __uint32_identity, __uint64_identity
+2026-11-12 22:23:22,110 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Running: unused-typedef-extractor --root-function=bmp_img_free /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_free.i
+2026-11-12 22:23:22,111 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Running: unused-typedef-extractor --root-function=bmp_img_alloc /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_alloc.i
+2026-11-12 22:23:22,111 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Running: unused-typedef-extractor --root-function=bmp_img_init_df /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_init_df.i
+2026-11-12 22:23:22,111 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Removed dead helper definitions from ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_write.i: __bswap_16, __bswap_32, __bswap_64, __uint16_identity, __uint32_identity, __uint64_identity
+2026-11-12 22:23:22,111 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Removed dead helper definitions from ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_header_init_df.i: __bswap_16, __bswap_32, __bswap_64, __uint16_identity, __uint32_identity, __uint64_identity
+2026-11-12 22:23:22,113 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Running: unused-typedef-extractor --root-function=bmp_img_write /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_write.i
+2026-11-12 22:23:22,112 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Removed dead helper definitions from ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_pixel_init.i: __bswap_16, __bswap_32, __bswap_64, __uint16_identity, __uint32_identity, __uint64_identity
+2026-11-12 22:23:22,113 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Running: unused-typedef-extractor --root-function=bmp_header_init_df /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_header_init_df.i
+2026-11-12 22:23:22,114 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Running: unused-typedef-extractor --root-function=bmp_pixel_init /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_pixel_init.i
+2026-11-12 22:23:22,112 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Removed dead helper definitions from ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_read.i: __bswap_16, __bswap_32, __bswap_64, __uint16_identity, __uint32_identity, __uint64_identity
+2026-11-12 22:23:22,116 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Running: unused-typedef-extractor --root-function=bmp_img_read /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_read.i
+2026-11-12 22:23:22,127 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - successfuly run cmd, unused-typedef-extractor --root-function=bmp_header_read /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_header_read.i
+2026-11-12 22:23:22,171 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - successfuly run cmd, unused-typedef-extractor --root-function=bmp_img_init_df /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_init_df.i
+2026-11-12 22:23:22,173 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - successfuly run cmd, unused-typedef-extractor --root-function=bmp_header_init_df /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_header_init_df.i
+2026-11-12 22:23:22,184 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - successfuly run cmd, unused-typedef-extractor --root-function=bmp_header_write /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_header_write.i
+2026-11-12 22:23:22,186 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - successfuly run cmd, unused-typedef-extractor --root-function=bmp_img_read /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_read.i
+2026-11-12 22:23:22,191 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - successfuly run cmd, unused-typedef-extractor --root-function=bmp_img_write /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_write.i
+2026-11-12 22:23:22,245 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - successfuly run cmd, unused-typedef-extractor --root-function=bmp_img_free /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_free.i
+2026-11-12 22:23:22,246 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - successfuly run cmd, unused-typedef-extractor --root-function=bmp_img_alloc /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_alloc.i
+2026-11-12 22:23:22,248 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - successfuly run cmd, unused-typedef-extractor --root-function=bmp_pixel_init /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_pixel_init.i
+2026-11-12 22:23:22,422 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Extracting function bodies for file: ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_header_init_df.i
+2026-11-12 22:23:22,422 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - (Re-)extracting functions from file ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_header_init_df.i
+2026-11-12 22:23:22,430 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Extracting function bodies for file: ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_pixel_init.i
+2026-11-12 22:23:22,430 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - (Re-)extracting functions from file ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_pixel_init.i
+2026-11-12 22:23:22,438 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Extracting function bodies for file: ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_header_read.i
+2026-11-12 22:23:22,438 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - (Re-)extracting functions from file ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_header_read.i
+2026-11-12 22:23:22,445 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Extracting function bodies for file: ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_init_df.i
+2026-11-12 22:23:22,445 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - (Re-)extracting functions from file ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_init_df.i
+2026-11-12 22:23:22,452 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Extracting function bodies for file: ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_write.i
+2026-11-12 22:23:22,452 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - (Re-)extracting functions from file ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_write.i
+2026-11-12 22:23:22,460 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Extracting function bodies for file: ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_free.i
+2026-11-12 22:23:22,460 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - (Re-)extracting functions from file ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_free.i
+2026-11-12 22:23:22,467 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Extracting function bodies for file: ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_read.i
+2026-11-12 22:23:22,467 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - (Re-)extracting functions from file ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_read.i
+2026-11-12 22:23:22,475 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Extracting function bodies for file: ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_header_write.i
+2026-11-12 22:23:22,475 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - (Re-)extracting functions from file ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_header_write.i
+2026-11-12 22:23:22,483 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Extracting function bodies for file: ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_alloc.i
+2026-11-12 22:23:22,483 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - (Re-)extracting functions from file ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_alloc.i
+2026-11-12 22:23:22,492 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting char*/void* fields from 9 functions
+2026-11-12 22:23:22,492 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting char*/void* field pointers from structs for file bmp_header_init_df
+2026-11-12 22:23:22,499 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - struct-with-generic-pointer-printer produced no output for ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_header_init_df.i (rc=0). stderr head: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_header_init_df.i:30:22: warning: implicitly declaring library function 'abs' with type 'int (int)' [-Wimplicit-function-declaration]
+         
+2026-11-12 22:23:22,500 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting char*/void* field pointers from structs for file bmp_pixel_init
+2026-11-12 22:23:22,506 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - struct-with-generic-pointer-printer produced no output for ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_pixel_init.i (rc=0). stderr head: 
+2026-11-12 22:23:22,506 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting char*/void* field pointers from structs for file bmp_header_read
+2026-11-12 22:23:22,515 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - struct-with-generic-pointer-printer produced no output for ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_header_read.i (rc=0). stderr head: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_header_read.i:46:6: warning: implicitly declaring library function 'fread' with type 'unsigned long (void *, unsigned long, unsigned long, FIL
+2026-11-12 22:23:22,515 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting char*/void* field pointers from structs for file bmp_img_init_df
+2026-11-12 22:23:22,525 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - struct-with-generic-pointer-printer produced no output for ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_init_df.i (rc=0). stderr head: 
+2026-11-12 22:23:22,525 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting char*/void* field pointers from structs for file bmp_img_write
+2026-11-12 22:23:22,535 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - struct-with-generic-pointer-printer produced no output for ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_write.i (rc=0). stderr head: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_write.i:55:19: warning: implicitly declaring library function 'fopen' with type 'FILE *(const char *, const char *)' (aka 'struct _IO_FILE
+2026-11-12 22:23:22,536 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting char*/void* field pointers from structs for file bmp_img_free
+2026-11-12 22:23:22,549 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - struct-with-generic-pointer-printer produced no output for ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_free.i (rc=0). stderr head: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_free.i:33:19: warning: implicitly declaring library function 'abs' with type 'int (int)' [-Wimplicit-function-declaration]
+ const size_t h
+2026-11-12 22:23:22,549 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting char*/void* field pointers from structs for file bmp_img_read
+2026-11-12 22:23:22,567 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - struct-with-generic-pointer-printer produced no output for ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_read.i (rc=0). stderr head: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_read.i:57:19: warning: implicitly declaring library function 'fopen' with type 'FILE *(const char *, const char *)' (aka 'struct _IO_FILE 
+2026-11-12 22:23:22,567 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting char*/void* field pointers from structs for file bmp_header_write
+2026-11-12 22:23:22,583 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - struct-with-generic-pointer-printer produced no output for ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_header_write.i (rc=0). stderr head: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_header_write.i:50:2: warning: implicitly declaring library function 'fwrite' with type 'unsigned long (const void *, unsigned long, unsigned l
+2026-11-12 22:23:22,583 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting char*/void* field pointers from structs for file bmp_img_alloc
+2026-11-12 22:23:22,593 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - struct-with-generic-pointer-printer produced no output for ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_alloc.i (rc=0). stderr head: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/bmp_img_alloc.i:33:19: warning: implicitly declaring library function 'abs' with type 'int (int)' [-Wimplicit-function-declaration]
+ const size_t 
+2026-11-12 22:23:22,593 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting normal structs from 9 functions
+2026-11-12 22:23:22,594 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting normal structs from for file bmp_header_init_df
+2026-11-12 22:23:22,631 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting normal structs from for file bmp_pixel_init
+2026-11-12 22:23:22,660 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting normal structs from for file bmp_header_read
+2026-11-12 22:23:22,745 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting normal structs from for file bmp_img_init_df
+2026-11-12 22:23:22,797 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting normal structs from for file bmp_img_write
+2026-11-12 22:23:22,919 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting normal structs from for file bmp_img_free
+2026-11-12 22:23:22,997 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting normal structs from for file bmp_img_read
+2026-11-12 22:23:23,108 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting normal structs from for file bmp_header_write
+2026-11-12 22:23:23,180 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting normal structs from for file bmp_img_alloc
+2026-11-12 22:23:23,254 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting enums from 9 functions
+2026-11-12 22:23:23,255 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting enums for file bmp_header_init_df
+2026-11-12 22:23:23,257 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting enums for file bmp_pixel_init
+2026-11-12 22:23:23,258 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting enums for file bmp_header_read
+2026-11-12 22:23:23,259 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting enums for file bmp_img_init_df
+2026-11-12 22:23:23,259 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting enums for file bmp_img_write
+2026-11-12 22:23:23,260 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting enums for file bmp_img_free
+2026-11-12 22:23:23,260 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting enums for file bmp_img_read
+2026-11-12 22:23:23,261 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting enums for file bmp_header_write
+2026-11-12 22:23:23,262 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting enums for file bmp_img_alloc
+2026-11-12 22:23:23,262 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Extracting struct field usages across 9 functions
+2026-11-12 22:23:23,396 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [type-registry] collected 8 definitions
+2026-11-12 22:23:23,396 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [type-registry] typedef:_IO_lock_t extracted_by=['normal'] depends_on=[]
+typedef void _IO_lock_t;
+2026-11-12 22:23:23,396 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [type-registry] typedef:__off64_t extracted_by=['normal'] depends_on=[]
+typedef long int __off64_t;
+2026-11-12 22:23:23,396 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [type-registry] typedef:__off_t extracted_by=['normal'] depends_on=[]
+typedef long int __off_t;
+2026-11-12 22:23:23,396 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [type-registry] typedef:size_t extracted_by=['normal'] depends_on=[]
+typedef long unsigned int size_t;
+2026-11-12 22:23:23,397 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [type-registry] enum:bmp_error extracted_by=['enum'] depends_on=[]
+enum bmp_error
+{
+ BMP_FILE_NOT_OPENED = -4,
+ BMP_HEADER_NOT_INITIALIZED,
+ BMP_INVALID_FILE,
+ BMP_ERROR,
+ BMP_OK = 0
+};
+2026-11-12 22:23:23,397 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [type-registry] struct:_bmp_header extracted_by=['normal'] depends_on=[]
+typedef struct _bmp_header
+{
+ unsigned int bfSize;
+ unsigned int bfReserved;
+ unsigned int bfOffBits;
+ unsigned int biSize;
+ int biWidth;
+ int biHeight;
+ unsigned short biPlanes;
+ unsigned short biBitCount;
+ unsigned int biCompression;
+ unsigned int biSizeImage;
+ int biXPelsPerMeter;
+ int biYPelsPerMeter;
+ unsigned int biClrUsed;
+ unsigned int biClrImportant;
+} bmp_header;
+2026-11-12 22:23:23,397 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [type-registry] struct:_bmp_img extracted_by=['normal'] depends_on=['struct:_bmp_header', 'struct:_bmp_pixel']
+typedef struct _bmp_img
+{
+ bmp_header img_header;
+ bmp_pixel **img_pixels;
+} bmp_img;
+2026-11-12 22:23:23,397 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [type-registry] struct:_bmp_pixel extracted_by=['normal'] depends_on=[]
+typedef struct _bmp_pixel
+{
+ unsigned char blue;
+ unsigned char green;
+ unsigned char red;
+} bmp_pixel;
+2026-11-12 22:23:23,565 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Sending request: Please translate the following C definitions to Rust.
+Please add any necessary header files, include statements, imports, or use statements required for the translated code to compile.
+
+For the final code result, please response with "Final result code" is : 
+definitions:
+typedef void _IO_lock_t;
+
+
+2026-11-12 22:23:25,661 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Rust raw response: The C definition `typedef void _IO_lock_t;` is a type alias for `void`. In glibc this is an opaque lock type, and it is only ever used through pointers (`_IO_lock_t *`). The closest safe Rust equivalent for `void` is the unit type `()`, so the alias maps to that. No imports are needed.
+
+Final result code:
+```rust
+#[allow(non_camel_case_types)]
+pub type _IO_lock_t = ();
+```
+2026-11-12 22:23:25,662 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Finish reason for function/struct _IO_lock_t: end_turn
+2026-11-12 22:23:25,663 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Sent request in 1 chunks
+2026-11-12 22:23:25,663 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - [type batch _IO_lock_t] sanitized result: #[allow(non_camel_case_types)]
+pub type _IO_lock_t = ();
+2026-11-12 22:23:25,663 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_3cxh_tl_, source=lib.rs)
+2026-11-12 22:23:26,962 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - [type stored typedef:_IO_lock_t]: pub type _IO_lock_t = ();
+2026-11-12 22:23:26,962 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - [type stored typedef:__off64_t]: type __off64_t = i64;
+2026-11-12 22:23:26,962 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - [type stored typedef:__off_t]: type __off_t = i64;
+2026-11-12 22:23:26,963 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Sending request: Please translate the following C definitions to Rust.
+Please add any necessary header files, include statements, imports, or use statements required for the translated code to compile.
+
+For the final code result, please response with "Final result code" is : 
+definitions:
+typedef long unsigned int size_t;
+
+
+2026-11-12 22:23:29,789 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Rust raw response: Final result code:
+
+```rust
+#![allow(non_camel_case_types)]
+
+// C: typedef long unsigned int size_t;
+// On the target platform (LP64), `long unsigned int` is a 64-bit unsigned integer.
+// The Rust equivalent is `u64`, or `usize` if the type is meant to match the platform's pointer width.
+pub type size_t = usize;
+```
+
+I chose `usize` because `size_t` in C is defined to hold object sizes and has the same width as a pointer on common platforms. On LP64 targets, `long unsigned int` is 64 bits, which is the same as `usize` there. If you need a fixed 64-bit width on every target, use `u64` instead.
+2026-11-12 22:23:29,790 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Finish reason for function/struct size_t: end_turn
+2026-11-12 22:23:29,790 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Sent request in 1 chunks
+2026-11-12 22:23:29,791 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - [type batch size_t] sanitized result: #![allow(non_camel_case_types)]
+
+// C: typedef long unsigned int size_t;
+// On the target platform (LP64), `long unsigned int` is a 64-bit unsigned integer.
+// The Rust equivalent is `u64`, or `usize` if the type is meant to match the platform's pointer width.
+pub type size_t = usize;
+2026-11-12 22:23:29,792 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_9drbquy3, source=lib.rs)
+2026-11-12 22:23:31,057 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - [type stored typedef:size_t]: pub type size_t = usize;
+2026-11-12 22:23:31,058 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Sending request: Please translate the following C definitions to Rust.
+Please add any necessary header files, include statements, imports, or use statements required for the translated code to compile.
+
+For the final code result, please response with "Final result code" is : 
+definitions:
+typedef long unsigned int size_t;
+
+In the previous translation, I got an compile error 
+error: an inner attribute is not permitted in this context
+ --> src/lib.rs:3:1
+  |
+3 | #![allow(non_camel_case_types)]
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+8 | pub type size_t = usize;
+  | ------------------------ the inner attribute doesn't annotate this type alias
+  |
+  = note: inner attributes, like `#![no_std]`, annotate the item enclosing them, and are usually found at the beginning of source files
+help: to annotate the type alias, change the attribute from inner to outer style
+  |
+3 - #![allow(non_camel_case_types)]
+3 + #[allow(non_camel_case_types)]
+  |
+
+warning: unused imports: `fclose`, `fopen`, `fread`, `free`, `fseek`, `ftell`, `malloc`, `memcpy`, `memset`, `realloc`, `strcmp`
+ --> src/lib.rs:1:12
+  |
+1 | use libc::{free, malloc, realloc, strcmp, memcpy, memset, fclose, fopen, fread, fseek, ftell};
+  |            ^^^^  ^^^^^^  ^^^^^^^  ^^^^^^  ^^^^^^  ^^^^^^  ^^^^^^  ^^^^^  ^^^^^  ^^^^^  ^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: type `size_t` should have an upper camel case name
+ --> src/lib.rs:8:10
+  |
+8 | pub type size_t = usize;
+  |          ^^^^^^ help: convert the identifier to upper camel case: `SizeT`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+error: could not compile `translation_compile_check` due to previous error; 2 warnings emitted
+
+This is the previous translation result : 
+#![allow(non_camel_case_types)]
+
+// C: typedef long unsigned int size_t;
+// On the target platform (LP64), `long unsigned int` is a 64-bit unsigned integer.
+// The Rust equivalent is `u64`, or `usize` if the type is meant to match the platform's pointer width.
+pub type size_t = usize;
+2026-11-12 22:23:33,620 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Rust raw response: The compile error occurred because `#![allow(...)]` is an inner attribute. It has to be the first item in the file, and here it came after other items, so it was in the wrong place. The fix is to use the outer form, `#[allow(non_camel_case_types)]`, directly on the type alias. I also removed the unused `libc` imports, since nothing in this snippet uses them.
+
+Final result code:
+
+```rust
+#[allow(non_camel_case_types)]
+pub type size_t = usize;
+```
+2026-11-12 22:23:33,620 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Finish reason for function/struct size_t: end_turn
+2026-11-12 22:23:33,620 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Sent request in 1 chunks
+2026-11-12 22:23:33,620 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - [type batch size_t] sanitized result: #[allow(non_camel_case_types)]
+pub type size_t = usize;
+2026-11-12 22:23:33,621 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_rrsnrm45, source=lib.rs)
+2026-11-12 22:23:34,830 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - [type stored typedef:size_t]: pub type size_t = usize;
+2026-11-12 22:23:34,831 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Sending request: Please translate the following C definitions to Rust.
+Please add any necessary header files, include statements, imports, or use statements required for the translated code to compile.
+
+For the final code result, please response with "Final result code" is : 
+definitions:
+enum bmp_error
+{
+ BMP_FILE_NOT_OPENED = -4,
+ BMP_HEADER_NOT_INITIALIZED,
+ BMP_INVALID_FILE,
+ BMP_ERROR,
+ BMP_OK = 0
+};
+
+
+2026-11-12 22:23:37,029 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Rust raw response: C enum values: BMP_FILE_NOT_OPENED = -4, BMP_HEADER_NOT_INITIALIZED = -3, BMP_INVALID_FILE = -2, BMP_ERROR = -1, BMP_OK = 0.
+
+In Rust, I'll use a `#[repr(i32)]` enum with explicit discriminants, which preserves the C values.
+
+Final result code:
+
+```rust
+#[repr(i32)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BmpError {
+    BMP_FILE_NOT_OPENED = -4,
+    BMP_HEADER_NOT_INITIALIZED = -3,
+    BMP_INVALID_FILE = -2,
+    BMP_ERROR = -1,
+    BMP_OK = 0,
+}
+```
+2026-11-12 22:23:37,030 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Finish reason for function/struct bmp_error: end_turn
+2026-11-12 22:23:37,030 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Sent request in 1 chunks
+2026-11-12 22:23:37,031 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - [type batch bmp_error] sanitized result: #[repr(i32)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BmpError {
+    BMP_FILE_NOT_OPENED = -4,
+    BMP_HEADER_NOT_INITIALIZED = -3,
+    BMP_INVALID_FILE = -2,
+    BMP_ERROR = -1,
+    BMP_OK = 0,
+}
+2026-11-12 22:23:37,031 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_r5m7balr, source=lib.rs)
+2026-11-12 22:23:38,275 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - [type stored enum:bmp_error]: #[repr(i32)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BmpError {
+    BMP_FILE_NOT_OPENED = -4,
+    BMP_HEADER_NOT_INITIALIZED = -3,
+    BMP_INVALID_FILE = -2,
+    BMP_ERROR = -1,
+    BMP_OK = 0,
+}
+2026-11-12 22:23:38,276 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Sending request: Please translate the following C definitions to Rust.
+Please add any necessary header files, include statements, imports, or use statements required for the translated code to compile.
+Please try to use safe and idiomatic Rust.
+
+For the final code result, please response with "Final result code" is : 
+definitions:
+typedef struct _bmp_header
+{
+ unsigned int bfSize;
+ unsigned int bfReserved;
+ unsigned int bfOffBits;
+ unsigned int biSize;
+ int biWidth;
+ int biHeight;
+ unsigned short biPlanes;
+ unsigned short biBitCount;
+ unsigned int biCompression;
+ unsigned int biSizeImage;
+ int biXPelsPerMeter;
+ int biYPelsPerMeter;
+ unsigned int biClrUsed;
+ unsigned int biClrImportant;
+} bmp_header;
+
+
+2026-11-12 22:23:41,420 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Rust raw response: Final result code:
+
+```rust
+/// BMP header (file header without the "BM" magic, plus the info header).
+///
+/// `#[repr(C)]` keeps the same field layout as the original C struct.
+#[repr(C)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct BmpHeader {
+    pub bf_size: u32,
+    pub bf_reserved: u32,
+    pub bf_off_bits: u32,
+    pub bi_size: u32,
+    pub bi_width: i32,
+    pub bi_height: i32,
+    pub bi_planes: u16,
+    pub bi_bit_count: u16,
+    pub bi_compression: u32,
+    pub bi_size_image: u32,
+    pub bi_x_pels_per_meter: i32,
+    pub bi_y_pels_per_meter: i32,
+    pub bi_clr_used: u32,
+    pub bi_clr_important: u32,
+}
+
+/// Alias preserving the original C type name.
+pub type bmp_header = BmpHeader;
+```
+
+The alias `bmp_header` is lowercase, so Rust will emit a non-camel-case warning. To silence it, add `#[allow(non_camel_case_types)]` above the alias.
+2026-11-12 22:23:41,421 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Finish reason for function/struct _bmp_header: end_turn
+2026-11-12 22:23:41,422 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Sent request in 1 chunks
+2026-11-12 22:23:41,423 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - [type batch _bmp_header] sanitized result: /// BMP header (file header without the "BM" magic, plus the info header).
+///
+/// `#[repr(C)]` keeps the same field layout as the original C struct.
+#[repr(C)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct BmpHeader {
+    pub bf_size: u32,
+    pub bf_reserved: u32,
+    pub bf_off_bits: u32,
+    pub bi_size: u32,
+    pub bi_width: i32,
+    pub bi_height: i32,
+    pub bi_planes: u16,
+    pub bi_bit_count: u16,
+    pub bi_compression: u32,
+    pub bi_size_image: u32,
+    pub bi_x_pels_per_meter: i32,
+    pub bi_y_pels_per_meter: i32,
+    pub bi_clr_used: u32,
+    pub bi_clr_important: u32,
+}
+
+/// Alias preserving the original C type name.
+pub type bmp_header = BmpHeader;
+2026-11-12 22:23:41,425 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_f3luyg5u, source=lib.rs)
+2026-11-12 22:23:42,663 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - [type stored struct:_bmp_header]: pub struct BmpHeader {
+    pub bf_size: u32,
+    pub bf_reserved: u32,
+    pub bf_off_bits: u32,
+    pub bi_size: u32,
+    pub bi_width: i32,
+    pub bi_height: i32,
+    pub bi_planes: u16,
+    pub bi_bit_count: u16,
+    pub bi_compression: u32,
+    pub bi_size_image: u32,
+    pub bi_x_pels_per_meter: i32,
+    pub bi_y_pels_per_meter: i32,
+    pub bi_clr_used: u32,
+    pub bi_clr_important: u32,
+}
+2026-11-12 22:23:42,664 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Sending request: Please translate the following C definitions to Rust.
+Please add any necessary header files, include statements, imports, or use statements required for the translated code to compile.
+Please try to use safe and idiomatic Rust.
+
+For the final code result, please response with "Final result code" is : 
+definitions:
+typedef struct _bmp_pixel
+{
+ unsigned char blue;
+ unsigned char green;
+ unsigned char red;
+} bmp_pixel;
+
+
+2026-11-12 22:23:44,991 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Rust raw response: Final result code:
+
+```rust
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+#[repr(C)]
+pub struct BmpPixel {
+    pub blue: u8,
+    pub green: u8,
+    pub red: u8,
+}
+
+// Alias preserving the original typedef name
+pub type bmp_pixel = BmpPixel;
+```
+
+Notes:
+- `unsigned char` maps to `u8`.
+- `#[repr(C)]` keeps the C memory layout (3 bytes, no padding), which matters for BMP pixel data.
+- The `bmp_pixel` alias keeps the original typedef name available. It needs no `use` statements or imports, and `#[allow(non_camel_case_types)]` may be added to silence the lint on the alias.
+2026-11-12 22:23:44,992 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Finish reason for function/struct _bmp_pixel: end_turn
+2026-11-12 22:23:44,993 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Sent request in 1 chunks
+2026-11-12 22:23:44,993 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - [type batch _bmp_pixel] sanitized result: #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+#[repr(C)]
+pub struct BmpPixel {
+    pub blue: u8,
+    pub green: u8,
+    pub red: u8,
+}
+
+// Alias preserving the original typedef name
+pub type bmp_pixel = BmpPixel;
+2026-11-12 22:23:44,994 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_17a9kz1h, source=lib.rs)
+2026-11-12 22:23:46,288 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - [type stored struct:_bmp_pixel]: pub struct BmpPixel {
+    pub blue: u8,
+    pub green: u8,
+    pub red: u8,
+}
+2026-11-12 22:23:46,289 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Sending request: Please translate the following C definitions to Rust.
+Please add any necessary header files, include statements, imports, or use statements required for the translated code to compile.
+Please try to use safe and idiomatic Rust.
+After the definitions, I will provide some sample uses of the struct under "example usage:". Please consider them when translating.
+
+For the final code result, please response with "Final result code" is : 
+definitions:
+typedef struct _bmp_img
+{
+ bmp_header img_header;
+ bmp_pixel **img_pixels;
+} bmp_img;
+
+translated dependency definitions for reference only:
+Do not repeat these dependency definitions in your response. Translate only the target definitions listed above.
+pub struct BmpHeader {
+    pub bf_size: u32,
+    pub bf_reserved: u32,
+    pub bf_off_bits: u32,
+    pub bi_size: u32,
+    pub bi_width: i32,
+    pub bi_height: i32,
+    pub bi_planes: u16,
+    pub bi_bit_count: u16,
+    pub bi_compression: u32,
+    pub bi_size_image: u32,
+    pub bi_x_pels_per_meter: i32,
+    pub bi_y_pels_per_meter: i32,
+    pub bi_clr_used: u32,
+    pub bi_clr_important: u32,
+}
+pub struct BmpPixel {
+    pub blue: u8,
+    pub green: u8,
+    pub red: u8,
+}
+
+example usage:
+_bmp_img: img_pixels: fwrite (img->img_pixels[abs (offset - y)], sizeof (bmp_pixel), img->img_header.biWidth, img_file)
+_bmp_img: img_pixels: free (img->img_pixels[y])
+_bmp_img: img_pixels: free (img->img_pixels)
+_bmp_img: img_pixels: if (fread (img->img_pixels[abs (offset - y)], sizeof (bmp_pixel), items, img_file) != items)
+_bmp_img: img_pixels: img->img_pixels = malloc (sizeof (bmp_pixel*) * h)
+_bmp_img: img_pixels: img->img_pixels[y] = malloc (sizeof (bmp_pixel) * img->img_header.biWidth)
+
+
+2026-11-12 22:23:50,020 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Rust raw response: Each `malloc` of a row of pixels becomes a `Vec<BmpPixel>`, and the outer `malloc` of row pointers becomes a `Vec` of those rows. The `free` calls are no longer needed because `Drop` releases the memory. `fread` and `fwrite` on a row work on a slice of that row's `Vec`.
+
+Final result code:
+```rust
+#[derive(Debug, Clone, Default)]
+pub struct BmpImg {
+    pub img_header: BmpHeader,
+    pub img_pixels: Vec<Vec<BmpPixel>>,
+}
+```
+
+The derives on `BmpImg` require `BmpHeader` and `BmpPixel` to implement `Debug`, `Clone` and `Default`. Their definitions weren't shown with derives, so they should be declared like this:
+
+```rust
+#[derive(Debug, Clone, Default)]
+pub struct BmpHeader { /* fields as above */ }
+
+#[derive(Debug, Clone, Copy, Default)]
+pub struct BmpPixel { /* fields as above */ }
+```
+
+If you don't want to change those definitions, use the plain version instead:
+
+```rust
+pub struct BmpImg {
+    pub img_header: BmpHeader,
+    pub img_pixels: Vec<Vec<BmpPixel>>,
+}
+```
+2026-11-12 22:23:50,021 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Finish reason for function/struct _bmp_img: end_turn
+2026-11-12 22:23:50,022 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Sent request in 1 chunks
+2026-11-12 22:23:50,022 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - [type batch _bmp_img] sanitized result: pub struct BmpImg {
+    pub img_header: BmpHeader,
+    pub img_pixels: Vec<Vec<BmpPixel>>,
+}
+2026-11-12 22:23:50,024 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_2kscvk0i, source=lib.rs)
+2026-11-12 22:23:51,222 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - [type stored struct:_bmp_img]: pub struct BmpImg {
+    pub img_header: BmpHeader,
+    pub img_pixels: Vec<Vec<BmpPixel>>,
+}
+2026-11-12 22:23:51,223 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Sending request: Translate C to Rust. If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function.
+ For the final code result, please response with "Final result code" is : 
+
+
+
+
+void
+bmp_header_init_df (bmp_header *header,
+                    const int width,
+                    const int height)
+{
+ header->bfSize = (sizeof (bmp_pixel) * width + ((width) % 4))
+                   * abs (height);
+ header->bfReserved = 0;
+ header->bfOffBits = 54;
+ header->biSize = 40;
+ header->biWidth = width;
+ header->biHeight = height;
+ header->biPlanes = 1;
+ header->biBitCount = 24;
+ header->biCompression = 0;
+ header->biSizeImage = 0;
+ header->biXPelsPerMeter = 0;
+ header->biYPelsPerMeter = 0;
+ header->biClrUsed = 0;
+ header->biClrImportant = 0;
+}
+
+
+Please use the following Rust translations of dependency definitions enclosed in /* Rust definitions ... */. Please do not include this translation in your response. 
+
+/* Rust definitions
+pub struct BmpHeader {
+    pub bf_size: u32,
+    pub bf_reserved: u32,
+    pub bf_off_bits: u32,
+    pub bi_size: u32,
+    pub bi_width: i32,
+    pub bi_height: i32,
+    pub bi_planes: u16,
+    pub bi_bit_count: u16,
+    pub bi_compression: u32,
+    pub bi_size_image: u32,
+    pub bi_x_pels_per_meter: i32,
+    pub bi_y_pels_per_meter: i32,
+    pub bi_clr_used: u32,
+    pub bi_clr_important: u32,
+}
+*/
+/* Rust definitions
+pub struct BmpPixel {
+    pub blue: u8,
+    pub green: u8,
+    pub red: u8,
+}
+*/
+
+
+/* 
+*/
+
+2026-11-12 22:23:55,809 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Rust raw response: Notes on the translation:
+
+- `sizeof(bmp_pixel)` is 3, so I use `std::mem::size_of::<BmpPixel>()`. The struct is three `u8` fields, so its size is 3.
+- The C expression multiplies in `size_t`, which is unsigned. `width % 4` is an `int` converted to `size_t`, and `abs(height)` is also converted to `size_t`. The result is then assigned to a 32-bit field.
+- I reproduce this with wrapping `usize` arithmetic: `width as usize` (sign extension, as in C), `(width % 4) as usize`, and `height.unsigned_abs() as usize`. The final cast to `u32` truncates, as the C assignment does.
+- The function is translated as a free function taking `&mut BmpHeader`.
+
+Final result code:
+
+```rust
+pub fn bmp_header_init_df(header: &mut BmpHeader, width: i32, height: i32) {
+    let size_px = std::mem::size_of::<BmpPixel>();
+    let row = size_px
+        .wrapping_mul(width as usize)
+        .wrapping_add((width % 4) as usize);
+    let total = row.wrapping_mul(height.unsigned_abs() as usize);
+    header.bf_size = total as u32;
+    header.bf_reserved = 0;
+    header.bf_off_bits = 54;
+    header.bi_size = 40;
+    header.bi_width = width;
+    header.bi_height = height;
+    header.bi_planes = 1;
+    header.bi_bit_count = 24;
+    header.bi_compression = 0;
+    header.bi_size_image = 0;
+    header.bi_x_pels_per_meter = 0;
+    header.bi_y_pels_per_meter = 0;
+    header.bi_clr_used = 0;
+    header.bi_clr_important = 0;
+}
+```
+2026-11-12 22:23:55,810 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Finish reason for function/struct bmp_header_init_df: end_turn
+2026-11-12 22:23:55,811 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Sent request in 1 chunks
+2026-11-12 22:23:55,813 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_hnt4uyb7, source=lib.rs)
+2026-11-12 22:23:57,129 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - [bmp_header_init_df], complete result : pub type _IO_lock_t = ();
+type __off64_t = i64;
+type __off_t = i64;
+pub type size_t = usize;
+#[repr(i32)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BmpError {
+    BMP_FILE_NOT_OPENED = -4,
+    BMP_HEADER_NOT_INITIALIZED = -3,
+    BMP_INVALID_FILE = -2,
+    BMP_ERROR = -1,
+    BMP_OK = 0,
+}
+pub struct BmpHeader {
+    pub bf_size: u32,
+    pub bf_reserved: u32,
+    pub bf_off_bits: u32,
+    pub bi_size: u32,
+    pub bi_width: i32,
+    pub bi_height: i32,
+    pub bi_planes: u16,
+    pub bi_bit_count: u16,
+    pub bi_compression: u32,
+    pub bi_size_image: u32,
+    pub bi_x_pels_per_meter: i32,
+    pub bi_y_pels_per_meter: i32,
+    pub bi_clr_used: u32,
+    pub bi_clr_important: u32,
+}
+pub struct BmpPixel {
+    pub blue: u8,
+    pub green: u8,
+    pub red: u8,
+}
+pub struct BmpImg {
+    pub img_header: BmpHeader,
+    pub img_pixels: Vec<Vec<BmpPixel>>,
+}
+
+pub fn bmp_header_init_df(header: &mut BmpHeader, width: i32, height: i32) {
+    let size_px = std::mem::size_of::<BmpPixel>();
+    let row = size_px
+        .wrapping_mul(width as usize)
+        .wrapping_add((width % 4) as usize);
+    let total = row.wrapping_mul(height.unsigned_abs() as usize);
+    header.bf_size = total as u32;
+    header.bf_reserved = 0;
+    header.bf_off_bits = 54;
+    header.bi_size = 40;
+    header.bi_width = width;
+    header.bi_height = height;
+    header.bi_planes = 1;
+    header.bi_bit_count = 24;
+    header.bi_compression = 0;
+    header.bi_size_image = 0;
+    header.bi_x_pels_per_meter = 0;
+    header.bi_y_pels_per_meter = 0;
+    header.bi_clr_used = 0;
+    header.bi_clr_important = 0;
+}
+2026-11-12 22:23:57,133 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - WARNING - Successfully added bmp_header_init_df to the merged file.
+2026-11-12 22:23:57,136 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Sending request: Translate C to Rust. If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function.
+ For the final code result, please response with "Final result code" is : 
+
+
+
+void
+bmp_pixel_init (bmp_pixel *pxl,
+                const unsigned char red,
+                const unsigned char green,
+                const unsigned char blue)
+{
+ pxl->red = red;
+ pxl->green = green;
+ pxl->blue = blue;
+}
+
+
+Please use the following Rust translations of dependency definitions enclosed in /* Rust definitions ... */. Please do not include this translation in your response. 
+
+/* Rust definitions
+pub struct BmpPixel {
+    pub blue: u8,
+    pub green: u8,
+    pub red: u8,
+}
+*/
+
+
+For the dependency functions, I will provide the translation of Rust included in /*// and //*/. These dependency functions are available for reference. Call them only when they are still required by the generated code; if the current stage has made a dependency unnecessary, do not call it. 
+/* 
+*/
+
+2026-11-12 22:23:58,751 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Rust raw response: Final result code:
+
+```rust
+pub fn bmp_pixel_init(pxl: &mut BmpPixel, red: u8, green: u8, blue: u8) {
+    pxl.red = red;
+    pxl.green = green;
+    pxl.blue = blue;
+}
+```
+2026-11-12 22:23:58,751 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Finish reason for function/struct bmp_pixel_init: end_turn
+2026-11-12 22:23:58,752 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Sent request in 1 chunks
+2026-11-12 22:23:58,754 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_ihkvn4ua, source=lib.rs)
+2026-11-12 22:24:00,101 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - [bmp_pixel_init], complete result : pub type _IO_lock_t = ();
+type __off64_t = i64;
+type __off_t = i64;
+pub type size_t = usize;
+#[repr(i32)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BmpError {
+    BMP_FILE_NOT_OPENED = -4,
+    BMP_HEADER_NOT_INITIALIZED = -3,
+    BMP_INVALID_FILE = -2,
+    BMP_ERROR = -1,
+    BMP_OK = 0,
+}
+pub struct BmpHeader {
+    pub bf_size: u32,
+    pub bf_reserved: u32,
+    pub bf_off_bits: u32,
+    pub bi_size: u32,
+    pub bi_width: i32,
+    pub bi_height: i32,
+    pub bi_planes: u16,
+    pub bi_bit_count: u16,
+    pub bi_compression: u32,
+    pub bi_size_image: u32,
+    pub bi_x_pels_per_meter: i32,
+    pub bi_y_pels_per_meter: i32,
+    pub bi_clr_used: u32,
+    pub bi_clr_important: u32,
+}
+pub struct BmpPixel {
+    pub blue: u8,
+    pub green: u8,
+    pub red: u8,
+}
+pub struct BmpImg {
+    pub img_header: BmpHeader,
+    pub img_pixels: Vec<Vec<BmpPixel>>,
+}
+
+pub fn bmp_header_init_df(header: &mut BmpHeader, width: i32, height: i32) {
+    let size_px = std::mem::size_of::<BmpPixel>();
+    let row = size_px
+        .wrapping_mul(width as usize)
+        .wrapping_add((width % 4) as usize);
+    let total = row.wrapping_mul(height.unsigned_abs() as usize);
+    header.bf_size = total as u32;
+    header.bf_reserved = 0;
+    header.bf_off_bits = 54;
+    header.bi_size = 40;
+    header.bi_width = width;
+    header.bi_height = height;
+    header.bi_planes = 1;
+    header.bi_bit_count = 24;
+    header.bi_compression = 0;
+    header.bi_size_image = 0;
+    header.bi_x_pels_per_meter = 0;
+    header.bi_y_pels_per_meter = 0;
+    header.bi_clr_used = 0;
+    header.bi_clr_important = 0;
+}
+pub fn bmp_pixel_init(pxl: &mut BmpPixel, red: u8, green: u8, blue: u8) {
+    pxl.red = red;
+    pxl.green = green;
+    pxl.blue = blue;
+}
+2026-11-12 22:24:00,102 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - WARNING - Successfully added bmp_pixel_init to the merged file.
+2026-11-12 22:24:00,105 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Sending request: Translate C to Rust. If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function.
+ For the final code result, please response with "Final result code" is : 
+
+
+
+
+struct _IO_FILE;
+struct _IO_FILE;
+typedef struct _IO_FILE FILE;
+struct _IO_FILE;
+struct _IO_marker;
+struct _IO_codecvt;
+struct _IO_wide_data;
+
+
+
+
+enum bmp_error
+bmp_header_read (bmp_header *header,
+                 FILE *img_file)
+{
+ if (img_file == ((void*)0))
+ {
+  return BMP_FILE_NOT_OPENED;
+ }
+ unsigned short magic;
+ if (fread (&magic, sizeof (magic), 1, img_file) != 1 ||
+     magic != 19778)
+ {
+  return BMP_INVALID_FILE;
+ }
+ if (fread (header, sizeof (bmp_header), 1, img_file) != 1)
+ {
+  return BMP_ERROR;
+ }
+ return BMP_OK;
+}
+
+
+Please use the following Rust translations of dependency definitions enclosed in /* Rust definitions ... */. Please do not include this translation in your response. 
+
+/* Rust definitions
+pub type _IO_lock_t = ();
+*/
+/* Rust definitions
+type __off64_t = i64;
+*/
+/* Rust definitions
+type __off_t = i64;
+*/
+/* Rust definitions
+pub type size_t = usize;
+*/
+/* Rust definitions
+#[repr(i32)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BmpError {
+    BMP_FILE_NOT_OPENED = -4,
+    BMP_HEADER_NOT_INITIALIZED = -3,
+    BMP_INVALID_FILE = -2,
+    BMP_ERROR = -1,
+    BMP_OK = 0,
+}
+*/
+/* Rust definitions
+pub struct BmpHeader {
+    pub bf_size: u32,
+    pub bf_reserved: u32,
+    pub bf_off_bits: u32,
+    pub bi_size: u32,
+    pub bi_width: i32,
+    pub bi_height: i32,
+    pub bi_planes: u16,
+    pub bi_bit_count: u16,
+    pub bi_compression: u32,
+    pub bi_size_image: u32,
+    pub bi_x_pels_per_meter: i32,
+    pub bi_y_pels_per_meter: i32,
+    pub bi_clr_used: u32,
+    pub bi_clr_important: u32,
+}
+*/
+
+
+For the dependency functions, I will provide the translation of Rust included in /*// and //*/. These dependency functions are available for reference. Call them only when they are still required by the generated code; if the current stage has made a dependency unnecessary, do not call it. 
+/* 
+*/
+
+2026-11-12 22:24:07,080 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Rust raw response: Final result code:
+
+```rust
+use std::fs::File;
+use std::io::Read;
+
+pub fn bmp_header_read(header: &mut BmpHeader, img_file: Option<&mut File>) -> BmpError {
+    let img_file = match img_file {
+        None => return BmpError::BMP_FILE_NOT_OPENED,
+        Some(f) => f,
+    };
+
+    let mut magic_buf = [0u8; 2];
+    if img_file.read_exact(&mut magic_buf).is_err() || u16::from_ne_bytes(magic_buf) != 19778 {
+        return BmpError::BMP_INVALID_FILE;
+    }
+
+    let mut buf = [0u8; 52];
+    if img_file.read_exact(&mut buf).is_err() {
+        return BmpError::BMP_ERROR;
+    }
+
+    let u32_at = |o: usize| u32::from_ne_bytes([buf[o], buf[o + 1], buf[o + 2], buf[o + 3]]);
+    let i32_at = |o: usize| i32::from_ne_bytes([buf[o], buf[o + 1], buf[o + 2], buf[o + 3]]);
+    let u16_at = |o: usize| u16::from_ne_bytes([buf[o], buf[o + 1]]);
+
+    header.bf_size = u32_at(0);
+    header.bf_reserved = u32_at(4);
+    header.bf_off_bits = u32_at(8);
+    header.bi_size = u32_at(12);
+    header.bi_width = i32_at(16);
+    header.bi_height = i32_at(20);
+    header.bi_planes = u16_at(24);
+    header.bi_bit_count = u16_at(26);
+    header.bi_compression = u32_at(28);
+    header.bi_size_image = u32_at(32);
+    header.bi_x_pels_per_meter = i32_at(36);
+    header.bi_y_pels_per_meter = i32_at(40);
+    header.bi_clr_used = u32_at(44);
+    header.bi_clr_important = u32_at(48);
+
+    BmpError::BMP_OK
+}
+```
+2026-11-12 22:24:07,081 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Finish reason for function/struct bmp_header_read: end_turn
+2026-11-12 22:24:07,082 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Sent request in 1 chunks
+2026-11-12 22:24:07,088 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_uky3q685, source=lib.rs)
+2026-11-12 22:24:08,159 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - [bmp_header_read], complete result : use std::fs::File;
+use std::io::Read;
+
+pub type _IO_lock_t = ();
+type __off64_t = i64;
+type __off_t = i64;
+pub type size_t = usize;
+#[repr(i32)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BmpError {
+    BMP_FILE_NOT_OPENED = -4,
+    BMP_HEADER_NOT_INITIALIZED = -3,
+    BMP_INVALID_FILE = -2,
+    BMP_ERROR = -1,
+    BMP_OK = 0,
+}
+pub struct BmpHeader {
+    pub bf_size: u32,
+    pub bf_reserved: u32,
+    pub bf_off_bits: u32,
+    pub bi_size: u32,
+    pub bi_width: i32,
+    pub bi_height: i32,
+    pub bi_planes: u16,
+    pub bi_bit_count: u16,
+    pub bi_compression: u32,
+    pub bi_size_image: u32,
+    pub bi_x_pels_per_meter: i32,
+    pub bi_y_pels_per_meter: i32,
+    pub bi_clr_used: u32,
+    pub bi_clr_important: u32,
+}
+pub struct BmpPixel {
+    pub blue: u8,
+    pub green: u8,
+    pub red: u8,
+}
+pub struct BmpImg {
+    pub img_header: BmpHeader,
+    pub img_pixels: Vec<Vec<BmpPixel>>,
+}
+
+pub fn bmp_header_init_df(header: &mut BmpHeader, width: i32, height: i32) {
+    let size_px = std::mem::size_of::<BmpPixel>();
+    let row = size_px
+        .wrapping_mul(width as usize)
+        .wrapping_add((width % 4) as usize);
+    let total = row.wrapping_mul(height.unsigned_abs() as usize);
+    header.bf_size = total as u32;
+    header.bf_reserved = 0;
+    header.bf_off_bits = 54;
+    header.bi_size = 40;
+    header.bi_width = width;
+    header.bi_height = height;
+    header.bi_planes = 1;
+    header.bi_bit_count = 24;
+    header.bi_compression = 0;
+    header.bi_size_image = 0;
+    header.bi_x_pels_per_meter = 0;
+    header.bi_y_pels_per_meter = 0;
+    header.bi_clr_used = 0;
+    header.bi_clr_important = 0;
+}
+pub fn bmp_pixel_init(pxl: &mut BmpPixel, red: u8, green: u8, blue: u8) {
+    pxl.red = red;
+    pxl.green = green;
+    pxl.blue = blue;
+}
+
+
+pub fn bmp_header_read(header: &mut BmpHeader, img_file: Option<&mut File>) -> BmpError {
+    let img_file = match img_file {
+        None => return BmpError::BMP_FILE_NOT_OPENED,
+        Some(f) => f,
+    };
+
+    let mut magic_buf = [0u8; 2];
+    if img_file.read_exact(&mut magic_buf).is_err() || u16::from_ne_bytes(magic_buf) != 19778 {
+        return BmpError::BMP_INVALID_FILE;
+    }
+
+    let mut buf = [0u8; 52];
+    if img_file.read_exact(&mut buf).is_err() {
+        return BmpError::BMP_ERROR;
+    }
+
+    let u32_at = |o: usize| u32::from_ne_bytes([buf[o], buf[o + 1], buf[o + 2], buf[o + 3]]);
+    let i32_at = |o: usize| i32::from_ne_bytes([buf[o], buf[o + 1], buf[o + 2], buf[o + 3]]);
+    let u16_at = |o: usize| u16::from_ne_bytes([buf[o], buf[o + 1]]);
+
+    header.bf_size = u32_at(0);
+    header.bf_reserved = u32_at(4);
+    header.bf_off_bits = u32_at(8);
+    header.bi_size = u32_at(12);
+    header.bi_width = i32_at(16);
+    header.bi_height = i32_at(20);
+    header.bi_planes = u16_at(24);
+    header.bi_bit_count = u16_at(26);
+    header.bi_compression = u32_at(28);
+    header.bi_size_image = u32_at(32);
+    header.bi_x_pels_per_meter = i32_at(36);
+    header.bi_y_pels_per_meter = i32_at(40);
+    header.bi_clr_used = u32_at(44);
+    header.bi_clr_important = u32_at(48);
+
+    BmpError::BMP_OK
+}
+2026-11-12 22:24:08,163 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - WARNING - Successfully added bmp_header_read to the merged file.
+2026-11-12 22:24:08,167 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Sending request: Translate C to Rust. If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function.
+ For the final code result, please response with "Final result code" is : 
+
+
+
+
+
+
+void
+bmp_img_alloc (bmp_img *img)
+{
+ const size_t h = abs (img->img_header.biHeight);
+ img->img_pixels = malloc (sizeof (bmp_pixel*) * h);
+ for (size_t y = 0; y < h; y++)
+ {
+  img->img_pixels[y] = malloc (sizeof (bmp_pixel) * img->img_header.biWidth);
+ }
+}
+
+
+Please use the following Rust translations of dependency definitions enclosed in /* Rust definitions ... */. Please do not include this translation in your response. 
+
+/* Rust definitions
+pub type size_t = usize;
+*/
+/* Rust definitions
+pub struct BmpHeader {
+    pub bf_size: u32,
+    pub bf_reserved: u32,
+    pub bf_off_bits: u32,
+    pub bi_size: u32,
+    pub bi_width: i32,
+    pub bi_height: i32,
+    pub bi_planes: u16,
+    pub bi_bit_count: u16,
+    pub bi_compression: u32,
+    pub bi_size_image: u32,
+    pub bi_x_pels_per_meter: i32,
+    pub bi_y_pels_per_meter: i32,
+    pub bi_clr_used: u32,
+    pub bi_clr_important: u32,
+}
+*/
+/* Rust definitions
+pub struct BmpPixel {
+    pub blue: u8,
+    pub green: u8,
+    pub red: u8,
+}
+*/
+/* Rust definitions
+pub struct BmpImg {
+    pub img_header: BmpHeader,
+    pub img_pixels: Vec<Vec<BmpPixel>>,
+}
+*/
+
+
+For the dependency functions, I will provide the translation of Rust included in /*// and //*/. These dependency functions are available for reference. Call them only when they are still required by the generated code; if the current stage has made a dependency unnecessary, do not call it. 
+/* 
+*/
+
+2026-11-12 22:24:12,303 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Rust raw response: Final result code:
+
+```rust
+pub fn bmp_img_alloc(img: &mut BmpImg) {
+    let h = img.img_header.bi_height.unsigned_abs() as usize;
+    let w = if img.img_header.bi_width > 0 {
+        img.img_header.bi_width as usize
+    } else {
+        0
+    };
+    img.img_pixels = Vec::with_capacity(h);
+    for _ in 0..h {
+        img.img_pixels.push(vec![
+            BmpPixel {
+                blue: 0,
+                green: 0,
+                red: 0,
+            };
+            w
+        ]);
+    }
+}
+```
+
+This assumes `BmpPixel` derives `Clone` and `Copy`, which `vec![...; w]` needs. The definition you gave doesn't show any derives.
+
+- **Height:** `unsigned_abs()` stands in for `abs`, so a negative height (top-down BMP) still gives the right row count.
+- **Width:** a negative or zero width gives empty rows instead of the wrapped size C would compute.
+- **Memory:** `malloc` returns uninitialized memory, but the Rust version zero-initializes every pixel. Safe Rust has no uninitialized equivalent, and this is the usual substitute.
+2026-11-12 22:24:12,305 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Finish reason for function/struct bmp_img_alloc: end_turn
+2026-11-12 22:24:12,305 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Sent request in 1 chunks
+2026-11-12 22:24:12,309 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_a807vlpe, source=lib.rs)
+2026-11-12 22:24:13,364 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - [bmp_img_alloc], complete result : use std::fs::File;
+use std::io::Read;
+
+pub type _IO_lock_t = ();
+type __off64_t = i64;
+type __off_t = i64;
+pub type size_t = usize;
+#[repr(i32)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BmpError {
+    BMP_FILE_NOT_OPENED = -4,
+    BMP_HEADER_NOT_INITIALIZED = -3,
+    BMP_INVALID_FILE = -2,
+    BMP_ERROR = -1,
+    BMP_OK = 0,
+}
+pub struct BmpHeader {
+    pub bf_size: u32,
+    pub bf_reserved: u32,
+    pub bf_off_bits: u32,
+    pub bi_size: u32,
+    pub bi_width: i32,
+    pub bi_height: i32,
+    pub bi_planes: u16,
+    pub bi_bit_count: u16,
+    pub bi_compression: u32,
+    pub bi_size_image: u32,
+    pub bi_x_pels_per_meter: i32,
+    pub bi_y_pels_per_meter: i32,
+    pub bi_clr_used: u32,
+    pub bi_clr_important: u32,
+}
+pub struct BmpPixel {
+    pub blue: u8,
+    pub green: u8,
+    pub red: u8,
+}
+pub struct BmpImg {
+    pub img_header: BmpHeader,
+    pub img_pixels: Vec<Vec<BmpPixel>>,
+}
+
+pub fn bmp_header_init_df(header: &mut BmpHeader, width: i32, height: i32) {
+    let size_px = std::mem::size_of::<BmpPixel>();
+    let row = size_px
+        .wrapping_mul(width as usize)
+        .wrapping_add((width % 4) as usize);
+    let total = row.wrapping_mul(height.unsigned_abs() as usize);
+    header.bf_size = total as u32;
+    header.bf_reserved = 0;
+    header.bf_off_bits = 54;
+    header.bi_size = 40;
+    header.bi_width = width;
+    header.bi_height = height;
+    header.bi_planes = 1;
+    header.bi_bit_count = 24;
+    header.bi_compression = 0;
+    header.bi_size_image = 0;
+    header.bi_x_pels_per_meter = 0;
+    header.bi_y_pels_per_meter = 0;
+    header.bi_clr_used = 0;
+    header.bi_clr_important = 0;
+}
+pub fn bmp_pixel_init(pxl: &mut BmpPixel, red: u8, green: u8, blue: u8) {
+    pxl.red = red;
+    pxl.green = green;
+    pxl.blue = blue;
+}
+
+
+pub fn bmp_header_read(header: &mut BmpHeader, img_file: Option<&mut File>) -> BmpError {
+    let img_file = match img_file {
+        None => return BmpError::BMP_FILE_NOT_OPENED,
+        Some(f) => f,
+    };
+
+    let mut magic_buf = [0u8; 2];
+    if img_file.read_exact(&mut magic_buf).is_err() || u16::from_ne_bytes(magic_buf) != 19778 {
+        return BmpError::BMP_INVALID_FILE;
+    }
+
+    let mut buf = [0u8; 52];
+    if img_file.read_exact(&mut buf).is_err() {
+        return BmpError::BMP_ERROR;
+    }
+
+    let u32_at = |o: usize| u32::from_ne_bytes([buf[o], buf[o + 1], buf[o + 2], buf[o + 3]]);
+    let i32_at = |o: usize| i32::from_ne_bytes([buf[o], buf[o + 1], buf[o + 2], buf[o + 3]]);
+    let u16_at = |o: usize| u16::from_ne_bytes([buf[o], buf[o + 1]]);
+
+    header.bf_size = u32_at(0);
+    header.bf_reserved = u32_at(4);
+    header.bf_off_bits = u32_at(8);
+    header.bi_size = u32_at(12);
+    header.bi_width = i32_at(16);
+    header.bi_height = i32_at(20);
+    header.bi_planes = u16_at(24);
+    header.bi_bit_count = u16_at(26);
+    header.bi_compression = u32_at(28);
+    header.bi_size_image = u32_at(32);
+    header.bi_x_pels_per_meter = i32_at(36);
+    header.bi_y_pels_per_meter = i32_at(40);
+    header.bi_clr_used = u32_at(44);
+    header.bi_clr_important = u32_at(48);
+
+    BmpError::BMP_OK
+}
+pub fn bmp_img_alloc(img: &mut BmpImg) {
+    let h = img.img_header.bi_height.unsigned_abs() as usize;
+    let w = if img.img_header.bi_width > 0 {
+        img.img_header.bi_width as usize
+    } else {
+        0
+    };
+    img.img_pixels = Vec::with_capacity(h);
+    for _ in 0..h {
+        img.img_pixels.push(vec![
+            BmpPixel {
+                blue: 0,
+                green: 0,
+                red: 0,
+            };
+            w
+        ]);
+    }
+}
+2026-11-12 22:24:13,365 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [COMPILE AND LINK]Trying to recompile translated function bmp_img_alloc, attempt # 1
+2026-11-12 22:24:13,365 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Full compilation error: error[E0277]: the trait bound `BmpPixel: Clone` is not satisfied
+   --> src/lib.rs:121:13
+    |
+120 |            img.img_pixels.push(vec![
+    |   _____________________________-
+121 |  |             BmpPixel {
+    |  |_____________^
+122 | ||                 blue: 0,
+123 | ||                 green: 0,
+124 | ||                 red: 0,
+125 | ||             };
+    | ||_____________^ the trait `Clone` is not implemented for `BmpPixel`
+126 |  |             w
+127 |  |         ]);
+    |  |_________- required by a bound introduced by this call
+    |
+note: required by a bound in `from_elem`
+help: consider annotating `BmpPixel` with `#[derive(Clone)]`
+    |
+36  | #[derive(Clone)]
+    |
+
+For more information about this error, try `rustc --explain E0277`.
+error: could not compile `translation_compile_check` due to previous error
+
+2026-11-12 22:24:13,368 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Sending request: IMPORTANT: the compiler gave specific fix suggestions below. Apply them DIRECTLY before considering any other rewrite:
+  - note: required by a bound in `from_elem`
+  - help: consider annotating `BmpPixel` with `#[derive(Clone)]`
+
+I got compilation error. Please help me fix or rewrite the target function
+The code is in the following :
+pub fn bmp_img_alloc(img: &mut BmpImg) {
+    let h = img.img_header.bi_height.unsigned_abs() as usize;
+    let w = if img.img_header.bi_width > 0 {
+        img.img_header.bi_width as usize
+    } else {
+        0
+    };
+    img.img_pixels = Vec::with_capacity(h);
+    for _ in 0..h {
+        img.img_pixels.push(vec![
+            BmpPixel {
+                blue: 0,
+                green: 0,
+                red: 0,
+            };
+            w
+        ]);
+    }
+}
+The function signature of the dependency functions is : /* 
+*/
+The dependency structs definition is  /* 
+
+pub type _IO_lock_t = ();
+type __off64_t = i64;
+type __off_t = i64;
+pub type size_t = usize;
+#[repr(i32)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BmpError {
+    BMP_FILE_NOT_OPENED = -4,
+    BMP_HEADER_NOT_INITIALIZED = -3,
+    BMP_INVALID_FILE = -2,
+    BMP_ERROR = -1,
+    BMP_OK = 0,
+}
+pub struct BmpHeader {
+    pub bf_size: u32,
+    pub bf_reserved: u32,
+    pub bf_off_bits: u32,
+    pub bi_size: u32,
+    pub bi_width: i32,
+    pub bi_height: i32,
+    pub bi_planes: u16,
+    pub bi_bit_count: u16,
+    pub bi_compression: u32,
+    pub bi_size_image: u32,
+    pub bi_x_pels_per_meter: i32,
+    pub bi_y_pels_per_meter: i32,
+    pub bi_clr_used: u32,
+    pub bi_clr_important: u32,
+}
+pub struct BmpPixel {
+    pub blue: u8,
+    pub green: u8,
+    pub red: u8,
+}
+pub struct BmpImg {
+    pub img_header: BmpHeader,
+    pub img_pixels: Vec<Vec<BmpPixel>>,
+}*/
+target function is bmp_img_alloc
+Please do not change or modify any other functions
+Please only reply with the modified or re-generated version of the target function: bmp_img_alloc
+Do NOT add C/C++ preprocessor directives (`#include`, `#define`, etc.) — this is Rust. If a new dependency is needed, add a `use` statement.The compile error information : error[E0277]: the trait bound `BmpPixel: Clone` is not satisfied
+   --> src/lib.rs:121:13
+    |
+120 |            img.img_pixels.push(vec![
+    |   _____________________________-
+121 |  |             BmpPixel {
+    |  |_____________^
+122 | ||                 blue: 0,
+123 | ||                 green: 0,
+124 | ||                 red: 0,
+125 | ||             };
+    | ||_____________^ the trait `Clone` is not implemented for `BmpPixel`
+126 |  |             w
+127 |  |         ]);
+    |  |_________- required by a bound introduced by this call
+    |
+note: required by a bound in `from_elem`
+help: consider annotating `BmpPixel` with `#[derive(Clone)]`
+    |
+36  | #[derive(Clone)]
+If the compile error is caused by missing dependency such as no member named, please fix try to generate code with the missing dependency 
+
+ For the final code result, please response with "Final result code" is : 
+
+2026-11-12 22:24:18,281 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Rust raw response: The compiler suggests `#[derive(Clone)]` on `BmpPixel`, but that struct is outside the target function and I was asked not to change anything else. So I rewrote the function so it does not need `Clone`. It builds each row with an iterator instead of `vec![elem; n]`, which is the call that requires `Clone`. If you add `#[derive(Clone)]` to `BmpPixel` yourself, the original code will also compile.
+
+Final result code:
+
+```rust
+pub fn bmp_img_alloc(img: &mut BmpImg) {
+    let h = img.img_header.bi_height.unsigned_abs() as usize;
+    let w = if img.img_header.bi_width > 0 {
+        img.img_header.bi_width as usize
+    } else {
+        0
+    };
+    img.img_pixels = Vec::with_capacity(h);
+    for _ in 0..h {
+        let row: Vec<BmpPixel> = (0..w)
+            .map(|_| BmpPixel {
+                blue: 0,
+                green: 0,
+                red: 0,
+            })
+            .collect();
+        img.img_pixels.push(row);
+    }
+}
+```
+2026-11-12 22:24:18,282 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Finish reason for function/struct bmp_img_alloc: end_turn
+2026-11-12 22:24:18,282 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Sent request in 1 chunks
+2026-11-12 22:24:18,284 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - [bmp_img_alloc], complete result : use std::fs::File;
+use std::io::Read;
+
+pub type _IO_lock_t = ();
+type __off64_t = i64;
+type __off_t = i64;
+pub type size_t = usize;
+#[repr(i32)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BmpError {
+    BMP_FILE_NOT_OPENED = -4,
+    BMP_HEADER_NOT_INITIALIZED = -3,
+    BMP_INVALID_FILE = -2,
+    BMP_ERROR = -1,
+    BMP_OK = 0,
+}
+pub struct BmpHeader {
+    pub bf_size: u32,
+    pub bf_reserved: u32,
+    pub bf_off_bits: u32,
+    pub bi_size: u32,
+    pub bi_width: i32,
+    pub bi_height: i32,
+    pub bi_planes: u16,
+    pub bi_bit_count: u16,
+    pub bi_compression: u32,
+    pub bi_size_image: u32,
+    pub bi_x_pels_per_meter: i32,
+    pub bi_y_pels_per_meter: i32,
+    pub bi_clr_used: u32,
+    pub bi_clr_important: u32,
+}
+pub struct BmpPixel {
+    pub blue: u8,
+    pub green: u8,
+    pub red: u8,
+}
+pub struct BmpImg {
+    pub img_header: BmpHeader,
+    pub img_pixels: Vec<Vec<BmpPixel>>,
+}
+
+pub fn bmp_header_init_df(header: &mut BmpHeader, width: i32, height: i32) {
+    let size_px = std::mem::size_of::<BmpPixel>();
+    let row = size_px
+        .wrapping_mul(width as usize)
+        .wrapping_add((width % 4) as usize);
+    let total = row.wrapping_mul(height.unsigned_abs() as usize);
+    header.bf_size = total as u32;
+    header.bf_reserved = 0;
+    header.bf_off_bits = 54;
+    header.bi_size = 40;
+    header.bi_width = width;
+    header.bi_height = height;
+    header.bi_planes = 1;
+    header.bi_bit_count = 24;
+    header.bi_compression = 0;
+    header.bi_size_image = 0;
+    header.bi_x_pels_per_meter = 0;
+    header.bi_y_pels_per_meter = 0;
+    header.bi_clr_used = 0;
+    header.bi_clr_important = 0;
+}
+pub fn bmp_pixel_init(pxl: &mut BmpPixel, red: u8, green: u8, blue: u8) {
+    pxl.red = red;
+    pxl.green = green;
+    pxl.blue = blue;
+}
+
+
+pub fn bmp_header_read(header: &mut BmpHeader, img_file: Option<&mut File>) -> BmpError {
+    let img_file = match img_file {
+        None => return BmpError::BMP_FILE_NOT_OPENED,
+        Some(f) => f,
+    };
+
+    let mut magic_buf = [0u8; 2];
+    if img_file.read_exact(&mut magic_buf).is_err() || u16::from_ne_bytes(magic_buf) != 19778 {
+        return BmpError::BMP_INVALID_FILE;
+    }
+
+    let mut buf = [0u8; 52];
+    if img_file.read_exact(&mut buf).is_err() {
+        return BmpError::BMP_ERROR;
+    }
+
+    let u32_at = |o: usize| u32::from_ne_bytes([buf[o], buf[o + 1], buf[o + 2], buf[o + 3]]);
+    let i32_at = |o: usize| i32::from_ne_bytes([buf[o], buf[o + 1], buf[o + 2], buf[o + 3]]);
+    let u16_at = |o: usize| u16::from_ne_bytes([buf[o], buf[o + 1]]);
+
+    header.bf_size = u32_at(0);
+    header.bf_reserved = u32_at(4);
+    header.bf_off_bits = u32_at(8);
+    header.bi_size = u32_at(12);
+    header.bi_width = i32_at(16);
+    header.bi_height = i32_at(20);
+    header.bi_planes = u16_at(24);
+    header.bi_bit_count = u16_at(26);
+    header.bi_compression = u32_at(28);
+    header.bi_size_image = u32_at(32);
+    header.bi_x_pels_per_meter = i32_at(36);
+    header.bi_y_pels_per_meter = i32_at(40);
+    header.bi_clr_used = u32_at(44);
+    header.bi_clr_important = u32_at(48);
+
+    BmpError::BMP_OK
+}
+pub fn bmp_img_alloc(img: &mut BmpImg) {
+    let h = img.img_header.bi_height.unsigned_abs() as usize;
+    let w = if img.img_header.bi_width > 0 {
+        img.img_header.bi_width as usize
+    } else {
+        0
+    };
+    img.img_pixels = Vec::with_capacity(h);
+    for _ in 0..h {
+        let row: Vec<BmpPixel> = (0..w)
+            .map(|_| BmpPixel {
+                blue: 0,
+                green: 0,
+                red: 0,
+            })
+            .collect();
+        img.img_pixels.push(row);
+    }
+}
+2026-11-12 22:24:18,285 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_ubsyoy8x, source=lib.rs)
+2026-11-12 22:24:19,440 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - [COMPILE AND LINK] After 1 retranslation attempts result, complete result: pub fn bmp_img_alloc(img: &mut BmpImg) {
+    let h = img.img_header.bi_height.unsigned_abs() as usize;
+    let w = if img.img_header.bi_width > 0 {
+        img.img_header.bi_width as usize
+    } else {
+        0
+    };
+    img.img_pixels = Vec::with_capacity(h);
+    for _ in 0..h {
+        let row: Vec<BmpPixel> = (0..w)
+            .map(|_| BmpPixel {
+                blue: 0,
+                green: 0,
+                red: 0,
+            })
+            .collect();
+        img.img_pixels.push(row);
+    }
+}, use std::fs::File;
+use std::io::Read;
+
+pub type _IO_lock_t = ();
+type __off64_t = i64;
+type __off_t = i64;
+pub type size_t = usize;
+#[repr(i32)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BmpError {
+    BMP_FILE_NOT_OPENED = -4,
+    BMP_HEADER_NOT_INITIALIZED = -3,
+    BMP_INVALID_FILE = -2,
+    BMP_ERROR = -1,
+    BMP_OK = 0,
+}
+pub struct BmpHeader {
+    pub bf_size: u32,
+    pub bf_reserved: u32,
+    pub bf_off_bits: u32,
+    pub bi_size: u32,
+    pub bi_width: i32,
+    pub bi_height: i32,
+    pub bi_planes: u16,
+    pub bi_bit_count: u16,
+    pub bi_compression: u32,
+    pub bi_size_image: u32,
+    pub bi_x_pels_per_meter: i32,
+    pub bi_y_pels_per_meter: i32,
+    pub bi_clr_used: u32,
+    pub bi_clr_important: u32,
+}
+pub struct BmpPixel {
+    pub blue: u8,
+    pub green: u8,
+    pub red: u8,
+}
+pub struct BmpImg {
+    pub img_header: BmpHeader,
+    pub img_pixels: Vec<Vec<BmpPixel>>,
+}
+
+pub fn bmp_header_init_df(header: &mut BmpHeader, width: i32, height: i32) {
+    let size_px = std::mem::size_of::<BmpPixel>();
+    let row = size_px
+        .wrapping_mul(width as usize)
+        .wrapping_add((width % 4) as usize);
+    let total = row.wrapping_mul(height.unsigned_abs() as usize);
+    header.bf_size = total as u32;
+    header.bf_reserved = 0;
+    header.bf_off_bits = 54;
+    header.bi_size = 40;
+    header.bi_width = width;
+    header.bi_height = height;
+    header.bi_planes = 1;
+    header.bi_bit_count = 24;
+    header.bi_compression = 0;
+    header.bi_size_image = 0;
+    header.bi_x_pels_per_meter = 0;
+    header.bi_y_pels_per_meter = 0;
+    header.bi_clr_used = 0;
+    header.bi_clr_important = 0;
+}
+pub fn bmp_pixel_init(pxl: &mut BmpPixel, red: u8, green: u8, blue: u8) {
+    pxl.red = red;
+    pxl.green = green;
+    pxl.blue = blue;
+}
+
+
+pub fn bmp_header_read(header: &mut BmpHeader, img_file: Option<&mut File>) -> BmpError {
+    let img_file = match img_file {
+        None => return BmpError::BMP_FILE_NOT_OPENED,
+        Some(f) => f,
+    };
+
+    let mut magic_buf = [0u8; 2];
+    if img_file.read_exact(&mut magic_buf).is_err() || u16::from_ne_bytes(magic_buf) != 19778 {
+        return BmpError::BMP_INVALID_FILE;
+    }
+
+    let mut buf = [0u8; 52];
+    if img_file.read_exact(&mut buf).is_err() {
+        return BmpError::BMP_ERROR;
+    }
+
+    let u32_at = |o: usize| u32::from_ne_bytes([buf[o], buf[o + 1], buf[o + 2], buf[o + 3]]);
+    let i32_at = |o: usize| i32::from_ne_bytes([buf[o], buf[o + 1], buf[o + 2], buf[o + 3]]);
+    let u16_at = |o: usize| u16::from_ne_bytes([buf[o], buf[o + 1]]);
+
+    header.bf_size = u32_at(0);
+    header.bf_reserved = u32_at(4);
+    header.bf_off_bits = u32_at(8);
+    header.bi_size = u32_at(12);
+    header.bi_width = i32_at(16);
+    header.bi_height = i32_at(20);
+    header.bi_planes = u16_at(24);
+    header.bi_bit_count = u16_at(26);
+    header.bi_compression = u32_at(28);
+    header.bi_size_image = u32_at(32);
+    header.bi_x_pels_per_meter = i32_at(36);
+    header.bi_y_pels_per_meter = i32_at(40);
+    header.bi_clr_used = u32_at(44);
+    header.bi_clr_important = u32_at(48);
+
+    BmpError::BMP_OK
+}
+pub fn bmp_img_alloc(img: &mut BmpImg) {
+    let h = img.img_header.bi_height.unsigned_abs() as usize;
+    let w = if img.img_header.bi_width > 0 {
+        img.img_header.bi_width as usize
+    } else {
+        0
+    };
+    img.img_pixels = Vec::with_capacity(h);
+    for _ in 0..h {
+        let row: Vec<BmpPixel> = (0..w)
+            .map(|_| BmpPixel {
+                blue: 0,
+                green: 0,
+                red: 0,
+            })
+            .collect();
+        img.img_pixels.push(row);
+    }
+}
+2026-11-12 22:24:19,442 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - WARNING - Successfully added bmp_img_alloc to the merged file.
+2026-11-12 22:24:19,448 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Sending request: Translate C to Rust. If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function.
+ For the final code result, please response with "Final result code" is : 
+
+
+
+
+struct _IO_FILE;
+struct _IO_FILE;
+typedef struct _IO_FILE FILE;
+struct _IO_FILE;
+struct _IO_marker;
+struct _IO_codecvt;
+struct _IO_wide_data;
+
+
+
+
+enum bmp_error
+bmp_header_write (const bmp_header *header,
+                  FILE *img_file)
+{
+ if (header == ((void*)0))
+ {
+  return BMP_HEADER_NOT_INITIALIZED;
+ }
+ else if (img_file == ((void*)0))
+ {
+  return BMP_FILE_NOT_OPENED;
+ }
+ const unsigned short magic = 19778;
+ fwrite (&magic, sizeof (magic), 1, img_file);
+ fwrite (header, sizeof (bmp_header), 1, img_file);
+ return BMP_OK;
+}
+
+
+Please use the following Rust translations of dependency definitions enclosed in /* Rust definitions ... */. Please do not include this translation in your response. 
+
+/* Rust definitions
+pub type _IO_lock_t = ();
+*/
+/* Rust definitions
+type __off64_t = i64;
+*/
+/* Rust definitions
+type __off_t = i64;
+*/
+/* Rust definitions
+pub type size_t = usize;
+*/
+/* Rust definitions
+#[repr(i32)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BmpError {
+    BMP_FILE_NOT_OPENED = -4,
+    BMP_HEADER_NOT_INITIALIZED = -3,
+    BMP_INVALID_FILE = -2,
+    BMP_ERROR = -1,
+    BMP_OK = 0,
+}
+*/
+/* Rust definitions
+pub struct BmpHeader {
+    pub bf_size: u32,
+    pub bf_reserved: u32,
+    pub bf_off_bits: u32,
+    pub bi_size: u32,
+    pub bi_width: i32,
+    pub bi_height: i32,
+    pub bi_planes: u16,
+    pub bi_bit_count: u16,
+    pub bi_compression: u32,
+    pub bi_size_image: u32,
+    pub bi_x_pels_per_meter: i32,
+    pub bi_y_pels_per_meter: i32,
+    pub bi_clr_used: u32,
+    pub bi_clr_important: u32,
+}
+*/
+
+
+For the dependency functions, I will provide the translation of Rust included in /*// and //*/. These dependency functions are available for reference. Call them only when they are still required by the generated code; if the current stage has made a dependency unnecessary, do not call it. 
+/* 
+*/
+
+2026-11-12 22:24:25,265 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Rust raw response: Design choices:
+
+- `FILE*` becomes `Option<&mut File>`, with `std::fs::File` and `std::io::Write` doing the writing.
+- `header` becomes `Option<&BmpHeader>`.
+- The C code writes the struct directly with `fwrite`. `BmpHeader` is 52 bytes of `u32`/`i32`/`u16` fields. The C struct is presumably packed, since 2 + 52 = 54 is the standard BMP header size, so I serialize the fields one by one in little-endian order. I assume the field order of the Rust definition matches the C layout.
+- The `fwrite` return values are ignored, as in the C code.
+
+Final result code:
+
+```rust
+use std::fs::File;
+use std::io::Write;
+
+pub fn bmp_header_write(header: Option<&BmpHeader>, img_file: Option<&mut File>) -> BmpError {
+    let header = match header {
+        None => return BmpError::BMP_HEADER_NOT_INITIALIZED,
+        Some(h) => h,
+    };
+    let img_file = match img_file {
+        None => return BmpError::BMP_FILE_NOT_OPENED,
+        Some(f) => f,
+    };
+    let magic: u16 = 19778;
+    let _ = img_file.write_all(&magic.to_le_bytes());
+
+    let mut buf: Vec<u8> = Vec::with_capacity(52);
+    buf.extend_from_slice(&header.bf_size.to_le_bytes());
+    buf.extend_from_slice(&header.bf_reserved.to_le_bytes());
+    buf.extend_from_slice(&header.bf_off_bits.to_le_bytes());
+    buf.extend_from_slice(&header.bi_size.to_le_bytes());
+    buf.extend_from_slice(&header.bi_width.to_le_bytes());
+    buf.extend_from_slice(&header.bi_height.to_le_bytes());
+    buf.extend_from_slice(&header.bi_planes.to_le_bytes());
+    buf.extend_from_slice(&header.bi_bit_count.to_le_bytes());
+    buf.extend_from_slice(&header.bi_compression.to_le_bytes());
+    buf.extend_from_slice(&header.bi_size_image.to_le_bytes());
+    buf.extend_from_slice(&header.bi_x_pels_per_meter.to_le_bytes());
+    buf.extend_from_slice(&header.bi_y_pels_per_meter.to_le_bytes());
+    buf.extend_from_slice(&header.bi_clr_used.to_le_bytes());
+    buf.extend_from_slice(&header.bi_clr_important.to_le_bytes());
+    let _ = img_file.write_all(&buf);
+
+    BmpError::BMP_OK
+}
+```
+2026-11-12 22:24:25,266 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Finish reason for function/struct bmp_header_write: end_turn
+2026-11-12 22:24:25,266 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Sent request in 1 chunks
+2026-11-12 22:24:25,269 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_59osxn4v, source=lib.rs)
+2026-11-12 22:24:26,379 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - [bmp_header_write], complete result : use std::fs::File;
+use std::io::{Read, Write};
+
+pub type _IO_lock_t = ();
+type __off64_t = i64;
+type __off_t = i64;
+pub type size_t = usize;
+#[repr(i32)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BmpError {
+    BMP_FILE_NOT_OPENED = -4,
+    BMP_HEADER_NOT_INITIALIZED = -3,
+    BMP_INVALID_FILE = -2,
+    BMP_ERROR = -1,
+    BMP_OK = 0,
+}
+pub struct BmpHeader {
+    pub bf_size: u32,
+    pub bf_reserved: u32,
+    pub bf_off_bits: u32,
+    pub bi_size: u32,
+    pub bi_width: i32,
+    pub bi_height: i32,
+    pub bi_planes: u16,
+    pub bi_bit_count: u16,
+    pub bi_compression: u32,
+    pub bi_size_image: u32,
+    pub bi_x_pels_per_meter: i32,
+    pub bi_y_pels_per_meter: i32,
+    pub bi_clr_used: u32,
+    pub bi_clr_important: u32,
+}
+pub struct BmpPixel {
+    pub blue: u8,
+    pub green: u8,
+    pub red: u8,
+}
+pub struct BmpImg {
+    pub img_header: BmpHeader,
+    pub img_pixels: Vec<Vec<BmpPixel>>,
+}
+
+pub fn bmp_header_init_df(header: &mut BmpHeader, width: i32, height: i32) {
+    let size_px = std::mem::size_of::<BmpPixel>();
+    let row = size_px
+        .wrapping_mul(width as usize)
+        .wrapping_add((width % 4) as usize);
+    let total = row.wrapping_mul(height.unsigned_abs() as usize);
+    header.bf_size = total as u32;
+    header.bf_reserved = 0;
+    header.bf_off_bits = 54;
+    header.bi_size = 40;
+    header.bi_width = width;
+    header.bi_height = height;
+    header.bi_planes = 1;
+    header.bi_bit_count = 24;
+    header.bi_compression = 0;
+    header.bi_size_image = 0;
+    header.bi_x_pels_per_meter = 0;
+    header.bi_y_pels_per_meter = 0;
+    header.bi_clr_used = 0;
+    header.bi_clr_important = 0;
+}
+pub fn bmp_pixel_init(pxl: &mut BmpPixel, red: u8, green: u8, blue: u8) {
+    pxl.red = red;
+    pxl.green = green;
+    pxl.blue = blue;
+}
+
+
+pub fn bmp_header_read(header: &mut BmpHeader, img_file: Option<&mut File>) -> BmpError {
+    let img_file = match img_file {
+        None => return BmpError::BMP_FILE_NOT_OPENED,
+        Some(f) => f,
+    };
+
+    let mut magic_buf = [0u8; 2];
+    if img_file.read_exact(&mut magic_buf).is_err() || u16::from_ne_bytes(magic_buf) != 19778 {
+        return BmpError::BMP_INVALID_FILE;
+    }
+
+    let mut buf = [0u8; 52];
+    if img_file.read_exact(&mut buf).is_err() {
+        return BmpError::BMP_ERROR;
+    }
+
+    let u32_at = |o: usize| u32::from_ne_bytes([buf[o], buf[o + 1], buf[o + 2], buf[o + 3]]);
+    let i32_at = |o: usize| i32::from_ne_bytes([buf[o], buf[o + 1], buf[o + 2], buf[o + 3]]);
+    let u16_at = |o: usize| u16::from_ne_bytes([buf[o], buf[o + 1]]);
+
+    header.bf_size = u32_at(0);
+    header.bf_reserved = u32_at(4);
+    header.bf_off_bits = u32_at(8);
+    header.bi_size = u32_at(12);
+    header.bi_width = i32_at(16);
+    header.bi_height = i32_at(20);
+    header.bi_planes = u16_at(24);
+    header.bi_bit_count = u16_at(26);
+    header.bi_compression = u32_at(28);
+    header.bi_size_image = u32_at(32);
+    header.bi_x_pels_per_meter = i32_at(36);
+    header.bi_y_pels_per_meter = i32_at(40);
+    header.bi_clr_used = u32_at(44);
+    header.bi_clr_important = u32_at(48);
+
+    BmpError::BMP_OK
+}
+pub fn bmp_img_alloc(img: &mut BmpImg) {
+    let h = img.img_header.bi_height.unsigned_abs() as usize;
+    let w = if img.img_header.bi_width > 0 {
+        img.img_header.bi_width as usize
+    } else {
+        0
+    };
+    img.img_pixels = Vec::with_capacity(h);
+    for _ in 0..h {
+        let row: Vec<BmpPixel> = (0..w)
+            .map(|_| BmpPixel {
+                blue: 0,
+                green: 0,
+                red: 0,
+            })
+            .collect();
+        img.img_pixels.push(row);
+    }
+}
+
+
+pub fn bmp_header_write(header: Option<&BmpHeader>, img_file: Option<&mut File>) -> BmpError {
+    let header = match header {
+        None => return BmpError::BMP_HEADER_NOT_INITIALIZED,
+        Some(h) => h,
+    };
+    let img_file = match img_file {
+        None => return BmpError::BMP_FILE_NOT_OPENED,
+        Some(f) => f,
+    };
+    let magic: u16 = 19778;
+    let _ = img_file.write_all(&magic.to_le_bytes());
+
+    let mut buf: Vec<u8> = Vec::with_capacity(52);
+    buf.extend_from_slice(&header.bf_size.to_le_bytes());
+    buf.extend_from_slice(&header.bf_reserved.to_le_bytes());
+    buf.extend_from_slice(&header.bf_off_bits.to_le_bytes());
+    buf.extend_from_slice(&header.bi_size.to_le_bytes());
+    buf.extend_from_slice(&header.bi_width.to_le_bytes());
+    buf.extend_from_slice(&header.bi_height.to_le_bytes());
+    buf.extend_from_slice(&header.bi_planes.to_le_bytes());
+    buf.extend_from_slice(&header.bi_bit_count.to_le_bytes());
+    buf.extend_from_slice(&header.bi_compression.to_le_bytes());
+    buf.extend_from_slice(&header.bi_size_image.to_le_bytes());
+    buf.extend_from_slice(&header.bi_x_pels_per_meter.to_le_bytes());
+    buf.extend_from_slice(&header.bi_y_pels_per_meter.to_le_bytes());
+    buf.extend_from_slice(&header.bi_clr_used.to_le_bytes());
+    buf.extend_from_slice(&header.bi_clr_important.to_le_bytes());
+    let _ = img_file.write_all(&buf);
+
+    BmpError::BMP_OK
+}
+2026-11-12 22:24:26,384 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - WARNING - Successfully added bmp_header_write to the merged file.
+2026-11-12 22:24:26,390 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Sending request: Translate C to Rust. If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function.
+ For the final code result, please response with "Final result code" is : 
+
+
+
+
+
+
+void
+bmp_img_free (bmp_img *img)
+{
+ const size_t h = abs (img->img_header.biHeight);
+ for (size_t y = 0; y < h; y++)
+ {
+  free (img->img_pixels[y]);
+ }
+ free (img->img_pixels);
+}
+
+
+Please use the following Rust translations of dependency definitions enclosed in /* Rust definitions ... */. Please do not include this translation in your response. 
+
+/* Rust definitions
+pub type size_t = usize;
+*/
+/* Rust definitions
+pub struct BmpHeader {
+    pub bf_size: u32,
+    pub bf_reserved: u32,
+    pub bf_off_bits: u32,
+    pub bi_size: u32,
+    pub bi_width: i32,
+    pub bi_height: i32,
+    pub bi_planes: u16,
+    pub bi_bit_count: u16,
+    pub bi_compression: u32,
+    pub bi_size_image: u32,
+    pub bi_x_pels_per_meter: i32,
+    pub bi_y_pels_per_meter: i32,
+    pub bi_clr_used: u32,
+    pub bi_clr_important: u32,
+}
+*/
+/* Rust definitions
+pub struct BmpPixel {
+    pub blue: u8,
+    pub green: u8,
+    pub red: u8,
+}
+*/
+/* Rust definitions
+pub struct BmpImg {
+    pub img_header: BmpHeader,
+    pub img_pixels: Vec<Vec<BmpPixel>>,
+}
+*/
+
+
+For the dependency functions, I will provide the translation of Rust included in /*// and //*/. These dependency functions are available for reference. Call them only when they are still required by the generated code; if the current stage has made a dependency unnecessary, do not call it. 
+/* 
+*/
+
+2026-11-12 22:24:29,138 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Rust raw response: The Rust `BmpImg` holds its pixel rows in a `Vec<Vec<BmpPixel>>`, so ownership handles the deallocation that the C code does with `free`. The function therefore only needs to release the rows and the outer vector explicitly, which clearing the vector does.
+
+The function takes `&mut BmpImg`. Clearing `img_pixels` drops every row and the outer buffer, and `shrink_to_fit` releases the outer allocation's capacity as well, matching the C `free(img->img_pixels)`.
+
+Final result code:
+
+```rust
+pub fn bmp_img_free(img: &mut BmpImg) {
+    // Free each row, then the outer container.
+    img.img_pixels.clear();
+    img.img_pixels.shrink_to_fit();
+}
+```
+2026-11-12 22:24:29,139 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Finish reason for function/struct bmp_img_free: end_turn
+2026-11-12 22:24:29,139 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Sent request in 1 chunks
+2026-11-12 22:24:29,143 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_bn_1c2jz, source=lib.rs)
+2026-11-12 22:24:30,432 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - [bmp_img_free], complete result : use std::fs::File;
+use std::io::{Read, Write};
+
+pub type _IO_lock_t = ();
+type __off64_t = i64;
+type __off_t = i64;
+pub type size_t = usize;
+#[repr(i32)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BmpError {
+    BMP_FILE_NOT_OPENED = -4,
+    BMP_HEADER_NOT_INITIALIZED = -3,
+    BMP_INVALID_FILE = -2,
+    BMP_ERROR = -1,
+    BMP_OK = 0,
+}
+pub struct BmpHeader {
+    pub bf_size: u32,
+    pub bf_reserved: u32,
+    pub bf_off_bits: u32,
+    pub bi_size: u32,
+    pub bi_width: i32,
+    pub bi_height: i32,
+    pub bi_planes: u16,
+    pub bi_bit_count: u16,
+    pub bi_compression: u32,
+    pub bi_size_image: u32,
+    pub bi_x_pels_per_meter: i32,
+    pub bi_y_pels_per_meter: i32,
+    pub bi_clr_used: u32,
+    pub bi_clr_important: u32,
+}
+pub struct BmpPixel {
+    pub blue: u8,
+    pub green: u8,
+    pub red: u8,
+}
+pub struct BmpImg {
+    pub img_header: BmpHeader,
+    pub img_pixels: Vec<Vec<BmpPixel>>,
+}
+
+pub fn bmp_header_init_df(header: &mut BmpHeader, width: i32, height: i32) {
+    let size_px = std::mem::size_of::<BmpPixel>();
+    let row = size_px
+        .wrapping_mul(width as usize)
+        .wrapping_add((width % 4) as usize);
+    let total = row.wrapping_mul(height.unsigned_abs() as usize);
+    header.bf_size = total as u32;
+    header.bf_reserved = 0;
+    header.bf_off_bits = 54;
+    header.bi_size = 40;
+    header.bi_width = width;
+    header.bi_height = height;
+    header.bi_planes = 1;
+    header.bi_bit_count = 24;
+    header.bi_compression = 0;
+    header.bi_size_image = 0;
+    header.bi_x_pels_per_meter = 0;
+    header.bi_y_pels_per_meter = 0;
+    header.bi_clr_used = 0;
+    header.bi_clr_important = 0;
+}
+pub fn bmp_pixel_init(pxl: &mut BmpPixel, red: u8, green: u8, blue: u8) {
+    pxl.red = red;
+    pxl.green = green;
+    pxl.blue = blue;
+}
+
+
+pub fn bmp_header_read(header: &mut BmpHeader, img_file: Option<&mut File>) -> BmpError {
+    let img_file = match img_file {
+        None => return BmpError::BMP_FILE_NOT_OPENED,
+        Some(f) => f,
+    };
+
+    let mut magic_buf = [0u8; 2];
+    if img_file.read_exact(&mut magic_buf).is_err() || u16::from_ne_bytes(magic_buf) != 19778 {
+        return BmpError::BMP_INVALID_FILE;
+    }
+
+    let mut buf = [0u8; 52];
+    if img_file.read_exact(&mut buf).is_err() {
+        return BmpError::BMP_ERROR;
+    }
+
+    let u32_at = |o: usize| u32::from_ne_bytes([buf[o], buf[o + 1], buf[o + 2], buf[o + 3]]);
+    let i32_at = |o: usize| i32::from_ne_bytes([buf[o], buf[o + 1], buf[o + 2], buf[o + 3]]);
+    let u16_at = |o: usize| u16::from_ne_bytes([buf[o], buf[o + 1]]);
+
+    header.bf_size = u32_at(0);
+    header.bf_reserved = u32_at(4);
+    header.bf_off_bits = u32_at(8);
+    header.bi_size = u32_at(12);
+    header.bi_width = i32_at(16);
+    header.bi_height = i32_at(20);
+    header.bi_planes = u16_at(24);
+    header.bi_bit_count = u16_at(26);
+    header.bi_compression = u32_at(28);
+    header.bi_size_image = u32_at(32);
+    header.bi_x_pels_per_meter = i32_at(36);
+    header.bi_y_pels_per_meter = i32_at(40);
+    header.bi_clr_used = u32_at(44);
+    header.bi_clr_important = u32_at(48);
+
+    BmpError::BMP_OK
+}
+pub fn bmp_img_alloc(img: &mut BmpImg) {
+    let h = img.img_header.bi_height.unsigned_abs() as usize;
+    let w = if img.img_header.bi_width > 0 {
+        img.img_header.bi_width as usize
+    } else {
+        0
+    };
+    img.img_pixels = Vec::with_capacity(h);
+    for _ in 0..h {
+        let row: Vec<BmpPixel> = (0..w)
+            .map(|_| BmpPixel {
+                blue: 0,
+                green: 0,
+                red: 0,
+            })
+            .collect();
+        img.img_pixels.push(row);
+    }
+}
+
+
+pub fn bmp_header_write(header: Option<&BmpHeader>, img_file: Option<&mut File>) -> BmpError {
+    let header = match header {
+        None => return BmpError::BMP_HEADER_NOT_INITIALIZED,
+        Some(h) => h,
+    };
+    let img_file = match img_file {
+        None => return BmpError::BMP_FILE_NOT_OPENED,
+        Some(f) => f,
+    };
+    let magic: u16 = 19778;
+    let _ = img_file.write_all(&magic.to_le_bytes());
+
+    let mut buf: Vec<u8> = Vec::with_capacity(52);
+    buf.extend_from_slice(&header.bf_size.to_le_bytes());
+    buf.extend_from_slice(&header.bf_reserved.to_le_bytes());
+    buf.extend_from_slice(&header.bf_off_bits.to_le_bytes());
+    buf.extend_from_slice(&header.bi_size.to_le_bytes());
+    buf.extend_from_slice(&header.bi_width.to_le_bytes());
+    buf.extend_from_slice(&header.bi_height.to_le_bytes());
+    buf.extend_from_slice(&header.bi_planes.to_le_bytes());
+    buf.extend_from_slice(&header.bi_bit_count.to_le_bytes());
+    buf.extend_from_slice(&header.bi_compression.to_le_bytes());
+    buf.extend_from_slice(&header.bi_size_image.to_le_bytes());
+    buf.extend_from_slice(&header.bi_x_pels_per_meter.to_le_bytes());
+    buf.extend_from_slice(&header.bi_y_pels_per_meter.to_le_bytes());
+    buf.extend_from_slice(&header.bi_clr_used.to_le_bytes());
+    buf.extend_from_slice(&header.bi_clr_important.to_le_bytes());
+    let _ = img_file.write_all(&buf);
+
+    BmpError::BMP_OK
+}
+pub fn bmp_img_free(img: &mut BmpImg) {
+    // Free each row, then the outer container.
+    img.img_pixels.clear();
+    img.img_pixels.shrink_to_fit();
+}
+2026-11-12 22:24:30,432 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - WARNING - Successfully added bmp_img_free to the merged file.
+2026-11-12 22:24:30,437 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Sending request: Translate C to Rust. If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function.
+ For the final code result, please response with "Final result code" is : 
+
+
+
+
+struct _IO_FILE;
+struct _IO_FILE;
+typedef struct _IO_FILE FILE;
+struct _IO_FILE;
+struct _IO_marker;
+struct _IO_codecvt;
+struct _IO_wide_data;
+
+
+
+
+
+enum bmp_error
+void
+
+enum bmp_error
+bmp_img_read (bmp_img *img,
+              const char *filename)
+{
+ FILE *img_file = fopen (filename, "rb");
+ if (img_file == ((void*)0))
+ {
+  return BMP_FILE_NOT_OPENED;
+ }
+ const enum bmp_error err = bmp_header_read (&img->img_header, img_file);
+ if (err != BMP_OK)
+ {
+  fclose (img_file);
+  return err;
+ }
+ bmp_img_alloc (img);
+ const size_t h = abs (img->img_header.biHeight);
+ const size_t offset = (img->img_header.biHeight > 0 ? h - 1 : 0);
+ const size_t padding = ((img->img_header.biWidth) % 4);
+ const size_t items = img->img_header.biWidth;
+ for (size_t y = 0; y < h; y++)
+ {
+  if (fread (img->img_pixels[abs (offset - y)], sizeof (bmp_pixel), items, img_file) != items)
+  {
+   fclose (img_file);
+   return BMP_ERROR;
+  }
+  fseek (img_file, padding, 1);
+ }
+ fclose (img_file);
+ return BMP_OK;
+}
+
+
+Please use the following Rust translations of dependency definitions enclosed in /* Rust definitions ... */. Please do not include this translation in your response. 
+
+/* Rust definitions
+pub type _IO_lock_t = ();
+*/
+/* Rust definitions
+type __off64_t = i64;
+*/
+/* Rust definitions
+type __off_t = i64;
+*/
+/* Rust definitions
+pub type size_t = usize;
+*/
+/* Rust definitions
+#[repr(i32)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BmpError {
+    BMP_FILE_NOT_OPENED = -4,
+    BMP_HEADER_NOT_INITIALIZED = -3,
+    BMP_INVALID_FILE = -2,
+    BMP_ERROR = -1,
+    BMP_OK = 0,
+}
+*/
+/* Rust definitions
+pub struct BmpHeader {
+    pub bf_size: u32,
+    pub bf_reserved: u32,
+    pub bf_off_bits: u32,
+    pub bi_size: u32,
+    pub bi_width: i32,
+    pub bi_height: i32,
+    pub bi_planes: u16,
+    pub bi_bit_count: u16,
+    pub bi_compression: u32,
+    pub bi_size_image: u32,
+    pub bi_x_pels_per_meter: i32,
+    pub bi_y_pels_per_meter: i32,
+    pub bi_clr_used: u32,
+    pub bi_clr_important: u32,
+}
+*/
+/* Rust definitions
+pub struct BmpPixel {
+    pub blue: u8,
+    pub green: u8,
+    pub red: u8,
+}
+*/
+/* Rust definitions
+pub struct BmpImg {
+    pub img_header: BmpHeader,
+    pub img_pixels: Vec<Vec<BmpPixel>>,
+}
+*/
+
+
+For the dependency functions, I will provide the function signature of Rust included in /*// and //*/. These dependency functions are available for reference. Call them only when they are still required by the generated code; if the current stage has made a dependency unnecessary, do not call it. 
+/* 
+bmp_header_read(header: &mut BmpHeader, img_file: Option<&mut File>) -> BmpError
+bmp_img_alloc(img: &mut BmpImg)
+*/
+
+2026-11-12 22:24:37,600 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Rust raw response: Final result code:
+
+```rust
+use std::fs::File;
+use std::io::{Read, Seek, SeekFrom};
+
+pub fn bmp_img_read(img: &mut BmpImg, filename: &str) -> BmpError {
+    let mut img_file = match File::open(filename) {
+        Ok(f) => f,
+        Err(_) => return BmpError::BMP_FILE_NOT_OPENED,
+    };
+    let err = bmp_header_read(&mut img.img_header, Some(&mut img_file));
+    if err != BmpError::BMP_OK {
+        return err;
+    }
+    bmp_img_alloc(img);
+    let height = img.img_header.bi_height;
+    let h = height.unsigned_abs() as usize;
+    let padding = (img.img_header.bi_width % 4) as i64;
+    let items = img.img_header.bi_width as usize;
+    let mut buf = vec![0u8; items * 3];
+    for y in 0..h {
+        let idx = if height > 0 { h - 1 - y } else { y };
+        if img_file.read_exact(&mut buf).is_err() {
+            return BmpError::BMP_ERROR;
+        }
+        let row = &mut img.img_pixels[idx];
+        for (i, chunk) in buf.chunks_exact(3).enumerate() {
+            row[i] = BmpPixel {
+                blue: chunk[0],
+                green: chunk[1],
+                red: chunk[2],
+            };
+        }
+        let _ = img_file.seek(SeekFrom::Current(padding));
+    }
+    BmpError::BMP_OK
+}
+```
+2026-11-12 22:24:37,602 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Finish reason for function/struct bmp_img_read: end_turn
+2026-11-12 22:24:37,602 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Sent request in 1 chunks
+2026-11-12 22:24:37,609 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_7q8bvxq4, source=lib.rs)
+2026-11-12 22:24:38,829 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - [bmp_img_read], complete result : use std::fs::File;
+use std::io::{Read, Seek, SeekFrom, Write};
+
+pub type _IO_lock_t = ();
+type __off64_t = i64;
+type __off_t = i64;
+pub type size_t = usize;
+#[repr(i32)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BmpError {
+    BMP_FILE_NOT_OPENED = -4,
+    BMP_HEADER_NOT_INITIALIZED = -3,
+    BMP_INVALID_FILE = -2,
+    BMP_ERROR = -1,
+    BMP_OK = 0,
+}
+pub struct BmpHeader {
+    pub bf_size: u32,
+    pub bf_reserved: u32,
+    pub bf_off_bits: u32,
+    pub bi_size: u32,
+    pub bi_width: i32,
+    pub bi_height: i32,
+    pub bi_planes: u16,
+    pub bi_bit_count: u16,
+    pub bi_compression: u32,
+    pub bi_size_image: u32,
+    pub bi_x_pels_per_meter: i32,
+    pub bi_y_pels_per_meter: i32,
+    pub bi_clr_used: u32,
+    pub bi_clr_important: u32,
+}
+pub struct BmpPixel {
+    pub blue: u8,
+    pub green: u8,
+    pub red: u8,
+}
+pub struct BmpImg {
+    pub img_header: BmpHeader,
+    pub img_pixels: Vec<Vec<BmpPixel>>,
+}
+
+pub fn bmp_header_init_df(header: &mut BmpHeader, width: i32, height: i32) {
+    let size_px = std::mem::size_of::<BmpPixel>();
+    let row = size_px
+        .wrapping_mul(width as usize)
+        .wrapping_add((width % 4) as usize);
+    let total = row.wrapping_mul(height.unsigned_abs() as usize);
+    header.bf_size = total as u32;
+    header.bf_reserved = 0;
+    header.bf_off_bits = 54;
+    header.bi_size = 40;
+    header.bi_width = width;
+    header.bi_height = height;
+    header.bi_planes = 1;
+    header.bi_bit_count = 24;
+    header.bi_compression = 0;
+    header.bi_size_image = 0;
+    header.bi_x_pels_per_meter = 0;
+    header.bi_y_pels_per_meter = 0;
+    header.bi_clr_used = 0;
+    header.bi_clr_important = 0;
+}
+pub fn bmp_pixel_init(pxl: &mut BmpPixel, red: u8, green: u8, blue: u8) {
+    pxl.red = red;
+    pxl.green = green;
+    pxl.blue = blue;
+}
+
+
+pub fn bmp_header_read(header: &mut BmpHeader, img_file: Option<&mut File>) -> BmpError {
+    let img_file = match img_file {
+        None => return BmpError::BMP_FILE_NOT_OPENED,
+        Some(f) => f,
+    };
+
+    let mut magic_buf = [0u8; 2];
+    if img_file.read_exact(&mut magic_buf).is_err() || u16::from_ne_bytes(magic_buf) != 19778 {
+        return BmpError::BMP_INVALID_FILE;
+    }
+
+    let mut buf = [0u8; 52];
+    if img_file.read_exact(&mut buf).is_err() {
+        return BmpError::BMP_ERROR;
+    }
+
+    let u32_at = |o: usize| u32::from_ne_bytes([buf[o], buf[o + 1], buf[o + 2], buf[o + 3]]);
+    let i32_at = |o: usize| i32::from_ne_bytes([buf[o], buf[o + 1], buf[o + 2], buf[o + 3]]);
+    let u16_at = |o: usize| u16::from_ne_bytes([buf[o], buf[o + 1]]);
+
+    header.bf_size = u32_at(0);
+    header.bf_reserved = u32_at(4);
+    header.bf_off_bits = u32_at(8);
+    header.bi_size = u32_at(12);
+    header.bi_width = i32_at(16);
+    header.bi_height = i32_at(20);
+    header.bi_planes = u16_at(24);
+    header.bi_bit_count = u16_at(26);
+    header.bi_compression = u32_at(28);
+    header.bi_size_image = u32_at(32);
+    header.bi_x_pels_per_meter = i32_at(36);
+    header.bi_y_pels_per_meter = i32_at(40);
+    header.bi_clr_used = u32_at(44);
+    header.bi_clr_important = u32_at(48);
+
+    BmpError::BMP_OK
+}
+pub fn bmp_img_alloc(img: &mut BmpImg) {
+    let h = img.img_header.bi_height.unsigned_abs() as usize;
+    let w = if img.img_header.bi_width > 0 {
+        img.img_header.bi_width as usize
+    } else {
+        0
+    };
+    img.img_pixels = Vec::with_capacity(h);
+    for _ in 0..h {
+        let row: Vec<BmpPixel> = (0..w)
+            .map(|_| BmpPixel {
+                blue: 0,
+                green: 0,
+                red: 0,
+            })
+            .collect();
+        img.img_pixels.push(row);
+    }
+}
+
+
+pub fn bmp_header_write(header: Option<&BmpHeader>, img_file: Option<&mut File>) -> BmpError {
+    let header = match header {
+        None => return BmpError::BMP_HEADER_NOT_INITIALIZED,
+        Some(h) => h,
+    };
+    let img_file = match img_file {
+        None => return BmpError::BMP_FILE_NOT_OPENED,
+        Some(f) => f,
+    };
+    let magic: u16 = 19778;
+    let _ = img_file.write_all(&magic.to_le_bytes());
+
+    let mut buf: Vec<u8> = Vec::with_capacity(52);
+    buf.extend_from_slice(&header.bf_size.to_le_bytes());
+    buf.extend_from_slice(&header.bf_reserved.to_le_bytes());
+    buf.extend_from_slice(&header.bf_off_bits.to_le_bytes());
+    buf.extend_from_slice(&header.bi_size.to_le_bytes());
+    buf.extend_from_slice(&header.bi_width.to_le_bytes());
+    buf.extend_from_slice(&header.bi_height.to_le_bytes());
+    buf.extend_from_slice(&header.bi_planes.to_le_bytes());
+    buf.extend_from_slice(&header.bi_bit_count.to_le_bytes());
+    buf.extend_from_slice(&header.bi_compression.to_le_bytes());
+    buf.extend_from_slice(&header.bi_size_image.to_le_bytes());
+    buf.extend_from_slice(&header.bi_x_pels_per_meter.to_le_bytes());
+    buf.extend_from_slice(&header.bi_y_pels_per_meter.to_le_bytes());
+    buf.extend_from_slice(&header.bi_clr_used.to_le_bytes());
+    buf.extend_from_slice(&header.bi_clr_important.to_le_bytes());
+    let _ = img_file.write_all(&buf);
+
+    BmpError::BMP_OK
+}
+pub fn bmp_img_free(img: &mut BmpImg) {
+    // Free each row, then the outer container.
+    img.img_pixels.clear();
+    img.img_pixels.shrink_to_fit();
+}
+
+
+pub fn bmp_img_read(img: &mut BmpImg, filename: &str) -> BmpError {
+    let mut img_file = match File::open(filename) {
+        Ok(f) => f,
+        Err(_) => return BmpError::BMP_FILE_NOT_OPENED,
+    };
+    let err = bmp_header_read(&mut img.img_header, Some(&mut img_file));
+    if err != BmpError::BMP_OK {
+        return err;
+    }
+    bmp_img_alloc(img);
+    let height = img.img_header.bi_height;
+    let h = height.unsigned_abs() as usize;
+    let padding = (img.img_header.bi_width % 4) as i64;
+    let items = img.img_header.bi_width as usize;
+    let mut buf = vec![0u8; items * 3];
+    for y in 0..h {
+        let idx = if height > 0 { h - 1 - y } else { y };
+        if img_file.read_exact(&mut buf).is_err() {
+            return BmpError::BMP_ERROR;
+        }
+        let row = &mut img.img_pixels[idx];
+        for (i, chunk) in buf.chunks_exact(3).enumerate() {
+            row[i] = BmpPixel {
+                blue: chunk[0],
+                green: chunk[1],
+                red: chunk[2],
+            };
+        }
+        let _ = img_file.seek(SeekFrom::Current(padding));
+    }
+    BmpError::BMP_OK
+}
+2026-11-12 22:24:38,832 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - WARNING - Successfully added bmp_img_read to the merged file.
+2026-11-12 22:24:38,838 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Sending request: Translate C to Rust. If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function.
+ For the final code result, please response with "Final result code" is : 
+
+
+
+
+void
+void
+
+void
+bmp_img_init_df (bmp_img *img,
+                 const int width,
+                 const int height)
+{
+ bmp_header_init_df (&img->img_header, width, height);
+ bmp_img_alloc (img);
+}
+
+
+Please use the following Rust translations of dependency definitions enclosed in /* Rust definitions ... */. Please do not include this translation in your response. 
+
+/* Rust definitions
+pub struct BmpHeader {
+    pub bf_size: u32,
+    pub bf_reserved: u32,
+    pub bf_off_bits: u32,
+    pub bi_size: u32,
+    pub bi_width: i32,
+    pub bi_height: i32,
+    pub bi_planes: u16,
+    pub bi_bit_count: u16,
+    pub bi_compression: u32,
+    pub bi_size_image: u32,
+    pub bi_x_pels_per_meter: i32,
+    pub bi_y_pels_per_meter: i32,
+    pub bi_clr_used: u32,
+    pub bi_clr_important: u32,
+}
+*/
+/* Rust definitions
+pub struct BmpPixel {
+    pub blue: u8,
+    pub green: u8,
+    pub red: u8,
+}
+*/
+/* Rust definitions
+pub struct BmpImg {
+    pub img_header: BmpHeader,
+    pub img_pixels: Vec<Vec<BmpPixel>>,
+}
+*/
+
+
+For the dependency functions, I will provide the function signature of Rust included in /*// and //*/. These dependency functions are available for reference. Call them only when they are still required by the generated code; if the current stage has made a dependency unnecessary, do not call it. 
+/* 
+bmp_header_init_df(header: &mut BmpHeader, width: i32, height: i32)
+bmp_img_alloc(img: &mut BmpImg)
+*/
+
+2026-11-12 22:24:40,199 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Rust raw response: Final result code" is :
+
+```rust
+pub fn bmp_img_init_df(img: &mut BmpImg, width: i32, height: i32) {
+    bmp_header_init_df(&mut img.img_header, width, height);
+    bmp_img_alloc(img);
+}
+```
+2026-11-12 22:24:40,200 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Finish reason for function/struct bmp_img_init_df: end_turn
+2026-11-12 22:24:40,200 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Sent request in 1 chunks
+2026-11-12 22:24:40,206 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_xdh6xyr0, source=lib.rs)
+2026-11-12 22:24:41,449 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - [bmp_img_init_df], complete result : use std::fs::File;
+use std::io::{Read, Seek, SeekFrom, Write};
+
+pub type _IO_lock_t = ();
+type __off64_t = i64;
+type __off_t = i64;
+pub type size_t = usize;
+#[repr(i32)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BmpError {
+    BMP_FILE_NOT_OPENED = -4,
+    BMP_HEADER_NOT_INITIALIZED = -3,
+    BMP_INVALID_FILE = -2,
+    BMP_ERROR = -1,
+    BMP_OK = 0,
+}
+pub struct BmpHeader {
+    pub bf_size: u32,
+    pub bf_reserved: u32,
+    pub bf_off_bits: u32,
+    pub bi_size: u32,
+    pub bi_width: i32,
+    pub bi_height: i32,
+    pub bi_planes: u16,
+    pub bi_bit_count: u16,
+    pub bi_compression: u32,
+    pub bi_size_image: u32,
+    pub bi_x_pels_per_meter: i32,
+    pub bi_y_pels_per_meter: i32,
+    pub bi_clr_used: u32,
+    pub bi_clr_important: u32,
+}
+pub struct BmpPixel {
+    pub blue: u8,
+    pub green: u8,
+    pub red: u8,
+}
+pub struct BmpImg {
+    pub img_header: BmpHeader,
+    pub img_pixels: Vec<Vec<BmpPixel>>,
+}
+
+pub fn bmp_header_init_df(header: &mut BmpHeader, width: i32, height: i32) {
+    let size_px = std::mem::size_of::<BmpPixel>();
+    let row = size_px
+        .wrapping_mul(width as usize)
+        .wrapping_add((width % 4) as usize);
+    let total = row.wrapping_mul(height.unsigned_abs() as usize);
+    header.bf_size = total as u32;
+    header.bf_reserved = 0;
+    header.bf_off_bits = 54;
+    header.bi_size = 40;
+    header.bi_width = width;
+    header.bi_height = height;
+    header.bi_planes = 1;
+    header.bi_bit_count = 24;
+    header.bi_compression = 0;
+    header.bi_size_image = 0;
+    header.bi_x_pels_per_meter = 0;
+    header.bi_y_pels_per_meter = 0;
+    header.bi_clr_used = 0;
+    header.bi_clr_important = 0;
+}
+pub fn bmp_pixel_init(pxl: &mut BmpPixel, red: u8, green: u8, blue: u8) {
+    pxl.red = red;
+    pxl.green = green;
+    pxl.blue = blue;
+}
+
+
+pub fn bmp_header_read(header: &mut BmpHeader, img_file: Option<&mut File>) -> BmpError {
+    let img_file = match img_file {
+        None => return BmpError::BMP_FILE_NOT_OPENED,
+        Some(f) => f,
+    };
+
+    let mut magic_buf = [0u8; 2];
+    if img_file.read_exact(&mut magic_buf).is_err() || u16::from_ne_bytes(magic_buf) != 19778 {
+        return BmpError::BMP_INVALID_FILE;
+    }
+
+    let mut buf = [0u8; 52];
+    if img_file.read_exact(&mut buf).is_err() {
+        return BmpError::BMP_ERROR;
+    }
+
+    let u32_at = |o: usize| u32::from_ne_bytes([buf[o], buf[o + 1], buf[o + 2], buf[o + 3]]);
+    let i32_at = |o: usize| i32::from_ne_bytes([buf[o], buf[o + 1], buf[o + 2], buf[o + 3]]);
+    let u16_at = |o: usize| u16::from_ne_bytes([buf[o], buf[o + 1]]);
+
+    header.bf_size = u32_at(0);
+    header.bf_reserved = u32_at(4);
+    header.bf_off_bits = u32_at(8);
+    header.bi_size = u32_at(12);
+    header.bi_width = i32_at(16);
+    header.bi_height = i32_at(20);
+    header.bi_planes = u16_at(24);
+    header.bi_bit_count = u16_at(26);
+    header.bi_compression = u32_at(28);
+    header.bi_size_image = u32_at(32);
+    header.bi_x_pels_per_meter = i32_at(36);
+    header.bi_y_pels_per_meter = i32_at(40);
+    header.bi_clr_used = u32_at(44);
+    header.bi_clr_important = u32_at(48);
+
+    BmpError::BMP_OK
+}
+pub fn bmp_img_alloc(img: &mut BmpImg) {
+    let h = img.img_header.bi_height.unsigned_abs() as usize;
+    let w = if img.img_header.bi_width > 0 {
+        img.img_header.bi_width as usize
+    } else {
+        0
+    };
+    img.img_pixels = Vec::with_capacity(h);
+    for _ in 0..h {
+        let row: Vec<BmpPixel> = (0..w)
+            .map(|_| BmpPixel {
+                blue: 0,
+                green: 0,
+                red: 0,
+            })
+            .collect();
+        img.img_pixels.push(row);
+    }
+}
+
+
+pub fn bmp_header_write(header: Option<&BmpHeader>, img_file: Option<&mut File>) -> BmpError {
+    let header = match header {
+        None => return BmpError::BMP_HEADER_NOT_INITIALIZED,
+        Some(h) => h,
+    };
+    let img_file = match img_file {
+        None => return BmpError::BMP_FILE_NOT_OPENED,
+        Some(f) => f,
+    };
+    let magic: u16 = 19778;
+    let _ = img_file.write_all(&magic.to_le_bytes());
+
+    let mut buf: Vec<u8> = Vec::with_capacity(52);
+    buf.extend_from_slice(&header.bf_size.to_le_bytes());
+    buf.extend_from_slice(&header.bf_reserved.to_le_bytes());
+    buf.extend_from_slice(&header.bf_off_bits.to_le_bytes());
+    buf.extend_from_slice(&header.bi_size.to_le_bytes());
+    buf.extend_from_slice(&header.bi_width.to_le_bytes());
+    buf.extend_from_slice(&header.bi_height.to_le_bytes());
+    buf.extend_from_slice(&header.bi_planes.to_le_bytes());
+    buf.extend_from_slice(&header.bi_bit_count.to_le_bytes());
+    buf.extend_from_slice(&header.bi_compression.to_le_bytes());
+    buf.extend_from_slice(&header.bi_size_image.to_le_bytes());
+    buf.extend_from_slice(&header.bi_x_pels_per_meter.to_le_bytes());
+    buf.extend_from_slice(&header.bi_y_pels_per_meter.to_le_bytes());
+    buf.extend_from_slice(&header.bi_clr_used.to_le_bytes());
+    buf.extend_from_slice(&header.bi_clr_important.to_le_bytes());
+    let _ = img_file.write_all(&buf);
+
+    BmpError::BMP_OK
+}
+pub fn bmp_img_free(img: &mut BmpImg) {
+    // Free each row, then the outer container.
+    img.img_pixels.clear();
+    img.img_pixels.shrink_to_fit();
+}
+
+
+pub fn bmp_img_read(img: &mut BmpImg, filename: &str) -> BmpError {
+    let mut img_file = match File::open(filename) {
+        Ok(f) => f,
+        Err(_) => return BmpError::BMP_FILE_NOT_OPENED,
+    };
+    let err = bmp_header_read(&mut img.img_header, Some(&mut img_file));
+    if err != BmpError::BMP_OK {
+        return err;
+    }
+    bmp_img_alloc(img);
+    let height = img.img_header.bi_height;
+    let h = height.unsigned_abs() as usize;
+    let padding = (img.img_header.bi_width % 4) as i64;
+    let items = img.img_header.bi_width as usize;
+    let mut buf = vec![0u8; items * 3];
+    for y in 0..h {
+        let idx = if height > 0 { h - 1 - y } else { y };
+        if img_file.read_exact(&mut buf).is_err() {
+            return BmpError::BMP_ERROR;
+        }
+        let row = &mut img.img_pixels[idx];
+        for (i, chunk) in buf.chunks_exact(3).enumerate() {
+            row[i] = BmpPixel {
+                blue: chunk[0],
+                green: chunk[1],
+                red: chunk[2],
+            };
+        }
+        let _ = img_file.seek(SeekFrom::Current(padding));
+    }
+    BmpError::BMP_OK
+}
+pub fn bmp_img_init_df(img: &mut BmpImg, width: i32, height: i32) {
+    bmp_header_init_df(&mut img.img_header, width, height);
+    bmp_img_alloc(img);
+}
+2026-11-12 22:24:41,450 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - WARNING - Successfully added bmp_img_init_df to the merged file.
+2026-11-12 22:24:41,457 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Sending request: Translate C to Rust. If the C source code does not have a main function, please do not add a main function. If the C source code does not have a called function defined, please do NOT add a dummy definition. Translate ONLY the provided function.
+ For the final code result, please response with "Final result code" is : 
+
+
+
+
+struct _IO_FILE;
+struct _IO_FILE;
+typedef struct _IO_FILE FILE;
+struct _IO_FILE;
+struct _IO_marker;
+struct _IO_codecvt;
+struct _IO_wide_data;
+
+
+
+
+
+enum bmp_error
+
+enum bmp_error
+bmp_img_write (const bmp_img *img,
+               const char *filename)
+{
+ FILE *img_file = fopen (filename, "wb");
+ if (img_file == ((void*)0))
+ {
+  return BMP_FILE_NOT_OPENED;
+ }
+ const enum bmp_error err = bmp_header_write (&img->img_header, img_file);
+ if (err != BMP_OK)
+ {
+  fclose (img_file);
+  return err;
+ }
+ const size_t h = abs (img->img_header.biHeight);
+ const size_t offset = (img->img_header.biHeight > 0 ? h - 1 : 0);
+ const unsigned char padding[3] = {'\0', '\0', '\0'};
+ for (size_t y = 0; y < h; y++)
+ {
+  fwrite (img->img_pixels[abs (offset - y)], sizeof (bmp_pixel), img->img_header.biWidth, img_file);
+  fwrite (padding, sizeof (unsigned char), ((img->img_header.biWidth) % 4), img_file);
+ }
+ fclose (img_file);
+ return BMP_OK;
+}
+
+
+Please use the following Rust translations of dependency definitions enclosed in /* Rust definitions ... */. Please do not include this translation in your response. 
+
+/* Rust definitions
+pub type _IO_lock_t = ();
+*/
+/* Rust definitions
+type __off64_t = i64;
+*/
+/* Rust definitions
+type __off_t = i64;
+*/
+/* Rust definitions
+pub type size_t = usize;
+*/
+/* Rust definitions
+#[repr(i32)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BmpError {
+    BMP_FILE_NOT_OPENED = -4,
+    BMP_HEADER_NOT_INITIALIZED = -3,
+    BMP_INVALID_FILE = -2,
+    BMP_ERROR = -1,
+    BMP_OK = 0,
+}
+*/
+/* Rust definitions
+pub struct BmpHeader {
+    pub bf_size: u32,
+    pub bf_reserved: u32,
+    pub bf_off_bits: u32,
+    pub bi_size: u32,
+    pub bi_width: i32,
+    pub bi_height: i32,
+    pub bi_planes: u16,
+    pub bi_bit_count: u16,
+    pub bi_compression: u32,
+    pub bi_size_image: u32,
+    pub bi_x_pels_per_meter: i32,
+    pub bi_y_pels_per_meter: i32,
+    pub bi_clr_used: u32,
+    pub bi_clr_important: u32,
+}
+*/
+/* Rust definitions
+pub struct BmpPixel {
+    pub blue: u8,
+    pub green: u8,
+    pub red: u8,
+}
+*/
+/* Rust definitions
+pub struct BmpImg {
+    pub img_header: BmpHeader,
+    pub img_pixels: Vec<Vec<BmpPixel>>,
+}
+*/
+
+
+For the dependency functions, I will provide the function signature of Rust included in /*// and //*/. These dependency functions are available for reference. Call them only when they are still required by the generated code; if the current stage has made a dependency unnecessary, do not call it. 
+/* 
+bmp_header_write(header: Option<&BmpHeader>, img_file: Option<&mut File>) -> BmpError
+*/
+
+2026-11-12 22:24:48,825 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Rust raw response: Below is the Rust translation of `bmp_img_write`. I assumed `bmp_header_write` is defined elsewhere, as in the provided signature.
+
+Notes on the translation:
+- `fopen`, `fwrite` and `fclose` become `File::create`, `write_all` and dropping the file.
+- `abs(offset - y)` is computed on `size_t`, so the subtraction wraps. I used `wrapping_sub` and then took the absolute value as an `i32`-style `abs`. Since `offset - y` is only ever negative when `offset` is 0, the wrapped value cast to `i32` gives the same result as in C. That cast truncates to 32 bits, as `abs(int)` does in C.
+- Pixels are written as blue, green, red, which matches the `BmpPixel` layout of three bytes.
+- `biWidth` is an `int`, so the C code converts it to `size_t` for `fwrite`. A negative width would give a huge count, and I treat it as 0 here. `biWidth % 4` is likewise converted to `size_t`, and I clamp it to 0 when negative.
+- C ignores `fwrite` errors, so I ignore them too.
+
+Final result code:
+
+```rust
+use std::fs::File;
+use std::io::Write;
+
+pub fn bmp_img_write(img: &BmpImg, filename: &str) -> BmpError {
+    let mut img_file = match File::create(filename) {
+        Ok(f) => f,
+        Err(_) => return BmpError::BMP_FILE_NOT_OPENED,
+    };
+
+    let err = bmp_header_write(Some(&img.img_header), Some(&mut img_file));
+    if err != BmpError::BMP_OK {
+        drop(img_file);
+        return err;
+    }
+
+    let h: usize = img.img_header.bi_height.unsigned_abs() as usize;
+    let offset: usize = if img.img_header.bi_height > 0 { h.wrapping_sub(1) } else { 0 };
+    let padding: [u8; 3] = [0, 0, 0];
+
+    let width: usize = if img.img_header.bi_width > 0 {
+        img.img_header.bi_width as usize
+    } else {
+        0
+    };
+    let pad_count: usize = {
+        let m = img.img_header.bi_width % 4;
+        if m > 0 { m as usize } else { 0 }
+    };
+
+    for y in 0..h {
+        let idx = (offset.wrapping_sub(y) as i32).wrapping_abs() as usize;
+        if let Some(row) = img.img_pixels.get(idx) {
+            let mut buf: Vec<u8> = Vec::with_capacity(width * 3);
+            for p in row.iter().take(width) {
+                buf.push(p.blue);
+                buf.push(p.green);
+                buf.push(p.red);
+            }
+            let _ = img_file.write_all(&buf);
+        }
+        let _ = img_file.write_all(&padding[..pad_count.min(3)]);
+    }
+
+    drop(img_file);
+    BmpError::BMP_OK
+}
+```
+2026-11-12 22:24:48,827 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Finish reason for function/struct bmp_img_write: end_turn
+2026-11-12 22:24:48,828 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Sent request in 1 chunks
+2026-11-12 22:24:48,834 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Checking translation compiles with cargo project: command cargo check --quiet (workdir=/tmp/rust_compile_check_kdcfiijz, source=lib.rs)
+2026-11-12 22:24:50,190 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - [bmp_img_write], complete result : use std::fs::File;
+use std::io::{Read, Seek, SeekFrom, Write};
+
+pub type _IO_lock_t = ();
+type __off64_t = i64;
+type __off_t = i64;
+pub type size_t = usize;
+#[repr(i32)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BmpError {
+    BMP_FILE_NOT_OPENED = -4,
+    BMP_HEADER_NOT_INITIALIZED = -3,
+    BMP_INVALID_FILE = -2,
+    BMP_ERROR = -1,
+    BMP_OK = 0,
+}
+pub struct BmpHeader {
+    pub bf_size: u32,
+    pub bf_reserved: u32,
+    pub bf_off_bits: u32,
+    pub bi_size: u32,
+    pub bi_width: i32,
+    pub bi_height: i32,
+    pub bi_planes: u16,
+    pub bi_bit_count: u16,
+    pub bi_compression: u32,
+    pub bi_size_image: u32,
+    pub bi_x_pels_per_meter: i32,
+    pub bi_y_pels_per_meter: i32,
+    pub bi_clr_used: u32,
+    pub bi_clr_important: u32,
+}
+pub struct BmpPixel {
+    pub blue: u8,
+    pub green: u8,
+    pub red: u8,
+}
+pub struct BmpImg {
+    pub img_header: BmpHeader,
+    pub img_pixels: Vec<Vec<BmpPixel>>,
+}
+
+pub fn bmp_header_init_df(header: &mut BmpHeader, width: i32, height: i32) {
+    let size_px = std::mem::size_of::<BmpPixel>();
+    let row = size_px
+        .wrapping_mul(width as usize)
+        .wrapping_add((width % 4) as usize);
+    let total = row.wrapping_mul(height.unsigned_abs() as usize);
+    header.bf_size = total as u32;
+    header.bf_reserved = 0;
+    header.bf_off_bits = 54;
+    header.bi_size = 40;
+    header.bi_width = width;
+    header.bi_height = height;
+    header.bi_planes = 1;
+    header.bi_bit_count = 24;
+    header.bi_compression = 0;
+    header.bi_size_image = 0;
+    header.bi_x_pels_per_meter = 0;
+    header.bi_y_pels_per_meter = 0;
+    header.bi_clr_used = 0;
+    header.bi_clr_important = 0;
+}
+pub fn bmp_pixel_init(pxl: &mut BmpPixel, red: u8, green: u8, blue: u8) {
+    pxl.red = red;
+    pxl.green = green;
+    pxl.blue = blue;
+}
+
+
+pub fn bmp_header_read(header: &mut BmpHeader, img_file: Option<&mut File>) -> BmpError {
+    let img_file = match img_file {
+        None => return BmpError::BMP_FILE_NOT_OPENED,
+        Some(f) => f,
+    };
+
+    let mut magic_buf = [0u8; 2];
+    if img_file.read_exact(&mut magic_buf).is_err() || u16::from_ne_bytes(magic_buf) != 19778 {
+        return BmpError::BMP_INVALID_FILE;
+    }
+
+    let mut buf = [0u8; 52];
+    if img_file.read_exact(&mut buf).is_err() {
+        return BmpError::BMP_ERROR;
+    }
+
+    let u32_at = |o: usize| u32::from_ne_bytes([buf[o], buf[o + 1], buf[o + 2], buf[o + 3]]);
+    let i32_at = |o: usize| i32::from_ne_bytes([buf[o], buf[o + 1], buf[o + 2], buf[o + 3]]);
+    let u16_at = |o: usize| u16::from_ne_bytes([buf[o], buf[o + 1]]);
+
+    header.bf_size = u32_at(0);
+    header.bf_reserved = u32_at(4);
+    header.bf_off_bits = u32_at(8);
+    header.bi_size = u32_at(12);
+    header.bi_width = i32_at(16);
+    header.bi_height = i32_at(20);
+    header.bi_planes = u16_at(24);
+    header.bi_bit_count = u16_at(26);
+    header.bi_compression = u32_at(28);
+    header.bi_size_image = u32_at(32);
+    header.bi_x_pels_per_meter = i32_at(36);
+    header.bi_y_pels_per_meter = i32_at(40);
+    header.bi_clr_used = u32_at(44);
+    header.bi_clr_important = u32_at(48);
+
+    BmpError::BMP_OK
+}
+pub fn bmp_img_alloc(img: &mut BmpImg) {
+    let h = img.img_header.bi_height.unsigned_abs() as usize;
+    let w = if img.img_header.bi_width > 0 {
+        img.img_header.bi_width as usize
+    } else {
+        0
+    };
+    img.img_pixels = Vec::with_capacity(h);
+    for _ in 0..h {
+        let row: Vec<BmpPixel> = (0..w)
+            .map(|_| BmpPixel {
+                blue: 0,
+                green: 0,
+                red: 0,
+            })
+            .collect();
+        img.img_pixels.push(row);
+    }
+}
+
+
+pub fn bmp_header_write(header: Option<&BmpHeader>, img_file: Option<&mut File>) -> BmpError {
+    let header = match header {
+        None => return BmpError::BMP_HEADER_NOT_INITIALIZED,
+        Some(h) => h,
+    };
+    let img_file = match img_file {
+        None => return BmpError::BMP_FILE_NOT_OPENED,
+        Some(f) => f,
+    };
+    let magic: u16 = 19778;
+    let _ = img_file.write_all(&magic.to_le_bytes());
+
+    let mut buf: Vec<u8> = Vec::with_capacity(52);
+    buf.extend_from_slice(&header.bf_size.to_le_bytes());
+    buf.extend_from_slice(&header.bf_reserved.to_le_bytes());
+    buf.extend_from_slice(&header.bf_off_bits.to_le_bytes());
+    buf.extend_from_slice(&header.bi_size.to_le_bytes());
+    buf.extend_from_slice(&header.bi_width.to_le_bytes());
+    buf.extend_from_slice(&header.bi_height.to_le_bytes());
+    buf.extend_from_slice(&header.bi_planes.to_le_bytes());
+    buf.extend_from_slice(&header.bi_bit_count.to_le_bytes());
+    buf.extend_from_slice(&header.bi_compression.to_le_bytes());
+    buf.extend_from_slice(&header.bi_size_image.to_le_bytes());
+    buf.extend_from_slice(&header.bi_x_pels_per_meter.to_le_bytes());
+    buf.extend_from_slice(&header.bi_y_pels_per_meter.to_le_bytes());
+    buf.extend_from_slice(&header.bi_clr_used.to_le_bytes());
+    buf.extend_from_slice(&header.bi_clr_important.to_le_bytes());
+    let _ = img_file.write_all(&buf);
+
+    BmpError::BMP_OK
+}
+pub fn bmp_img_free(img: &mut BmpImg) {
+    // Free each row, then the outer container.
+    img.img_pixels.clear();
+    img.img_pixels.shrink_to_fit();
+}
+
+
+pub fn bmp_img_read(img: &mut BmpImg, filename: &str) -> BmpError {
+    let mut img_file = match File::open(filename) {
+        Ok(f) => f,
+        Err(_) => return BmpError::BMP_FILE_NOT_OPENED,
+    };
+    let err = bmp_header_read(&mut img.img_header, Some(&mut img_file));
+    if err != BmpError::BMP_OK {
+        return err;
+    }
+    bmp_img_alloc(img);
+    let height = img.img_header.bi_height;
+    let h = height.unsigned_abs() as usize;
+    let padding = (img.img_header.bi_width % 4) as i64;
+    let items = img.img_header.bi_width as usize;
+    let mut buf = vec![0u8; items * 3];
+    for y in 0..h {
+        let idx = if height > 0 { h - 1 - y } else { y };
+        if img_file.read_exact(&mut buf).is_err() {
+            return BmpError::BMP_ERROR;
+        }
+        let row = &mut img.img_pixels[idx];
+        for (i, chunk) in buf.chunks_exact(3).enumerate() {
+            row[i] = BmpPixel {
+                blue: chunk[0],
+                green: chunk[1],
+                red: chunk[2],
+            };
+        }
+        let _ = img_file.seek(SeekFrom::Current(padding));
+    }
+    BmpError::BMP_OK
+}
+pub fn bmp_img_init_df(img: &mut BmpImg, width: i32, height: i32) {
+    bmp_header_init_df(&mut img.img_header, width, height);
+    bmp_img_alloc(img);
+}
+
+
+pub fn bmp_img_write(img: &BmpImg, filename: &str) -> BmpError {
+    let mut img_file = match File::create(filename) {
+        Ok(f) => f,
+        Err(_) => return BmpError::BMP_FILE_NOT_OPENED,
+    };
+
+    let err = bmp_header_write(Some(&img.img_header), Some(&mut img_file));
+    if err != BmpError::BMP_OK {
+        drop(img_file);
+        return err;
+    }
+
+    let h: usize = img.img_header.bi_height.unsigned_abs() as usize;
+    let offset: usize = if img.img_header.bi_height > 0 { h.wrapping_sub(1) } else { 0 };
+    let padding: [u8; 3] = [0, 0, 0];
+
+    let width: usize = if img.img_header.bi_width > 0 {
+        img.img_header.bi_width as usize
+    } else {
+        0
+    };
+    let pad_count: usize = {
+        let m = img.img_header.bi_width % 4;
+        if m > 0 { m as usize } else { 0 }
+    };
+
+    for y in 0..h {
+        let idx = (offset.wrapping_sub(y) as i32).wrapping_abs() as usize;
+        if let Some(row) = img.img_pixels.get(idx) {
+            let mut buf: Vec<u8> = Vec::with_capacity(width * 3);
+            for p in row.iter().take(width) {
+                buf.push(p.blue);
+                buf.push(p.green);
+                buf.push(p.red);
+            }
+            let _ = img_file.write_all(&buf);
+        }
+        let _ = img_file.write_all(&padding[..pad_count.min(3)]);
+    }
+
+    drop(img_file);
+    BmpError::BMP_OK
+}
+2026-11-12 22:24:50,193 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - WARNING - Successfully added bmp_img_write to the merged file.
+2026-11-12 22:24:50,207 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Copied struct-fn-replay output to temporary performance directory /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/temp before performance check
+2026-11-12 22:24:50,208 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Loaded performance information from /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/performance_information.json
+2026-11-12 22:24:50,208 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [Performance check start] : struct-fn-replay
+2026-11-12 22:24:50,211 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Sending request: Please generate Rust performance entry code according to the original C main function I provide below.
+The generated main function must preserve the same logic, control flow, validation, side effects, output, and timing behavior as the original C main function.
+The generated entry code must be self-contained in the performance runner environment: preserve relative file paths from the original C main, but create any missing parent directories before writing output files.
+If the original C main function uses srand and rand, generate performance code that calls those same C libc srand and rand functions via FFI so the generated performance runner preserves the C random sequence and seeding behavior exactly. Do not introduce FFI requirements for other C library functions just for this random-number rule.
+Do not use platform-specific or external crypto headers/libraries such as CommonCrypto, OpenSSL, or CryptoAPI; if a C++ print_file_md5 helper is missing, implement it with the md5sum command and standard headers only.
+Reply with the generated main function, any directly required include/import/use statements, and any missing helper functions required by that main function.
+I will provide dependency functions, structs, and type definitions below. Use them as already-existing context.
+Do NOT repeat, restate, redefine, wrap, or translate dependency functions, structs, enums, typedefs, type aliases, or helper functions that are already fully defined in the provided dependency code.
+Use existing scope functions directly, including when passing them as function pointers / callbacks (e.g. comparators, destructors, visitors). Do NOT generate wrapper closures or shim functions that merely re-call an already-defined dependency function; reference the dependency symbol directly, and if its signature differs from the expected callback type, bridge it with a single `std::mem::transmute` (Rust) or a C-style cast (C++) instead of redefining the logic.
+If the generated main function calls a helper that is not fully defined in the provided dependency code, add a compatible helper implementation in your output.
+For Rust: NEVER use `std::mem::zeroed::<T>()` or `MaybeUninit::zeroed().assume_init()` to construct a struct that contains non-nullable function pointers (plain `fn(...)` / `extern "C" fn(...)` fields), references, `NonNull`, or other types whose all-zero bit pattern is invalid — doing so causes an immediate runtime panic ("attempted to zero-initialize type ..."). Instead, allocate the object with `std::mem::MaybeUninit::<T>::uninit()`, pass `.as_mut_ptr()` into the initializer function (which writes every field through the raw pointer), and then call `.assume_init()` once initialization is complete. Only fall back to a field-by-field struct literal if no initializer function exists.
+Your output must contain exactly one main function, plus only the minimal include/import/use statements and missing helper functions required by that main function.
+Return only the generated main function and missing helpers. Do not return a full translation unit.
+For the final result, please reply with, the final code is : 
+// original C function : 
+int main(int argc, char **argv) {
+	if (argc < 2) {
+		printf("Usage: %s <directory>\n", argv[0]);
+		return 1;
+	}
+
+	const char *directory = argv[1];
+	DIR *dir = opendir(directory);
+	
+	if (dir == NULL) {
+		printf("Error: Cannot open directory %s\n", directory);
+		return 1;
+	}
+
+	unsigned long long global_checksum = 0;
+	struct dirent *entry;
+	int file_count = 0;
+	struct timespec start_time, end_time;
+
+	// MAIN COMPUTATION START
+	clock_gettime(CLOCK_MONOTONIC, &start_time);
+
+	while ((entry = readdir(dir)) != NULL) {
+		// Check if entry is a regular file with .bmp extension
+		if (entry->d_type != DT_REG) {
+			continue;
+		}
+		
+		const char *filename = entry->d_name;
+		size_t len = strlen(filename);
+		
+		if (len < 5 || strcmp(filename + len - 4, ".bmp") != 0) {
+			continue;
+		}
+		
+		// Construct full path
+		char filepath[1024];
+		snprintf(filepath, sizeof(filepath), "%s/%s", directory, filename);
+		
+		bmp_img img;
+		enum bmp_error err = bmp_img_read(&img, filepath);
+		
+		if (err == BMP_OK) {
+			unsigned long long img_checksum = 0;
+			const int h = abs(img.img_header.biHeight);
+			const int w = img.img_header.biWidth;
+			
+			for (int y = 0; y < h; y++) {
+				for (int x = 0; x < w; x++) {
+					img_checksum += img.img_pixels[y][x].red;
+					img_checksum += img.img_pixels[y][x].green;
+					img_checksum += img.img_pixels[y][x].blue;
+				}
+			}
+			
+			global_checksum += img_checksum;
+			file_count++;
+			bmp_img_free(&img);
+			// printf("Read %s: checksum %llu\n", filepath, img_checksum);
+		} else {
+			printf("Error reading %s: code %d\n", filepath, err);
+		}
+	}
+
+	clock_gettime(CLOCK_MONOTONIC, &end_time);
+	// MAIN COMPUTATION END
+
+	closedir(dir);
+	double elapsed_seconds = (double)(end_time.tv_sec - start_time.tv_sec) +
+                            (double)(end_time.tv_nsec - start_time.tv_nsec) / 1000000000.0;
+	printf("Processed %d BMP files\n", file_count);
+	printf("Global checksum: %llu\n", global_checksum);
+	printf("libbmp_time computation time: %.6f seconds\n", elapsed_seconds);
+	return 0;
+}
+// the dependency functions :
+```rust
+use std::fs::File;
+use std::io::{Read, Seek, SeekFrom, Write};
+
+pub type _IO_lock_t = ();
+type __off64_t = i64;
+type __off_t = i64;
+pub type size_t = usize;
+#[repr(i32)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BmpError {
+    BMP_FILE_NOT_OPENED = -4,
+    BMP_HEADER_NOT_INITIALIZED = -3,
+    BMP_INVALID_FILE = -2,
+    BMP_ERROR = -1,
+    BMP_OK = 0,
+}
+pub struct BmpHeader {
+    pub bf_size: u32,
+    pub bf_reserved: u32,
+    pub bf_off_bits: u32,
+    pub bi_size: u32,
+    pub bi_width: i32,
+    pub bi_height: i32,
+    pub bi_planes: u16,
+    pub bi_bit_count: u16,
+    pub bi_compression: u32,
+    pub bi_size_image: u32,
+    pub bi_x_pels_per_meter: i32,
+    pub bi_y_pels_per_meter: i32,
+    pub bi_clr_used: u32,
+    pub bi_clr_important: u32,
+}
+pub struct BmpPixel {
+    pub blue: u8,
+    pub green: u8,
+    pub red: u8,
+}
+pub struct BmpImg {
+    pub img_header: BmpHeader,
+    pub img_pixels: Vec<Vec<BmpPixel>>,
+}
+
+pub fn bmp_header_init_df(header: &mut BmpHeader, width: i32, height: i32) {
+    let size_px = std::mem::size_of::<BmpPixel>();
+    let row = size_px
+        .wrapping_mul(width as usize)
+        .wrapping_add((width % 4) as usize);
+    let total = row.wrapping_mul(height.unsigned_abs() as usize);
+    header.bf_size = total as u32;
+    header.bf_reserved = 0;
+    header.bf_off_bits = 54;
+    header.bi_size = 40;
+    header.bi_width = width;
+    header.bi_height = height;
+    header.bi_planes = 1;
+    header.bi_bit_count = 24;
+    header.bi_compression = 0;
+    header.bi_size_image = 0;
+    header.bi_x_pels_per_meter = 0;
+    header.bi_y_pels_per_meter = 0;
+    header.bi_clr_used = 0;
+    header.bi_clr_important = 0;
+}
+pub fn bmp_pixel_init(pxl: &mut BmpPixel, red: u8, green: u8, blue: u8) {
+    pxl.red = red;
+    pxl.green = green;
+    pxl.blue = blue;
+}
+
+
+pub fn bmp_header_read(header: &mut BmpHeader, img_file: Option<&mut File>) -> BmpError {
+    let img_file = match img_file {
+        None => return BmpError::BMP_FILE_NOT_OPENED,
+        Some(f) => f,
+    };
+
+    let mut magic_buf = [0u8; 2];
+    if img_file.read_exact(&mut magic_buf).is_err() || u16::from_ne_bytes(magic_buf) != 19778 {
+        return BmpError::BMP_INVALID_FILE;
+    }
+
+    let mut buf = [0u8; 52];
+    if img_file.read_exact(&mut buf).is_err() {
+        return BmpError::BMP_ERROR;
+    }
+
+    let u32_at = |o: usize| u32::from_ne_bytes([buf[o], buf[o + 1], buf[o + 2], buf[o + 3]]);
+    let i32_at = |o: usize| i32::from_ne_bytes([buf[o], buf[o + 1], buf[o + 2], buf[o + 3]]);
+    let u16_at = |o: usize| u16::from_ne_bytes([buf[o], buf[o + 1]]);
+
+    header.bf_size = u32_at(0);
+    header.bf_reserved = u32_at(4);
+    header.bf_off_bits = u32_at(8);
+    header.bi_size = u32_at(12);
+    header.bi_width = i32_at(16);
+    header.bi_height = i32_at(20);
+    header.bi_planes = u16_at(24);
+    header.bi_bit_count = u16_at(26);
+    header.bi_compression = u32_at(28);
+    header.bi_size_image = u32_at(32);
+    header.bi_x_pels_per_meter = i32_at(36);
+    header.bi_y_pels_per_meter = i32_at(40);
+    header.bi_clr_used = u32_at(44);
+    header.bi_clr_important = u32_at(48);
+
+    BmpError::BMP_OK
+}
+pub fn bmp_img_alloc(img: &mut BmpImg) {
+    let h = img.img_header.bi_height.unsigned_abs() as usize;
+    let w = if img.img_header.bi_width > 0 {
+        img.img_header.bi_width as usize
+    } else {
+        0
+    };
+    img.img_pixels = Vec::with_capacity(h);
+    for _ in 0..h {
+        let row: Vec<BmpPixel> = (0..w)
+            .map(|_| BmpPixel {
+                blue: 0,
+                green: 0,
+                red: 0,
+            })
+            .collect();
+        img.img_pixels.push(row);
+    }
+}
+
+
+pub fn bmp_header_write(header: Option<&BmpHeader>, img_file: Option<&mut File>) -> BmpError {
+    let header = match header {
+        None => return BmpError::BMP_HEADER_NOT_INITIALIZED,
+        Some(h) => h,
+    };
+    let img_file = match img_file {
+        None => return BmpError::BMP_FILE_NOT_OPENED,
+        Some(f) => f,
+    };
+    let magic: u16 = 19778;
+    let _ = img_file.write_all(&magic.to_le_bytes());
+
+    let mut buf: Vec<u8> = Vec::with_capacity(52);
+    buf.extend_from_slice(&header.bf_size.to_le_bytes());
+    buf.extend_from_slice(&header.bf_reserved.to_le_bytes());
+    buf.extend_from_slice(&header.bf_off_bits.to_le_bytes());
+    buf.extend_from_slice(&header.bi_size.to_le_bytes());
+    buf.extend_from_slice(&header.bi_width.to_le_bytes());
+    buf.extend_from_slice(&header.bi_height.to_le_bytes());
+    buf.extend_from_slice(&header.bi_planes.to_le_bytes());
+    buf.extend_from_slice(&header.bi_bit_count.to_le_bytes());
+    buf.extend_from_slice(&header.bi_compression.to_le_bytes());
+    buf.extend_from_slice(&header.bi_size_image.to_le_bytes());
+    buf.extend_from_slice(&header.bi_x_pels_per_meter.to_le_bytes());
+    buf.extend_from_slice(&header.bi_y_pels_per_meter.to_le_bytes());
+    buf.extend_from_slice(&header.bi_clr_used.to_le_bytes());
+    buf.extend_from_slice(&header.bi_clr_important.to_le_bytes());
+    let _ = img_file.write_all(&buf);
+
+    BmpError::BMP_OK
+}
+pub fn bmp_img_free(img: &mut BmpImg) {
+    // Free each row, then the outer container.
+    img.img_pixels.clear();
+    img.img_pixels.shrink_to_fit();
+}
+
+
+pub fn bmp_img_read(img: &mut BmpImg, filename: &str) -> BmpError {
+    let mut img_file = match File::open(filename) {
+        Ok(f) => f,
+        Err(_) => return BmpError::BMP_FILE_NOT_OPENED,
+    };
+    let err = bmp_header_read(&mut img.img_header, Some(&mut img_file));
+    if err != BmpError::BMP_OK {
+        return err;
+    }
+    bmp_img_alloc(img);
+    let height = img.img_header.bi_height;
+    let h = height.unsigned_abs() as usize;
+    let padding = (img.img_header.bi_width % 4) as i64;
+    let items = img.img_header.bi_width as usize;
+    let mut buf = vec![0u8; items * 3];
+    for y in 0..h {
+        let idx = if height > 0 { h - 1 - y } else { y };
+        if img_file.read_exact(&mut buf).is_err() {
+            return BmpError::BMP_ERROR;
+        }
+        let row = &mut img.img_pixels[idx];
+        for (i, chunk) in buf.chunks_exact(3).enumerate() {
+            row[i] = BmpPixel {
+                blue: chunk[0],
+                green: chunk[1],
+                red: chunk[2],
+            };
+        }
+        let _ = img_file.seek(SeekFrom::Current(padding));
+    }
+    BmpError::BMP_OK
+}
+pub fn bmp_img_init_df(img: &mut BmpImg, width: i32, height: i32) {
+    bmp_header_init_df(&mut img.img_header, width, height);
+    bmp_img_alloc(img);
+}
+
+
+pub fn bmp_img_write(img: &BmpImg, filename: &str) -> BmpError {
+    let mut img_file = match File::create(filename) {
+        Ok(f) => f,
+        Err(_) => return BmpError::BMP_FILE_NOT_OPENED,
+    };
+
+    let err = bmp_header_write(Some(&img.img_header), Some(&mut img_file));
+    if err != BmpError::BMP_OK {
+        drop(img_file);
+        return err;
+    }
+
+    let h: usize = img.img_header.bi_height.unsigned_abs() as usize;
+    let offset: usize = if img.img_header.bi_height > 0 { h.wrapping_sub(1) } else { 0 };
+    let padding: [u8; 3] = [0, 0, 0];
+
+    let width: usize = if img.img_header.bi_width > 0 {
+        img.img_header.bi_width as usize
+    } else {
+        0
+    };
+    let pad_count: usize = {
+        let m = img.img_header.bi_width % 4;
+        if m > 0 { m as usize } else { 0 }
+    };
+
+    for y in 0..h {
+        let idx = (offset.wrapping_sub(y) as i32).wrapping_abs() as usize;
+        if let Some(row) = img.img_pixels.get(idx) {
+            let mut buf: Vec<u8> = Vec::with_capacity(width * 3);
+            for p in row.iter().take(width) {
+                buf.push(p.blue);
+                buf.push(p.green);
+                buf.push(p.red);
+            }
+            let _ = img_file.write_all(&buf);
+        }
+        let _ = img_file.write_all(&padding[..pad_count.min(3)]);
+    }
+
+    drop(img_file);
+    BmpError::BMP_OK
+}
+```
+2026-11-12 22:25:00,369 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Rust raw response: // original C function : translated to Rust
+```rust
+use std::fs;
+use std::time::Instant;
+
+fn main() {
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() < 2 {
+        println!("Usage: {} <directory>", args.get(0).map(|s| s.as_str()).unwrap_or(""));
+        std::process::exit(1);
+    }
+
+    let directory = args[1].as_str();
+    let dir = match fs::read_dir(directory) {
+        Ok(d) => d,
+        Err(_) => {
+            println!("Error: Cannot open directory {}", directory);
+            std::process::exit(1);
+        }
+    };
+
+    let mut global_checksum: u64 = 0;
+    let mut file_count: i32 = 0;
+
+    // MAIN COMPUTATION START
+    let start_time = Instant::now();
+
+    for entry in dir {
+        let entry = match entry {
+            Ok(e) => e,
+            Err(_) => continue,
+        };
+        // Only regular files (d_type == DT_REG; symlinks are not followed)
+        match entry.file_type() {
+            Ok(ft) if ft.is_file() => {}
+            _ => continue,
+        }
+
+        let filename_os = entry.file_name();
+        let filename = filename_os.to_string_lossy().into_owned();
+        let len = filename.len();
+
+        if len < 5 || !filename.as_bytes().ends_with(b".bmp") {
+            continue;
+        }
+
+        let filepath = format!("{}/{}", directory, filename);
+
+        let mut img = BmpImg {
+            img_header: BmpHeader {
+                bf_size: 0,
+                bf_reserved: 0,
+                bf_off_bits: 0,
+                bi_size: 0,
+                bi_width: 0,
+                bi_height: 0,
+                bi_planes: 0,
+                bi_bit_count: 0,
+                bi_compression: 0,
+                bi_size_image: 0,
+                bi_x_pels_per_meter: 0,
+                bi_y_pels_per_meter: 0,
+                bi_clr_used: 0,
+                bi_clr_important: 0,
+            },
+            img_pixels: Vec::new(),
+        };
+        let err = bmp_img_read(&mut img, &filepath);
+
+        if err == BmpError::BMP_OK {
+            let mut img_checksum: u64 = 0;
+            let h = img.img_header.bi_height.wrapping_abs();
+            let w = img.img_header.bi_width;
+
+            for y in 0..h {
+                for x in 0..w {
+                    let p = &img.img_pixels[y as usize][x as usize];
+                    img_checksum = img_checksum.wrapping_add(p.red as u64);
+                    img_checksum = img_checksum.wrapping_add(p.green as u64);
+                    img_checksum = img_checksum.wrapping_add(p.blue as u64);
+                }
+            }
+
+            global_checksum = global_checksum.wrapping_add(img_checksum);
+            file_count += 1;
+            bmp_img_free(&mut img);
+        } else {
+            println!("Error reading {}: code {}", filepath, err as i32);
+        }
+    }
+
+    let elapsed_seconds = start_time.elapsed().as_secs_f64();
+    // MAIN COMPUTATION END
+
+    println!("Processed {} BMP files", file_count);
+    println!("Global checksum: {}", global_checksum);
+    println!("libbmp_time computation time: {:.6} seconds", elapsed_seconds);
+}
+```
+2026-11-12 22:25:00,372 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Finish reason for function/struct performance_main: end_turn
+2026-11-12 22:25:00,372 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Sent request in 1 chunks
+2026-11-12 22:25:00,381 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Created performance entry file at /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/temp/performance.rs
+2026-11-12 22:25:00,381 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Compiling performance binary: cargo build --release --quiet
+2026-11-12 22:25:02,269 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Using performance arguments for /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/temp/performance.rs: ['/home/gabe/libbmp_result/test_bmps']
+2026-11-12 22:25:02,270 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - DEBUG - Prepared performance runtime directories for /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/{}
+2026-11-12 22:25:02,270 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Running performance binary (1/5) in /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/temp/performance.out /home/gabe/libbmp_result/test_bmps
+2026-11-12 22:26:00,914 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Running performance binary (2/5) in /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/temp/performance.out /home/gabe/libbmp_result/test_bmps
+2026-11-12 22:26:01,653 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Running performance binary (3/5) in /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/temp/performance.out /home/gabe/libbmp_result/test_bmps
+2026-11-12 22:26:02,379 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Running performance binary (4/5) in /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/temp/performance.out /home/gabe/libbmp_result/test_bmps
+2026-11-12 22:26:03,114 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Running performance binary (5/5) in /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21: /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/temp/performance.out /home/gabe/libbmp_result/test_bmps
+2026-11-12 22:26:03,857 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Average elapsed_ms across 5 runs: 12313.281
+2026-11-12 22:26:03,858 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [Correctness check baseline] : temp checksum=38251312588 (no previous stage to compare)
+2026-11-12 22:26:03,859 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Recorded performance result 12313.281 ms at /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/temp/performance_metrics.json
+2026-11-12 22:26:03,859 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [Performance check pass] : struct-fn-replay
+2026-11-12 22:26:03,867 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Removed temporary performance directory /home/gabe/C-to-Rust-Assure-llm-based/src/python/inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/temp
+2026-11-12 22:26:03,868 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Running Crown analysis [struct-fn-replay] for ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/merged_funcs.rs: bash ./analyse.sh buffer
+2026-11-12 22:26:04,099 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - Saved Crown statistics for ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/merged_funcs.rs at ./inputs-oxivolve/libbmp/individual-funcs_sonnet55_20261112_22-23-19_claude-sonnet-5-5_2026-11-12_22-23-21/crown_statistics.json
+2026-11-12 22:26:04,101 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [token-usage] --- by stage ---
+2026-11-12 22:26:04,102 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [token-usage] section            calls  input  output  cache_r  cache_w  cost_usd
+2026-11-12 22:26:04,102 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [token-usage] -----------------  -----  -----  ------  -------  -------  --------
+2026-11-12 22:26:04,102 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [token-usage] (none)                18  18536    9788        0        0   $0.1350
+2026-11-12 22:26:04,102 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [token-usage] 
+2026-11-12 22:26:04,102 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [token-usage] --- by model ---
+2026-11-12 22:26:04,102 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [token-usage] section            calls  input  output  cache_r  cache_w  cost_usd
+2026-11-12 22:26:04,103 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [token-usage] -----------------  -----  -----  ------  -------  -------  --------
+2026-11-12 22:26:04,103 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [token-usage] claude-sonnet-5-5     18  18536    9788        0        0   $0.1350
+2026-11-12 22:26:04,103 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [token-usage] 
+2026-11-12 22:26:04,103 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [token-usage] --- total ---
+2026-11-12 22:26:04,103 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [token-usage] section            calls  input  output  cache_r  cache_w  cost_usd
+2026-11-12 22:26:04,103 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [token-usage] -----------------  -----  -----  ------  -------  -------  --------
+2026-11-12 22:26:04,103 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [token-usage] TOTAL                 18  18536    9788        0        0   $0.1350
+2026-11-12 22:26:04,104 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [token-usage] 
+2026-11-12 22:26:04,104 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [token-usage] --- retries ---
+2026-11-12 22:26:04,104 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [token-usage] compile retries :   1 calls  $0.0091
+2026-11-12 22:26:04,104 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [token-usage] struct retries  :   0 calls  $0.0000
+2026-11-12 22:26:04,104 - translator_logger./home/gabe/C-to-Rust-Assure-llm-based/src/python/temp_log/libbmp_validator_2026-11-12_22-23-21.log - INFO - [token-usage] perf retries    :   0 calls  $0.0000

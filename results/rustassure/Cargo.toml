@@ -1,0 +1,50 @@
+[package]
+name = "rustassure-sonnet55-oxivolve"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+libc = "=0.2.149"
+
+[profile.release]
+opt-level = 3
+
+[[bin]]
+name = "libcsv_time"
+path = "libcsv/run/performance.rs"
+
+[[bin]]
+name = "pagerank_time"
+path = "pagerank/run/performance.rs"
+
+[[bin]]
+name = "cjson_parse_time"
+path = "cjson_parse/run/performance.rs"
+
+[[bin]]
+name = "libbmp_time"
+path = "libbmp/run/performance.rs"
+
+[[bin]]
+name = "libbmp_write_time"
+path = "libbmp_write/run/performance.rs"
+
+[[bin]]
+name = "rfft_time"
+path = "rfft/run/performance.rs"
+
+[[bin]]
+name = "kmeans_time"
+path = "kmeans/run/performance.rs"
+
+[[bin]]
+name = "quicksort_time"
+path = "quicksort/run/performance.rs"
+
+[[bin]]
+name = "matrix_mult_time"
+path = "matrix_mult/run/performance.rs"
+
+[[bin]]
+name = "sssp_time"
+path = "sssp/run/performance.rs"

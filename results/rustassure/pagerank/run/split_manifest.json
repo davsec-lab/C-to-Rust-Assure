@@ -1,0 +1,14 @@
+{
+  "block_of": {
+    "detect_indexing": "detect_indexing",
+    "diff_timespec": "diff_timespec"
+  },
+  "deps": {
+    "detect_indexing": [],
+    "diff_timespec": []
+  },
+  "topo_sccs": [
+    "detect_indexing",
+    "diff_timespec"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "num_mut_static_accesses": 0,
+  "num_mut_unsafe_ptrs": 0,
+  "num_mut_unsafe_usages": 0,
+  "num_non_arr_mut_unsafe_ptrs": 0,
+  "num_non_arr_mut_unsafe_usages": 6,
+  "num_non_arr_unsafe_ptrs": 0,
+  "num_non_arr_unsafe_usages": 0,
+  "num_owning_ptrs_detected": 17,
+  "num_union_field_accesses": 0,
+  "num_unsafe_fn_calls": 0,
+  "num_unsafe_ptrs": 0,
+  "num_unsafe_trait_impls": 0,
+  "num_unsafe_usages": 0
+}

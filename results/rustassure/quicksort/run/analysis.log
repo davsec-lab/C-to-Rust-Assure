@@ -1,0 +1,10 @@
+Function: Tokens -> Full-Fits-Request : Full-Fits-Response: Function-Fits-Request: Function-Fits-Response: Decls-Fit-Request: Decls-Fit-Response 
+quicksort: 11 -> True : True: True: True: True: True 
+partition: 10 -> True : True: True: True: True: True 
+swap: 0 -> True : True: True: True: True: True 
+diff_timespec: 37 -> True : True: True: True: True: True 
+Summary:
+Total function: 4
+Full function + decls -> 4 fits in request limit, 4 fits in response limit
+Function only -> 4 fits in request limit, 4 fits in response limit
+Decls only -> 4 fits in request limit, 4 fits in response limit

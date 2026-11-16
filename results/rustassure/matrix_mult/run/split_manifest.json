@@ -1,0 +1,26 @@
+{
+  "block_of": {
+    "allocate_matrix": "allocate_matrix",
+    "diff_timespec": "diff_timespec",
+    "fill_matrix": "fill_matrix",
+    "free_matrix": "free_matrix",
+    "multiply_matrices": "multiply_matrices",
+    "print_matrix": "print_matrix"
+  },
+  "deps": {
+    "allocate_matrix": [],
+    "diff_timespec": [],
+    "fill_matrix": [],
+    "free_matrix": [],
+    "multiply_matrices": [],
+    "print_matrix": []
+  },
+  "topo_sccs": [
+    "multiply_matrices",
+    "free_matrix",
+    "fill_matrix",
+    "diff_timespec",
+    "allocate_matrix",
+    "print_matrix"
+  ]
+}

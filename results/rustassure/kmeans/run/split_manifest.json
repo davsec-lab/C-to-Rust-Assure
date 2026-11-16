@@ -1,0 +1,28 @@
+{
+  "block_of": {
+    "assign_clusters": "assign_clusters",
+    "diff_timespec": "diff_timespec",
+    "distance": "distance",
+    "kmeans": "kmeans",
+    "update_centroids": "update_centroids"
+  },
+  "deps": {
+    "assign_clusters": [
+      "distance"
+    ],
+    "diff_timespec": [],
+    "distance": [],
+    "kmeans": [
+      "assign_clusters",
+      "update_centroids"
+    ],
+    "update_centroids": []
+  },
+  "topo_sccs": [
+    "update_centroids",
+    "distance",
+    "assign_clusters",
+    "kmeans",
+    "diff_timespec"
+  ]
+}

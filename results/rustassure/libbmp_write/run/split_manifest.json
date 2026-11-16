@@ -1,0 +1,76 @@
+{
+  "block_of": {
+    "bmp_header_init_df": "bmp_header_init_df",
+    "bmp_header_read": "bmp_header_read",
+    "bmp_header_write": "bmp_header_write",
+    "bmp_img_alloc": "bmp_img_alloc",
+    "bmp_img_free": "bmp_img_free",
+    "bmp_img_init_df": "bmp_img_init_df",
+    "bmp_img_read": "bmp_img_read",
+    "bmp_img_write": "bmp_img_write",
+    "bmp_pixel_init": "bmp_pixel_init",
+    "bmp_row_index": "bmp_row_index",
+    "md5_final": "md5_final",
+    "md5_init": "md5_init",
+    "md5_left_rotate": "md5_left_rotate",
+    "md5_transform": "md5_transform",
+    "md5_update": "md5_update",
+    "print_file_md5": "print_file_md5"
+  },
+  "deps": {
+    "bmp_header_init_df": [],
+    "bmp_header_read": [],
+    "bmp_header_write": [],
+    "bmp_img_alloc": [],
+    "bmp_img_free": [],
+    "bmp_img_init_df": [
+      "bmp_header_init_df",
+      "bmp_img_alloc"
+    ],
+    "bmp_img_read": [
+      "bmp_header_read",
+      "bmp_img_alloc",
+      "bmp_row_index"
+    ],
+    "bmp_img_write": [
+      "bmp_header_write",
+      "bmp_row_index"
+    ],
+    "bmp_pixel_init": [],
+    "bmp_row_index": [],
+    "md5_final": [
+      "md5_update"
+    ],
+    "md5_init": [],
+    "md5_left_rotate": [],
+    "md5_transform": [
+      "md5_left_rotate"
+    ],
+    "md5_update": [
+      "md5_transform"
+    ],
+    "print_file_md5": [
+      "md5_final",
+      "md5_init",
+      "md5_update"
+    ]
+  },
+  "topo_sccs": [
+    "md5_left_rotate",
+    "md5_transform",
+    "md5_update",
+    "bmp_header_init_df",
+    "bmp_pixel_init",
+    "bmp_header_read",
+    "bmp_img_alloc",
+    "bmp_img_init_df",
+    "md5_final",
+    "bmp_row_index",
+    "bmp_header_write",
+    "bmp_img_write",
+    "bmp_img_free",
+    "md5_init",
+    "print_file_md5",
+    "bmp_img_read"
+  ]
+}

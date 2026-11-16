@@ -1,0 +1,6 @@
+allocate_matrix
+diff_timespec
+fill_matrix
+free_matrix
+multiply_matrices
+print_matrix

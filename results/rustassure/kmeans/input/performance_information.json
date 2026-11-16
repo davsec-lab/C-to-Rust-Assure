@@ -1,0 +1,7 @@
+{
+    "prompt": "int main(int argc, char *argv[]) {\n    if (argc < 3) {\n        printf(\"Usage: %s <num_points> <k> [max_iter]\\n\", argv[0]);\n        return 1;\n    }\n\n    int num_points = atoi(argv[1]);\n    int k = atoi(argv[2]);\n    int max_iter = (argc >= 4) ? atoi(argv[3]) : 100;\n\n    if (num_points <= 0 || k <= 0 || k > num_points) {\n        printf(\"Error: num_points > 0, k > 0, and k <= num_points required.\\n\");\n        return 1;\n    }\n\n    srand(42);\n    Point *points = malloc(num_points * sizeof(Point));\n    for (int i = 0; i < num_points; i++) {\n        points[i].x = (double)rand() / RAND_MAX * 100.0;\n        points[i].y = (double)rand() / RAND_MAX * 100.0;\n        points[i].cluster_id = -1;\n        points[i].cluster_distance = DBL_MAX;\n    }\n\n    Cluster *clusters = malloc(k * sizeof(Cluster));\n\n    struct timespec start_time, end_time;\n    double time_elapsed = 0;\n    clock_gettime(CLOCK_MONOTONIC, &start_time);\n\n    // MAIN COMPUTATION BEGIN\n    kmeans(points, num_points, clusters, k, max_iter);\n    // MAIN COMPUTATION END\n\n    clock_gettime(CLOCK_MONOTONIC, &end_time);\n    time_elapsed = diff_timespec(&end_time, &start_time);\n\n    printf(\"Time taken for k-means clustering of %d points into %d clusters: %f seconds\\n\", num_points, k, time_elapsed);\n\n    free(points);\n    free(clusters);\n    return 0;\n}",
+    "input_arguments": [
+        "1000000",
+        "10"
+    ]
+}
