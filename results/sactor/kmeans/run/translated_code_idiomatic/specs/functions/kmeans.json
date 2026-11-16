@@ -1,0 +1,73 @@
+{
+  "function_name": "kmeans",
+  "fields": [
+    {
+      "u_field": {
+        "name": "points",
+        "type": "*mut Point",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_from": "n",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "points",
+        "type": "&mut [Point]"
+      }
+    },
+    {
+      "u_field": {
+        "name": "n",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "points.len",
+        "type": "usize"
+      }
+    },
+    {
+      "u_field": {
+        "name": "clusters",
+        "type": "*mut Cluster",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_from": "k",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "clusters",
+        "type": "&mut [Cluster]"
+      }
+    },
+    {
+      "u_field": {
+        "name": "k",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "clusters.len",
+        "type": "usize"
+      }
+    },
+    {
+      "u_field": {
+        "name": "max_iter",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "max_iter",
+        "type": "i32"
+      }
+    }
+  ],
+  "idiomatic_name": "kmeans"
+}

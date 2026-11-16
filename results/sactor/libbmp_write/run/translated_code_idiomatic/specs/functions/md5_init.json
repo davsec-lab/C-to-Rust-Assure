@@ -1,0 +1,23 @@
+{
+  "function_name": "md5_init",
+  "fields": [
+    {
+      "u_field": {
+        "name": "ctx",
+        "type": "*mut md5_ctx",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "ctx",
+        "type": "&mut md5_ctx"
+      },
+      "ownership": "transient"
+    }
+  ],
+  "idiomatic_name": "md5_init"
+}

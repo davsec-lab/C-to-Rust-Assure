@@ -1,0 +1,3203 @@
+2026-11-16 13:29:56 | INFO     | sactor.sactor:210 | -------------SACTOR Configuration-------------
+2026-11-16 13:29:56 | INFO     | sactor.sactor:211 | Input file: matrix_mult.c
+2026-11-16 13:29:56 | INFO     | sactor.sactor:212 | Test command: test_cmd.json
+2026-11-16 13:29:56 | INFO     | sactor.sactor:213 | Is executable: True
+2026-11-16 13:29:56 | INFO     | sactor.sactor:216 | Build directory: /home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build
+2026-11-16 13:29:56 | INFO     | sactor.sactor:217 | Result directory: /home/gabe/sactor_forklift/sactor-bench-oxivolve/matrix_mult/result_sonnet55
+2026-11-16 13:29:56 | INFO     | sactor.sactor:218 | Config file: /home/gabe/sactor_forklift/sactor/sactor.sonnet55.toml
+2026-11-16 13:29:56 | INFO     | sactor.sactor:219 | No verify: False
+2026-11-16 13:29:56 | INFO     | sactor.sactor:220 | Unidiomatic only: False
+2026-11-16 13:29:56 | INFO     | sactor.sactor:221 | LLM statistics base path: /home/gabe/sactor_forklift/sactor-bench-oxivolve/matrix_mult/result_sonnet55/llm_stat.json
+2026-11-16 13:29:56 | INFO     | sactor.sactor:222 | Extra compile command: None
+2026-11-16 13:29:56 | INFO     | sactor.sactor:223 | Compile commands file: 
+2026-11-16 13:29:56 | INFO     | sactor.sactor:224 | Link args: ['-lm']
+2026-11-16 13:29:56 | INFO     | sactor.sactor:225 | Idiomatic only: False
+2026-11-16 13:29:56 | INFO     | sactor.sactor:226 | Continue run when incomplete: False
+2026-11-16 13:29:56 | INFO     | sactor.sactor:227 | -------------End of Configuration-------------
+2026-11-16 13:29:56 | DEBUG    | sactor.sactor:284 | Total structs: 0; order groups: 0
+2026-11-16 13:29:56 | DEBUG    | sactor.sactor:286 | Total functions: 7; order groups: 7
+2026-11-16 13:29:56 | DEBUG    | sactor.sactor:288 | Struct order: []
+2026-11-16 13:29:56 | DEBUG    | sactor.sactor:289 | Function order: [[FunctionInfo(int * * allocate_matrix ( int size ))], [FunctionInfo(void free_matrix ( int * * matrix , int size ))], [FunctionInfo(void fill_matrix ( int * * matrix , int size ))], [FunctionInfo(void multiply_matrices ( int * * A , int * * B , int * * C , int size ))], [FunctionInfo(void print_matrix ( int * * matrix , int size , const char * name ))], [FunctionInfo(static double diff_timespec ( struct timespec * time1 , struct timespec * time0 ))], [FunctionInfo(int main ( int argc , char * argv [ ] ))]]
+2026-11-16 13:29:56 | DEBUG    | sactor.llm.llm:38 | Default model: 'claude-sonnet-5-5'
+2026-11-16 13:29:56 | DEBUG    | sactor.llm.llm:40 | Found 1 models in config
+2026-11-16 13:29:56 | DEBUG    | sactor.llm.llm:46 | Model mapping 0: 'claude-sonnet-5-5' -> 'anthropic/claude-sonnet-5-5': {'model': 'anthropic/claude-sonnet-5-5', 'api_key': '***REDACTED***', 'max_tokens': '***REDACTED***'}
+2026-11-16 13:29:56 | DEBUG    | sactor.thirdparty.c2rust:52 | Running c2rust command: ['c2rust', 'transpile', '--preserve-unused-functions', '/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmp4abq54uf/c2rust/unfolded_typedefs.c', '--', '-I/usr/lib/llvm-19/lib/clang/19/include', '-I/usr/local/include', '-I/usr/include/x86_64-linux-gnu', '-I/usr/include']
+2026-11-16 13:29:56 | DEBUG    | sactor.sactor:425 | Checking function allocate_matrix: struct_ready=True, struct_blockers=[]
+2026-11-16 13:29:57 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: allocate_matrix (attempts: 0)
+2026-11-16 13:29:57 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+int **allocate_matrix(int size)
+{
+    int **matrix = (int **)malloc(size * sizeof(int *));
+    if (!matrix)
+    {
+        printf("Error: Memory allocation failed.\n");
+        exit(1);
+    }
+    for (int i = 0; i < size; i++)
+    {
+        matrix[i] = (int *)malloc(size * sizeof(int));
+        if (!matrix[i])
+        {
+            printf("Error: Memory allocation failed.\n");
+            exit(1);
+        }
+    }
+    return matrix;
+}
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:30:01 | RESPONSE | sactor.llm:160 | Below is the Rust translation. It keeps the raw `malloc` calls through `libc`, so the allocation behavior matches the C version, including the error message and `exit(1)` on failure.
+
+Two details are worth noting:
+- `printf` is replaced with `libc::printf` and a null-terminated byte string.
+- A `size` of 0 makes `malloc(0)` return either null or a unique pointer, depending on the platform. The code handles this the same way as the C original, so the behavior is identical.
+
+----FUNCTION----
+```rust
+pub unsafe fn allocate_matrix(size: i32) -> *mut *mut i32 {
+    let matrix = libc::malloc((size as usize).wrapping_mul(std::mem::size_of::<*mut i32>())) as *mut *mut i32;
+    if matrix.is_null() {
+        libc::printf(b"Error: Memory allocation failed.\n\0".as_ptr() as *const libc::c_char);
+        libc::exit(1);
+    }
+    let mut i: i32 = 0;
+    while i < size {
+        let row = libc::malloc((size as usize).wrapping_mul(std::mem::size_of::<i32>())) as *mut i32;
+        *matrix.add(i as usize) = row;
+        if row.is_null() {
+            libc::printf(b"Error: Memory allocation failed.\n\0".as_ptr() as *const libc::c_char);
+            libc::exit(1);
+        }
+        i += 1;
+    }
+    matrix
+}
+```
+----END FUNCTION----
+2026-11-16 13:30:01 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:30:01 | DEBUG    | sactor.utils:258 | pub unsafe fn allocate_matrix(size: i32) -> *mut *mut i32 {
+    let matrix = libc::malloc((size as usize).wrapping_mul(std::mem::size_of::<*mut i32>())) as *mut *mut i32;
+    if matrix.is_null() {
+        libc::printf(b"Error: Memory allocation failed.\n\0".as_ptr() as *const libc::c_char);
+        libc::exit(1);
+    }
+    let mut i: i32 = 0;
+    while i < size {
+        let row = libc::malloc((size as usize).wrapping_mul(std::mem::size_of::<i32>())) as *mut i32;
+        *matrix.add(i as usize) = row;
+        if row.is_null() {
+            libc::printf(b"Error: Memory allocation failed.\n\0".as_ptr() as *const libc::c_char);
+            libc::exit(1);
+        }
+        i += 1;
+    }
+    matrix
+}
+
+2026-11-16 13:30:01 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function allocate_matrix:
+2026-11-16 13:30:01 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub unsafe fn allocate_matrix(size: i32) -> *mut *mut i32 {
+    let matrix = libc::malloc(
+        (size as usize).wrapping_mul(std::mem::size_of::<*mut i32>()),
+    ) as *mut *mut i32;
+    if matrix.is_null() {
+        libc::printf(
+            b"Error: Memory allocation failed.\n\0".as_ptr() as *const libc::c_char,
+        );
+        libc::exit(1);
+    }
+    let mut i: i32 = 0;
+    while i < size {
+        let row = libc::malloc((size as usize).wrapping_mul(std::mem::size_of::<i32>()))
+            as *mut i32;
+        *matrix.add(i as usize) = row;
+        if row.is_null() {
+            libc::printf(
+                b"Error: Memory allocation failed.\n\0".as_ptr() as *const libc::c_char,
+            );
+            libc::exit(1);
+        }
+        i += 1;
+    }
+    matrix
+}
+
+2026-11-16 13:30:01 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/build_attempt/Cargo.toml
+2026-11-16 13:30:03 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:30:03 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_rust/Cargo.toml
+2026-11-16 13:30:06 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_c/allocate_matrix', '/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_c/allocate_matrix.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_rust/target/debug', '-lm', '-lallocate_matrix']
+2026-11-16 13:30:06 | DEBUG    | sactor.sactor:425 | Checking function free_matrix: struct_ready=True, struct_blockers=[]
+2026-11-16 13:30:06 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: free_matrix (attempts: 0)
+2026-11-16 13:30:06 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+void free_matrix(int **matrix, int size)
+{
+    for (int i = 0; i < size; i++)
+    {
+        free(matrix[i]);
+    }
+    free(matrix);
+}
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:30:09 | RESPONSE | sactor.llm:160 | The C function frees each row of a matrix and then frees the array of row pointers. In Rust I keep the same raw-pointer signature and call `libc::free` on each row, then on the outer pointer.
+
+----FUNCTION----
+```rust
+pub unsafe fn free_matrix(matrix: *mut *mut i32, size: i32) {
+    let mut i: i32 = 0;
+    while i < size {
+        libc::free(*matrix.offset(i as isize) as *mut libc::c_void);
+        i += 1;
+    }
+    libc::free(matrix as *mut libc::c_void);
+}
+```
+----END FUNCTION----
+2026-11-16 13:30:09 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:30:09 | DEBUG    | sactor.utils:258 | pub unsafe fn free_matrix(matrix: *mut *mut i32, size: i32) {
+    let mut i: i32 = 0;
+    while i < size {
+        libc::free(*matrix.offset(i as isize) as *mut libc::c_void);
+        i += 1;
+    }
+    libc::free(matrix as *mut libc::c_void);
+}
+
+2026-11-16 13:30:09 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function free_matrix:
+2026-11-16 13:30:09 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub unsafe fn free_matrix(matrix: *mut *mut i32, size: i32) {
+    let mut i: i32 = 0;
+    while i < size {
+        libc::free(*matrix.offset(i as isize) as *mut libc::c_void);
+        i += 1;
+    }
+    libc::free(matrix as *mut libc::c_void);
+}
+
+2026-11-16 13:30:09 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/build_attempt/Cargo.toml
+2026-11-16 13:30:11 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:30:11 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_rust/Cargo.toml
+2026-11-16 13:30:13 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_c/free_matrix', '/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_c/free_matrix.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_rust/target/debug', '-lm', '-lfree_matrix']
+2026-11-16 13:30:14 | DEBUG    | sactor.sactor:425 | Checking function fill_matrix: struct_ready=True, struct_blockers=[]
+2026-11-16 13:30:14 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: fill_matrix (attempts: 0)
+2026-11-16 13:30:14 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+void fill_matrix(int **matrix, int size)
+{
+    for (int i = 0; i < size; i++)
+    {
+        for (int j = 0; j < size; j++)
+        {
+            matrix[i][j] = rand();
+        }
+    }
+}
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:30:16 | RESPONSE | sactor.llm:160 | ----FUNCTION----
+```rust
+pub unsafe fn fill_matrix(matrix: *mut *mut libc::c_int, size: libc::c_int) {
+    let mut i: libc::c_int = 0;
+    while i < size {
+        let mut j: libc::c_int = 0;
+        while j < size {
+            let row = *matrix.offset(i as isize);
+            *row.offset(j as isize) = libc::rand();
+            j += 1;
+        }
+        i += 1;
+    }
+}
+```
+----END FUNCTION----
+2026-11-16 13:30:16 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:30:16 | DEBUG    | sactor.utils:258 | pub unsafe fn fill_matrix(matrix: *mut *mut libc::c_int, size: libc::c_int) {
+    let mut i: libc::c_int = 0;
+    while i < size {
+        let mut j: libc::c_int = 0;
+        while j < size {
+            let row = *matrix.offset(i as isize);
+            *row.offset(j as isize) = libc::rand();
+            j += 1;
+        }
+        i += 1;
+    }
+}
+
+2026-11-16 13:30:16 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function fill_matrix:
+2026-11-16 13:30:16 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub unsafe fn fill_matrix(matrix: *mut *mut libc::c_int, size: libc::c_int) {
+    let mut i: libc::c_int = 0;
+    while i < size {
+        let mut j: libc::c_int = 0;
+        while j < size {
+            let row = *matrix.offset(i as isize);
+            *row.offset(j as isize) = libc::rand();
+            j += 1;
+        }
+        i += 1;
+    }
+}
+
+2026-11-16 13:30:16 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/build_attempt/Cargo.toml
+2026-11-16 13:30:18 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:30:18 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_rust/Cargo.toml
+2026-11-16 13:30:21 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_c/fill_matrix', '/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_c/fill_matrix.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_rust/target/debug', '-lm', '-lfill_matrix']
+2026-11-16 13:30:21 | DEBUG    | sactor.sactor:425 | Checking function multiply_matrices: struct_ready=True, struct_blockers=[]
+2026-11-16 13:30:21 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: multiply_matrices (attempts: 0)
+2026-11-16 13:30:21 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+void multiply_matrices(int **A, int **B, int **C, int size)
+{
+    for (int i = 0; i < size; i++)
+    {
+        for (int j = 0; j < size; j++)
+        {
+            C[i][j] = 0;
+            for (int k = 0; k < size; k++)
+            {
+                C[i][j] += A[i][k] * B[k][j];
+            }
+        }
+    }
+}
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:30:25 | RESPONSE | sactor.llm:160 | I translated this with raw pointers to keep the same memory layout as the C `int **`. It is `unsafe`, as the C code is.
+
+C `int` overflow is undefined behavior for signed values. Rust would panic on overflow in debug builds, so I used wrapping arithmetic to get the usual two's-complement behavior.
+
+----FUNCTION----
+```rust
+pub unsafe fn multiply_matrices(a: *mut *mut i32, b: *mut *mut i32, c: *mut *mut i32, size: i32) {
+    let mut i: i32 = 0;
+    while i < size {
+        let mut j: i32 = 0;
+        while j < size {
+            let c_row = *c.offset(i as isize);
+            *c_row.offset(j as isize) = 0;
+            let mut k: i32 = 0;
+            while k < size {
+                let a_row = *a.offset(i as isize);
+                let b_row = *b.offset(k as isize);
+                let prod = (*a_row.offset(k as isize)).wrapping_mul(*b_row.offset(j as isize));
+                let cur = *c_row.offset(j as isize);
+                *c_row.offset(j as isize) = cur.wrapping_add(prod);
+                k += 1;
+            }
+            j += 1;
+        }
+        i += 1;
+    }
+}
+```
+----END FUNCTION----
+2026-11-16 13:30:25 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:30:25 | DEBUG    | sactor.utils:258 | pub unsafe fn multiply_matrices(a: *mut *mut i32, b: *mut *mut i32, c: *mut *mut i32, size: i32) {
+    let mut i: i32 = 0;
+    while i < size {
+        let mut j: i32 = 0;
+        while j < size {
+            let c_row = *c.offset(i as isize);
+            *c_row.offset(j as isize) = 0;
+            let mut k: i32 = 0;
+            while k < size {
+                let a_row = *a.offset(i as isize);
+                let b_row = *b.offset(k as isize);
+                let prod = (*a_row.offset(k as isize)).wrapping_mul(*b_row.offset(j as isize));
+                let cur = *c_row.offset(j as isize);
+                *c_row.offset(j as isize) = cur.wrapping_add(prod);
+                k += 1;
+            }
+            j += 1;
+        }
+        i += 1;
+    }
+}
+
+2026-11-16 13:30:25 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function multiply_matrices:
+2026-11-16 13:30:25 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub unsafe fn multiply_matrices(
+    a: *mut *mut i32,
+    b: *mut *mut i32,
+    c: *mut *mut i32,
+    size: i32,
+) {
+    let mut i: i32 = 0;
+    while i < size {
+        let mut j: i32 = 0;
+        while j < size {
+            let c_row = *c.offset(i as isize);
+            *c_row.offset(j as isize) = 0;
+            let mut k: i32 = 0;
+            while k < size {
+                let a_row = *a.offset(i as isize);
+                let b_row = *b.offset(k as isize);
+                let prod = (*a_row.offset(k as isize))
+                    .wrapping_mul(*b_row.offset(j as isize));
+                let cur = *c_row.offset(j as isize);
+                *c_row.offset(j as isize) = cur.wrapping_add(prod);
+                k += 1;
+            }
+            j += 1;
+        }
+        i += 1;
+    }
+}
+
+2026-11-16 13:30:25 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/build_attempt/Cargo.toml
+2026-11-16 13:30:27 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:30:27 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_rust/Cargo.toml
+2026-11-16 13:30:29 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_c/multiply_matrices', '/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_c/multiply_matrices.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_rust/target/debug', '-lm', '-lmultiply_matrices']
+2026-11-16 13:30:29 | DEBUG    | sactor.sactor:425 | Checking function print_matrix: struct_ready=True, struct_blockers=[]
+2026-11-16 13:30:29 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: print_matrix (attempts: 0)
+2026-11-16 13:30:29 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+void print_matrix(int **matrix, int size, const char *name)
+{
+    printf("Matrix %s:\n", name);
+    for (int i = 0; i < size; i++)
+    {
+        for (int j = 0; j < size; j++)
+        {
+            printf("%5d ", matrix[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:30:32 | RESPONSE | sactor.llm:160 | I translated this using `libc::printf` so the output behaviour matches the C version exactly. The function takes the same raw pointer types as the C signature and is marked `unsafe`.
+
+----FUNCTION----
+```rust
+pub unsafe fn print_matrix(matrix: *mut *mut i32, size: i32, name: *const libc::c_char) {
+    libc::printf(b"Matrix %s:\n\0".as_ptr() as *const libc::c_char, name);
+    let mut i: i32 = 0;
+    while i < size {
+        let row = *matrix.offset(i as isize);
+        let mut j: i32 = 0;
+        while j < size {
+            libc::printf(
+                b"%5d \0".as_ptr() as *const libc::c_char,
+                *row.offset(j as isize) as libc::c_int,
+            );
+            j += 1;
+        }
+        libc::printf(b"\n\0".as_ptr() as *const libc::c_char);
+        i += 1;
+    }
+    libc::printf(b"\n\0".as_ptr() as *const libc::c_char);
+}
+```
+----END FUNCTION----
+2026-11-16 13:30:32 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:30:32 | DEBUG    | sactor.utils:258 | pub unsafe fn print_matrix(matrix: *mut *mut i32, size: i32, name: *const libc::c_char) {
+    libc::printf(b"Matrix %s:\n\0".as_ptr() as *const libc::c_char, name);
+    let mut i: i32 = 0;
+    while i < size {
+        let row = *matrix.offset(i as isize);
+        let mut j: i32 = 0;
+        while j < size {
+            libc::printf(
+                b"%5d \0".as_ptr() as *const libc::c_char,
+                *row.offset(j as isize) as libc::c_int,
+            );
+            j += 1;
+        }
+        libc::printf(b"\n\0".as_ptr() as *const libc::c_char);
+        i += 1;
+    }
+    libc::printf(b"\n\0".as_ptr() as *const libc::c_char);
+}
+
+2026-11-16 13:30:32 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function print_matrix:
+2026-11-16 13:30:32 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub unsafe fn print_matrix(matrix: *mut *mut i32, size: i32, name: *const libc::c_char) {
+    libc::printf(b"Matrix %s:\n\0".as_ptr() as *const libc::c_char, name);
+    let mut i: i32 = 0;
+    while i < size {
+        let row = *matrix.offset(i as isize);
+        let mut j: i32 = 0;
+        while j < size {
+            libc::printf(
+                b"%5d \0".as_ptr() as *const libc::c_char,
+                *row.offset(j as isize) as libc::c_int,
+            );
+            j += 1;
+        }
+        libc::printf(b"\n\0".as_ptr() as *const libc::c_char);
+        i += 1;
+    }
+    libc::printf(b"\n\0".as_ptr() as *const libc::c_char);
+}
+
+2026-11-16 13:30:32 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/build_attempt/Cargo.toml
+2026-11-16 13:30:34 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:30:34 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_rust/Cargo.toml
+2026-11-16 13:30:37 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_c/print_matrix', '/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_c/print_matrix.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_rust/target/debug', '-lm', '-lprint_matrix']
+2026-11-16 13:30:37 | DEBUG    | sactor.sactor:425 | Checking function diff_timespec: struct_ready=True, struct_blockers=[]
+2026-11-16 13:30:37 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: diff_timespec (attempts: 0)
+2026-11-16 13:30:37 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+static double diff_timespec(struct timespec *time1, struct timespec *time0)
+{
+    return (time1->tv_sec - time0->tv_sec) + (time1->tv_nsec - time0->tv_nsec) / 1000000000.0;
+}
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:30:41 | RESPONSE | sactor.llm:160 | In C, `tv_sec` is `time_t` and `tv_nsec` is `long`. The subtraction happens in integer types, and the result is then converted to double when added to the double quotient. The `(tv_nsec - tv_nsec)` difference is a `long`, which is divided by the double `1000000000.0`, so it is converted to double first.
+
+In Rust, `libc::timespec` has the same fields. I'll use `wrapping_sub` to mimic C's behavior without overflow panics in debug builds. The first term is `time_t` (i64) converted to f64 when added to the double.
+
+```rust
+unsafe fn diff_timespec(time1: *mut libc::timespec, time0: *mut libc::timespec) -> f64
+```
+
+The function is `static` in C, so it is private. In Rust I'll make it a plain `fn` that takes raw pointers, which keeps the original semantics.
+
+----FUNCTION----
+```rust
+fn diff_timespec(time1: *mut libc::timespec, time0: *mut libc::timespec) -> f64 {
+    unsafe {
+        let sec = (*time1).tv_sec.wrapping_sub((*time0).tv_sec);
+        let nsec = (*time1).tv_nsec.wrapping_sub((*time0).tv_nsec);
+        (sec as f64) + (nsec as f64) / 1000000000.0
+    }
+}
+```
+----END FUNCTION----
+2026-11-16 13:30:41 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:30:41 | DEBUG    | sactor.utils:258 | fn diff_timespec(time1: *mut libc::timespec, time0: *mut libc::timespec) -> f64 {
+    unsafe {
+        let sec = (*time1).tv_sec.wrapping_sub((*time0).tv_sec);
+        let nsec = (*time1).tv_nsec.wrapping_sub((*time0).tv_nsec);
+        (sec as f64) + (nsec as f64) / 1000000000.0
+    }
+}
+
+2026-11-16 13:30:41 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function diff_timespec:
+2026-11-16 13:30:41 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | fn diff_timespec(time1: *mut libc::timespec, time0: *mut libc::timespec) -> f64 {
+    unsafe {
+        let sec = (*time1).tv_sec.wrapping_sub((*time0).tv_sec);
+        let nsec = (*time1).tv_nsec.wrapping_sub((*time0).tv_nsec);
+        (sec as f64) + (nsec as f64) / 1000000000.0
+    }
+}
+
+2026-11-16 13:30:41 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/build_attempt/Cargo.toml
+2026-11-16 13:30:43 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:30:43 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_rust/Cargo.toml
+2026-11-16 13:30:45 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_c/diff_timespec', '/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_c/diff_timespec.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_rust/target/debug', '-lm', '-ldiff_timespec']
+2026-11-16 13:30:46 | DEBUG    | sactor.sactor:425 | Checking function main: struct_ready=True, struct_blockers=[]
+2026-11-16 13:30:46 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: main (attempts: 0)
+2026-11-16 13:30:46 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+int main(int argc, char *argv[])
+{
+    if (argc != 2)
+    {
+        printf("Usage: %s <matrix_size>\n", argv[0]);
+        return 1;
+    }
+
+    int size = atoi(argv[1]);
+    if (size <= 0)
+    {
+        printf("Error: matrix size must be a positive integer.\n");
+        return 1;
+    }
+
+    srand(10000);
+
+    // Allocate matrices
+    int **A = allocate_matrix(size);
+    int **B = allocate_matrix(size);
+    int **C = allocate_matrix(size);
+
+    fill_matrix(A, size);
+    fill_matrix(B, size);
+
+    // print_matrix(A, size, "A");
+
+    struct timespec start_time, end_time;
+    double time_elapsed = 0;
+    clock_gettime(CLOCK_MONOTONIC, &start_time);
+
+    // MAIN COMPUTATION BEGIN
+    multiply_matrices(A, B, C, size);
+    // MAIN COMPUTATION END
+
+    clock_gettime(CLOCK_MONOTONIC, &end_time);
+    time_elapsed = diff_timespec(&end_time, &start_time);
+
+    printf("Time taken for matrix multiplication of size %d x %d: %f seconds\n", size, size, time_elapsed);
+
+    // Optionally print result matrix
+    // print_matrix(C, size, "C");
+
+    free_matrix(A, size);
+    free_matrix(B, size);
+    free_matrix(C, size);
+
+    return 0;
+}
+```
+
+The function is the `main` function, which is the entry point of the program. The function signature should be: `pub fn main() -> ()`.
+For `return 0;`, you can directly `return;` in Rust or ignore it if it's the last statement.
+For other return values, you can use `std::process::exit()` to return the value.
+For `argc` and `argv`, you can use `std::env::args()` to get the arguments.
+
+The function body above may reference the following macros. Use these definitions to understand the semantics; do **NOT** redefine them in Rust—expand or replicate their behavior as needed in the translation.
+```c
+#define CLOCK_MONOTONIC		1
+```
+
+The function calls the following functions, which are already translated and defined in Rust.
+Do **NOT** include the definition or declaration of the following functions in your translation.
+If you include them, the output will be considered **invalid**.
+But you can call the following functions in your translation.
+Only output the translation of the function I request.
+The called functions' signatures in Rust are the following:
+```rust
+fn allocate_matrix (size : i32) -> * mut * mut i32;
+fn fill_matrix (matrix : * mut * mut libc :: c_int , size : libc :: c_int);
+fn multiply_matrices (a : * mut * mut i32 , b : * mut * mut i32 , c : * mut * mut i32 , size : i32);
+fn diff_timespec (time1 : * mut libc :: timespec , time0 : * mut libc :: timespec) -> f64;
+fn free_matrix (matrix : * mut * mut i32 , size : i32);
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:30:52 | RESPONSE | sactor.llm:160 | I translated `main` directly, using `std::env::args()` for `argc`/`argv` and the `libc` crate for `srand` and `clock_gettime`. A few behaviors are worth noting:
+
+- **`atoi`:** I call `libc::atoi` on a `CString` built from the argument, which keeps its exact parsing behavior.
+- **Argument count:** `argc != 2` becomes `args.len() != 2`.
+- **`argv[0]`:** The usage message prints `args[0]`. If it is missing, an empty string is used instead.
+- **`printf` format:** `%f` prints six decimal places, which matches Rust's `{:.6}`.
+- **Exit codes:** The error paths use `std::process::exit(1)`.
+
+----FUNCTION----
+```rust
+pub fn main() -> () {
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() != 2 {
+        let prog = if !args.is_empty() { args[0].clone() } else { String::new() };
+        println!("Usage: {} <matrix_size>", prog);
+        std::process::exit(1);
+    }
+
+    let c_arg = std::ffi::CString::new(args[1].clone()).unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
+    let size: i32 = unsafe { libc::atoi(c_arg.as_ptr()) };
+    if size <= 0 {
+        println!("Error: matrix size must be a positive integer.");
+        std::process::exit(1);
+    }
+
+    unsafe {
+        libc::srand(10000);
+
+        let a = allocate_matrix(size);
+        let b = allocate_matrix(size);
+        let c = allocate_matrix(size);
+
+        fill_matrix(a, size);
+        fill_matrix(b, size);
+
+        let mut start_time: libc::timespec = std::mem::zeroed();
+        let mut end_time: libc::timespec = std::mem::zeroed();
+
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut start_time);
+
+        multiply_matrices(a, b, c, size);
+
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut end_time);
+        let time_elapsed: f64 = diff_timespec(&mut end_time, &mut start_time);
+
+        println!(
+            "Time taken for matrix multiplication of size {} x {}: {:.6} seconds",
+            size, size, time_elapsed
+        );
+
+        free_matrix(a, size);
+        free_matrix(b, size);
+        free_matrix(c, size);
+    }
+}
+```
+----END FUNCTION----
+2026-11-16 13:30:52 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:30:52 | DEBUG    | sactor.utils:258 | pub fn main() -> () {
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() != 2 {
+        let prog = if !args.is_empty() { args[0].clone() } else { String::new() };
+        println!("Usage: {} <matrix_size>", prog);
+        std::process::exit(1);
+    }
+
+    let c_arg = std::ffi::CString::new(args[1].clone()).unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
+    let size: i32 = unsafe { libc::atoi(c_arg.as_ptr()) };
+    if size <= 0 {
+        println!("Error: matrix size must be a positive integer.");
+        std::process::exit(1);
+    }
+
+    unsafe {
+        libc::srand(10000);
+
+        let a = allocate_matrix(size);
+        let b = allocate_matrix(size);
+        let c = allocate_matrix(size);
+
+        fill_matrix(a, size);
+        fill_matrix(b, size);
+
+        let mut start_time: libc::timespec = std::mem::zeroed();
+        let mut end_time: libc::timespec = std::mem::zeroed();
+
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut start_time);
+
+        multiply_matrices(a, b, c, size);
+
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut end_time);
+        let time_elapsed: f64 = diff_timespec(&mut end_time, &mut start_time);
+
+        println!(
+            "Time taken for matrix multiplication of size {} x {}: {:.6} seconds",
+            size, size, time_elapsed
+        );
+
+        free_matrix(a, size);
+        free_matrix(b, size);
+        free_matrix(c, size);
+    }
+}
+
+2026-11-16 13:30:52 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function main:
+2026-11-16 13:30:52 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub fn main() -> () {
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() != 2 {
+        let prog = if !args.is_empty() { args[0].clone() } else { String::new() };
+        println!("Usage: {} <matrix_size>", prog);
+        std::process::exit(1);
+    }
+    let c_arg = std::ffi::CString::new(args[1].clone())
+        .unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
+    let size: i32 = unsafe { libc::atoi(c_arg.as_ptr()) };
+    if size <= 0 {
+        println!("Error: matrix size must be a positive integer.");
+        std::process::exit(1);
+    }
+    unsafe {
+        libc::srand(10000);
+        let a = allocate_matrix(size);
+        let b = allocate_matrix(size);
+        let c = allocate_matrix(size);
+        fill_matrix(a, size);
+        fill_matrix(b, size);
+        let mut start_time: libc::timespec = std::mem::zeroed();
+        let mut end_time: libc::timespec = std::mem::zeroed();
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut start_time);
+        multiply_matrices(a, b, c, size);
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut end_time);
+        let time_elapsed: f64 = diff_timespec(&mut end_time, &mut start_time);
+        println!(
+            "Time taken for matrix multiplication of size {} x {}: {:.6} seconds", size,
+            size, time_elapsed
+        );
+        free_matrix(a, size);
+        free_matrix(b, size);
+        free_matrix(c, size);
+    }
+}
+
+2026-11-16 13:30:52 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/build_attempt/Cargo.toml
+2026-11-16 13:30:54 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:30:54 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_rust/Cargo.toml
+2026-11-16 13:31:04 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_c/main', '/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_c/main.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_rust/target/debug', '-lm', '-lmain']
+2026-11-16 13:31:04 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/build_attempt/Cargo.toml
+2026-11-16 13:31:06 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:31:06 | DEBUG    | sactor.combiner.program_combiner:234 | Running clippy fix command: cargo clippy --fix --allow-no-vcs --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/program/Cargo.toml -- -A clippy::cmp_null
+2026-11-16 13:31:08 | INFO     | sactor.combiner.program_combiner:259 | Found 11 warnings in the combined code
+2026-11-16 13:31:08 | INFO     | sactor.combiner.program_combiner:260 | Found 4 errors in the combined code
+2026-11-16 13:31:09 | DEBUG    | sactor.thirdparty.crown:81 | Executing crown command: rustup run nightly-2023-01-26-x86_64-unknown-linux-gnu crown /home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/crown_analysis/src/lib.rs preprocess in-place
+2026-11-16 13:31:10 | WARNING  | sactor.thirdparty.crown:90 | crown preprocess messed up code; restoring original translation
+2026-11-16 13:31:10 | WARNING  | sactor.thirdparty.crown:103 | crown explicit-addr messed up code; restoring original translation
+2026-11-16 13:31:10 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: allocate_matrix (attempts: 0)
+2026-11-16 13:31:10 | PROMPT   | sactor.llm:155 | 
+Translate the following unidiomatic Rust function into idiomatic Rust. Try to remove all the `unsafe` blocks and only use the safe Rust code or use the `unsafe` blocks only when necessary.
+Before translating, analyze the unsafe blocks one by one and how to convert them into safe Rust code.
+**libc may not be provided in the idiomatic code, so try to avoid using libc functions and types, and avoid using `std::ffi` module.**
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+```rust
+pub unsafe fn allocate_matrix(size: i32) -> *mut *mut i32 {
+    let matrix = libc::malloc((size as usize).wrapping_mul(std::mem::size_of::<*mut i32>()))
+        as *mut *mut i32;
+    if matrix.is_null() {
+        libc::printf(b"Error: Memory allocation failed.\n\0".as_ptr() as *const libc::c_char);
+        libc::exit(1);
+    }
+    let mut i: i32 = 0;
+    while i < size {
+        let row =
+            libc::malloc((size as usize).wrapping_mul(std::mem::size_of::<i32>())) as *mut i32;
+        *matrix.add(i as usize) = row;
+        if row.is_null() {
+            libc::printf(b"Error: Memory allocation failed.\n\0".as_ptr() as *const libc::c_char);
+            libc::exit(1);
+        }
+        i += 1;
+    }
+    matrix
+}
+
+```
+
+"Crown" is a pointer analysis tool that can help to identify the ownership, mutability and fatness of pointers. Following are the possible annotations for pointers:
+```
+fatness:
+    - `Ptr`: Single pointer
+    - `Arr`: Pointer is an array
+mutability:
+    - `Mut`: Mutable pointer
+    - `Imm`: Immutable pointer
+ownership:
+    - `Owning`: Owns the pointer
+    - `Transient`: Not owns the pointer
+````
+
+The following is the output of Crown for this function:
+```
+{'fresh0': {'fatness': ['Ptr', 'Arr'], 'mutability': ['Mut', 'Mut'], 'ownership': ['Transient', 'Transient']}, 'matrix': {'fatness': ['Arr', 'Arr'], 'mutability': ['Mut', 'Mut'], 'ownership': ['Owning', 'Transient']}}
+```
+Analyze the Crown output firstly, then translate the pointers in function arguments and return values with the help of the Crown output.
+Try to avoid using pointers in the function arguments and return values if possible.
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+
+Also output a minimal JSON spec that maps the unidiomatic Rust layout to the idiomatic Rust for the function arguments and return value.
+Full JSON Schema for the SPEC (do not output the schema; output only an instance that conforms to it):
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sactor://spec.schema.json",
+  "title": "Sactor Idiomatic Translation Spec",
+  "description": "Schema describing mappings between unidiomatic (repr(C)) Rust and idiomatic Rust for structs and function arguments.",
+  "$defs": {
+    "PtrShape": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ptr": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["slice", "cstring", "ref"] },
+            "len_from": { "type": "string", "description": "Name of the unidiomatic length field." },
+            "len_const": { "type": "integer", "minimum": 0, "description": "Constant element count for the pointer." },
+            "null": { "enum": ["nullable", "forbidden"], "description": "Whether the pointer can be NULL." }
+          },
+          "required": ["kind"]
+        }
+      },
+      "required": ["ptr"]
+    },
+    "UField": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "shape": {
+          "oneOf": [
+            { "const": "scalar", "description": "Scalar value (integer, float, bool, char, or any non-pointer data structures)" },
+            { "$ref": "#/$defs/PtrShape", "description": "Pointer type (raw pointer, slice, or C string)" }
+          ]
+        }
+      },
+      "required": ["name", "shape"]
+    },
+    "IField": {
+      "type": "object",
+      "description": "Idiomatic-side field path. Special convention: if name == 'ret', this Field describes the function return mapping.",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic field path or 'ret' for function return." },
+        "type": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "EnumDiscriminant": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tag": { "type": "string", "description": "u_field.name of the discriminant/tag" },
+        "equals": { "type": ["integer", "string"], "description": "Value of tag that selects this variant" }
+      },
+      "required": ["tag", "equals"]
+    },
+    "EnumVariant": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic enum variant name" },
+        "when": { "$ref": "#/$defs/EnumDiscriminant" },
+        "payload": { "type": "array", "items": { "$ref": "#/$defs/Field" } }
+      },
+      "required": ["name", "when"]
+    },
+    "Field": {
+      "type": "object",
+      "description": "Field mapping between unidiomatic C-style field and idiomatic Rust path.",
+      "properties": {
+        "u_field": { "$ref": "#/$defs/UField" },
+        "i_field": { "$ref": "#/$defs/IField" },
+        "ownership": { "type": "string", "enum": ["owning", "transient"], "description": "Optional ownership hint." },
+        "compare": {
+          "type": "string",
+          "enum": ["by_value", "by_slice", "skip"],
+          "description": "Comparison strategy for roundtrip tests. Use 'skip' generously for values that may legitimately diverge (raw pointers, aliasing views, externally-owned buffers, handles, allocator state, etc.) so the automated selftest stays permissive."
+        },
+        "llm_note": { "type": "string", "description": "Free-form note for LLM when automatic codegen is insufficient (e.g., aliasing/offset semantics)." }
+      },
+      "required": ["u_field", "i_field"]
+    },
+    "StructSpec": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "struct_name": { "type": "string", "description": "Name of the translated idiomatic struct." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 },
+        "i_kind": { "type": "string", "enum": ["struct", "enum"], "default": "struct" },
+        "i_type": { "type": "string", "description": "Idiomatic type name (useful when i_kind=enum)" },
+        "variants": { "type": "array", "items": { "$ref": "#/$defs/EnumVariant" } }
+      },
+      "required": ["fields", "i_kind", "i_type"]
+    },
+    "FunctionSpec": {
+      "type": "object",
+      "description": "Function argument/return mapping. Return values are expressed via a Field whose i_field.name == 'ret'.",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "function_name": { "type": "string", "description": "Name of the translated idiomatic function." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 }
+      },
+      "required": ["fields"]
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/StructSpec" },
+    { "$ref": "#/$defs/FunctionSpec" }
+  ]
+}
+
+```
+----SPEC----
+```json
+{
+  "function_name": "allocate_matrix",
+  "fields": [
+    {
+      "u_field": {
+        "name": "...",
+        "type": "...",
+        "shape": "scalar" | {"ptr": {"kind": "slice|cstring|ref", "len_from": "?", "len_const": 1}}
+      },
+      "i_field": {
+        "name": "...",
+        "type": "..."
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+
+Few-shot examples (each with unidiomatic Rust signature, idiomatic Rust signature, and the SPEC):
+
+Example F1 (slice argument):
+Raw slice pointer plus length translated to &[T] parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn sum(xs: *const i32, n: usize) -> i32;
+```
+Idiomatic Rust:
+```rust
+pub fn sum(xs: &[i32]) -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "sum",
+  "fields": [
+    { "u_field": {"name": "xs", "type": "*const i32", "shape": { "ptr": { "kind": "slice", "len_from": "n" } }},
+      "i_field": {"name": "xs", "type": "&[i32]"} },
+    { "u_field": {"name": "n", "type": "usize", "shape": "scalar"},
+      "i_field": {"name": "xs.len", "type": "usize"} },
+    { "u_field": {"name": "ret", "type": "i32", "shape": "scalar"},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F2 (out pointer to return value):
+Mutable pointer output replaced by direct return.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn get_value(out_value: *mut i32);
+```
+Idiomatic Rust:
+```rust
+pub fn get_value() -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "get_value",
+  "fields": [
+    { "u_field": {"name": "out_value", "type": "*mut i32", "shape": { "ptr": { "kind": "ref" } }},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F3 (nullable cstring to Option<&str>):
+Nullable C string pointer converted to Option<&str> parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn set_name(name: *const libc::c_char);
+```
+Idiomatic Rust:
+```rust
+pub fn set_name(name: Option<&str>);
+```
+----SPEC----
+```json
+{
+  "function_name": "set_name",
+  "fields": [
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring", "null": "nullable" } }},
+      "i_field": {"name": "name", "type": "Option<&str>"} }
+  ]
+}
+```
+----END SPEC----
+
+2026-11-16 13:31:17 | RESPONSE | sactor.llm:160 | **Analysis of the unsafe blocks**
+
+1. `libc::malloc` for the outer array of row pointers. Crown marks `matrix` as an owning array of pointers. In safe Rust this becomes a `Vec<Vec<i32>>`, which owns both levels.
+2. The null check, `printf` and `exit(1)` handle allocation failure. Rust's allocator aborts on out-of-memory, so these checks are unnecessary and can be removed.
+3. `libc::malloc` for each row, followed by `*matrix.add(i) = row`. This becomes a `Vec<i32>` per row, collected into the outer `Vec`.
+4. The returned `*mut *mut i32` becomes an owned `Vec<Vec<i32>>`, so the function needs no pointers in its signature or return value.
+
+**Crown output**
+
+- `matrix` is an owning array whose elements are mutable arrays. This maps to `Vec<Vec<i32>>`.
+- `fresh0` is a transient array that only holds a row pointer temporarily, so it needs no separate owner.
+
+**Details**
+
+- The `malloc`'d memory is uninitialized. Safe Rust has to initialize it, so I use zeros.
+- A negative `size` makes the original loop run zero times, and `malloc` gets a huge wrapped size, which would fail. I clamp negative sizes to 0, which returns an empty matrix.
+
+----FUNCTION----
+```rust
+pub fn allocate_matrix(size: i32) -> Vec<Vec<i32>> {
+    let n = if size > 0 { size as usize } else { 0 };
+    (0..n).map(|_| vec![0i32; n]).collect()
+}
+```
+----END FUNCTION----
+
+----SPEC----
+```json
+{
+  "function_name": "allocate_matrix",
+  "fields": [
+    {
+      "u_field": {
+        "name": "size",
+        "type": "i32",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "size",
+        "type": "i32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "*mut *mut i32",
+        "shape": { "ptr": { "kind": "slice", "len_from": "size", "null": "forbidden" } }
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "Vec<Vec<i32>>"
+      },
+      "ownership": "owning",
+      "llm_note": "Returns a size x size matrix; each row is a Vec<i32> of length size, zero-initialized."
+    }
+  ]
+}
+```
+----END SPEC----
+2026-11-16 13:31:17 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:31:17 | DEBUG    | sactor.utils:258 | pub fn allocate_matrix(size: i32) -> Vec<Vec<i32>> {
+    let n = if size > 0 { size as usize } else { 0 };
+    (0..n).map(|_| vec![0i32; n]).collect()
+}
+
+2026-11-16 13:31:17 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/build_attempt/Cargo.toml
+2026-11-16 13:31:19 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:31:19 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function allocate_matrix after the compile check (FFI harness skipped)
+2026-11-16 13:31:19 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: free_matrix (attempts: 0)
+2026-11-16 13:31:19 | PROMPT   | sactor.llm:155 | 
+Translate the following unidiomatic Rust function into idiomatic Rust. Try to remove all the `unsafe` blocks and only use the safe Rust code or use the `unsafe` blocks only when necessary.
+Before translating, analyze the unsafe blocks one by one and how to convert them into safe Rust code.
+**libc may not be provided in the idiomatic code, so try to avoid using libc functions and types, and avoid using `std::ffi` module.**
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+```rust
+pub unsafe fn free_matrix(matrix: *mut *mut i32, size: i32) {
+    let mut i: i32 = 0;
+    while i < size {
+        libc::free(*matrix.offset(i as isize) as *mut libc::c_void);
+        i += 1;
+    }
+    libc::free(matrix as *mut libc::c_void);
+}
+
+```
+
+"Crown" is a pointer analysis tool that can help to identify the ownership, mutability and fatness of pointers. Following are the possible annotations for pointers:
+```
+fatness:
+    - `Ptr`: Single pointer
+    - `Arr`: Pointer is an array
+mutability:
+    - `Mut`: Mutable pointer
+    - `Imm`: Immutable pointer
+ownership:
+    - `Owning`: Owns the pointer
+    - `Transient`: Not owns the pointer
+````
+
+The following is the output of Crown for this function:
+```
+{'matrix': {'fatness': ['Arr', 'Arr'], 'mutability': ['Mut', 'Mut'], 'ownership': ['Owning', 'Transient']}}
+```
+Analyze the Crown output firstly, then translate the pointers in function arguments and return values with the help of the Crown output.
+Try to avoid using pointers in the function arguments and return values if possible.
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+
+Also output a minimal JSON spec that maps the unidiomatic Rust layout to the idiomatic Rust for the function arguments and return value.
+Full JSON Schema for the SPEC (do not output the schema; output only an instance that conforms to it):
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sactor://spec.schema.json",
+  "title": "Sactor Idiomatic Translation Spec",
+  "description": "Schema describing mappings between unidiomatic (repr(C)) Rust and idiomatic Rust for structs and function arguments.",
+  "$defs": {
+    "PtrShape": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ptr": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["slice", "cstring", "ref"] },
+            "len_from": { "type": "string", "description": "Name of the unidiomatic length field." },
+            "len_const": { "type": "integer", "minimum": 0, "description": "Constant element count for the pointer." },
+            "null": { "enum": ["nullable", "forbidden"], "description": "Whether the pointer can be NULL." }
+          },
+          "required": ["kind"]
+        }
+      },
+      "required": ["ptr"]
+    },
+    "UField": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "shape": {
+          "oneOf": [
+            { "const": "scalar", "description": "Scalar value (integer, float, bool, char, or any non-pointer data structures)" },
+            { "$ref": "#/$defs/PtrShape", "description": "Pointer type (raw pointer, slice, or C string)" }
+          ]
+        }
+      },
+      "required": ["name", "shape"]
+    },
+    "IField": {
+      "type": "object",
+      "description": "Idiomatic-side field path. Special convention: if name == 'ret', this Field describes the function return mapping.",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic field path or 'ret' for function return." },
+        "type": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "EnumDiscriminant": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tag": { "type": "string", "description": "u_field.name of the discriminant/tag" },
+        "equals": { "type": ["integer", "string"], "description": "Value of tag that selects this variant" }
+      },
+      "required": ["tag", "equals"]
+    },
+    "EnumVariant": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic enum variant name" },
+        "when": { "$ref": "#/$defs/EnumDiscriminant" },
+        "payload": { "type": "array", "items": { "$ref": "#/$defs/Field" } }
+      },
+      "required": ["name", "when"]
+    },
+    "Field": {
+      "type": "object",
+      "description": "Field mapping between unidiomatic C-style field and idiomatic Rust path.",
+      "properties": {
+        "u_field": { "$ref": "#/$defs/UField" },
+        "i_field": { "$ref": "#/$defs/IField" },
+        "ownership": { "type": "string", "enum": ["owning", "transient"], "description": "Optional ownership hint." },
+        "compare": {
+          "type": "string",
+          "enum": ["by_value", "by_slice", "skip"],
+          "description": "Comparison strategy for roundtrip tests. Use 'skip' generously for values that may legitimately diverge (raw pointers, aliasing views, externally-owned buffers, handles, allocator state, etc.) so the automated selftest stays permissive."
+        },
+        "llm_note": { "type": "string", "description": "Free-form note for LLM when automatic codegen is insufficient (e.g., aliasing/offset semantics)." }
+      },
+      "required": ["u_field", "i_field"]
+    },
+    "StructSpec": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "struct_name": { "type": "string", "description": "Name of the translated idiomatic struct." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 },
+        "i_kind": { "type": "string", "enum": ["struct", "enum"], "default": "struct" },
+        "i_type": { "type": "string", "description": "Idiomatic type name (useful when i_kind=enum)" },
+        "variants": { "type": "array", "items": { "$ref": "#/$defs/EnumVariant" } }
+      },
+      "required": ["fields", "i_kind", "i_type"]
+    },
+    "FunctionSpec": {
+      "type": "object",
+      "description": "Function argument/return mapping. Return values are expressed via a Field whose i_field.name == 'ret'.",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "function_name": { "type": "string", "description": "Name of the translated idiomatic function." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 }
+      },
+      "required": ["fields"]
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/StructSpec" },
+    { "$ref": "#/$defs/FunctionSpec" }
+  ]
+}
+
+```
+----SPEC----
+```json
+{
+  "function_name": "free_matrix",
+  "fields": [
+    {
+      "u_field": {
+        "name": "...",
+        "type": "...",
+        "shape": "scalar" | {"ptr": {"kind": "slice|cstring|ref", "len_from": "?", "len_const": 1}}
+      },
+      "i_field": {
+        "name": "...",
+        "type": "..."
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+
+Few-shot examples (each with unidiomatic Rust signature, idiomatic Rust signature, and the SPEC):
+
+Example F1 (slice argument):
+Raw slice pointer plus length translated to &[T] parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn sum(xs: *const i32, n: usize) -> i32;
+```
+Idiomatic Rust:
+```rust
+pub fn sum(xs: &[i32]) -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "sum",
+  "fields": [
+    { "u_field": {"name": "xs", "type": "*const i32", "shape": { "ptr": { "kind": "slice", "len_from": "n" } }},
+      "i_field": {"name": "xs", "type": "&[i32]"} },
+    { "u_field": {"name": "n", "type": "usize", "shape": "scalar"},
+      "i_field": {"name": "xs.len", "type": "usize"} },
+    { "u_field": {"name": "ret", "type": "i32", "shape": "scalar"},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F2 (out pointer to return value):
+Mutable pointer output replaced by direct return.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn get_value(out_value: *mut i32);
+```
+Idiomatic Rust:
+```rust
+pub fn get_value() -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "get_value",
+  "fields": [
+    { "u_field": {"name": "out_value", "type": "*mut i32", "shape": { "ptr": { "kind": "ref" } }},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F3 (nullable cstring to Option<&str>):
+Nullable C string pointer converted to Option<&str> parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn set_name(name: *const libc::c_char);
+```
+Idiomatic Rust:
+```rust
+pub fn set_name(name: Option<&str>);
+```
+----SPEC----
+```json
+{
+  "function_name": "set_name",
+  "fields": [
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring", "null": "nullable" } }},
+      "i_field": {"name": "name", "type": "Option<&str>"} }
+  ]
+}
+```
+----END SPEC----
+
+2026-11-16 13:31:25 | RESPONSE | sactor.llm:160 | **Analysis of the unsafe operations**
+
+1. `*matrix.offset(i as isize)` reads each row pointer from the outer array. In safe Rust, the matrix is a `Vec<Vec<i32>>`, so the rows are accessed by iteration and no pointer arithmetic is needed.
+2. `libc::free(row)` frees each row. With `Vec<Vec<i32>>`, ownership of each row belongs to the outer vector, so the rows are dropped automatically.
+3. `libc::free(matrix)` frees the outer array. It is dropped the same way.
+
+**Crown output**
+
+- `matrix` is `Arr` of `Arr`, both `Mut`.
+- The outer pointer is `Owning` and the inner pointers are `Transient`. Crown marks the inner level as `Transient`, but the function frees the rows too, so in practice the rows are owned by the matrix.
+- The idiomatic form is therefore `Vec<Vec<i32>>`, taken by value. The `size` parameter is redundant because it equals `matrix.len()`.
+
+Taking the matrix by value and dropping it frees everything, with no `unsafe` needed.
+
+----FUNCTION----
+```rust
+pub fn free_matrix(matrix: Vec<Vec<i32>>) {
+    // Taking ownership and dropping frees every row and the outer vector.
+    drop(matrix);
+}
+```
+----END FUNCTION----
+
+----SPEC----
+```json
+{
+  "function_name": "free_matrix",
+  "fields": [
+    {
+      "u_field": {
+        "name": "matrix",
+        "type": "*mut *mut i32",
+        "shape": { "ptr": { "kind": "slice", "len_from": "size", "null": "forbidden" } }
+      },
+      "i_field": {
+        "name": "matrix",
+        "type": "Vec<Vec<i32>>"
+      },
+      "ownership": "owning",
+      "compare": "skip",
+      "llm_note": "Outer array of row pointers becomes Vec<Vec<i32>>; each row is owned by the outer vector and freed on drop."
+    },
+    {
+      "u_field": {
+        "name": "size",
+        "type": "i32",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "matrix.len",
+        "type": "usize"
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+2026-11-16 13:31:25 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:31:25 | DEBUG    | sactor.utils:258 | pub fn free_matrix(matrix: Vec<Vec<i32>>) {
+    // Taking ownership and dropping frees every row and the outer vector.
+    drop(matrix);
+}
+
+2026-11-16 13:31:25 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/build_attempt/Cargo.toml
+2026-11-16 13:31:27 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:31:27 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function free_matrix after the compile check (FFI harness skipped)
+2026-11-16 13:31:27 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: fill_matrix (attempts: 0)
+2026-11-16 13:31:27 | PROMPT   | sactor.llm:155 | 
+Translate the following unidiomatic Rust function into idiomatic Rust. Try to remove all the `unsafe` blocks and only use the safe Rust code or use the `unsafe` blocks only when necessary.
+Before translating, analyze the unsafe blocks one by one and how to convert them into safe Rust code.
+**libc may not be provided in the idiomatic code, so try to avoid using libc functions and types, and avoid using `std::ffi` module.**
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+```rust
+pub unsafe fn fill_matrix(matrix: *mut *mut libc::c_int, size: libc::c_int) {
+    let mut i: libc::c_int = 0;
+    while i < size {
+        let mut j: libc::c_int = 0;
+        while j < size {
+            let row = *matrix.offset(i as isize);
+            *row.offset(j as isize) = libc::rand();
+            j += 1;
+        }
+        i += 1;
+    }
+}
+
+```
+
+"Crown" is a pointer analysis tool that can help to identify the ownership, mutability and fatness of pointers. Following are the possible annotations for pointers:
+```
+fatness:
+    - `Ptr`: Single pointer
+    - `Arr`: Pointer is an array
+mutability:
+    - `Mut`: Mutable pointer
+    - `Imm`: Immutable pointer
+ownership:
+    - `Owning`: Owns the pointer
+    - `Transient`: Not owns the pointer
+````
+
+The following is the output of Crown for this function:
+```
+{'matrix': {'fatness': ['Arr', 'Arr'], 'mutability': ['Mut', 'Mut'], 'ownership': ['Transient', 'Transient']}}
+```
+Analyze the Crown output firstly, then translate the pointers in function arguments and return values with the help of the Crown output.
+Try to avoid using pointers in the function arguments and return values if possible.
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+
+Also output a minimal JSON spec that maps the unidiomatic Rust layout to the idiomatic Rust for the function arguments and return value.
+Full JSON Schema for the SPEC (do not output the schema; output only an instance that conforms to it):
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sactor://spec.schema.json",
+  "title": "Sactor Idiomatic Translation Spec",
+  "description": "Schema describing mappings between unidiomatic (repr(C)) Rust and idiomatic Rust for structs and function arguments.",
+  "$defs": {
+    "PtrShape": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ptr": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["slice", "cstring", "ref"] },
+            "len_from": { "type": "string", "description": "Name of the unidiomatic length field." },
+            "len_const": { "type": "integer", "minimum": 0, "description": "Constant element count for the pointer." },
+            "null": { "enum": ["nullable", "forbidden"], "description": "Whether the pointer can be NULL." }
+          },
+          "required": ["kind"]
+        }
+      },
+      "required": ["ptr"]
+    },
+    "UField": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "shape": {
+          "oneOf": [
+            { "const": "scalar", "description": "Scalar value (integer, float, bool, char, or any non-pointer data structures)" },
+            { "$ref": "#/$defs/PtrShape", "description": "Pointer type (raw pointer, slice, or C string)" }
+          ]
+        }
+      },
+      "required": ["name", "shape"]
+    },
+    "IField": {
+      "type": "object",
+      "description": "Idiomatic-side field path. Special convention: if name == 'ret', this Field describes the function return mapping.",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic field path or 'ret' for function return." },
+        "type": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "EnumDiscriminant": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tag": { "type": "string", "description": "u_field.name of the discriminant/tag" },
+        "equals": { "type": ["integer", "string"], "description": "Value of tag that selects this variant" }
+      },
+      "required": ["tag", "equals"]
+    },
+    "EnumVariant": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic enum variant name" },
+        "when": { "$ref": "#/$defs/EnumDiscriminant" },
+        "payload": { "type": "array", "items": { "$ref": "#/$defs/Field" } }
+      },
+      "required": ["name", "when"]
+    },
+    "Field": {
+      "type": "object",
+      "description": "Field mapping between unidiomatic C-style field and idiomatic Rust path.",
+      "properties": {
+        "u_field": { "$ref": "#/$defs/UField" },
+        "i_field": { "$ref": "#/$defs/IField" },
+        "ownership": { "type": "string", "enum": ["owning", "transient"], "description": "Optional ownership hint." },
+        "compare": {
+          "type": "string",
+          "enum": ["by_value", "by_slice", "skip"],
+          "description": "Comparison strategy for roundtrip tests. Use 'skip' generously for values that may legitimately diverge (raw pointers, aliasing views, externally-owned buffers, handles, allocator state, etc.) so the automated selftest stays permissive."
+        },
+        "llm_note": { "type": "string", "description": "Free-form note for LLM when automatic codegen is insufficient (e.g., aliasing/offset semantics)." }
+      },
+      "required": ["u_field", "i_field"]
+    },
+    "StructSpec": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "struct_name": { "type": "string", "description": "Name of the translated idiomatic struct." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 },
+        "i_kind": { "type": "string", "enum": ["struct", "enum"], "default": "struct" },
+        "i_type": { "type": "string", "description": "Idiomatic type name (useful when i_kind=enum)" },
+        "variants": { "type": "array", "items": { "$ref": "#/$defs/EnumVariant" } }
+      },
+      "required": ["fields", "i_kind", "i_type"]
+    },
+    "FunctionSpec": {
+      "type": "object",
+      "description": "Function argument/return mapping. Return values are expressed via a Field whose i_field.name == 'ret'.",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "function_name": { "type": "string", "description": "Name of the translated idiomatic function." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 }
+      },
+      "required": ["fields"]
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/StructSpec" },
+    { "$ref": "#/$defs/FunctionSpec" }
+  ]
+}
+
+```
+----SPEC----
+```json
+{
+  "function_name": "fill_matrix",
+  "fields": [
+    {
+      "u_field": {
+        "name": "...",
+        "type": "...",
+        "shape": "scalar" | {"ptr": {"kind": "slice|cstring|ref", "len_from": "?", "len_const": 1}}
+      },
+      "i_field": {
+        "name": "...",
+        "type": "..."
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+
+Few-shot examples (each with unidiomatic Rust signature, idiomatic Rust signature, and the SPEC):
+
+Example F1 (slice argument):
+Raw slice pointer plus length translated to &[T] parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn sum(xs: *const i32, n: usize) -> i32;
+```
+Idiomatic Rust:
+```rust
+pub fn sum(xs: &[i32]) -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "sum",
+  "fields": [
+    { "u_field": {"name": "xs", "type": "*const i32", "shape": { "ptr": { "kind": "slice", "len_from": "n" } }},
+      "i_field": {"name": "xs", "type": "&[i32]"} },
+    { "u_field": {"name": "n", "type": "usize", "shape": "scalar"},
+      "i_field": {"name": "xs.len", "type": "usize"} },
+    { "u_field": {"name": "ret", "type": "i32", "shape": "scalar"},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F2 (out pointer to return value):
+Mutable pointer output replaced by direct return.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn get_value(out_value: *mut i32);
+```
+Idiomatic Rust:
+```rust
+pub fn get_value() -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "get_value",
+  "fields": [
+    { "u_field": {"name": "out_value", "type": "*mut i32", "shape": { "ptr": { "kind": "ref" } }},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F3 (nullable cstring to Option<&str>):
+Nullable C string pointer converted to Option<&str> parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn set_name(name: *const libc::c_char);
+```
+Idiomatic Rust:
+```rust
+pub fn set_name(name: Option<&str>);
+```
+----SPEC----
+```json
+{
+  "function_name": "set_name",
+  "fields": [
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring", "null": "nullable" } }},
+      "i_field": {"name": "name", "type": "Option<&str>"} }
+  ]
+}
+```
+----END SPEC----
+
+2026-11-16 13:31:39 | RESPONSE | sactor.llm:160 | **Analysis of the unsafe blocks**
+
+1. `*matrix.offset(i)` reads a row pointer from the outer array. Crown marks `matrix` as `Arr`/`Mut`/`Transient`, so the outer pointer is a borrowed mutable array of rows. This becomes a `&mut [Vec<i32>]`, and the row count replaces `size`.
+2. `*row.offset(j) = libc::rand()` writes into the inner array. Crown marks this level as `Arr`/`Mut`/`Transient` too, so each row is a borrowed mutable array of ints. Iterating over `&mut i32` elements replaces the pointer arithmetic, and no `unsafe` is needed.
+3. `libc::rand()` is a libc call, which I can't use. I replaced it with std's `RandomState` hasher, masked to 31 bits so the values lie in `0..=i32::MAX` like `rand()`.
+
+**Assumptions:** the matrix is square (`size` × `size`), and the whole slice is filled. The original filled only the first `size` entries of the first `size` rows, so the caller must pass a matrix of exactly that shape.
+
+----FUNCTION----
+```rust
+pub fn fill_matrix(matrix: &mut [Vec<i32>]) {
+    use std::collections::hash_map::RandomState;
+    use std::hash::{BuildHasher, Hasher};
+
+    // Replacement for libc::rand(): returns a non-negative i32 (0..=i32::MAX)
+    let state = RandomState::new();
+    let mut counter: u64 = 0;
+    let mut next_rand = || -> i32 {
+        let mut hasher = state.build_hasher();
+        hasher.write_u64(counter);
+        counter = counter.wrapping_add(1);
+        (hasher.finish() & 0x7FFF_FFFF) as i32
+    };
+
+    for row in matrix.iter_mut() {
+        for cell in row.iter_mut() {
+            *cell = next_rand();
+        }
+    }
+}
+```
+----END FUNCTION----
+
+----SPEC----
+```json
+{
+  "function_name": "fill_matrix",
+  "fields": [
+    {
+      "u_field": {
+        "name": "matrix",
+        "type": "*mut *mut libc::c_int",
+        "shape": { "ptr": { "kind": "slice", "len_from": "size", "null": "forbidden" } }
+      },
+      "i_field": {
+        "name": "matrix",
+        "type": "&mut [Vec<i32>]"
+      },
+      "ownership": "transient",
+      "compare": "skip",
+      "llm_note": "Outer pointer is an array of row pointers (each row is an array of `size` ints); mapped to a slice of Vec<i32> rows. Random contents are not comparable."
+    },
+    {
+      "u_field": {
+        "name": "size",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "matrix.len",
+        "type": "usize"
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+2026-11-16 13:31:39 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:31:39 | DEBUG    | sactor.utils:258 | pub fn fill_matrix(matrix: &mut [Vec<i32>]) {
+    use std::collections::hash_map::RandomState;
+    use std::hash::{BuildHasher, Hasher};
+
+    // Replacement for libc::rand(): returns a non-negative i32 (0..=i32::MAX)
+    let state = RandomState::new();
+    let mut counter: u64 = 0;
+    let mut next_rand = || -> i32 {
+        let mut hasher = state.build_hasher();
+        hasher.write_u64(counter);
+        counter = counter.wrapping_add(1);
+        (hasher.finish() & 0x7FFF_FFFF) as i32
+    };
+
+    for row in matrix.iter_mut() {
+        for cell in row.iter_mut() {
+            *cell = next_rand();
+        }
+    }
+}
+
+2026-11-16 13:31:39 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/build_attempt/Cargo.toml
+2026-11-16 13:31:42 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:31:42 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function fill_matrix after the compile check (FFI harness skipped)
+2026-11-16 13:31:42 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: multiply_matrices (attempts: 0)
+2026-11-16 13:31:42 | PROMPT   | sactor.llm:155 | 
+Translate the following unidiomatic Rust function into idiomatic Rust. Try to remove all the `unsafe` blocks and only use the safe Rust code or use the `unsafe` blocks only when necessary.
+Before translating, analyze the unsafe blocks one by one and how to convert them into safe Rust code.
+**libc may not be provided in the idiomatic code, so try to avoid using libc functions and types, and avoid using `std::ffi` module.**
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+```rust
+pub unsafe fn multiply_matrices(a: *mut *mut i32, b: *mut *mut i32, c: *mut *mut i32, size: i32) {
+    let mut i: i32 = 0;
+    while i < size {
+        let mut j: i32 = 0;
+        while j < size {
+            let c_row = *c.offset(i as isize);
+            *c_row.offset(j as isize) = 0;
+            let mut k: i32 = 0;
+            while k < size {
+                let a_row = *a.offset(i as isize);
+                let b_row = *b.offset(k as isize);
+                let prod = (*a_row.offset(k as isize)).wrapping_mul(*b_row.offset(j as isize));
+                let cur = *c_row.offset(j as isize);
+                *c_row.offset(j as isize) = cur.wrapping_add(prod);
+                k += 1;
+            }
+            j += 1;
+        }
+        i += 1;
+    }
+}
+
+```
+
+"Crown" is a pointer analysis tool that can help to identify the ownership, mutability and fatness of pointers. Following are the possible annotations for pointers:
+```
+fatness:
+    - `Ptr`: Single pointer
+    - `Arr`: Pointer is an array
+mutability:
+    - `Mut`: Mutable pointer
+    - `Imm`: Immutable pointer
+ownership:
+    - `Owning`: Owns the pointer
+    - `Transient`: Not owns the pointer
+````
+
+The following is the output of Crown for this function:
+```
+{'A': {'fatness': ['Arr', 'Arr'], 'mutability': ['Imm', 'Mut'], 'ownership': ['Transient', 'Transient']}, 'B': {'fatness': ['Arr', 'Arr'], 'mutability': ['Imm', 'Mut'], 'ownership': ['Transient', 'Transient']}, 'C': {'fatness': ['Arr', 'Arr'], 'mutability': ['Mut', 'Mut'], 'ownership': ['Transient', 'Transient']}}
+```
+Analyze the Crown output firstly, then translate the pointers in function arguments and return values with the help of the Crown output.
+Try to avoid using pointers in the function arguments and return values if possible.
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+
+Also output a minimal JSON spec that maps the unidiomatic Rust layout to the idiomatic Rust for the function arguments and return value.
+Full JSON Schema for the SPEC (do not output the schema; output only an instance that conforms to it):
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sactor://spec.schema.json",
+  "title": "Sactor Idiomatic Translation Spec",
+  "description": "Schema describing mappings between unidiomatic (repr(C)) Rust and idiomatic Rust for structs and function arguments.",
+  "$defs": {
+    "PtrShape": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ptr": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["slice", "cstring", "ref"] },
+            "len_from": { "type": "string", "description": "Name of the unidiomatic length field." },
+            "len_const": { "type": "integer", "minimum": 0, "description": "Constant element count for the pointer." },
+            "null": { "enum": ["nullable", "forbidden"], "description": "Whether the pointer can be NULL." }
+          },
+          "required": ["kind"]
+        }
+      },
+      "required": ["ptr"]
+    },
+    "UField": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "shape": {
+          "oneOf": [
+            { "const": "scalar", "description": "Scalar value (integer, float, bool, char, or any non-pointer data structures)" },
+            { "$ref": "#/$defs/PtrShape", "description": "Pointer type (raw pointer, slice, or C string)" }
+          ]
+        }
+      },
+      "required": ["name", "shape"]
+    },
+    "IField": {
+      "type": "object",
+      "description": "Idiomatic-side field path. Special convention: if name == 'ret', this Field describes the function return mapping.",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic field path or 'ret' for function return." },
+        "type": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "EnumDiscriminant": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tag": { "type": "string", "description": "u_field.name of the discriminant/tag" },
+        "equals": { "type": ["integer", "string"], "description": "Value of tag that selects this variant" }
+      },
+      "required": ["tag", "equals"]
+    },
+    "EnumVariant": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic enum variant name" },
+        "when": { "$ref": "#/$defs/EnumDiscriminant" },
+        "payload": { "type": "array", "items": { "$ref": "#/$defs/Field" } }
+      },
+      "required": ["name", "when"]
+    },
+    "Field": {
+      "type": "object",
+      "description": "Field mapping between unidiomatic C-style field and idiomatic Rust path.",
+      "properties": {
+        "u_field": { "$ref": "#/$defs/UField" },
+        "i_field": { "$ref": "#/$defs/IField" },
+        "ownership": { "type": "string", "enum": ["owning", "transient"], "description": "Optional ownership hint." },
+        "compare": {
+          "type": "string",
+          "enum": ["by_value", "by_slice", "skip"],
+          "description": "Comparison strategy for roundtrip tests. Use 'skip' generously for values that may legitimately diverge (raw pointers, aliasing views, externally-owned buffers, handles, allocator state, etc.) so the automated selftest stays permissive."
+        },
+        "llm_note": { "type": "string", "description": "Free-form note for LLM when automatic codegen is insufficient (e.g., aliasing/offset semantics)." }
+      },
+      "required": ["u_field", "i_field"]
+    },
+    "StructSpec": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "struct_name": { "type": "string", "description": "Name of the translated idiomatic struct." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 },
+        "i_kind": { "type": "string", "enum": ["struct", "enum"], "default": "struct" },
+        "i_type": { "type": "string", "description": "Idiomatic type name (useful when i_kind=enum)" },
+        "variants": { "type": "array", "items": { "$ref": "#/$defs/EnumVariant" } }
+      },
+      "required": ["fields", "i_kind", "i_type"]
+    },
+    "FunctionSpec": {
+      "type": "object",
+      "description": "Function argument/return mapping. Return values are expressed via a Field whose i_field.name == 'ret'.",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "function_name": { "type": "string", "description": "Name of the translated idiomatic function." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 }
+      },
+      "required": ["fields"]
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/StructSpec" },
+    { "$ref": "#/$defs/FunctionSpec" }
+  ]
+}
+
+```
+----SPEC----
+```json
+{
+  "function_name": "multiply_matrices",
+  "fields": [
+    {
+      "u_field": {
+        "name": "...",
+        "type": "...",
+        "shape": "scalar" | {"ptr": {"kind": "slice|cstring|ref", "len_from": "?", "len_const": 1}}
+      },
+      "i_field": {
+        "name": "...",
+        "type": "..."
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+
+Few-shot examples (each with unidiomatic Rust signature, idiomatic Rust signature, and the SPEC):
+
+Example F1 (slice argument):
+Raw slice pointer plus length translated to &[T] parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn sum(xs: *const i32, n: usize) -> i32;
+```
+Idiomatic Rust:
+```rust
+pub fn sum(xs: &[i32]) -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "sum",
+  "fields": [
+    { "u_field": {"name": "xs", "type": "*const i32", "shape": { "ptr": { "kind": "slice", "len_from": "n" } }},
+      "i_field": {"name": "xs", "type": "&[i32]"} },
+    { "u_field": {"name": "n", "type": "usize", "shape": "scalar"},
+      "i_field": {"name": "xs.len", "type": "usize"} },
+    { "u_field": {"name": "ret", "type": "i32", "shape": "scalar"},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F2 (out pointer to return value):
+Mutable pointer output replaced by direct return.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn get_value(out_value: *mut i32);
+```
+Idiomatic Rust:
+```rust
+pub fn get_value() -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "get_value",
+  "fields": [
+    { "u_field": {"name": "out_value", "type": "*mut i32", "shape": { "ptr": { "kind": "ref" } }},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F3 (nullable cstring to Option<&str>):
+Nullable C string pointer converted to Option<&str> parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn set_name(name: *const libc::c_char);
+```
+Idiomatic Rust:
+```rust
+pub fn set_name(name: Option<&str>);
+```
+----SPEC----
+```json
+{
+  "function_name": "set_name",
+  "fields": [
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring", "null": "nullable" } }},
+      "i_field": {"name": "name", "type": "Option<&str>"} }
+  ]
+}
+```
+----END SPEC----
+
+2026-11-16 13:31:49 | RESPONSE | sactor.llm:160 | **Analysis of the unsafe operations**
+
+1. `*c.offset(i)`, `*a.offset(i)`, `*b.offset(k)`: these read row pointers out of arrays of pointers. Crown marks all three arguments as `Arr` of `Arr` and `Transient`. A and B are `Imm` at the inner level, so they become `&[&[i32]]`. C is `Mut`, so it becomes `&mut [&mut [i32]]`. Slices carry their own lengths, so there is no raw pointer arithmetic.
+2. `*c_row.offset(j) = 0` and the accumulation: these write into a row of C. In safe Rust this is `c[i][j] = ...`, or better, a local accumulator written once at the end.
+3. `*a_row.offset(k)` and `*b_row.offset(j)`: these become `a[i][k]` and `b[k][j]`, which are bounds-checked.
+4. `size: i32` is replaced by a `usize` taken from the slice length. To keep the original semantics (only the first `size` rows and columns are processed), I keep `size` as a `usize` parameter. The result is still not unsafe, and it panics instead of causing undefined behavior if the slices are too small.
+
+Wrapping arithmetic is kept because the original uses `wrapping_mul` and `wrapping_add`. A negative `size` in the original means no iterations, so the `usize` version handles it by construction.
+
+----FUNCTION----
+```rust
+pub fn multiply_matrices(a: &[&[i32]], b: &[&[i32]], c: &mut [&mut [i32]], size: usize) {
+    for i in 0..size {
+        for j in 0..size {
+            let mut acc: i32 = 0;
+            for k in 0..size {
+                let prod = a[i][k].wrapping_mul(b[k][j]);
+                acc = acc.wrapping_add(prod);
+            }
+            c[i][j] = acc;
+        }
+    }
+}
+```
+----END FUNCTION----
+
+----SPEC----
+```json
+{
+  "function_name": "multiply_matrices",
+  "fields": [
+    {
+      "u_field": {
+        "name": "a",
+        "type": "*mut *mut i32",
+        "shape": { "ptr": { "kind": "slice", "len_from": "size", "null": "forbidden" } }
+      },
+      "i_field": { "name": "a", "type": "&[&[i32]]" }
+    },
+    {
+      "u_field": {
+        "name": "b",
+        "type": "*mut *mut i32",
+        "shape": { "ptr": { "kind": "slice", "len_from": "size", "null": "forbidden" } }
+      },
+      "i_field": { "name": "b", "type": "&[&[i32]]" }
+    },
+    {
+      "u_field": {
+        "name": "c",
+        "type": "*mut *mut i32",
+        "shape": { "ptr": { "kind": "slice", "len_from": "size", "null": "forbidden" } }
+      },
+      "i_field": { "name": "c", "type": "&mut [&mut [i32]]" }
+    },
+    {
+      "u_field": { "name": "size", "type": "i32", "shape": "scalar" },
+      "i_field": { "name": "size", "type": "usize" }
+    }
+  ]
+}
+```
+----END SPEC----
+2026-11-16 13:31:49 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:31:49 | DEBUG    | sactor.utils:258 | pub fn multiply_matrices(a: &[&[i32]], b: &[&[i32]], c: &mut [&mut [i32]], size: usize) {
+    for i in 0..size {
+        for j in 0..size {
+            let mut acc: i32 = 0;
+            for k in 0..size {
+                let prod = a[i][k].wrapping_mul(b[k][j]);
+                acc = acc.wrapping_add(prod);
+            }
+            c[i][j] = acc;
+        }
+    }
+}
+
+2026-11-16 13:31:50 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/build_attempt/Cargo.toml
+2026-11-16 13:31:52 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:31:52 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function multiply_matrices after the compile check (FFI harness skipped)
+2026-11-16 13:31:52 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: print_matrix (attempts: 0)
+2026-11-16 13:31:52 | PROMPT   | sactor.llm:155 | 
+Translate the following unidiomatic Rust function into idiomatic Rust. Try to remove all the `unsafe` blocks and only use the safe Rust code or use the `unsafe` blocks only when necessary.
+Before translating, analyze the unsafe blocks one by one and how to convert them into safe Rust code.
+**libc may not be provided in the idiomatic code, so try to avoid using libc functions and types, and avoid using `std::ffi` module.**
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+```rust
+pub unsafe fn print_matrix(matrix: *mut *mut i32, size: i32, name: *const libc::c_char) {
+    libc::printf(b"Matrix %s:\n\0".as_ptr() as *const libc::c_char, name);
+    let mut i: i32 = 0;
+    while i < size {
+        let row = *matrix.offset(i as isize);
+        let mut j: i32 = 0;
+        while j < size {
+            libc::printf(
+                b"%5d \0".as_ptr() as *const libc::c_char,
+                *row.offset(j as isize) as libc::c_int,
+            );
+            j += 1;
+        }
+        libc::printf(b"\n\0".as_ptr() as *const libc::c_char);
+        i += 1;
+    }
+    libc::printf(b"\n\0".as_ptr() as *const libc::c_char);
+}
+
+```
+
+"Crown" is a pointer analysis tool that can help to identify the ownership, mutability and fatness of pointers. Following are the possible annotations for pointers:
+```
+fatness:
+    - `Ptr`: Single pointer
+    - `Arr`: Pointer is an array
+mutability:
+    - `Mut`: Mutable pointer
+    - `Imm`: Immutable pointer
+ownership:
+    - `Owning`: Owns the pointer
+    - `Transient`: Not owns the pointer
+````
+
+The following is the output of Crown for this function:
+```
+{'name': {'fatness': ['Ptr'], 'mutability': ['Imm'], 'ownership': ['Transient']}, 'matrix': {'fatness': ['Arr', 'Arr'], 'mutability': ['Imm', 'Imm'], 'ownership': ['Transient', 'Transient']}}
+```
+Analyze the Crown output firstly, then translate the pointers in function arguments and return values with the help of the Crown output.
+Try to avoid using pointers in the function arguments and return values if possible.
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+
+Also output a minimal JSON spec that maps the unidiomatic Rust layout to the idiomatic Rust for the function arguments and return value.
+Full JSON Schema for the SPEC (do not output the schema; output only an instance that conforms to it):
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sactor://spec.schema.json",
+  "title": "Sactor Idiomatic Translation Spec",
+  "description": "Schema describing mappings between unidiomatic (repr(C)) Rust and idiomatic Rust for structs and function arguments.",
+  "$defs": {
+    "PtrShape": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ptr": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["slice", "cstring", "ref"] },
+            "len_from": { "type": "string", "description": "Name of the unidiomatic length field." },
+            "len_const": { "type": "integer", "minimum": 0, "description": "Constant element count for the pointer." },
+            "null": { "enum": ["nullable", "forbidden"], "description": "Whether the pointer can be NULL." }
+          },
+          "required": ["kind"]
+        }
+      },
+      "required": ["ptr"]
+    },
+    "UField": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "shape": {
+          "oneOf": [
+            { "const": "scalar", "description": "Scalar value (integer, float, bool, char, or any non-pointer data structures)" },
+            { "$ref": "#/$defs/PtrShape", "description": "Pointer type (raw pointer, slice, or C string)" }
+          ]
+        }
+      },
+      "required": ["name", "shape"]
+    },
+    "IField": {
+      "type": "object",
+      "description": "Idiomatic-side field path. Special convention: if name == 'ret', this Field describes the function return mapping.",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic field path or 'ret' for function return." },
+        "type": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "EnumDiscriminant": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tag": { "type": "string", "description": "u_field.name of the discriminant/tag" },
+        "equals": { "type": ["integer", "string"], "description": "Value of tag that selects this variant" }
+      },
+      "required": ["tag", "equals"]
+    },
+    "EnumVariant": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic enum variant name" },
+        "when": { "$ref": "#/$defs/EnumDiscriminant" },
+        "payload": { "type": "array", "items": { "$ref": "#/$defs/Field" } }
+      },
+      "required": ["name", "when"]
+    },
+    "Field": {
+      "type": "object",
+      "description": "Field mapping between unidiomatic C-style field and idiomatic Rust path.",
+      "properties": {
+        "u_field": { "$ref": "#/$defs/UField" },
+        "i_field": { "$ref": "#/$defs/IField" },
+        "ownership": { "type": "string", "enum": ["owning", "transient"], "description": "Optional ownership hint." },
+        "compare": {
+          "type": "string",
+          "enum": ["by_value", "by_slice", "skip"],
+          "description": "Comparison strategy for roundtrip tests. Use 'skip' generously for values that may legitimately diverge (raw pointers, aliasing views, externally-owned buffers, handles, allocator state, etc.) so the automated selftest stays permissive."
+        },
+        "llm_note": { "type": "string", "description": "Free-form note for LLM when automatic codegen is insufficient (e.g., aliasing/offset semantics)." }
+      },
+      "required": ["u_field", "i_field"]
+    },
+    "StructSpec": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "struct_name": { "type": "string", "description": "Name of the translated idiomatic struct." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 },
+        "i_kind": { "type": "string", "enum": ["struct", "enum"], "default": "struct" },
+        "i_type": { "type": "string", "description": "Idiomatic type name (useful when i_kind=enum)" },
+        "variants": { "type": "array", "items": { "$ref": "#/$defs/EnumVariant" } }
+      },
+      "required": ["fields", "i_kind", "i_type"]
+    },
+    "FunctionSpec": {
+      "type": "object",
+      "description": "Function argument/return mapping. Return values are expressed via a Field whose i_field.name == 'ret'.",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "function_name": { "type": "string", "description": "Name of the translated idiomatic function." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 }
+      },
+      "required": ["fields"]
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/StructSpec" },
+    { "$ref": "#/$defs/FunctionSpec" }
+  ]
+}
+
+```
+----SPEC----
+```json
+{
+  "function_name": "print_matrix",
+  "fields": [
+    {
+      "u_field": {
+        "name": "...",
+        "type": "...",
+        "shape": "scalar" | {"ptr": {"kind": "slice|cstring|ref", "len_from": "?", "len_const": 1}}
+      },
+      "i_field": {
+        "name": "...",
+        "type": "..."
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+
+Few-shot examples (each with unidiomatic Rust signature, idiomatic Rust signature, and the SPEC):
+
+Example F1 (slice argument):
+Raw slice pointer plus length translated to &[T] parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn sum(xs: *const i32, n: usize) -> i32;
+```
+Idiomatic Rust:
+```rust
+pub fn sum(xs: &[i32]) -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "sum",
+  "fields": [
+    { "u_field": {"name": "xs", "type": "*const i32", "shape": { "ptr": { "kind": "slice", "len_from": "n" } }},
+      "i_field": {"name": "xs", "type": "&[i32]"} },
+    { "u_field": {"name": "n", "type": "usize", "shape": "scalar"},
+      "i_field": {"name": "xs.len", "type": "usize"} },
+    { "u_field": {"name": "ret", "type": "i32", "shape": "scalar"},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F2 (out pointer to return value):
+Mutable pointer output replaced by direct return.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn get_value(out_value: *mut i32);
+```
+Idiomatic Rust:
+```rust
+pub fn get_value() -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "get_value",
+  "fields": [
+    { "u_field": {"name": "out_value", "type": "*mut i32", "shape": { "ptr": { "kind": "ref" } }},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F3 (nullable cstring to Option<&str>):
+Nullable C string pointer converted to Option<&str> parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn set_name(name: *const libc::c_char);
+```
+Idiomatic Rust:
+```rust
+pub fn set_name(name: Option<&str>);
+```
+----SPEC----
+```json
+{
+  "function_name": "set_name",
+  "fields": [
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring", "null": "nullable" } }},
+      "i_field": {"name": "name", "type": "Option<&str>"} }
+  ]
+}
+```
+----END SPEC----
+
+2026-11-16 13:31:58 | RESPONSE | sactor.llm:160 | **Analysis of the unsafe blocks**
+
+1. `libc::printf` with `name`: `name` is a C string (`Ptr`, `Imm`, `Transient`). It becomes `&str`, and `print!` or `println!` replaces `printf`.
+2. `*matrix.offset(i)`: `matrix` is `Arr` of `Arr` of `Imm` pointers, so it is a 2D array. It becomes `&[Vec<i32>]`, or `&[&[i32]]`. I chose `&[Vec<i32>]` because it is the most common owned layout, though `&[&[i32]]` would work too. Row access is then safe indexing.
+3. `*row.offset(j)`: this becomes safe slice indexing, so no raw pointers are left.
+4. `size` is the row count and also the column count. The idiomatic version derives the row count from `matrix.len()`. To preserve the original behavior (a square `size x size` matrix), each row is iterated with `take(size)` where `size = matrix.len()`.
+5. `%5d `: this becomes `{:5} `, which right-aligns to width 5.
+
+No `unsafe` is needed.
+
+----FUNCTION----
+```rust
+pub fn print_matrix(matrix: &[Vec<i32>], name: &str) {
+    let size = matrix.len();
+    println!("Matrix {}:", name);
+    for row in matrix.iter().take(size) {
+        for value in row.iter().take(size) {
+            print!("{:5} ", value);
+        }
+        println!();
+    }
+    println!();
+}
+```
+----END FUNCTION----
+
+----SPEC----
+```json
+{
+  "function_name": "print_matrix",
+  "fields": [
+    {
+      "u_field": {
+        "name": "matrix",
+        "type": "*mut *mut i32",
+        "shape": { "ptr": { "kind": "slice", "len_from": "size", "null": "forbidden" } }
+      },
+      "i_field": {
+        "name": "matrix",
+        "type": "&[Vec<i32>]"
+      },
+      "ownership": "transient",
+      "compare": "skip",
+      "llm_note": "Array of row pointers, each row has `size` elements. Idiomatic version uses a slice of rows; each row has at least `size` elements."
+    },
+    {
+      "u_field": {
+        "name": "size",
+        "type": "i32",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "matrix.len",
+        "type": "usize"
+      }
+    },
+    {
+      "u_field": {
+        "name": "name",
+        "type": "*const c_char",
+        "shape": { "ptr": { "kind": "cstring", "null": "forbidden" } }
+      },
+      "i_field": {
+        "name": "name",
+        "type": "&str"
+      },
+      "ownership": "transient"
+    }
+  ]
+}
+```
+----END SPEC----
+2026-11-16 13:31:58 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:31:58 | DEBUG    | sactor.utils:258 | pub fn print_matrix(matrix: &[Vec<i32>], name: &str) {
+    let size = matrix.len();
+    println!("Matrix {}:", name);
+    for row in matrix.iter().take(size) {
+        for value in row.iter().take(size) {
+            print!("{:5} ", value);
+        }
+        println!();
+    }
+    println!();
+}
+
+2026-11-16 13:31:58 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/build_attempt/Cargo.toml
+2026-11-16 13:32:00 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:32:00 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function print_matrix after the compile check (FFI harness skipped)
+2026-11-16 13:32:00 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: diff_timespec (attempts: 0)
+2026-11-16 13:32:00 | PROMPT   | sactor.llm:155 | 
+Translate the following unidiomatic Rust function into idiomatic Rust. Try to remove all the `unsafe` blocks and only use the safe Rust code or use the `unsafe` blocks only when necessary.
+Before translating, analyze the unsafe blocks one by one and how to convert them into safe Rust code.
+**libc may not be provided in the idiomatic code, so try to avoid using libc functions and types, and avoid using `std::ffi` module.**
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+```rust
+pub fn diff_timespec(time1: *mut libc::timespec, time0: *mut libc::timespec) -> f64 {
+    unsafe {
+        let sec = (*time1).tv_sec.wrapping_sub((*time0).tv_sec);
+        let nsec = (*time1).tv_nsec.wrapping_sub((*time0).tv_nsec);
+        (sec as f64) + (nsec as f64) / 1000000000.0
+    }
+}
+
+```
+
+"Crown" is a pointer analysis tool that can help to identify the ownership, mutability and fatness of pointers. Following are the possible annotations for pointers:
+```
+fatness:
+    - `Ptr`: Single pointer
+    - `Arr`: Pointer is an array
+mutability:
+    - `Mut`: Mutable pointer
+    - `Imm`: Immutable pointer
+ownership:
+    - `Owning`: Owns the pointer
+    - `Transient`: Not owns the pointer
+````
+
+The following is the output of Crown for this function:
+```
+{'time1': {'fatness': ['Ptr'], 'mutability': ['Imm'], 'ownership': ['Transient']}, 'time0': {'fatness': ['Ptr'], 'mutability': ['Imm'], 'ownership': ['Transient']}}
+```
+Analyze the Crown output firstly, then translate the pointers in function arguments and return values with the help of the Crown output.
+Try to avoid using pointers in the function arguments and return values if possible.
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+
+Also output a minimal JSON spec that maps the unidiomatic Rust layout to the idiomatic Rust for the function arguments and return value.
+Full JSON Schema for the SPEC (do not output the schema; output only an instance that conforms to it):
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sactor://spec.schema.json",
+  "title": "Sactor Idiomatic Translation Spec",
+  "description": "Schema describing mappings between unidiomatic (repr(C)) Rust and idiomatic Rust for structs and function arguments.",
+  "$defs": {
+    "PtrShape": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ptr": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["slice", "cstring", "ref"] },
+            "len_from": { "type": "string", "description": "Name of the unidiomatic length field." },
+            "len_const": { "type": "integer", "minimum": 0, "description": "Constant element count for the pointer." },
+            "null": { "enum": ["nullable", "forbidden"], "description": "Whether the pointer can be NULL." }
+          },
+          "required": ["kind"]
+        }
+      },
+      "required": ["ptr"]
+    },
+    "UField": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "shape": {
+          "oneOf": [
+            { "const": "scalar", "description": "Scalar value (integer, float, bool, char, or any non-pointer data structures)" },
+            { "$ref": "#/$defs/PtrShape", "description": "Pointer type (raw pointer, slice, or C string)" }
+          ]
+        }
+      },
+      "required": ["name", "shape"]
+    },
+    "IField": {
+      "type": "object",
+      "description": "Idiomatic-side field path. Special convention: if name == 'ret', this Field describes the function return mapping.",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic field path or 'ret' for function return." },
+        "type": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "EnumDiscriminant": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tag": { "type": "string", "description": "u_field.name of the discriminant/tag" },
+        "equals": { "type": ["integer", "string"], "description": "Value of tag that selects this variant" }
+      },
+      "required": ["tag", "equals"]
+    },
+    "EnumVariant": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic enum variant name" },
+        "when": { "$ref": "#/$defs/EnumDiscriminant" },
+        "payload": { "type": "array", "items": { "$ref": "#/$defs/Field" } }
+      },
+      "required": ["name", "when"]
+    },
+    "Field": {
+      "type": "object",
+      "description": "Field mapping between unidiomatic C-style field and idiomatic Rust path.",
+      "properties": {
+        "u_field": { "$ref": "#/$defs/UField" },
+        "i_field": { "$ref": "#/$defs/IField" },
+        "ownership": { "type": "string", "enum": ["owning", "transient"], "description": "Optional ownership hint." },
+        "compare": {
+          "type": "string",
+          "enum": ["by_value", "by_slice", "skip"],
+          "description": "Comparison strategy for roundtrip tests. Use 'skip' generously for values that may legitimately diverge (raw pointers, aliasing views, externally-owned buffers, handles, allocator state, etc.) so the automated selftest stays permissive."
+        },
+        "llm_note": { "type": "string", "description": "Free-form note for LLM when automatic codegen is insufficient (e.g., aliasing/offset semantics)." }
+      },
+      "required": ["u_field", "i_field"]
+    },
+    "StructSpec": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "struct_name": { "type": "string", "description": "Name of the translated idiomatic struct." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 },
+        "i_kind": { "type": "string", "enum": ["struct", "enum"], "default": "struct" },
+        "i_type": { "type": "string", "description": "Idiomatic type name (useful when i_kind=enum)" },
+        "variants": { "type": "array", "items": { "$ref": "#/$defs/EnumVariant" } }
+      },
+      "required": ["fields", "i_kind", "i_type"]
+    },
+    "FunctionSpec": {
+      "type": "object",
+      "description": "Function argument/return mapping. Return values are expressed via a Field whose i_field.name == 'ret'.",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "function_name": { "type": "string", "description": "Name of the translated idiomatic function." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 }
+      },
+      "required": ["fields"]
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/StructSpec" },
+    { "$ref": "#/$defs/FunctionSpec" }
+  ]
+}
+
+```
+----SPEC----
+```json
+{
+  "function_name": "diff_timespec",
+  "fields": [
+    {
+      "u_field": {
+        "name": "...",
+        "type": "...",
+        "shape": "scalar" | {"ptr": {"kind": "slice|cstring|ref", "len_from": "?", "len_const": 1}}
+      },
+      "i_field": {
+        "name": "...",
+        "type": "..."
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+
+Few-shot examples (each with unidiomatic Rust signature, idiomatic Rust signature, and the SPEC):
+
+Example F1 (slice argument):
+Raw slice pointer plus length translated to &[T] parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn sum(xs: *const i32, n: usize) -> i32;
+```
+Idiomatic Rust:
+```rust
+pub fn sum(xs: &[i32]) -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "sum",
+  "fields": [
+    { "u_field": {"name": "xs", "type": "*const i32", "shape": { "ptr": { "kind": "slice", "len_from": "n" } }},
+      "i_field": {"name": "xs", "type": "&[i32]"} },
+    { "u_field": {"name": "n", "type": "usize", "shape": "scalar"},
+      "i_field": {"name": "xs.len", "type": "usize"} },
+    { "u_field": {"name": "ret", "type": "i32", "shape": "scalar"},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F2 (out pointer to return value):
+Mutable pointer output replaced by direct return.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn get_value(out_value: *mut i32);
+```
+Idiomatic Rust:
+```rust
+pub fn get_value() -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "get_value",
+  "fields": [
+    { "u_field": {"name": "out_value", "type": "*mut i32", "shape": { "ptr": { "kind": "ref" } }},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F3 (nullable cstring to Option<&str>):
+Nullable C string pointer converted to Option<&str> parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn set_name(name: *const libc::c_char);
+```
+Idiomatic Rust:
+```rust
+pub fn set_name(name: Option<&str>);
+```
+----SPEC----
+```json
+{
+  "function_name": "set_name",
+  "fields": [
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring", "null": "nullable" } }},
+      "i_field": {"name": "name", "type": "Option<&str>"} }
+  ]
+}
+```
+----END SPEC----
+
+2026-11-16 13:32:11 | RESPONSE | sactor.llm:160 | **Analysis of the unsafe blocks**
+
+The function has one `unsafe` block. Its only unsafe operations are four raw-pointer dereferences: `(*time1).tv_sec`, `(*time0).tv_sec`, `(*time1).tv_nsec` and `(*time0).tv_nsec`.
+
+Crown reports both `time1` and `time0` as `Ptr`, `Imm`, `Transient`. That means each is a single, read-only, borrowed pointer to one struct. Neither pointer is an array, nothing is written through it, and the function does not own it. The natural safe form is a shared reference, `&timespec`.
+
+Using `&libc::timespec` would need libc, which is not allowed. The function only reads `tv_sec` and `tv_nsec` from each struct, so I pass those fields directly as `i64` values. This is the layout of `timespec` on 64-bit Linux.
+
+With that change the `unsafe` block is gone. The arithmetic is unchanged: `wrapping_sub` for the differences, then conversion to `f64`.
+
+----FUNCTION----
+```rust
+pub fn diff_timespec(time1_sec: i64, time1_nsec: i64, time0_sec: i64, time0_nsec: i64) -> f64 {
+    let sec = time1_sec.wrapping_sub(time0_sec);
+    let nsec = time1_nsec.wrapping_sub(time0_nsec);
+    (sec as f64) + (nsec as f64) / 1000000000.0
+}
+```
+----END FUNCTION----
+
+----SPEC----
+```json
+{
+  "function_name": "diff_timespec",
+  "fields": [
+    {
+      "u_field": {
+        "name": "time1",
+        "type": "*mut libc::timespec",
+        "shape": { "ptr": { "kind": "ref", "null": "forbidden" } }
+      },
+      "i_field": { "name": "time1_sec", "type": "i64" },
+      "ownership": "transient",
+      "compare": "skip",
+      "llm_note": "time1.tv_sec is passed as time1_sec; time1.tv_nsec is passed as time1_nsec (i64)."
+    },
+    {
+      "u_field": {
+        "name": "time1",
+        "type": "*mut libc::timespec",
+        "shape": { "ptr": { "kind": "ref", "null": "forbidden" } }
+      },
+      "i_field": { "name": "time1_nsec", "type": "i64" },
+      "ownership": "transient",
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "time0",
+        "type": "*mut libc::timespec",
+        "shape": { "ptr": { "kind": "ref", "null": "forbidden" } }
+      },
+      "i_field": { "name": "time0_sec", "type": "i64" },
+      "ownership": "transient",
+      "compare": "skip",
+      "llm_note": "time0.tv_sec is passed as time0_sec; time0.tv_nsec is passed as time0_nsec (i64)."
+    },
+    {
+      "u_field": {
+        "name": "time0",
+        "type": "*mut libc::timespec",
+        "shape": { "ptr": { "kind": "ref", "null": "forbidden" } }
+      },
+      "i_field": { "name": "time0_nsec", "type": "i64" },
+      "ownership": "transient",
+      "compare": "skip"
+    },
+    {
+      "u_field": { "name": "ret", "type": "f64", "shape": "scalar" },
+      "i_field": { "name": "ret", "type": "f64" },
+      "compare": "by_value"
+    }
+  ]
+}
+```
+----END SPEC----
+2026-11-16 13:32:11 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:32:11 | DEBUG    | sactor.utils:258 | pub fn diff_timespec(time1_sec: i64, time1_nsec: i64, time0_sec: i64, time0_nsec: i64) -> f64 {
+    let sec = time1_sec.wrapping_sub(time0_sec);
+    let nsec = time1_nsec.wrapping_sub(time0_nsec);
+    (sec as f64) + (nsec as f64) / 1000000000.0
+}
+
+2026-11-16 13:32:11 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/build_attempt/Cargo.toml
+2026-11-16 13:32:13 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:32:13 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function diff_timespec after the compile check (FFI harness skipped)
+2026-11-16 13:32:13 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: main (attempts: 0)
+2026-11-16 13:32:13 | PROMPT   | sactor.llm:155 | 
+Translate the following unidiomatic Rust function into idiomatic Rust. Try to remove all the `unsafe` blocks and only use the safe Rust code or use the `unsafe` blocks only when necessary.
+Before translating, analyze the unsafe blocks one by one and how to convert them into safe Rust code.
+**libc may not be provided in the idiomatic code, so try to avoid using libc functions and types, and avoid using `std::ffi` module.**
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+```rust
+pub fn main() -> () {
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() != 2 {
+        let prog = if !args.is_empty() {
+            args[0].clone()
+        } else {
+            String::new()
+        };
+        println!("Usage: {} <matrix_size>", prog);
+        std::process::exit(1);
+    }
+    let c_arg = std::ffi::CString::new(args[1].clone())
+        .unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
+    let size: i32 = unsafe { libc::atoi(c_arg.as_ptr()) };
+    if size <= 0 {
+        println!("Error: matrix size must be a positive integer.");
+        std::process::exit(1);
+    }
+    unsafe {
+        libc::srand(10000);
+        let a = allocate_matrix(size);
+        let b = allocate_matrix(size);
+        let c = allocate_matrix(size);
+        fill_matrix(a, size);
+        fill_matrix(b, size);
+        let mut start_time: libc::timespec = std::mem::zeroed();
+        let mut end_time: libc::timespec = std::mem::zeroed();
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut start_time);
+        multiply_matrices(a, b, c, size);
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut end_time);
+        let time_elapsed: f64 = diff_timespec(&mut end_time, &mut start_time);
+        println!(
+            "Time taken for matrix multiplication of size {} x {}: {:.6} seconds",
+            size, size, time_elapsed
+        );
+        free_matrix(a, size);
+        free_matrix(b, size);
+        free_matrix(c, size);
+    }
+}
+
+```
+
+This function uses the following functions, which are already translated as (you don't need to include them in your translation, and **you can not modify them**):
+```rust
+fn allocate_matrix (size : i32) -> Vec < Vec < i32 > >;
+fn allocate_matrix (size : i32) -> Vec < Vec < i32 > >;
+fn allocate_matrix (size : i32) -> Vec < Vec < i32 > >;
+fn allocate_matrix (size : i32) -> Vec < Vec < i32 > >;
+fn allocate_matrix (size : i32) -> Vec < Vec < i32 > >;
+fn allocate_matrix (size : i32) -> Vec < Vec < i32 > >;
+fn fill_matrix (matrix : & mut [Vec < i32 >]);
+fn fill_matrix (matrix : & mut [Vec < i32 >]);
+fn fill_matrix (matrix : & mut [Vec < i32 >]);
+fn fill_matrix (matrix : & mut [Vec < i32 >]);
+fn multiply_matrices (a : & [& [i32]] , b : & [& [i32]] , c : & mut [& mut [i32]] , size : usize);
+fn multiply_matrices (a : & [& [i32]] , b : & [& [i32]] , c : & mut [& mut [i32]] , size : usize);
+fn diff_timespec (time1_sec : i64 , time1_nsec : i64 , time0_sec : i64 , time0_nsec : i64) -> f64;
+fn diff_timespec (time1_sec : i64 , time1_nsec : i64 , time0_sec : i64 , time0_nsec : i64) -> f64;
+fn free_matrix (matrix : Vec < Vec < i32 > >);
+fn free_matrix (matrix : Vec < Vec < i32 > >);
+fn free_matrix (matrix : Vec < Vec < i32 > >);
+fn free_matrix (matrix : Vec < Vec < i32 > >);
+fn free_matrix (matrix : Vec < Vec < i32 > >);
+fn free_matrix (matrix : Vec < Vec < i32 > >);
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+Few-shot examples (each with unidiomatic Rust signature, idiomatic Rust signature, and the SPEC):
+
+Example F1 (slice argument):
+Raw slice pointer plus length translated to &[T] parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn sum(xs: *const i32, n: usize) -> i32;
+```
+Idiomatic Rust:
+```rust
+pub fn sum(xs: &[i32]) -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "sum",
+  "fields": [
+    { "u_field": {"name": "xs", "type": "*const i32", "shape": { "ptr": { "kind": "slice", "len_from": "n" } }},
+      "i_field": {"name": "xs", "type": "&[i32]"} },
+    { "u_field": {"name": "n", "type": "usize", "shape": "scalar"},
+      "i_field": {"name": "xs.len", "type": "usize"} },
+    { "u_field": {"name": "ret", "type": "i32", "shape": "scalar"},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F2 (out pointer to return value):
+Mutable pointer output replaced by direct return.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn get_value(out_value: *mut i32);
+```
+Idiomatic Rust:
+```rust
+pub fn get_value() -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "get_value",
+  "fields": [
+    { "u_field": {"name": "out_value", "type": "*mut i32", "shape": { "ptr": { "kind": "ref" } }},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F3 (nullable cstring to Option<&str>):
+Nullable C string pointer converted to Option<&str> parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn set_name(name: *const libc::c_char);
+```
+Idiomatic Rust:
+```rust
+pub fn set_name(name: Option<&str>);
+```
+----SPEC----
+```json
+{
+  "function_name": "set_name",
+  "fields": [
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring", "null": "nullable" } }},
+      "i_field": {"name": "name", "type": "Option<&str>"} }
+  ]
+}
+```
+----END SPEC----
+
+2026-11-16 13:32:26 | RESPONSE | sactor.llm:160 | Analysis of the unsafe blocks:
+
+1. `libc::atoi(c_arg.as_ptr())` parses an integer prefix from the string. It can be done in safe Rust by skipping leading whitespace, reading an optional sign, and accumulating leading digits. That also removes the need for `CString`.
+2. `libc::srand(10000)` seeds the C RNG. The translated `fill_matrix` takes no seed, so the call is dropped.
+3. The raw-pointer matrix calls (`allocate_matrix`, `fill_matrix`, `multiply_matrices`, `free_matrix`) become safe calls on `Vec<Vec<i32>>`, with slices of row slices built for `multiply_matrices`.
+4. `clock_gettime` with `mem::zeroed` timespecs becomes `std::time::Instant`. Its elapsed `Duration` is passed to `diff_timespec` as seconds and nanoseconds, with the start time as zero.
+
+----FUNCTION----
+```rust
+pub fn main() -> () {
+    // Helper emulating C's atoi (safe implementation)
+    fn parse_atoi(s: &str) -> i32 {
+        let s = s.trim_start();
+        let mut chars = s.chars().peekable();
+        let mut negative = false;
+        if let Some(&c) = chars.peek() {
+            if c == '+' || c == '-' {
+                negative = c == '-';
+                chars.next();
+            }
+        }
+        let mut value: i64 = 0;
+        for c in chars {
+            if let Some(d) = c.to_digit(10) {
+                value = value.saturating_mul(10).saturating_add(d as i64);
+                if value > i64::from(i32::MAX) + 1 {
+                    value = i64::from(i32::MAX) + 1;
+                }
+            } else {
+                break;
+            }
+        }
+        if negative {
+            value = -value;
+        }
+        value.clamp(i64::from(i32::MIN), i64::from(i32::MAX)) as i32
+    }
+
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() != 2 {
+        let prog = if !args.is_empty() {
+            args[0].clone()
+        } else {
+            String::new()
+        };
+        println!("Usage: {} <matrix_size>", prog);
+        std::process::exit(1);
+    }
+    let size: i32 = parse_atoi(&args[1]);
+    if size <= 0 {
+        println!("Error: matrix size must be a positive integer.");
+        std::process::exit(1);
+    }
+
+    let mut a = allocate_matrix(size);
+    let mut b = allocate_matrix(size);
+    let mut c = allocate_matrix(size);
+    fill_matrix(&mut a);
+    fill_matrix(&mut b);
+
+    let start_time = std::time::Instant::now();
+    {
+        let a_refs: Vec<&[i32]> = a.iter().map(|r| r.as_slice()).collect();
+        let b_refs: Vec<&[i32]> = b.iter().map(|r| r.as_slice()).collect();
+        let mut c_refs: Vec<&mut [i32]> = c.iter_mut().map(|r| r.as_mut_slice()).collect();
+        multiply_matrices(&a_refs, &b_refs, &mut c_refs, size as usize);
+    }
+    let elapsed = start_time.elapsed();
+
+    let time_elapsed: f64 = diff_timespec(
+        elapsed.as_secs() as i64,
+        elapsed.subsec_nanos() as i64,
+        0,
+        0,
+    );
+    println!(
+        "Time taken for matrix multiplication of size {} x {}: {:.6} seconds",
+        size, size, time_elapsed
+    );
+
+    free_matrix(a);
+    free_matrix(b);
+    free_matrix(c);
+}
+```
+----END FUNCTION----
+2026-11-16 13:32:26 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:32:26 | DEBUG    | sactor.utils:258 | pub fn main() -> () {
+    // Helper emulating C's atoi (safe implementation)
+    fn parse_atoi(s: &str) -> i32 {
+        let s = s.trim_start();
+        let mut chars = s.chars().peekable();
+        let mut negative = false;
+        if let Some(&c) = chars.peek() {
+            if c == '+' || c == '-' {
+                negative = c == '-';
+                chars.next();
+            }
+        }
+        let mut value: i64 = 0;
+        for c in chars {
+            if let Some(d) = c.to_digit(10) {
+                value = value.saturating_mul(10).saturating_add(d as i64);
+                if value > i64::from(i32::MAX) + 1 {
+                    value = i64::from(i32::MAX) + 1;
+                }
+            } else {
+                break;
+            }
+        }
+        if negative {
+            value = -value;
+        }
+        value.clamp(i64::from(i32::MIN), i64::from(i32::MAX)) as i32
+    }
+
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() != 2 {
+        let prog = if !args.is_empty() {
+            args[0].clone()
+        } else {
+            String::new()
+        };
+        println!("Usage: {} <matrix_size>", prog);
+        std::process::exit(1);
+    }
+    let size: i32 = parse_atoi(&args[1]);
+    if size <= 0 {
+        println!("Error: matrix size must be a positive integer.");
+        std::process::exit(1);
+    }
+
+    let mut a = allocate_matrix(size);
+    let mut b = allocate_matrix(size);
+    let mut c = allocate_matrix(size);
+    fill_matrix(&mut a);
+    fill_matrix(&mut b);
+
+    let start_time = std::time::Instant::now();
+    {
+        let a_refs: Vec<&[i32]> = a.iter().map(|r| r.as_slice()).collect();
+        let b_refs: Vec<&[i32]> = b.iter().map(|r| r.as_slice()).collect();
+        let mut c_refs: Vec<&mut [i32]> = c.iter_mut().map(|r| r.as_mut_slice()).collect();
+        multiply_matrices(&a_refs, &b_refs, &mut c_refs, size as usize);
+    }
+    let elapsed = start_time.elapsed();
+
+    let time_elapsed: f64 = diff_timespec(
+        elapsed.as_secs() as i64,
+        elapsed.subsec_nanos() as i64,
+        0,
+        0,
+    );
+    println!(
+        "Time taken for matrix multiplication of size {} x {}: {:.6} seconds",
+        size, size, time_elapsed
+    );
+
+    free_matrix(a);
+    free_matrix(b);
+    free_matrix(c);
+}
+
+2026-11-16 13:32:26 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/build_attempt/Cargo.toml
+2026-11-16 13:32:28 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:32:28 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function main after the compile check (FFI harness skipped)
+2026-11-16 13:32:28 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/build_attempt/Cargo.toml
+2026-11-16 13:32:30 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:32:31 | DEBUG    | sactor.combiner.program_combiner:234 | Running clippy fix command: cargo clippy --fix --allow-no-vcs --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/program/Cargo.toml -- -A clippy::cmp_null
+2026-11-16 13:32:33 | INFO     | sactor.combiner.program_combiner:259 | Found 1 warnings in the combined code
+2026-11-16 13:32:33 | INFO     | sactor.combiner.program_combiner:260 | Found 0 errors in the combined code

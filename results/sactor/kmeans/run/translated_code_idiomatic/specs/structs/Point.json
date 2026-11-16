@@ -1,0 +1,51 @@
+{
+  "struct_name": "Point",
+  "i_kind": "struct",
+  "i_type": "Point",
+  "fields": [
+    {
+      "u_field": {
+        "name": "x",
+        "type": "libc::c_double",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "x",
+        "type": "f64"
+      }
+    },
+    {
+      "u_field": {
+        "name": "y",
+        "type": "libc::c_double",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "y",
+        "type": "f64"
+      }
+    },
+    {
+      "u_field": {
+        "name": "cluster_id",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "cluster_id",
+        "type": "i32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "cluster_distance",
+        "type": "libc::c_double",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "cluster_distance",
+        "type": "f64"
+      }
+    }
+  ]
+}

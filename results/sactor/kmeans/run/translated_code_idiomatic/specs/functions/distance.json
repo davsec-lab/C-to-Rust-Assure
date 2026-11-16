@@ -1,0 +1,39 @@
+{
+  "function_name": "distance",
+  "fields": [
+    {
+      "u_field": {
+        "name": "p",
+        "type": "Point",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "p",
+        "type": "Point"
+      }
+    },
+    {
+      "u_field": {
+        "name": "c",
+        "type": "Cluster",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "c",
+        "type": "Cluster"
+      }
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "f64",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "f64"
+      }
+    }
+  ],
+  "idiomatic_name": "distance"
+}

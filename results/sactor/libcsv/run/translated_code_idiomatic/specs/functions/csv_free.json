@@ -1,0 +1,25 @@
+{
+  "function_name": "csv_free",
+  "fields": [
+    {
+      "u_field": {
+        "name": "p",
+        "type": "*mut csv_parser",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "p",
+        "type": "&mut csv_parser"
+      },
+      "ownership": "transient",
+      "compare": "skip",
+      "llm_note": "The raw pointer is replaced by a mutable reference. The owned entry_buf Vec is dropped by replacing it with an empty Vec, and entry_pos is reset to 0. The null check and free_func call are unnecessary."
+    }
+  ],
+  "idiomatic_name": "csv_free"
+}

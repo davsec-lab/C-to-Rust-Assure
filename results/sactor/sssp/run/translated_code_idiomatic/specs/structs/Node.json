@@ -1,0 +1,80 @@
+{
+  "struct_name": "Node",
+  "i_kind": "struct",
+  "i_type": "Node",
+  "fields": [
+    {
+      "u_field": {
+        "name": "id",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "id",
+        "type": "i32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "edges",
+        "type": "*mut libc::c_int",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_from": "edge_count",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "edges",
+        "type": "Vec<i32>"
+      },
+      "ownership": "transient",
+      "compare": "by_slice"
+    },
+    {
+      "u_field": {
+        "name": "weights",
+        "type": "*mut libc::c_int",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_from": "edge_count",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "weights",
+        "type": "Vec<i32>"
+      },
+      "ownership": "transient",
+      "compare": "by_slice"
+    },
+    {
+      "u_field": {
+        "name": "edge_count",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "edges.len",
+        "type": "usize"
+      }
+    },
+    {
+      "u_field": {
+        "name": "capacity",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "edges.capacity",
+        "type": "usize"
+      },
+      "compare": "skip",
+      "llm_note": "Capacity is the allocated element count in C; in Rust it is derived from the Vec's capacity and may legitimately differ."
+    }
+  ]
+}

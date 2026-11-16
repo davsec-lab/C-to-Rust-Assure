@@ -1,0 +1,13 @@
+{
+    "total_warnings": 4,
+    "total_errors": 1,
+    "warnings": {
+        "clippy::needless_range_loop": 4
+    },
+    "errors": {
+        "clippy::approx_constant": 1
+    },
+    "total_tokens": 994,
+    "unsafe_tokens": 0,
+    "unsafe_fraction": 0.0
+}

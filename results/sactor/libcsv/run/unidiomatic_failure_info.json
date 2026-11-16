@@ -1,0 +1,240 @@
+{
+    "csv_parser": {
+        "type": "struct",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "csv_error": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "csv_strerror": {
+        "type": "function",
+        "errors": [
+            {
+                "type": "COMPILE_ERROR",
+                "message": "    Updating crates.io index\n     Locking 1 package to latest compatible version\n   Compiling libc v0.2.191\n   Compiling build_attempt v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/build_attempt)\nerror[E0608]: cannot index into a value of type `CsvErrors`\n  --> src/lib.rs:18:23\n   |\n18 |             csv_errors[CSV_EINVALID as usize]\n   |                       ^^^^^^^^^^^^^^^^^^^^^^^\n\nerror[E0608]: cannot index into a value of type `CsvErrors`\n  --> src/lib.rs:20:23\n   |\n20 |             csv_errors[status as usize]\n   |                       ^^^^^^^^^^^^^^^^^\n\nFor more information about this error, try `rustc --explain E0608`.\nerror: could not compile `build_attempt` (lib) due to 2 previous errors\n",
+                "translation": "pub fn csv_strerror(status: i32) -> *const libc::c_char {\n    const CSV_EINVALID: i32 = 4;\n    #[allow(unused_unsafe)]\n    unsafe {\n        if status >= CSV_EINVALID || status < 0 {\n            csv_errors[CSV_EINVALID as usize]\n        } else {\n            csv_errors[status as usize]\n        }\n    }\n}\n"
+            }
+        ],
+        "status": "success",
+        "attempts": [
+            2
+        ]
+    },
+    "csv_errors": {
+        "type": "global_var",
+        "errors": [
+            {
+                "type": "COMPILE_ERROR",
+                "message": "    Updating crates.io index\n     Locking 1 package to latest compatible version\n   Compiling libc v0.2.191\n   Compiling build_attempt v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/build_attempt)\nerror[E0277]: `*const i8` cannot be shared between threads safely\n --> src/lib.rs:1:20\n  |\n1 | static csv_errors: [*const libc::c_char; 5] = [\n  |                    ^^^^^^^^^^^^^^^^^^^^^^^^ `*const i8` cannot be shared between threads safely\n  |\n  = help: within `[*const i8; 5]`, the trait `Sync` is not implemented for `*const i8`\n  = note: required because it appears within the type `[*const i8; 5]`\n  = note: shared static variables must have a type that implements `Sync`\n\nFor more information about this error, try `rustc --explain E0277`.\nerror: could not compile `build_attempt` (lib) due to 1 previous error\n",
+                "translation": "static csv_errors: [*const libc::c_char; 5] = [\n    b\"success\\0\".as_ptr() as *const libc::c_char,\n    b\"error parsing data while strict checking enabled\\0\".as_ptr()\n        as *const libc::c_char,\n    b\"memory exhausted while increasing buffer size\\0\".as_ptr() as *const libc::c_char,\n    b\"data size too large\\0\".as_ptr() as *const libc::c_char,\n    b\"invalid status code\\0\".as_ptr() as *const libc::c_char,\n];\n"
+            },
+            {
+                "type": "COMPILE_ERROR",
+                "message": "    Updating crates.io index\n     Locking 1 package to latest compatible version\n   Compiling libc v0.2.191\n   Compiling build_attempt v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/build_attempt)\nerror[E0277]: `*const i8` cannot be shared between threads safely\n --> src/lib.rs:2:20\n  |\n2 | static csv_errors: [*const libc::c_char; 5] = [\n  |                    ^^^^^^^^^^^^^^^^^^^^^^^^ `*const i8` cannot be shared between threads safely\n  |\n  = help: within `[*const i8; 5]`, the trait `Sync` is not implemented for `*const i8`\n  = note: required because it appears within the type `[*const i8; 5]`\n  = note: shared static variables must have a type that implements `Sync`\n\nFor more information about this error, try `rustc --explain E0277`.\nerror: could not compile `build_attempt` (lib) due to 1 previous error\n",
+                "translation": "#[allow(non_upper_case_globals)]\nstatic csv_errors: [*const libc::c_char; 5] = [\n    b\"success\\0\".as_ptr() as *const libc::c_char,\n    b\"error parsing data while strict checking enabled\\0\".as_ptr()\n        as *const libc::c_char,\n    b\"memory exhausted while increasing buffer size\\0\".as_ptr() as *const libc::c_char,\n    b\"data size too large\\0\".as_ptr() as *const libc::c_char,\n    b\"invalid status code\\0\".as_ptr() as *const libc::c_char,\n];\n"
+            },
+            {
+                "type": "COMPILE_ERROR",
+                "message": "    Updating crates.io index\n     Locking 1 package to latest compatible version\n   Compiling libc v0.2.191\n   Compiling build_attempt v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/build_attempt)\nerror[E0277]: `*const i8` cannot be shared between threads safely\n --> src/lib.rs:2:20\n  |\n2 | static csv_errors: [*const libc::c_char; 5] = [\n  |                    ^^^^^^^^^^^^^^^^^^^^^^^^ `*const i8` cannot be shared between threads safely\n  |\n  = help: within `[*const i8; 5]`, the trait `Sync` is not implemented for `*const i8`\n  = note: required because it appears within the type `[*const i8; 5]`\n  = note: shared static variables must have a type that implements `Sync`\n\nFor more information about this error, try `rustc --explain E0277`.\nerror: could not compile `build_attempt` (lib) due to 1 previous error\n",
+                "translation": "#[allow(non_upper_case_globals)]\nstatic csv_errors: [*const libc::c_char; 5] = [\n    b\"success\\0\".as_ptr() as *const libc::c_char,\n    b\"error parsing data while strict checking enabled\\0\".as_ptr()\n        as *const libc::c_char,\n    b\"memory exhausted while increasing buffer size\\0\".as_ptr() as *const libc::c_char,\n    b\"data size too large\\0\".as_ptr() as *const libc::c_char,\n    b\"invalid status code\\0\".as_ptr() as *const libc::c_char,\n];\n"
+            }
+        ],
+        "status": "success",
+        "attempts": [
+            4
+        ]
+    },
+    "csv_get_opts": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "csv_set_opts": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "csv_init": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "csv_free": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "csv_fini": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "csv_set_delim": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "csv_set_quote": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "csv_get_delim": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "csv_get_quote": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "csv_set_space_func": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "csv_set_term_func": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "csv_set_realloc_func": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "csv_set_free_func": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "csv_set_blk_size": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "csv_get_buffer_size": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "csv_increase_buffer": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "csv_write2": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "csv_fwrite2": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "diff_timespec": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "csv_parse": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "csv_write": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "csv_fwrite": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "main": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    }
+}

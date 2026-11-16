@@ -1,0 +1,24 @@
+{
+  "function_name": "cJSON_Delete",
+  "fields": [
+    {
+      "u_field": {
+        "name": "item",
+        "type": "*mut cJSON",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "item",
+        "type": "Option<Box<cJSON>>"
+      },
+      "ownership": "owning",
+      "compare": "skip"
+    }
+  ],
+  "idiomatic_name": "cJSON_Delete"
+}

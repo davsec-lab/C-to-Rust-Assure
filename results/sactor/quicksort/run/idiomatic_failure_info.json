@@ -1,0 +1,42 @@
+{
+    "swap": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "diff_timespec": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "partition": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "quicksort": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "main": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    }
+}

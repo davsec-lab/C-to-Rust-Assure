@@ -1,0 +1,19 @@
+3c07e5a idiomatic struct translation: give the LLM and the compile check the full struct dependency closure
+59bca2e globals: tentative definitions are defined in Rust; only const/initialized arrays count as constant
+7565ee5 struct/union extraction keeps aliases emitted after the item; builtins are not dependencies
+f46055e c_parser: calls through function-pointer expressions are not unresolved references
+f309373 idiomatic: compile unit includes enums used by callee functions and dependent structs
+ca5b1f9 c2rust: pass --preserve-unused-functions
+62c64b5 Support mutually recursive structs (struct SCCs), e.g. skiplist's link <-> skip_node_t
+4cbb7c4 c_parser: keep feature-test macros through cpp -P; add direct-Anthropic Sonnet config
+042f7d0 combiner: exclude clippy::cmp_null from cargo clippy --fix
+787704b group translation: verify against the transitive dependency closure
+eb36360 idiomatic stage: self-recursion, global struct types in verification, unsafe rule scoped to the function
+5f688d8 idiomatic stage: translate mutable globals into safe interior-mutability statics
+17a8feb Count the struct type of a used global variable as a struct dependency
+3d6199a unidiomatic globals: translate struct-typed globals against the real struct definition
+3219329 check_dependencies: a function is not a prerequisite of itself
+5d82313 Translate mutually recursive functions instead of aborting on them
+f7266b0 rust_ast_parser: normalize size_t-style libc typedef aliases like stdint ones
+5c4e996 idiomatic stage: skip the FFI harness when no test commands are configured
+45f98b1 rust_ast_parser: only copy type/const aliases the extracted struct/union references

@@ -1,0 +1,41 @@
+{
+  "function_name": "md5_transform",
+  "fields": [
+    {
+      "u_field": {
+        "name": "ctx",
+        "type": "&mut md5_ctx",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "ctx",
+        "type": "&mut md5_ctx"
+      },
+      "ownership": "transient"
+    },
+    {
+      "u_field": {
+        "name": "block",
+        "type": "&[libc::c_uchar; 64]",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_const": 64,
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "block",
+        "type": "&[u8; 64]"
+      },
+      "ownership": "transient"
+    }
+  ],
+  "idiomatic_name": "md5_transform"
+}

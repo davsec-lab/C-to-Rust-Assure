@@ -1,0 +1,40 @@
+{
+  "function_name": "cJSON_Parse",
+  "fields": [
+    {
+      "u_field": {
+        "name": "value",
+        "type": "*const c_char",
+        "shape": {
+          "ptr": {
+            "kind": "cstring",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "value",
+        "type": "Option<&[u8]>"
+      },
+      "ownership": "transient"
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "*mut cJSON",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "Option<Box<cJSON>>"
+      },
+      "ownership": "owning"
+    }
+  ],
+  "idiomatic_name": "cJSON_Parse"
+}

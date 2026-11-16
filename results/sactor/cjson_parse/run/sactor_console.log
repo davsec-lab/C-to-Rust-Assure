@@ -1,0 +1,489 @@
+=== start 2026-11-16T13:25:00-08:00 cjson_parse
+usage: sactor translate [-h] [--log-dir LOG_DIR]
+                        [--test-command-path TEST_COMMAND_OVERRIDE] --type
+                        {bin,lib} [--entry-tu-file ENTRY_TU_FILE]
+                        [--config CONFIG_FILE] [--build-dir BUILD_DIR]
+                        [--result-dir RESULT_DIR] [--llm-stat LLM_STAT]
+                        [--no-verify] [--unidiomatic-only] [--idiomatic-only]
+                        [--continue-run-when-incomplete]
+                        [--extra-compile-command EXTRA_COMPILE_COMMAND]
+                        [--executable-object EXECUTABLE_OBJECT]
+                        [--link-args LINK_ARGS]
+                        [--compile-commands-file COMPILE_COMMANDS_FILE]
+                        [input_file] [test_command_path]
+sactor translate: error: argument --link-args: expected one argument
+=== end 2026-11-16T13:25:02-08:00 cjson_parse rc=2
+=== start 2026-11-16T13:25:29-08:00 cjson_parse
+2026-11-16 13:25:37 | INFO     | sactor.sactor:210 | -------------SACTOR Configuration-------------
+2026-11-16 13:25:37 | INFO     | sactor.sactor:211 | Input file: cjson_parse.c
+2026-11-16 13:25:37 | INFO     | sactor.sactor:212 | Test command: test_cmd.json
+2026-11-16 13:25:37 | INFO     | sactor.sactor:213 | Is executable: True
+2026-11-16 13:25:37 | INFO     | sactor.sactor:216 | Build directory: /home/gabe/sactor_forklift/tmp/sactor/tmpducrphvf/build
+2026-11-16 13:25:37 | INFO     | sactor.sactor:217 | Result directory: /home/gabe/sactor_forklift/sactor-bench-oxivolve/cjson_parse/result_sonnet55
+2026-11-16 13:25:37 | INFO     | sactor.sactor:218 | Config file: /home/gabe/sactor_forklift/sactor/sactor.sonnet55.toml
+2026-11-16 13:25:37 | INFO     | sactor.sactor:219 | No verify: False
+2026-11-16 13:25:37 | INFO     | sactor.sactor:220 | Unidiomatic only: False
+2026-11-16 13:25:37 | INFO     | sactor.sactor:221 | LLM statistics base path: /home/gabe/sactor_forklift/sactor-bench-oxivolve/cjson_parse/result_sonnet55/llm_stat.json
+2026-11-16 13:25:37 | INFO     | sactor.sactor:222 | Extra compile command: None
+2026-11-16 13:25:37 | INFO     | sactor.sactor:223 | Compile commands file: 
+2026-11-16 13:25:37 | INFO     | sactor.sactor:224 | Link args: ['-lm']
+2026-11-16 13:25:37 | INFO     | sactor.sactor:225 | Idiomatic only: False
+2026-11-16 13:25:37 | INFO     | sactor.sactor:226 | Continue run when incomplete: False
+2026-11-16 13:25:37 | INFO     | sactor.sactor:227 | -------------End of Configuration-------------
+Traceback (most recent call last):
+  File "/home/gabe/sactor_forklift/sactor/.venv/bin/sactor", line 10, in <module>
+    sys.exit(__main__.main())
+             ^^^^^^^^^^^^^^^
+  File "/home/gabe/sactor_forklift/sactor/sactor/__main__.py", line 484, in main
+    translate(parser, args)
+  File "/home/gabe/sactor_forklift/sactor/sactor/__main__.py", line 307, in translate
+    result = Sactor.translate(
+             ^^^^^^^^^^^^^^^^^
+  File "/home/gabe/sactor_forklift/sactor/sactor/sactor.py", line 96, in translate
+    runner.run()
+  File "/home/gabe/sactor_forklift/sactor/sactor/sactor.py", line 315, in run
+    result, unidiomatic_translator = self._run_unidomatic_translation()
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gabe/sactor_forklift/sactor/sactor/sactor.py", line 400, in _run_unidomatic_translation
+    translator = self._new_unidiomatic_translator()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gabe/sactor_forklift/sactor/sactor/sactor.py", line 374, in _new_unidiomatic_translator
+    self.c2rust_translation = self.c2rust.get_c2rust_translation(compile_flags=self.compile_only_flags)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gabe/sactor_forklift/sactor/sactor/thirdparty/c2rust.py", line 61, in get_c2rust_translation
+    assert os.path.exists(tmp_filename_rs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
+=== end 2026-11-16T13:25:41-08:00 cjson_parse rc=1
+=== start 2026-11-16T13:29:36-08:00 cjson_parse
+2026-11-16 13:29:41 | INFO     | sactor.sactor:210 | -------------SACTOR Configuration-------------
+2026-11-16 13:29:41 | INFO     | sactor.sactor:211 | Input file: cjson_parse.c
+2026-11-16 13:29:41 | INFO     | sactor.sactor:212 | Test command: test_cmd.json
+2026-11-16 13:29:41 | INFO     | sactor.sactor:213 | Is executable: True
+2026-11-16 13:29:41 | INFO     | sactor.sactor:216 | Build directory: /home/gabe/sactor_forklift/tmp/oxivolve_cjson_parse/sactor/tmp77n2nnvw/build
+2026-11-16 13:29:41 | INFO     | sactor.sactor:217 | Result directory: /home/gabe/sactor_forklift/sactor-bench-oxivolve/cjson_parse/result_sonnet55
+2026-11-16 13:29:41 | INFO     | sactor.sactor:218 | Config file: /home/gabe/sactor_forklift/sactor/sactor.sonnet55.toml
+2026-11-16 13:29:41 | INFO     | sactor.sactor:219 | No verify: False
+2026-11-16 13:29:41 | INFO     | sactor.sactor:220 | Unidiomatic only: False
+2026-11-16 13:29:41 | INFO     | sactor.sactor:221 | LLM statistics base path: /home/gabe/sactor_forklift/sactor-bench-oxivolve/cjson_parse/result_sonnet55/llm_stat.json
+2026-11-16 13:29:41 | INFO     | sactor.sactor:222 | Extra compile command: None
+2026-11-16 13:29:41 | INFO     | sactor.sactor:223 | Compile commands file: 
+2026-11-16 13:29:41 | INFO     | sactor.sactor:224 | Link args: ['-lm']
+2026-11-16 13:29:41 | INFO     | sactor.sactor:225 | Idiomatic only: False
+2026-11-16 13:29:41 | INFO     | sactor.sactor:226 | Continue run when incomplete: False
+2026-11-16 13:29:41 | INFO     | sactor.sactor:227 | -------------End of Configuration-------------
+2026-11-16 13:29:43 | INFO     | sactor.translator.unidiomatic_translator:633 | Struct/Union internal_hooks already translated
+2026-11-16 13:29:44 | INFO     | sactor.translator.unidiomatic_translator:497 | Translating global variable: global_error (attempts: 0)
+2026-11-16 13:29:47 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:29:47 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: cJSON_GetErrorPtr (attempts: 0)
+2026-11-16 13:29:53 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling cJSON_GetErrorPtr v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_cjson_parse/sactor/tmp77n2nnvw/build/embed_test_rust)
+warning: crate `cJSON_GetErrorPtr` should have a snake case name
+  |
+  = help: convert the identifier to snake case: `c_json_get_error_ptr`
+  = note: `#[warn(non_snake_case)]` on by default
+
+warning: static variable `global_error` should have an upper case name
+ --> src/lib.rs:8:12
+  |
+8 | static mut global_error: error = error {
+  |            ^^^^^^^^^^^^ help: convert the identifier to upper case: `GLOBAL_ERROR`
+  |
+  = note: `#[warn(non_upper_case_globals)]` on by default
+
+warning: `cJSON_GetErrorPtr` (lib) generated 2 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.94s
+2026-11-16 13:29:57 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: cJSON_New_Item (attempts: 0)
+2026-11-16 13:30:03 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling cJSON_New_Item v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_cjson_parse/sactor/tmp77n2nnvw/build/embed_test_rust)
+warning: crate `cJSON_New_Item` should have a snake case name
+  |
+  = help: convert the identifier to snake case: `c_json_new_item`
+  = note: `#[warn(non_snake_case)]` on by default
+
+warning: `cJSON_New_Item` (lib) generated 1 warning
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.02s
+2026-11-16 13:30:07 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: get_decimal_point (attempts: 0)
+2026-11-16 13:30:13 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+    Blocking waiting for file lock on package cache
+     Locking 1 package to latest compatible version
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+   Compiling libc v0.2.191
+   Compiling get_decimal_point v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_cjson_parse/sactor/tmp77n2nnvw/build/embed_test_rust)
+warning: unexpected `cfg` condition value: `enable_locales`
+ --> src/lib.rs:3:11
+  |
+3 |     #[cfg(feature = "enable_locales")]
+  |           ^^^^^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+  |
+  = note: no expected values for `feature`
+  = help: consider adding `enable_locales` as a feature in `Cargo.toml`
+  = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+  = note: `#[warn(unexpected_cfgs)]` on by default
+
+warning: unexpected `cfg` condition value: `enable_locales`
+  --> src/lib.rs:10:15
+   |
+10 |     #[cfg(not(feature = "enable_locales"))]
+   |               ^^^^^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `enable_locales` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: `get_decimal_point` (lib) generated 2 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.95s
+2026-11-16 13:30:18 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: parse_hex4 (attempts: 0)
+2026-11-16 13:30:23 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling parse_hex4 v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_cjson_parse/sactor/tmp77n2nnvw/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.90s
+2026-11-16 13:30:27 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: buffer_skip_whitespace (attempts: 0)
+2026-11-16 13:30:34 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling buffer_skip_whitespace v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_cjson_parse/sactor/tmp77n2nnvw/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.95s
+2026-11-16 13:30:38 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: skip_utf8_bom (attempts: 0)
+2026-11-16 13:30:45 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling skip_utf8_bom v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_cjson_parse/sactor/tmp77n2nnvw/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.89s
+2026-11-16 13:30:50 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: diff_timespec (attempts: 0)
+2026-11-16 13:30:56 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling diff_timespec v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_cjson_parse/sactor/tmp77n2nnvw/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.93s
+2026-11-16 13:31:00 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: parse_number (attempts: 0)
+2026-11-16 13:31:10 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling parse_number v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_cjson_parse/sactor/tmp77n2nnvw/build/embed_test_rust)
+warning: use of deprecated constant `libc::INT_MAX`: Use `c_int::MAX` instead.
+  --> src/lib.rs:98:24
+   |
+98 |     if number >= libc::INT_MAX as f64 {
+   |                        ^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated constant `libc::INT_MAX`: Use `c_int::MAX` instead.
+  --> src/lib.rs:99:34
+   |
+99 |         (*item).valueint = libc::INT_MAX;
+   |                                  ^^^^^^^
+
+warning: use of deprecated constant `libc::INT_MIN`: Use `c_int::MIN` instead.
+   --> src/lib.rs:100:31
+    |
+100 |     } else if number <= libc::INT_MIN as f64 {
+    |                               ^^^^^^^
+
+warning: use of deprecated constant `libc::INT_MIN`: Use `c_int::MIN` instead.
+   --> src/lib.rs:101:34
+    |
+101 |         (*item).valueint = libc::INT_MIN;
+    |                                  ^^^^^^^
+
+warning: `parse_number` (lib) generated 4 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.87s
+2026-11-16 13:31:16 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: utf16_literal_to_utf8 (attempts: 0)
+2026-11-16 13:31:24 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling utf16_literal_to_utf8 v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_cjson_parse/sactor/tmp77n2nnvw/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.91s
+2026-11-16 13:31:33 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: parse_string (attempts: 0)
+2026-11-16 13:31:51 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling parse_string v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_cjson_parse/sactor/tmp77n2nnvw/build/embed_test_rust)
+warning: value assigned to `output_pointer` is never read
+  --> src/lib.rs:53:13
+   |
+53 |     let mut output_pointer: *mut u8 = std::ptr::null_mut();
+   |             ^^^^^^^^^^^^^^
+   |
+   = help: maybe it is overwritten before being read?
+   = note: `#[warn(unused_assignments)]` on by default
+
+warning: `parse_string` (lib) generated 1 warning
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.03s
+2026-11-16 13:31:57 | INFO     | sactor.translator.unidiomatic_translator:497 | Translating global variable: global_hooks (attempts: 0)
+2026-11-16 13:32:02 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:32:03 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: cJSON_Delete (attempts: 0)
+2026-11-16 13:32:09 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling cJSON_Delete v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_cjson_parse/sactor/tmp77n2nnvw/build/embed_test_rust)
+warning: value assigned to `next` is never read
+  --> src/lib.rs:30:13
+   |
+30 |     let mut next: *mut cJSON = std::ptr::null_mut();
+   |             ^^^^
+   |
+   = help: maybe it is overwritten before being read?
+   = note: `#[warn(unused_assignments)]` on by default
+
+warning: crate `cJSON_Delete` should have a snake case name
+  |
+  = help: convert the identifier to snake case: `c_json_delete`
+  = note: `#[warn(non_snake_case)]` on by default
+
+warning: static variable `global_hooks` should have an upper case name
+  --> src/lib.rs:23:12
+   |
+23 | static mut global_hooks: internal_hooks = internal_hooks {
+   |            ^^^^^^^^^^^^ help: convert the identifier to upper case: `GLOBAL_HOOKS`
+   |
+   = note: `#[warn(non_upper_case_globals)]` on by default
+
+warning: `cJSON_Delete` (lib) generated 3 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.67s
+2026-11-16 13:32:18 | INFO     | sactor.sactor:419 | Translating mutually recursive group one by one: ['parse_value', 'parse_array', 'parse_object']
+2026-11-16 13:32:19 | INFO     | sactor.translator.unidiomatic_translator:715 | Dependency parse_array of parse_value is in the same recursive group; using its c2rust signature
+2026-11-16 13:32:19 | INFO     | sactor.translator.unidiomatic_translator:715 | Dependency parse_array of parse_value is in the same recursive group; using its c2rust signature
+2026-11-16 13:32:19 | INFO     | sactor.translator.unidiomatic_translator:715 | Dependency parse_object of parse_value is in the same recursive group; using its c2rust signature
+2026-11-16 13:32:19 | INFO     | sactor.translator.unidiomatic_translator:715 | Dependency parse_object of parse_value is in the same recursive group; using its c2rust signature
+2026-11-16 13:32:19 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: parse_value (attempts: 0)
+2026-11-16 13:32:26 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+    Blocking waiting for file lock on package cache
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling parse_value v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_cjson_parse/sactor/tmp77n2nnvw/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.16s
+2026-11-16 13:32:43 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: parse_array (attempts: 0)
+2026-11-16 13:32:54 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling parse_array v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_cjson_parse/sactor/tmp77n2nnvw/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.00s
+2026-11-16 13:33:20 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: parse_object (attempts: 0)
+2026-11-16 13:33:34 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling parse_object v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_cjson_parse/sactor/tmp77n2nnvw/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.41s
+2026-11-16 13:34:08 | INFO     | sactor.translator.unidiomatic_translator:398 | Global variable global_error already translated
+2026-11-16 13:34:08 | INFO     | sactor.translator.unidiomatic_translator:398 | Global variable global_hooks already translated
+2026-11-16 13:34:08 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: cJSON_ParseWithLengthOpts (attempts: 0)
+2026-11-16 13:34:18 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+    Blocking waiting for file lock on package cache
+     Locking 1 package to latest compatible version
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+   Compiling libc v0.2.191
+   Compiling cJSON_ParseWithLengthOpts v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_cjson_parse/sactor/tmp77n2nnvw/build/embed_test_rust)
+warning: crate `cJSON_ParseWithLengthOpts` should have a snake case name
+  |
+  = help: convert the identifier to snake case: `c_json_parse_with_length_opts`
+  = note: `#[warn(non_snake_case)]` on by default
+
+warning: static variable `global_error` should have an upper case name
+  --> src/lib.rs:46:12
+   |
+46 | static mut global_error: error = error {
+   |            ^^^^^^^^^^^^ help: convert the identifier to upper case: `GLOBAL_ERROR`
+   |
+   = note: `#[warn(non_upper_case_globals)]` on by default
+
+warning: static variable `global_hooks` should have an upper case name
+  --> src/lib.rs:50:12
+   |
+50 | static mut global_hooks: internal_hooks = internal_hooks {
+   |            ^^^^^^^^^^^^ help: convert the identifier to upper case: `GLOBAL_HOOKS`
+
+warning: creating a shared reference to mutable static is discouraged
+  --> src/lib.rs:84:31
+   |
+84 |         item = cJSON_New_Item(&global_hooks as *const internal_hooks);
+   |                               ^^^^^^^^^^^^^ shared reference to mutable static
+   |
+   = note: for more information, see <https://doc.rust-lang.org/nightly/edition-guide/rust-2024/static-mut-references.html>
+   = note: shared references to mutable statics are dangerous; it's undefined behavior if the static is mutated or if a mutable reference is created for it while the shared reference lives
+   = note: `#[warn(static_mut_refs)]` on by default
+help: use `&raw const` instead to create a raw pointer
+   |
+84 |         item = cJSON_New_Item(&raw const global_hooks as *const internal_hooks);
+   |                                +++++++++
+
+warning: `cJSON_ParseWithLengthOpts` (lib) generated 4 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.95s
+2026-11-16 13:34:42 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: cJSON_ParseWithOpts (attempts: 0)
+2026-11-16 13:34:46 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling cJSON_ParseWithOpts v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_cjson_parse/sactor/tmp77n2nnvw/build/embed_test_rust)
+warning: value assigned to `buffer_length` is never read
+  --> src/lib.rs:53:13
+   |
+53 |     let mut buffer_length: libc::size_t = 0;
+   |             ^^^^^^^^^^^^^
+   |
+   = help: maybe it is overwritten before being read?
+   = note: `#[warn(unused_assignments)]` on by default
+
+warning: crate `cJSON_ParseWithOpts` should have a snake case name
+  |
+  = help: convert the identifier to snake case: `c_json_parse_with_opts`
+  = note: `#[warn(non_snake_case)]` on by default
+
+warning: `cJSON_ParseWithOpts` (lib) generated 2 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.90s
+2026-11-16 13:34:52 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: cJSON_ParseWithLength (attempts: 0)
+2026-11-16 13:34:56 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling cJSON_ParseWithLength v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_cjson_parse/sactor/tmp77n2nnvw/build/embed_test_rust)
+warning: crate `cJSON_ParseWithLength` should have a snake case name
+  |
+  = help: convert the identifier to snake case: `c_json_parse_with_length`
+  = note: `#[warn(non_snake_case)]` on by default
+
+warning: `cJSON_ParseWithLength` (lib) generated 1 warning
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.84s
+2026-11-16 13:35:03 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: cJSON_Parse (attempts: 0)
+2026-11-16 13:35:06 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling cJSON_Parse v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_cjson_parse/sactor/tmp77n2nnvw/build/embed_test_rust)
+warning: crate `cJSON_Parse` should have a snake case name
+  |
+  = help: convert the identifier to snake case: `c_json_parse`
+  = note: `#[warn(non_snake_case)]` on by default
+
+warning: `cJSON_Parse` (lib) generated 1 warning
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.89s
+2026-11-16 13:35:12 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: tree_checksum (attempts: 0)
+2026-11-16 13:35:17 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling tree_checksum v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_cjson_parse/sactor/tmp77n2nnvw/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.92s
+2026-11-16 13:35:24 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: main (attempts: 0)
+2026-11-16 13:35:33 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling main v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_cjson_parse/sactor/tmp77n2nnvw/build/embed_test_rust)
+warning: static `stderr` is never used
+  --> src/lib.rs:25:16
+   |
+25 |     static mut stderr: *mut libc::FILE;
+   |                ^^^^^^
+   |
+   = note: `#[warn(dead_code)]` on by default
+
+warning: `main` (lib) generated 1 warning
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.03s
+2026-11-16 13:35:51 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:35:55 | INFO     | sactor.combiner.program_combiner:259 | Found 42 warnings in the combined code
+2026-11-16 13:35:55 | INFO     | sactor.combiner.program_combiner:260 | Found 5 errors in the combined code
+2026-11-16 13:35:58 | WARNING  | sactor.thirdparty.crown:90 | crown preprocess messed up code; restoring original translation
+2026-11-16 13:35:58 | WARNING  | sactor.thirdparty.crown:103 | crown explicit-addr messed up code; restoring original translation
+2026-11-16 13:35:59 | INFO     | sactor.translator.idiomatic_translator:634 | Translating struct: cJSON (attempts: 0)
+2026-11-16 13:36:14 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:36:14 | INFO     | sactor.verifier.idiomatic_verifier:1268 | No test commands configured; accepting idiomatic struct cJSON after the compile check (converter harness skipped)
+2026-11-16 13:36:14 | INFO     | sactor.translator.idiomatic_translator:634 | Translating struct: internal_hooks (attempts: 0)
+2026-11-16 13:36:25 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:36:25 | INFO     | sactor.verifier.idiomatic_verifier:1268 | No test commands configured; accepting idiomatic struct internal_hooks after the compile check (converter harness skipped)
+2026-11-16 13:36:25 | INFO     | sactor.translator.idiomatic_translator:634 | Translating struct: error (attempts: 0)
+2026-11-16 13:36:32 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:36:32 | INFO     | sactor.verifier.idiomatic_verifier:1268 | No test commands configured; accepting idiomatic struct error after the compile check (converter harness skipped)
+2026-11-16 13:36:32 | INFO     | sactor.translator.idiomatic_translator:634 | Translating struct: parse_buffer (attempts: 0)
+2026-11-16 13:36:41 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:36:41 | INFO     | sactor.verifier.idiomatic_verifier:1268 | No test commands configured; accepting idiomatic struct parse_buffer after the compile check (converter harness skipped)
+2026-11-16 13:36:41 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: cJSON_GetErrorPtr (attempts: 0)
+2026-11-16 13:36:41 | INFO     | sactor.translator.idiomatic_translator:421 | Translating global variable: global_error (attempts: 0)
+2026-11-16 13:36:45 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:36:52 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:36:52 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function cJSON_GetErrorPtr after the compile check (FFI harness skipped)
+2026-11-16 13:36:53 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: cJSON_New_Item (attempts: 0)
+2026-11-16 13:37:02 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:37:02 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function cJSON_New_Item after the compile check (FFI harness skipped)
+2026-11-16 13:37:02 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: get_decimal_point (attempts: 0)
+2026-11-16 13:37:09 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:37:09 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function get_decimal_point after the compile check (FFI harness skipped)
+2026-11-16 13:37:09 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: parse_hex4 (attempts: 0)
+2026-11-16 13:37:18 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:37:18 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function parse_hex4 after the compile check (FFI harness skipped)
+2026-11-16 13:37:18 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: buffer_skip_whitespace (attempts: 0)
+2026-11-16 13:37:29 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:37:29 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function buffer_skip_whitespace after the compile check (FFI harness skipped)
+2026-11-16 13:37:29 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: skip_utf8_bom (attempts: 0)
+2026-11-16 13:37:39 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:37:39 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function skip_utf8_bom after the compile check (FFI harness skipped)
+2026-11-16 13:37:39 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: diff_timespec (attempts: 0)
+2026-11-16 13:37:48 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:37:48 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function diff_timespec after the compile check (FFI harness skipped)
+2026-11-16 13:37:48 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: parse_number (attempts: 0)
+2026-11-16 13:38:08 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:38:08 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function parse_number after the compile check (FFI harness skipped)
+2026-11-16 13:38:08 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: utf16_literal_to_utf8 (attempts: 0)
+2026-11-16 13:38:25 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:38:26 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function utf16_literal_to_utf8 after the compile check (FFI harness skipped)
+2026-11-16 13:38:26 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: parse_string (attempts: 0)
+2026-11-16 13:38:55 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:38:55 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function parse_string after the compile check (FFI harness skipped)
+2026-11-16 13:38:55 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: cJSON_Delete (attempts: 0)
+2026-11-16 13:38:55 | INFO     | sactor.translator.idiomatic_translator:421 | Translating global variable: global_hooks (attempts: 0)
+2026-11-16 13:38:59 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:39:09 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:39:09 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function cJSON_Delete after the compile check (FFI harness skipped)
+2026-11-16 13:39:09 | INFO     | sactor.translator.idiomatic_translator:1402 | Translating function group: ['parse_value', 'parse_array', 'parse_object'] (attempts: 0)
+2026-11-16 13:39:09 | INFO     | sactor.translator.idiomatic_translator:389 | Global variable global_hooks already translated
+2026-11-16 13:39:37 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:39:37 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function parse_value after the compile check (FFI harness skipped)
+2026-11-16 13:39:37 | INFO     | sactor.translator.idiomatic_translator:1659 | Function group ['parse_value', 'parse_array', 'parse_object'] translated successfully
+2026-11-16 13:39:37 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: cJSON_ParseWithLengthOpts (attempts: 0)
+2026-11-16 13:39:37 | INFO     | sactor.translator.idiomatic_translator:389 | Global variable global_error already translated
+2026-11-16 13:39:37 | INFO     | sactor.translator.idiomatic_translator:389 | Global variable global_hooks already translated
+2026-11-16 13:39:58 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:39:58 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function cJSON_ParseWithLengthOpts after the compile check (FFI harness skipped)
+2026-11-16 13:39:58 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: cJSON_ParseWithOpts (attempts: 0)
+2026-11-16 13:40:08 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:40:08 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function cJSON_ParseWithOpts after the compile check (FFI harness skipped)
+2026-11-16 13:40:08 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: cJSON_ParseWithLength (attempts: 0)
+2026-11-16 13:40:16 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:40:16 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function cJSON_ParseWithLength after the compile check (FFI harness skipped)
+2026-11-16 13:40:16 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: cJSON_Parse (attempts: 0)
+2026-11-16 13:40:24 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:40:24 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function cJSON_Parse after the compile check (FFI harness skipped)
+2026-11-16 13:40:24 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: tree_checksum (attempts: 0)
+2026-11-16 13:40:34 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:40:34 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function tree_checksum after the compile check (FFI harness skipped)
+2026-11-16 13:40:34 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: main (attempts: 0)
+2026-11-16 13:40:46 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:40:46 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function main after the compile check (FFI harness skipped)
+2026-11-16 13:40:48 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:40:51 | INFO     | sactor.combiner.program_combiner:259 | Found 13 warnings in the combined code
+2026-11-16 13:40:51 | INFO     | sactor.combiner.program_combiner:260 | Found 0 errors in the combined code
+=== end 2026-11-16T13:40:53-08:00 cjson_parse rc=0

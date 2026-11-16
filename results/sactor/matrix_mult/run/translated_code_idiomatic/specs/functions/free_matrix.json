@@ -1,0 +1,37 @@
+{
+  "function_name": "free_matrix",
+  "fields": [
+    {
+      "u_field": {
+        "name": "matrix",
+        "type": "*mut *mut i32",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_from": "size",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "matrix",
+        "type": "Vec<Vec<i32>>"
+      },
+      "ownership": "owning",
+      "compare": "skip",
+      "llm_note": "Outer array of row pointers becomes Vec<Vec<i32>>; each row is owned by the outer vector and freed on drop."
+    },
+    {
+      "u_field": {
+        "name": "size",
+        "type": "i32",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "matrix.len",
+        "type": "usize"
+      }
+    }
+  ],
+  "idiomatic_name": "free_matrix"
+}

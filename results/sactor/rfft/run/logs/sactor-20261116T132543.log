@@ -1,0 +1,131 @@
+2026-11-16 13:25:44 | INFO     | sactor.sactor:210 | -------------SACTOR Configuration-------------
+2026-11-16 13:25:44 | INFO     | sactor.sactor:211 | Input file: rfft.c
+2026-11-16 13:25:44 | INFO     | sactor.sactor:212 | Test command: test_cmd.json
+2026-11-16 13:25:44 | INFO     | sactor.sactor:213 | Is executable: True
+2026-11-16 13:25:44 | INFO     | sactor.sactor:216 | Build directory: /home/gabe/sactor_forklift/tmp/sactor/tmphntfbu1p/build
+2026-11-16 13:25:44 | INFO     | sactor.sactor:217 | Result directory: /home/gabe/sactor_forklift/sactor-bench-oxivolve/rfft/result_sonnet55
+2026-11-16 13:25:44 | INFO     | sactor.sactor:218 | Config file: /home/gabe/sactor_forklift/sactor/sactor.sonnet55.toml
+2026-11-16 13:25:44 | INFO     | sactor.sactor:219 | No verify: False
+2026-11-16 13:25:44 | INFO     | sactor.sactor:220 | Unidiomatic only: False
+2026-11-16 13:25:44 | INFO     | sactor.sactor:221 | LLM statistics base path: /home/gabe/sactor_forklift/sactor-bench-oxivolve/rfft/result_sonnet55/llm_stat.json
+2026-11-16 13:25:44 | INFO     | sactor.sactor:222 | Extra compile command: None
+2026-11-16 13:25:44 | INFO     | sactor.sactor:223 | Compile commands file: 
+2026-11-16 13:25:44 | INFO     | sactor.sactor:224 | Link args: ['-lm']
+2026-11-16 13:25:44 | INFO     | sactor.sactor:225 | Idiomatic only: False
+2026-11-16 13:25:44 | INFO     | sactor.sactor:226 | Continue run when incomplete: False
+2026-11-16 13:25:44 | INFO     | sactor.sactor:227 | -------------End of Configuration-------------
+2026-11-16 13:25:45 | DEBUG    | sactor.sactor:284 | Total structs: 0; order groups: 0
+2026-11-16 13:25:45 | DEBUG    | sactor.sactor:286 | Total functions: 4; order groups: 4
+2026-11-16 13:25:45 | DEBUG    | sactor.sactor:288 | Struct order: []
+2026-11-16 13:25:45 | DEBUG    | sactor.sactor:289 | Function order: [[FunctionInfo(void fft_transform_radix2 ( double complex * vec , size_t n , bool inverse ))], [FunctionInfo(void fft_transform_bluestein ( double complex * vec , size_t n , bool inverse ))], [FunctionInfo(void fft_transform ( double complex * vec , size_t n , bool inverse ))], [FunctionInfo(int main ( ))]]
+2026-11-16 13:25:45 | DEBUG    | sactor.llm.llm:38 | Default model: 'claude-sonnet-5-5'
+2026-11-16 13:25:45 | DEBUG    | sactor.llm.llm:40 | Found 1 models in config
+2026-11-16 13:25:45 | DEBUG    | sactor.llm.llm:46 | Model mapping 0: 'claude-sonnet-5-5' -> 'anthropic/claude-sonnet-5-5': {'model': 'anthropic/claude-sonnet-5-5', 'api_key': '***REDACTED***', 'max_tokens': '***REDACTED***'}
+2026-11-16 13:25:45 | DEBUG    | sactor.thirdparty.c2rust:52 | Running c2rust command: ['c2rust', 'transpile', '--preserve-unused-functions', '/home/gabe/sactor_forklift/tmp/sactor/tmpqme_6fwz/c2rust/unfolded_typedefs.c', '--', '-I/usr/lib/llvm-19/lib/clang/19/include', '-I/usr/local/include', '-I/usr/include/x86_64-linux-gnu', '-I/usr/include']
+2026-11-16 13:25:46 | ERROR    | sactor.thirdparty.c2rust:56 | c2rust failed: /home/gabe/sactor_forklift/tmp/sactor/tmpqme_6fwz/c2rust/unfolded_typedefs.c:77:40: warning: c2rust: Encountered unsupported imaginary literal
+   double complex omega = cos(angle) + I * sin(angle);
+                                       ^
+/usr/include/complex.h:53:11: note: expanded from macro 'I'
+#define I _Complex_I
+          ^~~~~~~~~~
+/usr/include/complex.h:48:35: note: expanded from macro '_Complex_I'
+#define _Complex_I      (__extension__ 1.0iF)
+                                       ^
+/home/gabe/sactor_forklift/tmp/sactor/tmpqme_6fwz/c2rust/unfolded_typedefs.c:77:40: warning: c2rust: Encountered unsupported imaginary literal
+   double complex omega = cos(angle) + I * sin(angle);
+                                       ^
+/usr/include/complex.h:53:11: note: expanded from macro 'I'
+#define I _Complex_I
+          ^~~~~~~~~~
+/usr/include/complex.h:48:35: note: expanded from macro '_Complex_I'
+#define _Complex_I      (__extension__ 1.0iF)
+                                       ^
+/home/gabe/sactor_forklift/tmp/sactor/tmpqme_6fwz/c2rust/unfolded_typedefs.c:100:39: warning: c2rust: Encountered unsupported imaginary literal
+  double complex omega = cos(angle) + I * sin(angle);
+                                      ^
+/usr/include/complex.h:53:11: note: expanded from macro 'I'
+#define I _Complex_I
+          ^~~~~~~~~~
+/usr/include/complex.h:48:35: note: expanded from macro '_Complex_I'
+#define _Complex_I      (__extension__ 1.0iF)
+                                       ^
+/home/gabe/sactor_forklift/tmp/sactor/tmpqme_6fwz/c2rust/unfolded_typedefs.c:100:39: warning: c2rust: Encountered unsupported imaginary literal
+  double complex omega = cos(angle) + I * sin(angle);
+                                      ^
+/usr/include/complex.h:53:11: note: expanded from macro 'I'
+#define I _Complex_I
+          ^~~~~~~~~~
+/usr/include/complex.h:48:35: note: expanded from macro '_Complex_I'
+#define _Complex_I      (__extension__ 1.0iF)
+                                       ^
+/home/gabe/sactor_forklift/tmp/sactor/tmpqme_6fwz/c2rust/unfolded_typedefs.c:100:39: warning: c2rust: Encountered unsupported imaginary literal
+  double complex omega = cos(angle) + I * sin(angle);
+                                      ^
+/usr/include/complex.h:53:11: note: expanded from macro 'I'
+#define I _Complex_I
+          ^~~~~~~~~~
+/usr/include/complex.h:48:35: note: expanded from macro '_Complex_I'
+#define _Complex_I      (__extension__ 1.0iF)
+                                       ^
+/home/gabe/sactor_forklift/tmp/sactor/tmpqme_6fwz/c2rust/unfolded_typedefs.c:114:39: warning: c2rust: Encountered unsupported imaginary literal
+  double complex omega = cos(angle) + I * sin(angle);
+                                      ^
+/usr/include/complex.h:53:11: note: expanded from macro 'I'
+#define I _Complex_I
+          ^~~~~~~~~~
+/usr/include/complex.h:48:35: note: expanded from macro '_Complex_I'
+#define _Complex_I      (__extension__ 1.0iF)
+                                       ^
+/home/gabe/sactor_forklift/tmp/sactor/tmpqme_6fwz/c2rust/unfolded_typedefs.c:114:39: warning: c2rust: Encountered unsupported imaginary literal
+  double complex omega = cos(angle) + I * sin(angle);
+                                      ^
+/usr/include/complex.h:53:11: note: expanded from macro 'I'
+#define I _Complex_I
+          ^~~~~~~~~~
+/usr/include/complex.h:48:35: note: expanded from macro '_Complex_I'
+#define _Complex_I      (__extension__ 1.0iF)
+                                       ^
+/home/gabe/sactor_forklift/tmp/sactor/tmpqme_6fwz/c2rust/unfolded_typedefs.c:136:24: warning: c2rust: Encountered unsupported imaginary literal
+  vec[i] = val + 0.0 * I;
+                       ^
+/usr/include/complex.h:53:11: note: expanded from macro 'I'
+#define I _Complex_I
+          ^~~~~~~~~~
+/usr/include/complex.h:48:35: note: expanded from macro '_Complex_I'
+#define _Complex_I      (__extension__ 1.0iF)
+                                       ^
+8 warnings generated.
+[33mwarning:[0m Missing child 95597259375624 of node AstNode { tag: TagUnaryOperator, children: [Some(95597259375624)], loc: SrcSpan { fileid: 71, begin_line: 114, begin_column: 39, end_line: 114, end_column: 39 }, type_id: Some(95597257114016), rvalue: RValue, macro_expansions: [], macro_expansion_text: Some("I"), extras: [Text("__extension__"), Bool(false)] }
+Exported Clang AST was invalid. Check warnings above for unimplemented features.
+--> /home/gabe/sactor_forklift/tmp/sactor/tmpqme_6fwz/c2rust/unfolded_typedefs.c:114:39
+ [-Wclang-ast]
+[33mwarning:[0m Missing child 95597259362688 of node AstNode { tag: TagUnaryOperator, children: [Some(95597259362688)], loc: SrcSpan { fileid: 71, begin_line: 77, begin_column: 40, end_line: 77, end_column: 40 }, type_id: Some(95597257114016), rvalue: RValue, macro_expansions: [], macro_expansion_text: Some("I"), extras: [Text("__extension__"), Bool(false)] }
+Exported Clang AST was invalid. Check warnings above for unimplemented features.
+--> /home/gabe/sactor_forklift/tmp/sactor/tmpqme_6fwz/c2rust/unfolded_typedefs.c:77:40
+ [-Wclang-ast]
+[33mwarning:[0m Missing child 95597259370424 of node AstNode { tag: TagUnaryOperator, children: [Some(95597259370424)], loc: SrcSpan { fileid: 71, begin_line: 100, begin_column: 39, end_line: 100, end_column: 39 }, type_id: Some(95597257114016), rvalue: RValue, macro_expansions: [], macro_expansion_text: Some("I"), extras: [Text("__extension__"), Bool(false)] }
+Exported Clang AST was invalid. Check warnings above for unimplemented features.
+--> /home/gabe/sactor_forklift/tmp/sactor/tmpqme_6fwz/c2rust/unfolded_typedefs.c:100:39
+ [-Wclang-ast]
+[33mwarning:[0m Missing child 95597259382056 of node AstNode { tag: TagUnaryOperator, children: [Some(95597259382056)], loc: SrcSpan { fileid: 71, begin_line: 136, begin_column: 24, end_line: 136, end_column: 24 }, type_id: Some(95597257114016), rvalue: RValue, macro_expansions: [], macro_expansion_text: Some("I"), extras: [Text("__extension__"), Bool(false)] }
+Exported Clang AST was invalid. Check warnings above for unimplemented features.
+--> /home/gabe/sactor_forklift/tmp/sactor/tmpqme_6fwz/c2rust/unfolded_typedefs.c:136:24
+ [-Wclang-ast]
+[31merror:[0m Failed to translate conj: Unsupported type Complex(CTypeId(33))
+
+[31merror:[0m Failed to translate cimag: Unsupported type Complex(CTypeId(33))
+
+[31merror:[0m Failed to translate creal: Unsupported type Complex(CTypeId(33))
+
+[31merror:[0m Failed to translate fft_transform_radix2: Unsupported type Complex(CTypeId(33))
+
+[31merror:[0m Failed to translate fft_transform_bluestein: Unsupported type Complex(CTypeId(33))
+
+[31merror:[0m Failed to translate fft_transform: Unsupported type Complex(CTypeId(33))
+
+[31merror:[0m Failed to translate main: Unsupported type Complex(CTypeId(33))
+
+thread 'main' panicked at /home/gabe/.cargo/registry/src/index.crates.io-6f17d22bba15001f/c2rust-0.20.0/src/bin/c2rust-transpile.rs:264:14:
+Failed to remove temporary compile_commands.json: Os { code: 2, kind: NotFound, message: "No such file or directory" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+

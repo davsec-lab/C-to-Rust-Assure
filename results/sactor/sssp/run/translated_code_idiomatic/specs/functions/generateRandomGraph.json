@@ -1,0 +1,23 @@
+{
+  "function_name": "generateRandomGraph",
+  "fields": [
+    {
+      "u_field": {
+        "name": "graph",
+        "type": "*mut Graph",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "graph",
+        "type": "&mut Graph"
+      },
+      "ownership": "transient"
+    }
+  ],
+  "idiomatic_name": "generateRandomGraph"
+}

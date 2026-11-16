@@ -1,0 +1,68 @@
+{
+  "function_name": "multiply_matrices",
+  "fields": [
+    {
+      "u_field": {
+        "name": "a",
+        "type": "*mut *mut i32",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_from": "size",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "a",
+        "type": "&[&[i32]]"
+      }
+    },
+    {
+      "u_field": {
+        "name": "b",
+        "type": "*mut *mut i32",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_from": "size",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "b",
+        "type": "&[&[i32]]"
+      }
+    },
+    {
+      "u_field": {
+        "name": "c",
+        "type": "*mut *mut i32",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_from": "size",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "c",
+        "type": "&mut [&mut [i32]]"
+      }
+    },
+    {
+      "u_field": {
+        "name": "size",
+        "type": "i32",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "size",
+        "type": "usize"
+      }
+    }
+  ],
+  "idiomatic_name": "multiply_matrices"
+}

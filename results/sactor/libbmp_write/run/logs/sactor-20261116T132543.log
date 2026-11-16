@@ -1,0 +1,3876 @@
+2026-11-16 13:25:44 | INFO     | sactor.sactor:210 | -------------SACTOR Configuration-------------
+2026-11-16 13:25:44 | INFO     | sactor.sactor:211 | Input file: libbmp_write.c
+2026-11-16 13:25:44 | INFO     | sactor.sactor:212 | Test command: test_cmd.json
+2026-11-16 13:25:44 | INFO     | sactor.sactor:213 | Is executable: True
+2026-11-16 13:25:44 | INFO     | sactor.sactor:216 | Build directory: /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build
+2026-11-16 13:25:44 | INFO     | sactor.sactor:217 | Result directory: /home/gabe/sactor_forklift/sactor-bench-oxivolve/libbmp_write/result_sonnet55
+2026-11-16 13:25:44 | INFO     | sactor.sactor:218 | Config file: /home/gabe/sactor_forklift/sactor/sactor.sonnet55.toml
+2026-11-16 13:25:44 | INFO     | sactor.sactor:219 | No verify: False
+2026-11-16 13:25:44 | INFO     | sactor.sactor:220 | Unidiomatic only: False
+2026-11-16 13:25:44 | INFO     | sactor.sactor:221 | LLM statistics base path: /home/gabe/sactor_forklift/sactor-bench-oxivolve/libbmp_write/result_sonnet55/llm_stat.json
+2026-11-16 13:25:44 | INFO     | sactor.sactor:222 | Extra compile command: None
+2026-11-16 13:25:44 | INFO     | sactor.sactor:223 | Compile commands file: 
+2026-11-16 13:25:44 | INFO     | sactor.sactor:224 | Link args: ['-lm']
+2026-11-16 13:25:44 | INFO     | sactor.sactor:225 | Idiomatic only: False
+2026-11-16 13:25:44 | INFO     | sactor.sactor:226 | Continue run when incomplete: False
+2026-11-16 13:25:44 | INFO     | sactor.sactor:227 | -------------End of Configuration-------------
+2026-11-16 13:25:45 | DEBUG    | sactor.sactor:284 | Total structs: 4; order groups: 4
+2026-11-16 13:25:45 | DEBUG    | sactor.sactor:286 | Total functions: 18; order groups: 18
+2026-11-16 13:25:45 | DEBUG    | sactor.sactor:288 | Struct order: [[StructInfo(md5_ctx)], [StructInfo(_bmp_pixel)], [StructInfo(_bmp_header)], [StructInfo(_bmp_img)]]
+2026-11-16 13:25:45 | DEBUG    | sactor.sactor:289 | Function order: [[FunctionInfo(static uint32_t md5_left_rotate ( const uint32_t value , const uint32_t shift ))], [FunctionInfo(static void md5_init ( struct md5_ctx * ctx ))], [FunctionInfo(void bmp_header_init_df ( struct _bmp_header * header , const int width , const int height ))], [FunctionInfo(enum bmp_error bmp_header_write ( const struct _bmp_header * header , FILE * img_file ))], [FunctionInfo(enum bmp_error bmp_header_read ( struct _bmp_header * header , FILE * img_file ))], [FunctionInfo(void bmp_pixel_init ( struct _bmp_pixel * pxl , const unsigned char red , const unsigned char green , const unsigned char blue ))], [FunctionInfo(void bmp_img_alloc ( struct _bmp_img * img ))], [FunctionInfo(void bmp_img_free ( struct _bmp_img * img ))], [FunctionInfo(static size_t bmp_row_index ( const struct _bmp_header * header , const size_t y ))], [FunctionInfo(static int get_now ( struct timespec * ts ))], [FunctionInfo(static void md5_transform ( struct md5_ctx * ctx , const unsigned char block [ 64 ] ))], [FunctionInfo(void bmp_img_init_df ( struct _bmp_img * img , const int width , const int height ))], [FunctionInfo(enum bmp_error bmp_img_write ( const struct _bmp_img * img , const char * filename ))], [FunctionInfo(enum bmp_error bmp_img_read ( struct _bmp_img * img , const char * filename ))], [FunctionInfo(static void md5_update ( struct md5_ctx * ctx , const unsigned char * data , size_t len ))], [FunctionInfo(static void md5_final ( struct md5_ctx * ctx , unsigned char digest [ 16 ] ))], [FunctionInfo(static int print_file_md5 ( const char * filename ))], [FunctionInfo(int main ( int argc , char * argv [ ] ))]]
+2026-11-16 13:25:45 | DEBUG    | sactor.llm.llm:38 | Default model: 'claude-sonnet-5-5'
+2026-11-16 13:25:45 | DEBUG    | sactor.llm.llm:40 | Found 1 models in config
+2026-11-16 13:25:45 | DEBUG    | sactor.llm.llm:46 | Model mapping 0: 'claude-sonnet-5-5' -> 'anthropic/claude-sonnet-5-5': {'model': 'anthropic/claude-sonnet-5-5', 'api_key': '***REDACTED***', 'max_tokens': '***REDACTED***'}
+2026-11-16 13:25:45 | DEBUG    | sactor.thirdparty.c2rust:52 | Running c2rust command: ['c2rust', 'transpile', '--preserve-unused-functions', '/home/gabe/sactor_forklift/tmp/sactor/tmptq88mkgv/c2rust/unfolded_typedefs.c', '--', '-I/usr/lib/llvm-19/lib/clang/19/include', '-I/usr/local/include', '-I/usr/include/x86_64-linux-gnu', '-I/usr/include']
+2026-11-16 13:25:46 | INFO     | sactor.translator.unidiomatic_translator:633 | Struct/Union _bmp_pixel already translated
+2026-11-16 13:25:46 | INFO     | sactor.translator.unidiomatic_translator:633 | Struct/Union _bmp_header already translated
+2026-11-16 13:25:46 | DEBUG    | sactor.sactor:425 | Checking function md5_left_rotate: struct_ready=True, struct_blockers=[]
+2026-11-16 13:25:46 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: md5_left_rotate (attempts: 0)
+2026-11-16 13:25:46 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+static uint32_t
+md5_left_rotate (const uint32_t value, const uint32_t shift)
+{
+	return (value << shift) | (value >> (32 - shift));
+}
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:25:49 | RESPONSE | sactor.llm:160 | In C, shifting a `uint32_t` by 32 or more is undefined behavior, and a shift of 0 makes `value >> 32` undefined. In practice MD5 only calls this function with shifts from 1 to 31. In Rust, `<<` and `>>` panic on overflow in debug builds, so I used `wrapping_shl` and `wrapping_shr`. These mask the shift amount modulo 32, which matches what x86 hardware does with the C code. For shift 0, `wrapping_shr(32)` becomes a shift by 0, so the result is `value | value`, which equals `value` and is the same as a rotate by 0.
+
+`rotate_left` would also work, but the explicit form follows the original more closely.
+
+----FUNCTION----
+```rust
+fn md5_left_rotate(value: u32, shift: u32) -> u32 {
+    value.wrapping_shl(shift) | value.wrapping_shr(32u32.wrapping_sub(shift))
+}
+```
+----END FUNCTION----
+2026-11-16 13:25:49 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:25:49 | DEBUG    | sactor.utils:258 | fn md5_left_rotate(value: u32, shift: u32) -> u32 {
+    value.wrapping_shl(shift) | value.wrapping_shr(32u32.wrapping_sub(shift))
+}
+
+2026-11-16 13:25:49 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function md5_left_rotate:
+2026-11-16 13:25:49 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | fn md5_left_rotate(value: u32, shift: u32) -> u32 {
+    value.wrapping_shl(shift) | value.wrapping_shr(32u32.wrapping_sub(shift))
+}
+
+2026-11-16 13:25:49 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt/Cargo.toml
+2026-11-16 13:25:52 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:25:52 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/Cargo.toml
+2026-11-16 13:25:55 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/md5_left_rotate', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/md5_left_rotate.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/target/debug', '-lm', '-lmd5_left_rotate']
+2026-11-16 13:25:55 | DEBUG    | sactor.sactor:425 | Checking function md5_init: struct_ready=True, struct_blockers=[]
+2026-11-16 13:25:55 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: md5_init (attempts: 0)
+2026-11-16 13:25:55 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+static void
+md5_init (md5_ctx *ctx)
+{
+	ctx->state[0] = 0x67452301u;
+	ctx->state[1] = 0xefcdab89u;
+	ctx->state[2] = 0x98badcfeu;
+	ctx->state[3] = 0x10325476u;
+	ctx->bit_len = 0;
+	ctx->buffer_len = 0;
+}
+```
+
+The function uses the following structs/unions, which are already translated as (you should **NOT** define them in your translation, as the system will automatically define them. But you can use these structs or unions):
+```rust
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct md5_ctx {
+    pub state: [uint32_t; 4],
+    pub bit_len: uint64_t,
+    pub buffer: [libc::c_uchar; 64],
+    pub buffer_len: size_t,
+}
+
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:25:57 | RESPONSE | sactor.llm:160 | ----FUNCTION----
+```rust
+unsafe fn md5_init(ctx: *mut md5_ctx) {
+    (*ctx).state[0] = 0x67452301u32 as _;
+    (*ctx).state[1] = 0xefcdab89u32 as _;
+    (*ctx).state[2] = 0x98badcfeu32 as _;
+    (*ctx).state[3] = 0x10325476u32 as _;
+    (*ctx).bit_len = 0;
+    (*ctx).buffer_len = 0;
+}
+```
+----END FUNCTION----
+2026-11-16 13:25:57 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:25:57 | DEBUG    | sactor.utils:258 | unsafe fn md5_init(ctx: *mut md5_ctx) {
+    (*ctx).state[0] = 0x67452301u32 as _;
+    (*ctx).state[1] = 0xefcdab89u32 as _;
+    (*ctx).state[2] = 0x98badcfeu32 as _;
+    (*ctx).state[3] = 0x10325476u32 as _;
+    (*ctx).bit_len = 0;
+    (*ctx).buffer_len = 0;
+}
+
+2026-11-16 13:25:57 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function md5_init:
+2026-11-16 13:25:57 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | unsafe fn md5_init(ctx: *mut md5_ctx) {
+    (*ctx).state[0] = 0x67452301u32 as _;
+    (*ctx).state[1] = 0xefcdab89u32 as _;
+    (*ctx).state[2] = 0x98badcfeu32 as _;
+    (*ctx).state[3] = 0x10325476u32 as _;
+    (*ctx).bit_len = 0;
+    (*ctx).buffer_len = 0;
+}
+
+2026-11-16 13:25:57 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt/Cargo.toml
+2026-11-16 13:25:59 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:25:59 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/Cargo.toml
+2026-11-16 13:26:02 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/md5_init', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/md5_init.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/target/debug', '-lm', '-lmd5_init']
+2026-11-16 13:26:02 | DEBUG    | sactor.sactor:425 | Checking function bmp_header_init_df: struct_ready=True, struct_blockers=[]
+2026-11-16 13:26:02 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: bmp_header_init_df (attempts: 0)
+2026-11-16 13:26:02 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+void
+bmp_header_init_df (bmp_header *header,
+                    const int   width,
+                    const int   height)
+{
+	header->bfSize = (sizeof (bmp_pixel) * width + BMP_GET_PADDING (width))
+	                  * abs (height);
+	header->bfReserved = 0;
+	header->bfOffBits = 54;
+	header->biSize = 40;
+	header->biWidth = width;
+	header->biHeight = height;
+	header->biPlanes = 1;
+	header->biBitCount = 24;
+	header->biCompression = 0;
+	header->biSizeImage = 0;
+	header->biXPelsPerMeter = 0;
+	header->biYPelsPerMeter = 0;
+	header->biClrUsed = 0;
+	header->biClrImportant = 0;
+}
+```
+
+The function body above may reference the following macros. Use these definitions to understand the semantics; do **NOT** redefine them in Rust—expand or replicate their behavior as needed in the translation.
+```c
+#define BMP_GET_PADDING(a) ((a) % 4)
+```
+
+The function uses the following structs/unions, which are already translated as (you should **NOT** define them in your translation, as the system will automatically define them. But you can use these structs or unions):
+```rust
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct _bmp_pixel {
+    pub blue: libc::c_uchar,
+    pub green: libc::c_uchar,
+    pub red: libc::c_uchar,
+}
+
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct _bmp_header {
+    pub bfSize: libc::c_uint,
+    pub bfReserved: libc::c_uint,
+    pub bfOffBits: libc::c_uint,
+    pub biSize: libc::c_uint,
+    pub biWidth: libc::c_int,
+    pub biHeight: libc::c_int,
+    pub biPlanes: libc::c_ushort,
+    pub biBitCount: libc::c_ushort,
+    pub biCompression: libc::c_uint,
+    pub biSizeImage: libc::c_uint,
+    pub biXPelsPerMeter: libc::c_int,
+    pub biYPelsPerMeter: libc::c_int,
+    pub biClrUsed: libc::c_uint,
+    pub biClrImportant: libc::c_uint,
+}
+
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:26:09 | RESPONSE | sactor.llm:160 | I need to work out the C arithmetic semantics first.
+
+`sizeof(bmp_pixel)` is `size_t`, which is 3 as a `usize`. The `width` is an `int`, so `sizeof * width` converts `width` to `size_t` (u64 on 64-bit), and a negative width wraps. `BMP_GET_PADDING(width)` is `width % 4`, an `int` that can be negative. Adding it to a `size_t` converts it to `size_t` with wraparound. `abs(height)` is an `int`, converted to `size_t` for the multiply. The final result is truncated to `unsigned int` when assigned to `bfSize`.
+
+In Rust, with `usize`:
+- `let w = width as usize;`
+- `let pad = (width % 4) as usize;` (`%` on i32 follows C semantics, and the cast sign-extends like C)
+- `let size = (3usize.wrapping_mul(w).wrapping_add(pad)).wrapping_mul(abs(height) as usize);`
+
+`abs(INT_MIN)` is undefined behavior in C, so I use `wrapping_abs`. For the `as usize` cast, `abs` returns an `i32`, which sign-extends. For non-negative values that is the same. Then `bfSize = size as c_uint`.
+
+The type is `_bmp_header`. The C code uses `bmp_header`, which is presumably a typedef for it, so the parameter is `*mut _bmp_header`. I'll declare the function as `unsafe`, and use `pub unsafe extern "C" fn` to keep it equivalent.
+
+----FUNCTION----
+```rust
+pub unsafe extern "C" fn bmp_header_init_df(
+    header: *mut _bmp_header,
+    width: libc::c_int,
+    height: libc::c_int,
+) {
+    let w = width as isize as usize;
+    let pad = (width % 4) as isize as usize;
+    let h = height.wrapping_abs() as isize as usize;
+    let size = (core::mem::size_of::<_bmp_pixel>())
+        .wrapping_mul(w)
+        .wrapping_add(pad)
+        .wrapping_mul(h);
+    (*header).bfSize = size as libc::c_uint;
+    (*header).bfReserved = 0;
+    (*header).bfOffBits = 54;
+    (*header).biSize = 40;
+    (*header).biWidth = width;
+    (*header).biHeight = height;
+    (*header).biPlanes = 1;
+    (*header).biBitCount = 24;
+    (*header).biCompression = 0;
+    (*header).biSizeImage = 0;
+    (*header).biXPelsPerMeter = 0;
+    (*header).biYPelsPerMeter = 0;
+    (*header).biClrUsed = 0;
+    (*header).biClrImportant = 0;
+}
+```
+----END FUNCTION----
+2026-11-16 13:26:09 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:26:09 | DEBUG    | sactor.utils:258 | pub unsafe extern "C" fn bmp_header_init_df(
+    header: *mut _bmp_header,
+    width: libc::c_int,
+    height: libc::c_int,
+) {
+    let w = width as isize as usize;
+    let pad = (width % 4) as isize as usize;
+    let h = height.wrapping_abs() as isize as usize;
+    let size = (core::mem::size_of::<_bmp_pixel>())
+        .wrapping_mul(w)
+        .wrapping_add(pad)
+        .wrapping_mul(h);
+    (*header).bfSize = size as libc::c_uint;
+    (*header).bfReserved = 0;
+    (*header).bfOffBits = 54;
+    (*header).biSize = 40;
+    (*header).biWidth = width;
+    (*header).biHeight = height;
+    (*header).biPlanes = 1;
+    (*header).biBitCount = 24;
+    (*header).biCompression = 0;
+    (*header).biSizeImage = 0;
+    (*header).biXPelsPerMeter = 0;
+    (*header).biYPelsPerMeter = 0;
+    (*header).biClrUsed = 0;
+    (*header).biClrImportant = 0;
+}
+
+2026-11-16 13:26:09 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function bmp_header_init_df:
+2026-11-16 13:26:09 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub unsafe extern "C" fn bmp_header_init_df(
+    header: *mut _bmp_header,
+    width: libc::c_int,
+    height: libc::c_int,
+) {
+    let w = width as isize as usize;
+    let pad = (width % 4) as isize as usize;
+    let h = height.wrapping_abs() as isize as usize;
+    let size = (core::mem::size_of::<_bmp_pixel>())
+        .wrapping_mul(w)
+        .wrapping_add(pad)
+        .wrapping_mul(h);
+    (*header).bfSize = size as libc::c_uint;
+    (*header).bfReserved = 0;
+    (*header).bfOffBits = 54;
+    (*header).biSize = 40;
+    (*header).biWidth = width;
+    (*header).biHeight = height;
+    (*header).biPlanes = 1;
+    (*header).biBitCount = 24;
+    (*header).biCompression = 0;
+    (*header).biSizeImage = 0;
+    (*header).biXPelsPerMeter = 0;
+    (*header).biYPelsPerMeter = 0;
+    (*header).biClrUsed = 0;
+    (*header).biClrImportant = 0;
+}
+
+2026-11-16 13:26:09 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt/Cargo.toml
+2026-11-16 13:26:11 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:26:11 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/Cargo.toml
+2026-11-16 13:26:14 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/bmp_header_init_df', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/bmp_header_init_df.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/target/debug', '-lm', '-lbmp_header_init_df']
+2026-11-16 13:26:15 | DEBUG    | sactor.sactor:425 | Checking function bmp_header_write: struct_ready=True, struct_blockers=[]
+2026-11-16 13:26:15 | INFO     | sactor.translator.unidiomatic_translator:201 | Translating enum: bmp_error (attempts: 0)
+2026-11-16 13:26:15 | PROMPT   | sactor.llm:155 | 
+Translate the following C enum to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+The enum is:
+```c
+enum bmp_error
+{
+ BMP_FILE_NOT_OPENED = -4,
+ BMP_HEADER_NOT_INITIALIZED,
+ BMP_INVALID_FILE,
+ BMP_ERROR,
+ BMP_OK = 0
+};
+
+```
+
+Output the translated enum into this format (wrap with the following tags):
+----ENUM----
+```rust
+// Your translated enum here
+```
+----END ENUM----
+
+2026-11-16 13:26:18 | RESPONSE | sactor.llm:160 | In C, `BMP_FILE_NOT_OPENED` is -4, so the following enumerators count up from it: `BMP_HEADER_NOT_INITIALIZED` is -3, `BMP_INVALID_FILE` is -2, and `BMP_ERROR` is -1. `BMP_OK` is explicitly 0.
+
+C enums are int-sized, so I used `#[repr(C)]` with `#[derive(...)]` and explicit discriminants to keep the same layout and values.
+
+----ENUM----
+```rust
+#[repr(C)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum bmp_error {
+    BMP_FILE_NOT_OPENED = -4,
+    BMP_HEADER_NOT_INITIALIZED = -3,
+    BMP_INVALID_FILE = -2,
+    BMP_ERROR = -1,
+    BMP_OK = 0,
+}
+```
+----END ENUM----
+2026-11-16 13:26:18 | DEBUG    | sactor.utils:257 | Generated enum:
+2026-11-16 13:26:18 | DEBUG    | sactor.utils:258 | #[repr(C)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum bmp_error {
+    BMP_FILE_NOT_OPENED = -4,
+    BMP_HEADER_NOT_INITIALIZED = -3,
+    BMP_INVALID_FILE = -2,
+    BMP_ERROR = -1,
+    BMP_OK = 0,
+}
+
+2026-11-16 13:26:18 | DEBUG    | sactor.translator.unidiomatic_translator:275 | Translated enum for bmp_error:
+2026-11-16 13:26:18 | DEBUG    | sactor.translator.unidiomatic_translator:276 | #[repr(C)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum bmp_error {
+    BMP_FILE_NOT_OPENED = -4,
+    BMP_HEADER_NOT_INITIALIZED = -3,
+    BMP_INVALID_FILE = -2,
+    BMP_ERROR = -1,
+    BMP_OK = 0,
+}
+
+2026-11-16 13:26:18 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt/Cargo.toml
+2026-11-16 13:26:20 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:26:20 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: bmp_header_write (attempts: 0)
+2026-11-16 13:26:20 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+enum bmp_error
+bmp_header_write (const bmp_header *header,
+                  FILE             *img_file)
+{
+	if (header == NULL)
+	{
+		return BMP_HEADER_NOT_INITIALIZED; 
+	}
+	else if (img_file == NULL)
+	{
+		return BMP_FILE_NOT_OPENED;
+	}
+	
+	// Since an adress must be passed to fwrite, create a variable!
+	const unsigned short magic = BMP_MAGIC;
+	fwrite (&magic, sizeof (magic), 1, img_file);
+	
+	// Use the type instead of the variable because its a pointer!
+	fwrite (header, sizeof (bmp_header), 1, img_file);
+	return BMP_OK;
+}
+```
+
+The function body above may reference the following macros. Use these definitions to understand the semantics; do **NOT** redefine them in Rust—expand or replicate their behavior as needed in the translation.
+```c
+#define BMP_MAGIC 19778
+#define NULL ((void*)0)
+```
+
+The function uses the following structs/unions, which are already translated as (you should **NOT** define them in your translation, as the system will automatically define them. But you can use these structs or unions):
+```rust
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct _bmp_header {
+    pub bfSize: libc::c_uint,
+    pub bfReserved: libc::c_uint,
+    pub bfOffBits: libc::c_uint,
+    pub biSize: libc::c_uint,
+    pub biWidth: libc::c_int,
+    pub biHeight: libc::c_int,
+    pub biPlanes: libc::c_ushort,
+    pub biBitCount: libc::c_ushort,
+    pub biCompression: libc::c_uint,
+    pub biSizeImage: libc::c_uint,
+    pub biXPelsPerMeter: libc::c_int,
+    pub biYPelsPerMeter: libc::c_int,
+    pub biClrUsed: libc::c_uint,
+    pub biClrImportant: libc::c_uint,
+}
+
+```
+
+The function uses the following enums:
+```c
+BMP_HEADER_NOT_INITIALIZED
+BMP_OK
+BMP_FILE_NOT_OPENED
+bmp_error
+```
+Which are already translated as:
+```rust
+#[repr(C)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum bmp_error {
+    BMP_FILE_NOT_OPENED = -4,
+    BMP_HEADER_NOT_INITIALIZED = -3,
+    BMP_INVALID_FILE = -2,
+    BMP_ERROR = -1,
+    BMP_OK = 0,
+}
+
+```
+Directly access the translated enums in your translation. You should **NOT** define or declare them in your translation, as the system will automatically define them.
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:26:24 | RESPONSE | sactor.llm:160 | The Rust version keeps the C logic: two null checks, then two `fwrite` calls through `libc`.
+
+- **Types:** `bmp_header` is translated as `_bmp_header`, so the header parameter is `*const _bmp_header`. The file is `*mut libc::FILE`.
+- **Struct size:** `sizeof(bmp_header)` is the size of the `repr(C)` struct. The fields add up to 52 bytes with no padding, so `size_of::<_bmp_header>()` matches the C value.
+- **Magic:** `BMP_MAGIC` is 19778, written as a `c_ushort` (2 bytes).
+
+----FUNCTION----
+```rust
+pub unsafe extern "C" fn bmp_header_write(
+    header: *const _bmp_header,
+    img_file: *mut libc::FILE,
+) -> bmp_error {
+    if header.is_null() {
+        return bmp_error::BMP_HEADER_NOT_INITIALIZED;
+    } else if img_file.is_null() {
+        return bmp_error::BMP_FILE_NOT_OPENED;
+    }
+
+    let magic: libc::c_ushort = 19778;
+    libc::fwrite(
+        &magic as *const libc::c_ushort as *const libc::c_void,
+        std::mem::size_of::<libc::c_ushort>(),
+        1,
+        img_file,
+    );
+
+    libc::fwrite(
+        header as *const libc::c_void,
+        std::mem::size_of::<_bmp_header>(),
+        1,
+        img_file,
+    );
+    bmp_error::BMP_OK
+}
+```
+----END FUNCTION----
+2026-11-16 13:26:24 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:26:24 | DEBUG    | sactor.utils:258 | pub unsafe extern "C" fn bmp_header_write(
+    header: *const _bmp_header,
+    img_file: *mut libc::FILE,
+) -> bmp_error {
+    if header.is_null() {
+        return bmp_error::BMP_HEADER_NOT_INITIALIZED;
+    } else if img_file.is_null() {
+        return bmp_error::BMP_FILE_NOT_OPENED;
+    }
+
+    let magic: libc::c_ushort = 19778;
+    libc::fwrite(
+        &magic as *const libc::c_ushort as *const libc::c_void,
+        std::mem::size_of::<libc::c_ushort>(),
+        1,
+        img_file,
+    );
+
+    libc::fwrite(
+        header as *const libc::c_void,
+        std::mem::size_of::<_bmp_header>(),
+        1,
+        img_file,
+    );
+    bmp_error::BMP_OK
+}
+
+2026-11-16 13:26:24 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function bmp_header_write:
+2026-11-16 13:26:24 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub unsafe extern "C" fn bmp_header_write(
+    header: *const _bmp_header,
+    img_file: *mut libc::FILE,
+) -> bmp_error {
+    if header.is_null() {
+        return bmp_error::BMP_HEADER_NOT_INITIALIZED;
+    } else if img_file.is_null() {
+        return bmp_error::BMP_FILE_NOT_OPENED;
+    }
+    let magic: libc::c_ushort = 19778;
+    libc::fwrite(
+        &magic as *const libc::c_ushort as *const libc::c_void,
+        std::mem::size_of::<libc::c_ushort>(),
+        1,
+        img_file,
+    );
+    libc::fwrite(
+        header as *const libc::c_void,
+        std::mem::size_of::<_bmp_header>(),
+        1,
+        img_file,
+    );
+    bmp_error::BMP_OK
+}
+
+2026-11-16 13:26:24 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt/Cargo.toml
+2026-11-16 13:26:26 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:26:26 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/Cargo.toml
+2026-11-16 13:26:30 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/bmp_header_write', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/bmp_header_write.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/target/debug', '-lm', '-lbmp_header_write']
+2026-11-16 13:26:30 | DEBUG    | sactor.sactor:425 | Checking function bmp_header_read: struct_ready=True, struct_blockers=[]
+2026-11-16 13:26:30 | INFO     | sactor.translator.unidiomatic_translator:102 | Enum bmp_error already translated
+2026-11-16 13:26:30 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: bmp_header_read (attempts: 0)
+2026-11-16 13:26:30 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+enum bmp_error
+bmp_header_read (bmp_header *header,
+                 FILE       *img_file)
+{
+	if (img_file == NULL)
+	{
+		return BMP_FILE_NOT_OPENED;
+	}
+	
+	// Since an adress must be passed to fread, create a variable!
+	unsigned short magic;
+	
+	// Check if its an bmp file by comparing the magic nbr:
+	if (fread (&magic, sizeof (magic), 1, img_file) != 1 ||
+	    magic != BMP_MAGIC)
+	{
+		return BMP_INVALID_FILE;
+	}
+	
+	if (fread (header, sizeof (bmp_header), 1, img_file) != 1)
+	{
+		return BMP_ERROR;
+	}
+
+	return BMP_OK;
+}
+```
+
+The function body above may reference the following macros. Use these definitions to understand the semantics; do **NOT** redefine them in Rust—expand or replicate their behavior as needed in the translation.
+```c
+#define BMP_MAGIC 19778
+#define NULL ((void*)0)
+```
+
+The function uses the following structs/unions, which are already translated as (you should **NOT** define them in your translation, as the system will automatically define them. But you can use these structs or unions):
+```rust
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct _bmp_header {
+    pub bfSize: libc::c_uint,
+    pub bfReserved: libc::c_uint,
+    pub bfOffBits: libc::c_uint,
+    pub biSize: libc::c_uint,
+    pub biWidth: libc::c_int,
+    pub biHeight: libc::c_int,
+    pub biPlanes: libc::c_ushort,
+    pub biBitCount: libc::c_ushort,
+    pub biCompression: libc::c_uint,
+    pub biSizeImage: libc::c_uint,
+    pub biXPelsPerMeter: libc::c_int,
+    pub biYPelsPerMeter: libc::c_int,
+    pub biClrUsed: libc::c_uint,
+    pub biClrImportant: libc::c_uint,
+}
+
+```
+
+The function uses the following enums:
+```c
+BMP_ERROR
+BMP_INVALID_FILE
+BMP_OK
+BMP_FILE_NOT_OPENED
+bmp_error
+```
+Which are already translated as:
+```rust
+#[repr(C)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum bmp_error {
+    BMP_FILE_NOT_OPENED = -4,
+    BMP_HEADER_NOT_INITIALIZED = -3,
+    BMP_INVALID_FILE = -2,
+    BMP_ERROR = -1,
+    BMP_OK = 0,
+}
+
+```
+Directly access the translated enums in your translation. You should **NOT** define or declare them in your translation, as the system will automatically define them.
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:26:33 | RESPONSE | sactor.llm:160 | This translation calls `libc::fread` directly. The struct type `bmp_header` is a typedef of `_bmp_header`, so the function takes `*mut _bmp_header`.
+
+----FUNCTION----
+```rust
+pub unsafe fn bmp_header_read(
+    header: *mut _bmp_header,
+    img_file: *mut libc::FILE,
+) -> bmp_error {
+    if img_file.is_null() {
+        return bmp_error::BMP_FILE_NOT_OPENED;
+    }
+
+    let mut magic: libc::c_ushort = 0;
+
+    if libc::fread(
+        &mut magic as *mut libc::c_ushort as *mut libc::c_void,
+        std::mem::size_of::<libc::c_ushort>(),
+        1,
+        img_file,
+    ) != 1
+        || magic != 19778
+    {
+        return bmp_error::BMP_INVALID_FILE;
+    }
+
+    if libc::fread(
+        header as *mut libc::c_void,
+        std::mem::size_of::<_bmp_header>(),
+        1,
+        img_file,
+    ) != 1
+    {
+        return bmp_error::BMP_ERROR;
+    }
+
+    bmp_error::BMP_OK
+}
+```
+----END FUNCTION----
+2026-11-16 13:26:33 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:26:33 | DEBUG    | sactor.utils:258 | pub unsafe fn bmp_header_read(
+    header: *mut _bmp_header,
+    img_file: *mut libc::FILE,
+) -> bmp_error {
+    if img_file.is_null() {
+        return bmp_error::BMP_FILE_NOT_OPENED;
+    }
+
+    let mut magic: libc::c_ushort = 0;
+
+    if libc::fread(
+        &mut magic as *mut libc::c_ushort as *mut libc::c_void,
+        std::mem::size_of::<libc::c_ushort>(),
+        1,
+        img_file,
+    ) != 1
+        || magic != 19778
+    {
+        return bmp_error::BMP_INVALID_FILE;
+    }
+
+    if libc::fread(
+        header as *mut libc::c_void,
+        std::mem::size_of::<_bmp_header>(),
+        1,
+        img_file,
+    ) != 1
+    {
+        return bmp_error::BMP_ERROR;
+    }
+
+    bmp_error::BMP_OK
+}
+
+2026-11-16 13:26:33 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function bmp_header_read:
+2026-11-16 13:26:33 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub unsafe fn bmp_header_read(
+    header: *mut _bmp_header,
+    img_file: *mut libc::FILE,
+) -> bmp_error {
+    if img_file.is_null() {
+        return bmp_error::BMP_FILE_NOT_OPENED;
+    }
+    let mut magic: libc::c_ushort = 0;
+    if libc::fread(
+        &mut magic as *mut libc::c_ushort as *mut libc::c_void,
+        std::mem::size_of::<libc::c_ushort>(),
+        1,
+        img_file,
+    ) != 1 || magic != 19778
+    {
+        return bmp_error::BMP_INVALID_FILE;
+    }
+    if libc::fread(
+        header as *mut libc::c_void,
+        std::mem::size_of::<_bmp_header>(),
+        1,
+        img_file,
+    ) != 1
+    {
+        return bmp_error::BMP_ERROR;
+    }
+    bmp_error::BMP_OK
+}
+
+2026-11-16 13:26:33 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt/Cargo.toml
+2026-11-16 13:26:35 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:26:35 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/Cargo.toml
+2026-11-16 13:26:38 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/bmp_header_read', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/bmp_header_read.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/target/debug', '-lm', '-lbmp_header_read']
+2026-11-16 13:26:38 | DEBUG    | sactor.sactor:425 | Checking function bmp_pixel_init: struct_ready=True, struct_blockers=[]
+2026-11-16 13:26:38 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: bmp_pixel_init (attempts: 0)
+2026-11-16 13:26:38 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+void
+bmp_pixel_init (bmp_pixel           *pxl,
+                const unsigned char  red,
+                const unsigned char  green,
+                const unsigned char  blue)
+{
+	pxl->red = red;
+	pxl->green = green;
+	pxl->blue = blue;
+}
+```
+
+The function uses the following structs/unions, which are already translated as (you should **NOT** define them in your translation, as the system will automatically define them. But you can use these structs or unions):
+```rust
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct _bmp_pixel {
+    pub blue: libc::c_uchar,
+    pub green: libc::c_uchar,
+    pub red: libc::c_uchar,
+}
+
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:26:41 | RESPONSE | sactor.llm:160 | The C code uses the type `bmp_pixel`, which is a typedef of `_bmp_pixel`. The provided Rust struct is `_bmp_pixel`, so the function takes a raw pointer to it, matching the C pointer semantics.
+
+----FUNCTION----
+```rust
+pub unsafe extern "C" fn bmp_pixel_init(
+    pxl: *mut _bmp_pixel,
+    red: libc::c_uchar,
+    green: libc::c_uchar,
+    blue: libc::c_uchar,
+) {
+    (*pxl).red = red;
+    (*pxl).green = green;
+    (*pxl).blue = blue;
+}
+```
+----END FUNCTION----
+2026-11-16 13:26:41 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:26:41 | DEBUG    | sactor.utils:258 | pub unsafe extern "C" fn bmp_pixel_init(
+    pxl: *mut _bmp_pixel,
+    red: libc::c_uchar,
+    green: libc::c_uchar,
+    blue: libc::c_uchar,
+) {
+    (*pxl).red = red;
+    (*pxl).green = green;
+    (*pxl).blue = blue;
+}
+
+2026-11-16 13:26:41 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function bmp_pixel_init:
+2026-11-16 13:26:41 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub unsafe extern "C" fn bmp_pixel_init(
+    pxl: *mut _bmp_pixel,
+    red: libc::c_uchar,
+    green: libc::c_uchar,
+    blue: libc::c_uchar,
+) {
+    (*pxl).red = red;
+    (*pxl).green = green;
+    (*pxl).blue = blue;
+}
+
+2026-11-16 13:26:41 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt/Cargo.toml
+2026-11-16 13:26:43 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:26:43 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/Cargo.toml
+2026-11-16 13:26:47 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/bmp_pixel_init', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/bmp_pixel_init.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/target/debug', '-lm', '-lbmp_pixel_init']
+2026-11-16 13:26:47 | DEBUG    | sactor.sactor:425 | Checking function bmp_img_alloc: struct_ready=True, struct_blockers=[]
+2026-11-16 13:26:47 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: bmp_img_alloc (attempts: 0)
+2026-11-16 13:26:47 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+void
+bmp_img_alloc (bmp_img *img)
+{
+	const size_t h = abs (img->img_header.biHeight);
+	
+	// Allocate the required memory for the pixels:
+	img->img_pixels = malloc (sizeof (bmp_pixel*) * h);
+	
+	for (size_t y = 0; y < h; y++)
+	{
+		img->img_pixels[y] = malloc (sizeof (bmp_pixel) * img->img_header.biWidth);
+	}
+}
+```
+
+The function uses the following structs/unions, which are already translated as (you should **NOT** define them in your translation, as the system will automatically define them. But you can use these structs or unions):
+```rust
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct _bmp_pixel {
+    pub blue: libc::c_uchar,
+    pub green: libc::c_uchar,
+    pub red: libc::c_uchar,
+}
+
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct _bmp_img {
+    pub img_header: _bmp_header,
+    pub img_pixels: *mut *mut _bmp_pixel,
+}
+
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct _bmp_header {
+    pub bfSize: libc::c_uint,
+    pub bfReserved: libc::c_uint,
+    pub bfOffBits: libc::c_uint,
+    pub biSize: libc::c_uint,
+    pub biWidth: libc::c_int,
+    pub biHeight: libc::c_int,
+    pub biPlanes: libc::c_ushort,
+    pub biBitCount: libc::c_ushort,
+    pub biCompression: libc::c_uint,
+    pub biSizeImage: libc::c_uint,
+    pub biXPelsPerMeter: libc::c_int,
+    pub biYPelsPerMeter: libc::c_int,
+    pub biClrUsed: libc::c_uint,
+    pub biClrImportant: libc::c_uint,
+}
+
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:26:53 | RESPONSE | sactor.llm:160 | The struct types are provided as `_bmp_img`, so `bmp_img` is presumably a typedef for it. I'll take `*mut _bmp_img` as the parameter and use `libc::malloc`.
+
+Details I kept from the C:
+- `abs` on `biHeight` becomes `libc::abs`, which has the same behavior for `i32::MIN` as C. `wrapping_abs` would also work.
+- `h` is cast to `usize`.
+- In C, `sizeof(bmp_pixel) * biWidth` converts a negative `biWidth` to `size_t` by sign extension, so I use `as usize` on the `c_int`. That cast also sign-extends, and the multiplication wraps, so I use `wrapping_mul`.
+
+```rust
+pub unsafe fn bmp_img_alloc(img: *mut _bmp_img) {
+    let h: usize = libc::abs((*img).img_header.biHeight) as usize;
+
+    // Allocate the required memory for the pixels:
+    (*img).img_pixels = libc::malloc(
+        std::mem::size_of::<*mut _bmp_pixel>().wrapping_mul(h),
+    ) as *mut *mut _bmp_pixel;
+
+    let mut y: usize = 0;
+    while y < h {
+        *(*img).img_pixels.add(y) = libc::malloc(
+            std::mem::size_of::<_bmp_pixel>()
+                .wrapping_mul((*img).img_header.biWidth as usize),
+        ) as *mut _bmp_pixel;
+        y += 1;
+    }
+}
+```
+
+----FUNCTION----
+```rust
+pub unsafe fn bmp_img_alloc(img: *mut _bmp_img) {
+    let h: usize = libc::abs((*img).img_header.biHeight) as usize;
+
+    // Allocate the required memory for the pixels:
+    (*img).img_pixels = libc::malloc(
+        std::mem::size_of::<*mut _bmp_pixel>().wrapping_mul(h),
+    ) as *mut *mut _bmp_pixel;
+
+    let mut y: usize = 0;
+    while y < h {
+        *(*img).img_pixels.add(y) = libc::malloc(
+            std::mem::size_of::<_bmp_pixel>()
+                .wrapping_mul((*img).img_header.biWidth as usize),
+        ) as *mut _bmp_pixel;
+        y += 1;
+    }
+}
+```
+----END FUNCTION----
+2026-11-16 13:26:53 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:26:53 | DEBUG    | sactor.utils:258 | pub unsafe fn bmp_img_alloc(img: *mut _bmp_img) {
+    let h: usize = libc::abs((*img).img_header.biHeight) as usize;
+
+    // Allocate the required memory for the pixels:
+    (*img).img_pixels = libc::malloc(
+        std::mem::size_of::<*mut _bmp_pixel>().wrapping_mul(h),
+    ) as *mut *mut _bmp_pixel;
+
+    let mut y: usize = 0;
+    while y < h {
+        *(*img).img_pixels.add(y) = libc::malloc(
+            std::mem::size_of::<_bmp_pixel>()
+                .wrapping_mul((*img).img_header.biWidth as usize),
+        ) as *mut _bmp_pixel;
+        y += 1;
+    }
+}
+
+2026-11-16 13:26:53 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function bmp_img_alloc:
+2026-11-16 13:26:53 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub unsafe fn bmp_img_alloc(img: *mut _bmp_img) {
+    let h: usize = libc::abs((*img).img_header.biHeight) as usize;
+    (*img).img_pixels = libc::malloc(
+        std::mem::size_of::<*mut _bmp_pixel>().wrapping_mul(h),
+    ) as *mut *mut _bmp_pixel;
+    let mut y: usize = 0;
+    while y < h {
+        *(*img).img_pixels.add(y) = libc::malloc(
+            std::mem::size_of::<_bmp_pixel>()
+                .wrapping_mul((*img).img_header.biWidth as usize),
+        ) as *mut _bmp_pixel;
+        y += 1;
+    }
+}
+
+2026-11-16 13:26:53 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt/Cargo.toml
+2026-11-16 13:26:55 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:26:55 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/Cargo.toml
+2026-11-16 13:26:58 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/bmp_img_alloc', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/bmp_img_alloc.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/target/debug', '-lm', '-lbmp_img_alloc']
+2026-11-16 13:26:58 | DEBUG    | sactor.sactor:425 | Checking function bmp_img_free: struct_ready=True, struct_blockers=[]
+2026-11-16 13:26:58 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: bmp_img_free (attempts: 0)
+2026-11-16 13:26:58 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+void
+bmp_img_free (bmp_img *img)
+{
+	const size_t h = abs (img->img_header.biHeight);
+	
+	for (size_t y = 0; y < h; y++)
+	{
+		free (img->img_pixels[y]);
+	}
+	free (img->img_pixels);
+}
+```
+
+The function uses the following structs/unions, which are already translated as (you should **NOT** define them in your translation, as the system will automatically define them. But you can use these structs or unions):
+```rust
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct _bmp_pixel {
+    pub blue: libc::c_uchar,
+    pub green: libc::c_uchar,
+    pub red: libc::c_uchar,
+}
+
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct _bmp_img {
+    pub img_header: _bmp_header,
+    pub img_pixels: *mut *mut _bmp_pixel,
+}
+
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct _bmp_header {
+    pub bfSize: libc::c_uint,
+    pub bfReserved: libc::c_uint,
+    pub bfOffBits: libc::c_uint,
+    pub biSize: libc::c_uint,
+    pub biWidth: libc::c_int,
+    pub biHeight: libc::c_int,
+    pub biPlanes: libc::c_ushort,
+    pub biBitCount: libc::c_ushort,
+    pub biCompression: libc::c_uint,
+    pub biSizeImage: libc::c_uint,
+    pub biXPelsPerMeter: libc::c_int,
+    pub biYPelsPerMeter: libc::c_int,
+    pub biClrUsed: libc::c_uint,
+    pub biClrImportant: libc::c_uint,
+}
+
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:27:01 | RESPONSE | sactor.llm:160 | The type `bmp_img` is the C typedef for `_bmp_img`, so the function takes `*mut _bmp_img`. The C code calls `abs` on `biHeight`, so I use `libc::abs` to match it, including its behavior on `i32::MIN`. `wrapping_abs` would give the same result, but `libc::abs` is the closer match. The result is cast to `usize`, as in the C code.
+
+The loop frees each row pointer, then frees the pixel array itself.
+
+----FUNCTION----
+```rust
+pub unsafe extern "C" fn bmp_img_free(img: *mut _bmp_img) {
+    let h: usize = libc::abs((*img).img_header.biHeight) as usize;
+
+    let mut y: usize = 0;
+    while y < h {
+        libc::free(*(*img).img_pixels.add(y) as *mut libc::c_void);
+        y += 1;
+    }
+    libc::free((*img).img_pixels as *mut libc::c_void);
+}
+```
+----END FUNCTION----
+2026-11-16 13:27:01 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:27:01 | DEBUG    | sactor.utils:258 | pub unsafe extern "C" fn bmp_img_free(img: *mut _bmp_img) {
+    let h: usize = libc::abs((*img).img_header.biHeight) as usize;
+
+    let mut y: usize = 0;
+    while y < h {
+        libc::free(*(*img).img_pixels.add(y) as *mut libc::c_void);
+        y += 1;
+    }
+    libc::free((*img).img_pixels as *mut libc::c_void);
+}
+
+2026-11-16 13:27:01 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function bmp_img_free:
+2026-11-16 13:27:01 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub unsafe extern "C" fn bmp_img_free(img: *mut _bmp_img) {
+    let h: usize = libc::abs((*img).img_header.biHeight) as usize;
+    let mut y: usize = 0;
+    while y < h {
+        libc::free(*(*img).img_pixels.add(y) as *mut libc::c_void);
+        y += 1;
+    }
+    libc::free((*img).img_pixels as *mut libc::c_void);
+}
+
+2026-11-16 13:27:01 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt/Cargo.toml
+2026-11-16 13:27:03 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:27:03 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/Cargo.toml
+2026-11-16 13:27:07 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/bmp_img_free', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/bmp_img_free.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/target/debug', '-lm', '-lbmp_img_free']
+2026-11-16 13:27:07 | DEBUG    | sactor.sactor:425 | Checking function bmp_row_index: struct_ready=True, struct_blockers=[]
+2026-11-16 13:27:07 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: bmp_row_index (attempts: 0)
+2026-11-16 13:27:07 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+static size_t
+bmp_row_index (const bmp_header *header, const size_t y)
+{
+	const size_t h = abs (header->biHeight);
+	return header->biHeight > 0 ? h - 1 - y : y;
+}
+```
+
+The function uses the following structs/unions, which are already translated as (you should **NOT** define them in your translation, as the system will automatically define them. But you can use these structs or unions):
+```rust
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct _bmp_header {
+    pub bfSize: libc::c_uint,
+    pub bfReserved: libc::c_uint,
+    pub bfOffBits: libc::c_uint,
+    pub biSize: libc::c_uint,
+    pub biWidth: libc::c_int,
+    pub biHeight: libc::c_int,
+    pub biPlanes: libc::c_ushort,
+    pub biBitCount: libc::c_ushort,
+    pub biCompression: libc::c_uint,
+    pub biSizeImage: libc::c_uint,
+    pub biXPelsPerMeter: libc::c_int,
+    pub biYPelsPerMeter: libc::c_int,
+    pub biClrUsed: libc::c_uint,
+    pub biClrImportant: libc::c_uint,
+}
+
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:27:10 | RESPONSE | sactor.llm:160 | The C function takes `bmp_header`, which is a typedef of the struct `_bmp_header`, so the Rust parameter is `*const _bmp_header`.
+
+For the arithmetic, `abs` returns an `int`, which is converted to `size_t`. In Rust I use `libc::abs` and cast the result to `usize`. When `biHeight > 0`, the result is `h - 1 - y`, which I compute with wrapping arithmetic to match C's unsigned behavior. `y` is a `usize`.
+
+----FUNCTION----
+```rust
+unsafe fn bmp_row_index(header: *const _bmp_header, y: usize) -> usize {
+    let h: usize = libc::abs((*header).biHeight) as usize;
+    if (*header).biHeight > 0 {
+        h.wrapping_sub(1).wrapping_sub(y)
+    } else {
+        y
+    }
+}
+```
+----END FUNCTION----
+2026-11-16 13:27:10 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:27:10 | DEBUG    | sactor.utils:258 | unsafe fn bmp_row_index(header: *const _bmp_header, y: usize) -> usize {
+    let h: usize = libc::abs((*header).biHeight) as usize;
+    if (*header).biHeight > 0 {
+        h.wrapping_sub(1).wrapping_sub(y)
+    } else {
+        y
+    }
+}
+
+2026-11-16 13:27:10 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function bmp_row_index:
+2026-11-16 13:27:10 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | unsafe fn bmp_row_index(header: *const _bmp_header, y: usize) -> usize {
+    let h: usize = libc::abs((*header).biHeight) as usize;
+    if (*header).biHeight > 0 { h.wrapping_sub(1).wrapping_sub(y) } else { y }
+}
+
+2026-11-16 13:27:10 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt/Cargo.toml
+2026-11-16 13:27:12 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:27:12 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/Cargo.toml
+2026-11-16 13:27:15 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/bmp_row_index', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/bmp_row_index.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/target/debug', '-lm', '-lbmp_row_index']
+2026-11-16 13:27:15 | DEBUG    | sactor.sactor:425 | Checking function get_now: struct_ready=True, struct_blockers=[]
+2026-11-16 13:27:15 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: get_now (attempts: 0)
+2026-11-16 13:27:15 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+static int get_now(struct timespec *ts)
+{
+#if defined(CLOCK_MONOTONIC)
+	return clock_gettime(CLOCK_MONOTONIC, ts);
+#else
+	struct timeval tv;
+
+	if (gettimeofday(&tv, NULL) != 0)
+	{
+		return -1;
+	}
+
+	ts->tv_sec = tv.tv_sec;
+	ts->tv_nsec = (long) tv.tv_usec * 1000L;
+	return 0;
+#endif
+}
+```
+
+The function body above may reference the following macros. Use these definitions to understand the semantics; do **NOT** redefine them in Rust—expand or replicate their behavior as needed in the translation.
+```c
+#define CLOCK_MONOTONIC		1
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:27:17 | RESPONSE | sactor.llm:160 | Since `CLOCK_MONOTONIC` is defined, the `#if` branch is taken, so the Rust version only calls `clock_gettime(CLOCK_MONOTONIC, ts)`.
+
+----FUNCTION----
+```rust
+unsafe fn get_now(ts: *mut libc::timespec) -> libc::c_int {
+    libc::clock_gettime(libc::CLOCK_MONOTONIC, ts)
+}
+```
+----END FUNCTION----
+2026-11-16 13:27:17 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:27:17 | DEBUG    | sactor.utils:258 | unsafe fn get_now(ts: *mut libc::timespec) -> libc::c_int {
+    libc::clock_gettime(libc::CLOCK_MONOTONIC, ts)
+}
+
+2026-11-16 13:27:17 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function get_now:
+2026-11-16 13:27:17 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | unsafe fn get_now(ts: *mut libc::timespec) -> libc::c_int {
+    libc::clock_gettime(libc::CLOCK_MONOTONIC, ts)
+}
+
+2026-11-16 13:27:17 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt/Cargo.toml
+2026-11-16 13:27:19 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:27:19 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/Cargo.toml
+2026-11-16 13:27:22 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/get_now', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/get_now.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/target/debug', '-lm', '-lget_now']
+2026-11-16 13:27:22 | DEBUG    | sactor.sactor:425 | Checking function md5_transform: struct_ready=True, struct_blockers=[]
+2026-11-16 13:27:22 | INFO     | sactor.translator.unidiomatic_translator:497 | Translating global variable: s (attempts: 0)
+2026-11-16 13:27:22 | PROMPT   | sactor.llm:155 | 
+Translate the following C global variable to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+In the translation, keep the casing and spelling of the variable name **identical** to the source C code.
+The global variable is:
+```c
+ static const uint32_t s[64] = {
+  7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
+  5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20,
+  4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23,
+  6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21
+ };
+
+```
+
+The global variable is an array with size 64. Use `static` as the specifier in Rust.
+
+Output the translated global variable into this format (wrap with the following tags):
+----GLOBAL VAR----
+```rust
+// Your translated global variable here
+```
+----END GLOBAL VAR----
+
+2026-11-16 13:27:25 | RESPONSE | sactor.llm:160 | ----GLOBAL VAR----
+```rust
+static s: [u32; 64] = [
+    7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
+    5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20,
+    4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23,
+    6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21,
+];
+```
+----END GLOBAL VAR----
+2026-11-16 13:27:25 | DEBUG    | sactor.utils:257 | Generated global var:
+2026-11-16 13:27:25 | DEBUG    | sactor.utils:258 | static s: [u32; 64] = [
+    7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
+    5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20,
+    4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23,
+    6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21,
+];
+
+2026-11-16 13:27:25 | DEBUG    | sactor.translator.unidiomatic_translator:335 | Translated global variable s:
+2026-11-16 13:27:25 | DEBUG    | sactor.translator.unidiomatic_translator:336 | static s: [u32; 64] = [
+    7,
+    12,
+    17,
+    22,
+    7,
+    12,
+    17,
+    22,
+    7,
+    12,
+    17,
+    22,
+    7,
+    12,
+    17,
+    22,
+    5,
+    9,
+    14,
+    20,
+    5,
+    9,
+    14,
+    20,
+    5,
+    9,
+    14,
+    20,
+    5,
+    9,
+    14,
+    20,
+    4,
+    11,
+    16,
+    23,
+    4,
+    11,
+    16,
+    23,
+    4,
+    11,
+    16,
+    23,
+    4,
+    11,
+    16,
+    23,
+    6,
+    10,
+    15,
+    21,
+    6,
+    10,
+    15,
+    21,
+    6,
+    10,
+    15,
+    21,
+    6,
+    10,
+    15,
+    21,
+];
+
+2026-11-16 13:27:25 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt/Cargo.toml
+2026-11-16 13:27:27 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:27:27 | INFO     | sactor.translator.unidiomatic_translator:497 | Translating global variable: k (attempts: 0)
+2026-11-16 13:27:27 | PROMPT   | sactor.llm:155 | 
+Translate the following C global variable to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+In the translation, keep the casing and spelling of the variable name **identical** to the source C code.
+The global variable is:
+```c
+ static const uint32_t k[64] = {
+  0xd76aa478u, 0xe8c7b756u, 0x242070dbu, 0xc1bdceeeu,
+  0xf57c0fafu, 0x4787c62au, 0xa8304613u, 0xfd469501u,
+  0x698098d8u, 0x8b44f7afu, 0xffff5bb1u, 0x895cd7beu,
+  0x6b901122u, 0xfd987193u, 0xa679438eu, 0x49b40821u,
+  0xf61e2562u, 0xc040b340u, 0x265e5a51u, 0xe9b6c7aau,
+  0xd62f105du, 0x02441453u, 0xd8a1e681u, 0xe7d3fbc8u,
+  0x21e1cde6u, 0xc33707d6u, 0xf4d50d87u, 0x455a14edu,
+  0xa9e3e905u, 0xfcefa3f8u, 0x676f02d9u, 0x8d2a4c8au,
+  0xfffa3942u, 0x8771f681u, 0x6d9d6122u, 0xfde5380cu,
+  0xa4beea44u, 0x4bdecfa9u, 0xf6bb4b60u, 0xbebfbc70u,
+  0x289b7ec6u, 0xeaa127fau, 0xd4ef3085u, 0x04881d05u,
+  0xd9d4d039u, 0xe6db99e5u, 0x1fa27cf8u, 0xc4ac5665u,
+  0xf4292244u, 0x432aff97u, 0xab9423a7u, 0xfc93a039u,
+  0x655b59c3u, 0x8f0ccc92u, 0xffeff47du, 0x85845dd1u,
+  0x6fa87e4fu, 0xfe2ce6e0u, 0xa3014314u, 0x4e0811a1u,
+  0xf7537e82u, 0xbd3af235u, 0x2ad7d2bbu, 0xeb86d391u
+ };
+
+```
+
+The global variable is an array with size 64. Use `static` as the specifier in Rust.
+
+Output the translated global variable into this format (wrap with the following tags):
+----GLOBAL VAR----
+```rust
+// Your translated global variable here
+```
+----END GLOBAL VAR----
+
+2026-11-16 13:27:31 | RESPONSE | sactor.llm:160 | ----GLOBAL VAR----
+```rust
+static k: [u32; 64] = [
+    0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
+    0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
+    0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be,
+    0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
+    0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa,
+    0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8,
+    0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed,
+    0xa9e3e905, 0xfcefa3f8, 0x676f02d9, 0x8d2a4c8a,
+    0xfffa3942, 0x8771f681, 0x6d9d6122, 0xfde5380c,
+    0xa4beea44, 0x4bdecfa9, 0xf6bb4b60, 0xbebfbc70,
+    0x289b7ec6, 0xeaa127fa, 0xd4ef3085, 0x04881d05,
+    0xd9d4d039, 0xe6db99e5, 0x1fa27cf8, 0xc4ac5665,
+    0xf4292244, 0x432aff97, 0xab9423a7, 0xfc93a039,
+    0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1,
+    0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1,
+    0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391,
+];
+```
+----END GLOBAL VAR----
+2026-11-16 13:27:31 | DEBUG    | sactor.utils:257 | Generated global var:
+2026-11-16 13:27:31 | DEBUG    | sactor.utils:258 | static k: [u32; 64] = [
+    0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
+    0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
+    0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be,
+    0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
+    0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa,
+    0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8,
+    0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed,
+    0xa9e3e905, 0xfcefa3f8, 0x676f02d9, 0x8d2a4c8a,
+    0xfffa3942, 0x8771f681, 0x6d9d6122, 0xfde5380c,
+    0xa4beea44, 0x4bdecfa9, 0xf6bb4b60, 0xbebfbc70,
+    0x289b7ec6, 0xeaa127fa, 0xd4ef3085, 0x04881d05,
+    0xd9d4d039, 0xe6db99e5, 0x1fa27cf8, 0xc4ac5665,
+    0xf4292244, 0x432aff97, 0xab9423a7, 0xfc93a039,
+    0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1,
+    0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1,
+    0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391,
+];
+
+2026-11-16 13:27:31 | DEBUG    | sactor.translator.unidiomatic_translator:335 | Translated global variable k:
+2026-11-16 13:27:31 | DEBUG    | sactor.translator.unidiomatic_translator:336 | static k: [u32; 64] = [
+    0xd76aa478,
+    0xe8c7b756,
+    0x242070db,
+    0xc1bdceee,
+    0xf57c0faf,
+    0x4787c62a,
+    0xa8304613,
+    0xfd469501,
+    0x698098d8,
+    0x8b44f7af,
+    0xffff5bb1,
+    0x895cd7be,
+    0x6b901122,
+    0xfd987193,
+    0xa679438e,
+    0x49b40821,
+    0xf61e2562,
+    0xc040b340,
+    0x265e5a51,
+    0xe9b6c7aa,
+    0xd62f105d,
+    0x02441453,
+    0xd8a1e681,
+    0xe7d3fbc8,
+    0x21e1cde6,
+    0xc33707d6,
+    0xf4d50d87,
+    0x455a14ed,
+    0xa9e3e905,
+    0xfcefa3f8,
+    0x676f02d9,
+    0x8d2a4c8a,
+    0xfffa3942,
+    0x8771f681,
+    0x6d9d6122,
+    0xfde5380c,
+    0xa4beea44,
+    0x4bdecfa9,
+    0xf6bb4b60,
+    0xbebfbc70,
+    0x289b7ec6,
+    0xeaa127fa,
+    0xd4ef3085,
+    0x04881d05,
+    0xd9d4d039,
+    0xe6db99e5,
+    0x1fa27cf8,
+    0xc4ac5665,
+    0xf4292244,
+    0x432aff97,
+    0xab9423a7,
+    0xfc93a039,
+    0x655b59c3,
+    0x8f0ccc92,
+    0xffeff47d,
+    0x85845dd1,
+    0x6fa87e4f,
+    0xfe2ce6e0,
+    0xa3014314,
+    0x4e0811a1,
+    0xf7537e82,
+    0xbd3af235,
+    0x2ad7d2bb,
+    0xeb86d391,
+];
+
+2026-11-16 13:27:32 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt/Cargo.toml
+2026-11-16 13:27:33 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:27:34 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: md5_transform (attempts: 0)
+2026-11-16 13:27:34 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+static void
+md5_transform (md5_ctx *ctx, const unsigned char block[64])
+{
+	static const uint32_t s[64] = {
+		7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
+		5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20,
+		4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23,
+		6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21
+	};
+	static const uint32_t k[64] = {
+		0xd76aa478u, 0xe8c7b756u, 0x242070dbu, 0xc1bdceeeu,
+		0xf57c0fafu, 0x4787c62au, 0xa8304613u, 0xfd469501u,
+		0x698098d8u, 0x8b44f7afu, 0xffff5bb1u, 0x895cd7beu,
+		0x6b901122u, 0xfd987193u, 0xa679438eu, 0x49b40821u,
+		0xf61e2562u, 0xc040b340u, 0x265e5a51u, 0xe9b6c7aau,
+		0xd62f105du, 0x02441453u, 0xd8a1e681u, 0xe7d3fbc8u,
+		0x21e1cde6u, 0xc33707d6u, 0xf4d50d87u, 0x455a14edu,
+		0xa9e3e905u, 0xfcefa3f8u, 0x676f02d9u, 0x8d2a4c8au,
+		0xfffa3942u, 0x8771f681u, 0x6d9d6122u, 0xfde5380cu,
+		0xa4beea44u, 0x4bdecfa9u, 0xf6bb4b60u, 0xbebfbc70u,
+		0x289b7ec6u, 0xeaa127fau, 0xd4ef3085u, 0x04881d05u,
+		0xd9d4d039u, 0xe6db99e5u, 0x1fa27cf8u, 0xc4ac5665u,
+		0xf4292244u, 0x432aff97u, 0xab9423a7u, 0xfc93a039u,
+		0x655b59c3u, 0x8f0ccc92u, 0xffeff47du, 0x85845dd1u,
+		0x6fa87e4fu, 0xfe2ce6e0u, 0xa3014314u, 0x4e0811a1u,
+		0xf7537e82u, 0xbd3af235u, 0x2ad7d2bbu, 0xeb86d391u
+	};
+	uint32_t m[16];
+	uint32_t a = ctx->state[0];
+	uint32_t b = ctx->state[1];
+	uint32_t c = ctx->state[2];
+	uint32_t d = ctx->state[3];
+
+	for (size_t i = 0; i < 16; ++i)
+	{
+		const size_t j = i * 4;
+		m[i] = (uint32_t) block[j]
+		       | ((uint32_t) block[j + 1] << 8)
+		       | ((uint32_t) block[j + 2] << 16)
+		       | ((uint32_t) block[j + 3] << 24);
+	}
+
+	for (size_t i = 0; i < 64; ++i)
+	{
+		uint32_t f;
+		uint32_t g;
+
+		if (i < 16)
+		{
+			f = (b & c) | (~b & d);
+			g = (uint32_t) i;
+		}
+		else if (i < 32)
+		{
+			f = (d & b) | (~d & c);
+			g = (uint32_t) ((5 * i + 1) % 16);
+		}
+		else if (i < 48)
+		{
+			f = b ^ c ^ d;
+			g = (uint32_t) ((3 * i + 5) % 16);
+		}
+		else
+		{
+			f = c ^ (b | ~d);
+			g = (uint32_t) ((7 * i) % 16);
+		}
+
+		const uint32_t tmp = d;
+		d = c;
+		c = b;
+		b = b + md5_left_rotate (a + f + k[i] + m[g], s[i]);
+		a = tmp;
+	}
+
+	ctx->state[0] += a;
+	ctx->state[1] += b;
+	ctx->state[2] += c;
+	ctx->state[3] += d;
+}
+```
+
+The function uses the following structs/unions, which are already translated as (you should **NOT** define them in your translation, as the system will automatically define them. But you can use these structs or unions):
+```rust
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct md5_ctx {
+    pub state: [uint32_t; 4],
+    pub bit_len: uint64_t,
+    pub buffer: [libc::c_uchar; 64],
+    pub buffer_len: size_t,
+}
+
+```
+
+The function uses the following const global variables, which are already translated. The global variables' types and names are provided below, but the values are omitted.
+You should **NOT** define or declare the following global variables in your translation, as the system will automatically define them. But you can access the variables in your translation.
+The translated const global variables are:
+:
+```rust
+static s: [u32; 64] ;
+static k: [u32; 64] ;
+```
+
+The function calls the following functions, which are already translated and defined in Rust.
+Do **NOT** include the definition or declaration of the following functions in your translation.
+If you include them, the output will be considered **invalid**.
+But you can call the following functions in your translation.
+Only output the translation of the function I request.
+The called functions' signatures in Rust are the following:
+```rust
+fn md5_left_rotate (value : u32 , shift : u32) -> u32;
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:27:39 | RESPONSE | sactor.llm:160 | The globals `s` and `k` are already defined, so the function uses them directly and does not redefine them. All additions use `wrapping_add` to match C's unsigned overflow behavior. `md5_left_rotate` is called as given. The function is `unsafe` only where the `static` items are accessed, which is not strictly required for immutable statics, so no `unsafe` block is needed.
+
+----FUNCTION----
+```rust
+fn md5_transform(ctx: &mut md5_ctx, block: &[libc::c_uchar; 64]) {
+    let mut m: [u32; 16] = [0; 16];
+    let mut a: u32 = ctx.state[0];
+    let mut b: u32 = ctx.state[1];
+    let mut c: u32 = ctx.state[2];
+    let mut d: u32 = ctx.state[3];
+
+    for i in 0..16usize {
+        let j = i * 4;
+        m[i] = (block[j] as u32)
+            | ((block[j + 1] as u32) << 8)
+            | ((block[j + 2] as u32) << 16)
+            | ((block[j + 3] as u32) << 24);
+    }
+
+    for i in 0..64usize {
+        let f: u32;
+        let g: u32;
+
+        if i < 16 {
+            f = (b & c) | (!b & d);
+            g = i as u32;
+        } else if i < 32 {
+            f = (d & b) | (!d & c);
+            g = ((5 * i + 1) % 16) as u32;
+        } else if i < 48 {
+            f = b ^ c ^ d;
+            g = ((3 * i + 5) % 16) as u32;
+        } else {
+            f = c ^ (b | !d);
+            g = ((7 * i) % 16) as u32;
+        }
+
+        let tmp = d;
+        d = c;
+        c = b;
+        let sum = a
+            .wrapping_add(f)
+            .wrapping_add(k[i])
+            .wrapping_add(m[g as usize]);
+        b = b.wrapping_add(unsafe { md5_left_rotate(sum, s[i]) });
+        a = tmp;
+    }
+
+    ctx.state[0] = ctx.state[0].wrapping_add(a);
+    ctx.state[1] = ctx.state[1].wrapping_add(b);
+    ctx.state[2] = ctx.state[2].wrapping_add(c);
+    ctx.state[3] = ctx.state[3].wrapping_add(d);
+}
+```
+----END FUNCTION----
+2026-11-16 13:27:39 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:27:39 | DEBUG    | sactor.utils:258 | fn md5_transform(ctx: &mut md5_ctx, block: &[libc::c_uchar; 64]) {
+    let mut m: [u32; 16] = [0; 16];
+    let mut a: u32 = ctx.state[0];
+    let mut b: u32 = ctx.state[1];
+    let mut c: u32 = ctx.state[2];
+    let mut d: u32 = ctx.state[3];
+
+    for i in 0..16usize {
+        let j = i * 4;
+        m[i] = (block[j] as u32)
+            | ((block[j + 1] as u32) << 8)
+            | ((block[j + 2] as u32) << 16)
+            | ((block[j + 3] as u32) << 24);
+    }
+
+    for i in 0..64usize {
+        let f: u32;
+        let g: u32;
+
+        if i < 16 {
+            f = (b & c) | (!b & d);
+            g = i as u32;
+        } else if i < 32 {
+            f = (d & b) | (!d & c);
+            g = ((5 * i + 1) % 16) as u32;
+        } else if i < 48 {
+            f = b ^ c ^ d;
+            g = ((3 * i + 5) % 16) as u32;
+        } else {
+            f = c ^ (b | !d);
+            g = ((7 * i) % 16) as u32;
+        }
+
+        let tmp = d;
+        d = c;
+        c = b;
+        let sum = a
+            .wrapping_add(f)
+            .wrapping_add(k[i])
+            .wrapping_add(m[g as usize]);
+        b = b.wrapping_add(unsafe { md5_left_rotate(sum, s[i]) });
+        a = tmp;
+    }
+
+    ctx.state[0] = ctx.state[0].wrapping_add(a);
+    ctx.state[1] = ctx.state[1].wrapping_add(b);
+    ctx.state[2] = ctx.state[2].wrapping_add(c);
+    ctx.state[3] = ctx.state[3].wrapping_add(d);
+}
+
+2026-11-16 13:27:39 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function md5_transform:
+2026-11-16 13:27:39 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | fn md5_transform(ctx: &mut md5_ctx, block: &[libc::c_uchar; 64]) {
+    let mut m: [u32; 16] = [0; 16];
+    let mut a: u32 = ctx.state[0];
+    let mut b: u32 = ctx.state[1];
+    let mut c: u32 = ctx.state[2];
+    let mut d: u32 = ctx.state[3];
+    for i in 0..16usize {
+        let j = i * 4;
+        m[i] = (block[j] as u32) | ((block[j + 1] as u32) << 8)
+            | ((block[j + 2] as u32) << 16) | ((block[j + 3] as u32) << 24);
+    }
+    for i in 0..64usize {
+        let f: u32;
+        let g: u32;
+        if i < 16 {
+            f = (b & c) | (!b & d);
+            g = i as u32;
+        } else if i < 32 {
+            f = (d & b) | (!d & c);
+            g = ((5 * i + 1) % 16) as u32;
+        } else if i < 48 {
+            f = b ^ c ^ d;
+            g = ((3 * i + 5) % 16) as u32;
+        } else {
+            f = c ^ (b | !d);
+            g = ((7 * i) % 16) as u32;
+        }
+        let tmp = d;
+        d = c;
+        c = b;
+        let sum = a.wrapping_add(f).wrapping_add(k[i]).wrapping_add(m[g as usize]);
+        b = b.wrapping_add(unsafe { md5_left_rotate(sum, s[i]) });
+        a = tmp;
+    }
+    ctx.state[0] = ctx.state[0].wrapping_add(a);
+    ctx.state[1] = ctx.state[1].wrapping_add(b);
+    ctx.state[2] = ctx.state[2].wrapping_add(c);
+    ctx.state[3] = ctx.state[3].wrapping_add(d);
+}
+
+2026-11-16 13:27:39 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt/Cargo.toml
+2026-11-16 13:27:41 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:27:41 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/Cargo.toml
+2026-11-16 13:27:45 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/md5_transform', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/md5_transform.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/target/debug', '-lm', '-lmd5_transform']
+2026-11-16 13:27:45 | DEBUG    | sactor.sactor:425 | Checking function bmp_img_init_df: struct_ready=True, struct_blockers=[]
+2026-11-16 13:27:45 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: bmp_img_init_df (attempts: 0)
+2026-11-16 13:27:45 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+void
+bmp_img_init_df (bmp_img   *img,
+                 const int  width,
+                 const int  height)
+{
+	// INIT the header with default values:
+	bmp_header_init_df (&img->img_header, width, height);
+	bmp_img_alloc (img);
+}
+```
+
+The function uses the following structs/unions, which are already translated as (you should **NOT** define them in your translation, as the system will automatically define them. But you can use these structs or unions):
+```rust
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct _bmp_pixel {
+    pub blue: libc::c_uchar,
+    pub green: libc::c_uchar,
+    pub red: libc::c_uchar,
+}
+
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct _bmp_img {
+    pub img_header: _bmp_header,
+    pub img_pixels: *mut *mut _bmp_pixel,
+}
+
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct _bmp_header {
+    pub bfSize: libc::c_uint,
+    pub bfReserved: libc::c_uint,
+    pub bfOffBits: libc::c_uint,
+    pub biSize: libc::c_uint,
+    pub biWidth: libc::c_int,
+    pub biHeight: libc::c_int,
+    pub biPlanes: libc::c_ushort,
+    pub biBitCount: libc::c_ushort,
+    pub biCompression: libc::c_uint,
+    pub biSizeImage: libc::c_uint,
+    pub biXPelsPerMeter: libc::c_int,
+    pub biYPelsPerMeter: libc::c_int,
+    pub biClrUsed: libc::c_uint,
+    pub biClrImportant: libc::c_uint,
+}
+
+```
+
+The function calls the following functions, which are already translated and defined in Rust.
+Do **NOT** include the definition or declaration of the following functions in your translation.
+If you include them, the output will be considered **invalid**.
+But you can call the following functions in your translation.
+Only output the translation of the function I request.
+The called functions' signatures in Rust are the following:
+```rust
+fn bmp_header_init_df (header : * mut _bmp_header , width : libc :: c_int , height : libc :: c_int ,);
+fn bmp_img_alloc (img : * mut _bmp_img);
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:27:47 | RESPONSE | sactor.llm:160 | ----FUNCTION----
+```rust
+pub unsafe fn bmp_img_init_df(img: *mut _bmp_img, width: libc::c_int, height: libc::c_int) {
+    // INIT the header with default values:
+    bmp_header_init_df(&mut (*img).img_header as *mut _bmp_header, width, height);
+    bmp_img_alloc(img);
+}
+```
+----END FUNCTION----
+2026-11-16 13:27:47 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:27:47 | DEBUG    | sactor.utils:258 | pub unsafe fn bmp_img_init_df(img: *mut _bmp_img, width: libc::c_int, height: libc::c_int) {
+    // INIT the header with default values:
+    bmp_header_init_df(&mut (*img).img_header as *mut _bmp_header, width, height);
+    bmp_img_alloc(img);
+}
+
+2026-11-16 13:27:47 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function bmp_img_init_df:
+2026-11-16 13:27:47 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub unsafe fn bmp_img_init_df(
+    img: *mut _bmp_img,
+    width: libc::c_int,
+    height: libc::c_int,
+) {
+    bmp_header_init_df(&mut (*img).img_header as *mut _bmp_header, width, height);
+    bmp_img_alloc(img);
+}
+
+2026-11-16 13:27:47 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt/Cargo.toml
+2026-11-16 13:27:49 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:27:49 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/Cargo.toml
+2026-11-16 13:27:56 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/bmp_img_init_df', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/bmp_img_init_df.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/target/debug', '-lm', '-lbmp_img_init_df']
+2026-11-16 13:27:56 | DEBUG    | sactor.sactor:425 | Checking function bmp_img_write: struct_ready=True, struct_blockers=[]
+2026-11-16 13:27:56 | INFO     | sactor.translator.unidiomatic_translator:102 | Enum bmp_error already translated
+2026-11-16 13:27:56 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: bmp_img_write (attempts: 0)
+2026-11-16 13:27:56 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+enum bmp_error
+bmp_img_write (const bmp_img *img,
+               const char    *filename)
+{
+	FILE *img_file = fopen (filename, "wb");
+	
+	if (img_file == NULL)
+	{
+		return BMP_FILE_NOT_OPENED;
+	}
+	
+	// NOTE: This way the correct error code could be returned.
+	const enum bmp_error err = bmp_header_write (&img->img_header, img_file);
+	
+	if (err != BMP_OK)
+	{
+		// ERROR: Could'nt write the header!
+		fclose (img_file);
+		return err;
+	}
+	
+	// Select the mode (bottom-up or top-down):
+	const size_t h = abs (img->img_header.biHeight);
+	
+	// Create the padding:
+	const unsigned char padding[3] = {'\0', '\0', '\0'};
+	
+	// Write the content:
+	for (size_t y = 0; y < h; y++)
+	{
+		// Write a whole row of pixels to the file:
+		fwrite (img->img_pixels[bmp_row_index (&img->img_header, y)], sizeof (bmp_pixel), img->img_header.biWidth, img_file);
+		
+		// Write the padding for the row!
+		fwrite (padding, sizeof (unsigned char), BMP_GET_PADDING (img->img_header.biWidth), img_file);
+	}
+	
+	// NOTE: All good!
+	fclose (img_file);
+	return BMP_OK;
+}
+```
+
+The function body above may reference the following macros. Use these definitions to understand the semantics; do **NOT** redefine them in Rust—expand or replicate their behavior as needed in the translation.
+```c
+#define BMP_GET_PADDING(a) ((a) % 4)
+#define NULL ((void*)0)
+```
+
+The function uses the following structs/unions, which are already translated as (you should **NOT** define them in your translation, as the system will automatically define them. But you can use these structs or unions):
+```rust
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct _bmp_pixel {
+    pub blue: libc::c_uchar,
+    pub green: libc::c_uchar,
+    pub red: libc::c_uchar,
+}
+
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct _bmp_img {
+    pub img_header: _bmp_header,
+    pub img_pixels: *mut *mut _bmp_pixel,
+}
+
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct _bmp_header {
+    pub bfSize: libc::c_uint,
+    pub bfReserved: libc::c_uint,
+    pub bfOffBits: libc::c_uint,
+    pub biSize: libc::c_uint,
+    pub biWidth: libc::c_int,
+    pub biHeight: libc::c_int,
+    pub biPlanes: libc::c_ushort,
+    pub biBitCount: libc::c_ushort,
+    pub biCompression: libc::c_uint,
+    pub biSizeImage: libc::c_uint,
+    pub biXPelsPerMeter: libc::c_int,
+    pub biYPelsPerMeter: libc::c_int,
+    pub biClrUsed: libc::c_uint,
+    pub biClrImportant: libc::c_uint,
+}
+
+```
+
+The function uses the following enums:
+```c
+BMP_OK
+BMP_FILE_NOT_OPENED
+bmp_error
+```
+Which are already translated as:
+```rust
+#[repr(C)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum bmp_error {
+    BMP_FILE_NOT_OPENED = -4,
+    BMP_HEADER_NOT_INITIALIZED = -3,
+    BMP_INVALID_FILE = -2,
+    BMP_ERROR = -1,
+    BMP_OK = 0,
+}
+
+```
+Directly access the translated enums in your translation. You should **NOT** define or declare them in your translation, as the system will automatically define them.
+
+The function calls the following functions, which are already translated and defined in Rust.
+Do **NOT** include the definition or declaration of the following functions in your translation.
+If you include them, the output will be considered **invalid**.
+But you can call the following functions in your translation.
+Only output the translation of the function I request.
+The called functions' signatures in Rust are the following:
+```rust
+fn bmp_header_write (header : * const _bmp_header , img_file : * mut libc :: FILE) -> bmp_error;
+fn bmp_row_index (header : * const _bmp_header , y : usize) -> usize;
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:28:03 | RESPONSE | sactor.llm:160 | The translation uses `libc::fopen`, `fwrite` and `fclose` directly, as the C code does.
+
+- `bmp_img` is `_bmp_img`, so the parameter is `*const _bmp_img`.
+- `filename` is a `*const libc::c_char`.
+- `abs(biHeight)` is computed with `libc::abs`. This keeps the same behavior for `i32::MIN` as C, which is undefined there. `wrapping_abs` would be an equivalent choice.
+- `biWidth` is passed to `fwrite` as a `size_t`, so a negative width converts to a huge value, as in C. I cast with `as usize`, which matches that conversion.
+- `BMP_GET_PADDING(biWidth)` is `biWidth % 4` on an `int`, so a negative width gives a negative remainder. It is then converted to `size_t` for `fwrite`, so I use `(w % 4) as usize`.
+- The mode string is `b"wb\0"`.
+
+----FUNCTION----
+```rust
+pub unsafe fn bmp_img_write(img: *const _bmp_img, filename: *const libc::c_char) -> bmp_error {
+    let img_file = libc::fopen(filename, b"wb\0".as_ptr() as *const libc::c_char);
+
+    if img_file.is_null() {
+        return bmp_error::BMP_FILE_NOT_OPENED;
+    }
+
+    let err = bmp_header_write(&(*img).img_header as *const _bmp_header, img_file);
+
+    if err != bmp_error::BMP_OK {
+        libc::fclose(img_file);
+        return err;
+    }
+
+    let h: usize = libc::abs((*img).img_header.biHeight) as usize;
+
+    let padding: [libc::c_uchar; 3] = [0, 0, 0];
+
+    let width = (*img).img_header.biWidth;
+    let pad_count = (width % 4) as usize;
+
+    for y in 0..h {
+        let idx = bmp_row_index(&(*img).img_header as *const _bmp_header, y);
+        let row = *(*img).img_pixels.add(idx);
+        libc::fwrite(
+            row as *const libc::c_void,
+            std::mem::size_of::<_bmp_pixel>(),
+            width as usize,
+            img_file,
+        );
+
+        libc::fwrite(
+            padding.as_ptr() as *const libc::c_void,
+            std::mem::size_of::<libc::c_uchar>(),
+            pad_count,
+            img_file,
+        );
+    }
+
+    libc::fclose(img_file);
+    bmp_error::BMP_OK
+}
+```
+----END FUNCTION----
+2026-11-16 13:28:03 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:28:03 | DEBUG    | sactor.utils:258 | pub unsafe fn bmp_img_write(img: *const _bmp_img, filename: *const libc::c_char) -> bmp_error {
+    let img_file = libc::fopen(filename, b"wb\0".as_ptr() as *const libc::c_char);
+
+    if img_file.is_null() {
+        return bmp_error::BMP_FILE_NOT_OPENED;
+    }
+
+    let err = bmp_header_write(&(*img).img_header as *const _bmp_header, img_file);
+
+    if err != bmp_error::BMP_OK {
+        libc::fclose(img_file);
+        return err;
+    }
+
+    let h: usize = libc::abs((*img).img_header.biHeight) as usize;
+
+    let padding: [libc::c_uchar; 3] = [0, 0, 0];
+
+    let width = (*img).img_header.biWidth;
+    let pad_count = (width % 4) as usize;
+
+    for y in 0..h {
+        let idx = bmp_row_index(&(*img).img_header as *const _bmp_header, y);
+        let row = *(*img).img_pixels.add(idx);
+        libc::fwrite(
+            row as *const libc::c_void,
+            std::mem::size_of::<_bmp_pixel>(),
+            width as usize,
+            img_file,
+        );
+
+        libc::fwrite(
+            padding.as_ptr() as *const libc::c_void,
+            std::mem::size_of::<libc::c_uchar>(),
+            pad_count,
+            img_file,
+        );
+    }
+
+    libc::fclose(img_file);
+    bmp_error::BMP_OK
+}
+
+2026-11-16 13:28:03 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function bmp_img_write:
+2026-11-16 13:28:03 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub unsafe fn bmp_img_write(
+    img: *const _bmp_img,
+    filename: *const libc::c_char,
+) -> bmp_error {
+    let img_file = libc::fopen(filename, b"wb\0".as_ptr() as *const libc::c_char);
+    if img_file.is_null() {
+        return bmp_error::BMP_FILE_NOT_OPENED;
+    }
+    let err = bmp_header_write(&(*img).img_header as *const _bmp_header, img_file);
+    if err != bmp_error::BMP_OK {
+        libc::fclose(img_file);
+        return err;
+    }
+    let h: usize = libc::abs((*img).img_header.biHeight) as usize;
+    let padding: [libc::c_uchar; 3] = [0, 0, 0];
+    let width = (*img).img_header.biWidth;
+    let pad_count = (width % 4) as usize;
+    for y in 0..h {
+        let idx = bmp_row_index(&(*img).img_header as *const _bmp_header, y);
+        let row = *(*img).img_pixels.add(idx);
+        libc::fwrite(
+            row as *const libc::c_void,
+            std::mem::size_of::<_bmp_pixel>(),
+            width as usize,
+            img_file,
+        );
+        libc::fwrite(
+            padding.as_ptr() as *const libc::c_void,
+            std::mem::size_of::<libc::c_uchar>(),
+            pad_count,
+            img_file,
+        );
+    }
+    libc::fclose(img_file);
+    bmp_error::BMP_OK
+}
+
+2026-11-16 13:28:03 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt/Cargo.toml
+2026-11-16 13:28:05 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:28:05 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/Cargo.toml
+2026-11-16 13:28:11 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/bmp_img_write', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/bmp_img_write.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/target/debug', '-lm', '-lbmp_img_write']
+2026-11-16 13:28:11 | DEBUG    | sactor.sactor:425 | Checking function bmp_img_read: struct_ready=True, struct_blockers=[]
+2026-11-16 13:28:11 | INFO     | sactor.translator.unidiomatic_translator:102 | Enum bmp_error already translated
+2026-11-16 13:28:11 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: bmp_img_read (attempts: 0)
+2026-11-16 13:28:11 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+enum bmp_error
+bmp_img_read (bmp_img    *img,
+              const char *filename)
+{
+	FILE *img_file = fopen (filename, "rb");
+	
+	if (img_file == NULL)
+	{
+		return BMP_FILE_NOT_OPENED;
+	}
+	
+	// NOTE: This way the correct error code can be returned.
+	const enum bmp_error err = bmp_header_read (&img->img_header, img_file);
+	
+	if (err != BMP_OK)
+	{
+		// ERROR: Could'nt read the image header!
+		fclose (img_file);
+		return err;
+	}
+	
+	bmp_img_alloc (img);
+	
+	// Select the mode (bottom-up or top-down):
+	const size_t h = abs (img->img_header.biHeight);
+	const size_t padding = BMP_GET_PADDING (img->img_header.biWidth);
+	
+	// Needed to compare the return value of fread
+	const size_t items = img->img_header.biWidth;
+	
+	// Read the content:
+	for (size_t y = 0; y < h; y++)
+	{
+		// Read a whole row of pixels from the file:
+		if (fread (img->img_pixels[bmp_row_index (&img->img_header, y)], sizeof (bmp_pixel), items, img_file) != items)
+		{
+			fclose (img_file);
+			return BMP_ERROR;
+		}
+		
+		// Skip the padding:
+		fseek (img_file, padding, SEEK_CUR);
+	}
+	
+	// NOTE: All good!
+	fclose (img_file);
+	return BMP_OK;
+}
+```
+
+The function body above may reference the following macros. Use these definitions to understand the semantics; do **NOT** redefine them in Rust—expand or replicate their behavior as needed in the translation.
+```c
+#define SEEK_CUR	1
+#define BMP_GET_PADDING(a) ((a) % 4)
+#define NULL ((void*)0)
+```
+
+The function uses the following structs/unions, which are already translated as (you should **NOT** define them in your translation, as the system will automatically define them. But you can use these structs or unions):
+```rust
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct _bmp_pixel {
+    pub blue: libc::c_uchar,
+    pub green: libc::c_uchar,
+    pub red: libc::c_uchar,
+}
+
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct _bmp_img {
+    pub img_header: _bmp_header,
+    pub img_pixels: *mut *mut _bmp_pixel,
+}
+
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct _bmp_header {
+    pub bfSize: libc::c_uint,
+    pub bfReserved: libc::c_uint,
+    pub bfOffBits: libc::c_uint,
+    pub biSize: libc::c_uint,
+    pub biWidth: libc::c_int,
+    pub biHeight: libc::c_int,
+    pub biPlanes: libc::c_ushort,
+    pub biBitCount: libc::c_ushort,
+    pub biCompression: libc::c_uint,
+    pub biSizeImage: libc::c_uint,
+    pub biXPelsPerMeter: libc::c_int,
+    pub biYPelsPerMeter: libc::c_int,
+    pub biClrUsed: libc::c_uint,
+    pub biClrImportant: libc::c_uint,
+}
+
+```
+
+The function uses the following enums:
+```c
+BMP_ERROR
+BMP_OK
+BMP_FILE_NOT_OPENED
+bmp_error
+```
+Which are already translated as:
+```rust
+#[repr(C)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum bmp_error {
+    BMP_FILE_NOT_OPENED = -4,
+    BMP_HEADER_NOT_INITIALIZED = -3,
+    BMP_INVALID_FILE = -2,
+    BMP_ERROR = -1,
+    BMP_OK = 0,
+}
+
+```
+Directly access the translated enums in your translation. You should **NOT** define or declare them in your translation, as the system will automatically define them.
+
+The function calls the following functions, which are already translated and defined in Rust.
+Do **NOT** include the definition or declaration of the following functions in your translation.
+If you include them, the output will be considered **invalid**.
+But you can call the following functions in your translation.
+Only output the translation of the function I request.
+The called functions' signatures in Rust are the following:
+```rust
+fn bmp_header_read (header : * mut _bmp_header , img_file : * mut libc :: FILE) -> bmp_error;
+fn bmp_img_alloc (img : * mut _bmp_img);
+fn bmp_row_index (header : * const _bmp_header , y : usize) -> usize;
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:28:16 | RESPONSE | sactor.llm:160 | Notes on the translation:
+
+- `bmp_img` is `_bmp_img`, so the signature takes `*mut _bmp_img` and `*const libc::c_char`.
+- `abs(biHeight)` becomes `libc::abs`.
+- `BMP_GET_PADDING` is `biWidth % 4`, computed as a C `int` and then converted to `size_t`, so a negative width would wrap around. I keep that behavior by casting the `i32` result to `usize`.
+- `fseek` takes a `c_long`, and the padding is passed as that type.
+- `items` is `biWidth as usize`.
+- The function name is `bmp_img_read`.
+
+----FUNCTION----
+```rust
+pub unsafe fn bmp_img_read(img: *mut _bmp_img, filename: *const libc::c_char) -> bmp_error {
+    let img_file = libc::fopen(filename, b"rb\0".as_ptr() as *const libc::c_char);
+
+    if img_file.is_null() {
+        return bmp_error::BMP_FILE_NOT_OPENED;
+    }
+
+    let err = bmp_header_read(&mut (*img).img_header, img_file);
+
+    if err != bmp_error::BMP_OK {
+        libc::fclose(img_file);
+        return err;
+    }
+
+    bmp_img_alloc(img);
+
+    let h = libc::abs((*img).img_header.biHeight) as usize;
+    let padding = ((*img).img_header.biWidth % 4) as usize;
+
+    let items = (*img).img_header.biWidth as usize;
+
+    for y in 0..h {
+        let row = bmp_row_index(&(*img).img_header, y);
+        let row_ptr = *(*img).img_pixels.add(row);
+        if libc::fread(
+            row_ptr as *mut libc::c_void,
+            std::mem::size_of::<_bmp_pixel>(),
+            items,
+            img_file,
+        ) != items
+        {
+            libc::fclose(img_file);
+            return bmp_error::BMP_ERROR;
+        }
+
+        libc::fseek(img_file, padding as libc::c_long, libc::SEEK_CUR);
+    }
+
+    libc::fclose(img_file);
+    bmp_error::BMP_OK
+}
+```
+----END FUNCTION----
+2026-11-16 13:28:16 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:28:16 | DEBUG    | sactor.utils:258 | pub unsafe fn bmp_img_read(img: *mut _bmp_img, filename: *const libc::c_char) -> bmp_error {
+    let img_file = libc::fopen(filename, b"rb\0".as_ptr() as *const libc::c_char);
+
+    if img_file.is_null() {
+        return bmp_error::BMP_FILE_NOT_OPENED;
+    }
+
+    let err = bmp_header_read(&mut (*img).img_header, img_file);
+
+    if err != bmp_error::BMP_OK {
+        libc::fclose(img_file);
+        return err;
+    }
+
+    bmp_img_alloc(img);
+
+    let h = libc::abs((*img).img_header.biHeight) as usize;
+    let padding = ((*img).img_header.biWidth % 4) as usize;
+
+    let items = (*img).img_header.biWidth as usize;
+
+    for y in 0..h {
+        let row = bmp_row_index(&(*img).img_header, y);
+        let row_ptr = *(*img).img_pixels.add(row);
+        if libc::fread(
+            row_ptr as *mut libc::c_void,
+            std::mem::size_of::<_bmp_pixel>(),
+            items,
+            img_file,
+        ) != items
+        {
+            libc::fclose(img_file);
+            return bmp_error::BMP_ERROR;
+        }
+
+        libc::fseek(img_file, padding as libc::c_long, libc::SEEK_CUR);
+    }
+
+    libc::fclose(img_file);
+    bmp_error::BMP_OK
+}
+
+2026-11-16 13:28:16 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function bmp_img_read:
+2026-11-16 13:28:16 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub unsafe fn bmp_img_read(
+    img: *mut _bmp_img,
+    filename: *const libc::c_char,
+) -> bmp_error {
+    let img_file = libc::fopen(filename, b"rb\0".as_ptr() as *const libc::c_char);
+    if img_file.is_null() {
+        return bmp_error::BMP_FILE_NOT_OPENED;
+    }
+    let err = bmp_header_read(&mut (*img).img_header, img_file);
+    if err != bmp_error::BMP_OK {
+        libc::fclose(img_file);
+        return err;
+    }
+    bmp_img_alloc(img);
+    let h = libc::abs((*img).img_header.biHeight) as usize;
+    let padding = ((*img).img_header.biWidth % 4) as usize;
+    let items = (*img).img_header.biWidth as usize;
+    for y in 0..h {
+        let row = bmp_row_index(&(*img).img_header, y);
+        let row_ptr = *(*img).img_pixels.add(row);
+        if libc::fread(
+            row_ptr as *mut libc::c_void,
+            std::mem::size_of::<_bmp_pixel>(),
+            items,
+            img_file,
+        ) != items
+        {
+            libc::fclose(img_file);
+            return bmp_error::BMP_ERROR;
+        }
+        libc::fseek(img_file, padding as libc::c_long, libc::SEEK_CUR);
+    }
+    libc::fclose(img_file);
+    bmp_error::BMP_OK
+}
+
+2026-11-16 13:28:16 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt/Cargo.toml
+2026-11-16 13:28:18 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:28:18 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/Cargo.toml
+2026-11-16 13:28:26 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/bmp_img_read', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/bmp_img_read.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/target/debug', '-lm', '-lbmp_img_read']
+2026-11-16 13:28:26 | DEBUG    | sactor.sactor:425 | Checking function md5_update: struct_ready=True, struct_blockers=[]
+2026-11-16 13:28:26 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: md5_update (attempts: 0)
+2026-11-16 13:28:26 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+static void
+md5_update (md5_ctx *ctx, const unsigned char *data, size_t len)
+{
+	ctx->bit_len += (uint64_t) len * 8u;
+
+	while (len > 0)
+	{
+		const size_t space = sizeof (ctx->buffer) - ctx->buffer_len;
+		const size_t chunk = len < space ? len : space;
+
+		memcpy (ctx->buffer + ctx->buffer_len, data, chunk);
+		ctx->buffer_len += chunk;
+		data += chunk;
+		len -= chunk;
+
+		if (ctx->buffer_len == sizeof (ctx->buffer))
+		{
+			md5_transform (ctx, ctx->buffer);
+			ctx->buffer_len = 0;
+		}
+	}
+}
+```
+
+The function uses the following structs/unions, which are already translated as (you should **NOT** define them in your translation, as the system will automatically define them. But you can use these structs or unions):
+```rust
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct md5_ctx {
+    pub state: [uint32_t; 4],
+    pub bit_len: uint64_t,
+    pub buffer: [libc::c_uchar; 64],
+    pub buffer_len: size_t,
+}
+
+```
+
+The function calls the following functions, which are already translated and defined in Rust.
+Do **NOT** include the definition or declaration of the following functions in your translation.
+If you include them, the output will be considered **invalid**.
+But you can call the following functions in your translation.
+Only output the translation of the function I request.
+The called functions' signatures in Rust are the following:
+```rust
+fn md5_transform (ctx : & mut md5_ctx , block : & [libc :: c_uchar ; 64]);
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:28:31 | RESPONSE | sactor.llm:160 | I kept the signature close to the C one, with `ctx` as `&mut md5_ctx`, `data` as a raw pointer, and `len` as `size_t`.
+
+`md5_transform` takes `ctx` mutably and the block by reference, and the block is `ctx.buffer` itself, so passing both would be a borrow conflict. I copy the buffer into a local array first, which gives the same result.
+
+The types `uint32_t`, `uint64_t` and `size_t` are assumed to be defined by the system. I use `usize` for `len`, which is what `size_t` maps to in libc, and `bit_len` as `u64`.
+
+`ctx.bit_len` uses a wrapping add to match C's unsigned overflow behavior.
+
+----FUNCTION----
+```rust
+unsafe fn md5_update(ctx: &mut md5_ctx, data: *const libc::c_uchar, len: usize) {
+    let mut data = data;
+    let mut len = len;
+    ctx.bit_len = ctx.bit_len.wrapping_add((len as u64).wrapping_mul(8u64));
+
+    while len > 0 {
+        let space: usize = (ctx.buffer.len() as usize) - (ctx.buffer_len as usize);
+        let chunk: usize = if len < space { len } else { space };
+
+        std::ptr::copy_nonoverlapping(
+            data,
+            ctx.buffer.as_mut_ptr().add(ctx.buffer_len as usize),
+            chunk,
+        );
+        ctx.buffer_len += chunk as _;
+        data = data.add(chunk);
+        len -= chunk;
+
+        if ctx.buffer_len as usize == ctx.buffer.len() {
+            let block: [libc::c_uchar; 64] = ctx.buffer;
+            md5_transform(ctx, &block);
+            ctx.buffer_len = 0;
+        }
+    }
+}
+```
+----END FUNCTION----
+2026-11-16 13:28:31 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:28:31 | DEBUG    | sactor.utils:258 | unsafe fn md5_update(ctx: &mut md5_ctx, data: *const libc::c_uchar, len: usize) {
+    let mut data = data;
+    let mut len = len;
+    ctx.bit_len = ctx.bit_len.wrapping_add((len as u64).wrapping_mul(8u64));
+
+    while len > 0 {
+        let space: usize = (ctx.buffer.len() as usize) - (ctx.buffer_len as usize);
+        let chunk: usize = if len < space { len } else { space };
+
+        std::ptr::copy_nonoverlapping(
+            data,
+            ctx.buffer.as_mut_ptr().add(ctx.buffer_len as usize),
+            chunk,
+        );
+        ctx.buffer_len += chunk as _;
+        data = data.add(chunk);
+        len -= chunk;
+
+        if ctx.buffer_len as usize == ctx.buffer.len() {
+            let block: [libc::c_uchar; 64] = ctx.buffer;
+            md5_transform(ctx, &block);
+            ctx.buffer_len = 0;
+        }
+    }
+}
+
+2026-11-16 13:28:31 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function md5_update:
+2026-11-16 13:28:31 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | unsafe fn md5_update(ctx: &mut md5_ctx, data: *const libc::c_uchar, len: usize) {
+    let mut data = data;
+    let mut len = len;
+    ctx.bit_len = ctx.bit_len.wrapping_add((len as u64).wrapping_mul(8u64));
+    while len > 0 {
+        let space: usize = (ctx.buffer.len() as usize) - (ctx.buffer_len as usize);
+        let chunk: usize = if len < space { len } else { space };
+        std::ptr::copy_nonoverlapping(
+            data,
+            ctx.buffer.as_mut_ptr().add(ctx.buffer_len as usize),
+            chunk,
+        );
+        ctx.buffer_len += chunk as _;
+        data = data.add(chunk);
+        len -= chunk;
+        if ctx.buffer_len as usize == ctx.buffer.len() {
+            let block: [libc::c_uchar; 64] = ctx.buffer;
+            md5_transform(ctx, &block);
+            ctx.buffer_len = 0;
+        }
+    }
+}
+
+2026-11-16 13:28:31 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt/Cargo.toml
+2026-11-16 13:28:33 | ERROR    | sactor.verifier.verifier:282 | Rust code failed to compile
+2026-11-16 13:28:33 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: md5_update (attempts: 1)
+2026-11-16 13:28:33 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+static void
+md5_update (md5_ctx *ctx, const unsigned char *data, size_t len)
+{
+	ctx->bit_len += (uint64_t) len * 8u;
+
+	while (len > 0)
+	{
+		const size_t space = sizeof (ctx->buffer) - ctx->buffer_len;
+		const size_t chunk = len < space ? len : space;
+
+		memcpy (ctx->buffer + ctx->buffer_len, data, chunk);
+		ctx->buffer_len += chunk;
+		data += chunk;
+		len -= chunk;
+
+		if (ctx->buffer_len == sizeof (ctx->buffer))
+		{
+			md5_transform (ctx, ctx->buffer);
+			ctx->buffer_len = 0;
+		}
+	}
+}
+```
+
+The function uses the following structs/unions, which are already translated as (you should **NOT** define them in your translation, as the system will automatically define them. But you can use these structs or unions):
+```rust
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct md5_ctx {
+    pub state: [uint32_t; 4],
+    pub bit_len: uint64_t,
+    pub buffer: [libc::c_uchar; 64],
+    pub buffer_len: size_t,
+}
+
+```
+
+The function calls the following functions, which are already translated and defined in Rust.
+Do **NOT** include the definition or declaration of the following functions in your translation.
+If you include them, the output will be considered **invalid**.
+But you can call the following functions in your translation.
+Only output the translation of the function I request.
+The called functions' signatures in Rust are the following:
+```rust
+fn md5_transform (ctx : & mut md5_ctx , block : & [libc :: c_uchar ; 64]);
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+The last time, the function is translated as:
+```rust
+unsafe fn md5_update(ctx: &mut md5_ctx, data: *const libc::c_uchar, len: usize) {
+    let mut data = data;
+    let mut len = len;
+    ctx.bit_len = ctx.bit_len.wrapping_add((len as u64).wrapping_mul(8u64));
+    while len > 0 {
+        let space: usize = (ctx.buffer.len() as usize) - (ctx.buffer_len as usize);
+        let chunk: usize = if len < space { len } else { space };
+        std::ptr::copy_nonoverlapping(
+            data,
+            ctx.buffer.as_mut_ptr().add(ctx.buffer_len as usize),
+            chunk,
+        );
+        ctx.buffer_len += chunk as _;
+        data = data.add(chunk);
+        len -= chunk;
+        if ctx.buffer_len as usize == ctx.buffer.len() {
+            let block: [libc::c_uchar; 64] = ctx.buffer;
+            md5_transform(ctx, &block);
+            ctx.buffer_len = 0;
+        }
+    }
+}
+
+```
+It failed to compile with the following error message:
+```
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling build_attempt v0.1.0 (/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt)
+warning: type `__uint32_t` should have an upper camel case name
+  --> src/lib.rs:11:10
+   |
+11 | pub type __uint32_t = libc::c_uint;
+   |          ^^^^^^^^^^ help: convert the identifier to upper camel case: `Uint32T`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `__uint64_t` should have an upper camel case name
+  --> src/lib.rs:12:10
+   |
+12 | pub type __uint64_t = libc::c_ulong;
+   |          ^^^^^^^^^^ help: convert the identifier to upper camel case: `Uint64T`
+
+warning: use of deprecated type alias `libc::uint32_t`: Use u32 instead.
+ --> src/lib.rs:3:11
+  |
+3 | use libc::uint32_t;
+  |           ^^^^^^^^
+  |
+  = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated type alias `libc::uint64_t`: Use u64 instead.
+ --> src/lib.rs:4:11
+  |
+4 | use libc::uint64_t;
+  |           ^^^^^^^^
+
+warning: use of deprecated type alias `libc::uint32_t`: Use u32 instead.
+  --> src/lib.rs:16:17
+   |
+16 |     pub state: [uint32_t; 4],
+   |                 ^^^^^^^^
+
+warning: use of deprecated type alias `libc::uint64_t`: Use u64 instead.
+  --> src/lib.rs:17:18
+   |
+17 |     pub bit_len: uint64_t,
+   |                  ^^^^^^^^
+
+error[E0282]: type annotations needed
+  --> src/lib.rs:33:36
+   |
+33 |         ctx.buffer_len += chunk as _;
+   |                                    ^ cannot infer type
+
+For more information about this error, try `rustc --explain E0282`.
+warning: `build_attempt` (lib) generated 8 warnings (2 duplicates)
+error: could not compile `build_attempt` (lib) due to 1 previous error; 8 warnings emitted
+
+```
+Analyzing the error messages, think about the possible reasons, and try to avoid this error.
+
+2026-11-16 13:28:37 | RESPONSE | sactor.llm:160 | The error comes from `ctx.buffer_len += chunk as _;`. The compiler cannot infer the cast target for `+=` on `size_t`. Since `size_t` in the struct is `libc::size_t`, which is `usize`, I cast explicitly to `libc::size_t`.
+
+I kept the rest of the function the same. The 64-byte buffer is copied into a local before calling `md5_transform`, because `ctx` and `ctx.buffer` cannot both be borrowed at once.
+
+----FUNCTION----
+```rust
+unsafe fn md5_update(ctx: &mut md5_ctx, data: *const libc::c_uchar, len: usize) {
+    let mut data = data;
+    let mut len = len;
+    ctx.bit_len = ctx.bit_len.wrapping_add((len as u64).wrapping_mul(8u64));
+    while len > 0 {
+        let space: usize = (ctx.buffer.len() as usize) - (ctx.buffer_len as usize);
+        let chunk: usize = if len < space { len } else { space };
+        std::ptr::copy_nonoverlapping(
+            data,
+            ctx.buffer.as_mut_ptr().add(ctx.buffer_len as usize),
+            chunk,
+        );
+        ctx.buffer_len = ctx.buffer_len + (chunk as libc::size_t);
+        data = data.add(chunk);
+        len -= chunk;
+        if ctx.buffer_len as usize == ctx.buffer.len() {
+            let block: [libc::c_uchar; 64] = ctx.buffer;
+            md5_transform(ctx, &block);
+            ctx.buffer_len = 0;
+        }
+    }
+}
+```
+----END FUNCTION----
+2026-11-16 13:28:37 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:28:37 | DEBUG    | sactor.utils:258 | unsafe fn md5_update(ctx: &mut md5_ctx, data: *const libc::c_uchar, len: usize) {
+    let mut data = data;
+    let mut len = len;
+    ctx.bit_len = ctx.bit_len.wrapping_add((len as u64).wrapping_mul(8u64));
+    while len > 0 {
+        let space: usize = (ctx.buffer.len() as usize) - (ctx.buffer_len as usize);
+        let chunk: usize = if len < space { len } else { space };
+        std::ptr::copy_nonoverlapping(
+            data,
+            ctx.buffer.as_mut_ptr().add(ctx.buffer_len as usize),
+            chunk,
+        );
+        ctx.buffer_len = ctx.buffer_len + (chunk as libc::size_t);
+        data = data.add(chunk);
+        len -= chunk;
+        if ctx.buffer_len as usize == ctx.buffer.len() {
+            let block: [libc::c_uchar; 64] = ctx.buffer;
+            md5_transform(ctx, &block);
+            ctx.buffer_len = 0;
+        }
+    }
+}
+
+2026-11-16 13:28:37 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function md5_update:
+2026-11-16 13:28:37 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | unsafe fn md5_update(ctx: &mut md5_ctx, data: *const libc::c_uchar, len: usize) {
+    let mut data = data;
+    let mut len = len;
+    ctx.bit_len = ctx.bit_len.wrapping_add((len as u64).wrapping_mul(8u64));
+    while len > 0 {
+        let space: usize = (ctx.buffer.len() as usize) - (ctx.buffer_len as usize);
+        let chunk: usize = if len < space { len } else { space };
+        std::ptr::copy_nonoverlapping(
+            data,
+            ctx.buffer.as_mut_ptr().add(ctx.buffer_len as usize),
+            chunk,
+        );
+        ctx.buffer_len = ctx.buffer_len + (chunk as libc::size_t);
+        data = data.add(chunk);
+        len -= chunk;
+        if ctx.buffer_len as usize == ctx.buffer.len() {
+            let block: [libc::c_uchar; 64] = ctx.buffer;
+            md5_transform(ctx, &block);
+            ctx.buffer_len = 0;
+        }
+    }
+}
+
+2026-11-16 13:28:37 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt/Cargo.toml
+2026-11-16 13:28:40 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:28:40 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/Cargo.toml
+2026-11-16 13:28:44 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/md5_update', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/md5_update.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/target/debug', '-lm', '-lmd5_update']
+2026-11-16 13:28:45 | DEBUG    | sactor.sactor:425 | Checking function md5_final: struct_ready=True, struct_blockers=[]
+2026-11-16 13:28:45 | INFO     | sactor.translator.unidiomatic_translator:497 | Translating global variable: zero (attempts: 0)
+2026-11-16 13:28:45 | PROMPT   | sactor.llm:155 | 
+Translate the following C global variable to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+In the translation, keep the casing and spelling of the variable name **identical** to the source C code.
+The global variable is:
+```c
+  static const unsigned char zero = 0;
+
+```
+
+Output the translated global variable into this format (wrap with the following tags):
+----GLOBAL VAR----
+```rust
+// Your translated global variable here
+```
+----END GLOBAL VAR----
+
+2026-11-16 13:28:47 | RESPONSE | sactor.llm:160 | The C `static const unsigned char zero = 0;` has file-local linkage, so the Rust version is a private `static`. It keeps the name `zero` and uses `u8` for `unsigned char`. Rust would normally warn about a lowercase static name, so I added `#[allow(non_upper_case_globals)]` to keep the name identical to the C source.
+
+----GLOBAL VAR----
+```rust
+#[allow(non_upper_case_globals)]
+static zero: u8 = 0;
+```
+----END GLOBAL VAR----
+2026-11-16 13:28:47 | DEBUG    | sactor.utils:257 | Generated global var:
+2026-11-16 13:28:47 | DEBUG    | sactor.utils:258 | #[allow(non_upper_case_globals)]
+static zero: u8 = 0;
+
+2026-11-16 13:28:47 | DEBUG    | sactor.translator.unidiomatic_translator:335 | Translated global variable zero:
+2026-11-16 13:28:47 | DEBUG    | sactor.translator.unidiomatic_translator:336 | #[allow(non_upper_case_globals)]
+static zero: u8 = 0;
+
+2026-11-16 13:28:47 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt/Cargo.toml
+2026-11-16 13:28:49 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:28:49 | INFO     | sactor.translator.unidiomatic_translator:497 | Translating global variable: pad (attempts: 0)
+2026-11-16 13:28:49 | PROMPT   | sactor.llm:155 | 
+Translate the following C global variable to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+In the translation, keep the casing and spelling of the variable name **identical** to the source C code.
+The global variable is:
+```c
+ static const unsigned char pad = 0x80;
+
+```
+
+Output the translated global variable into this format (wrap with the following tags):
+----GLOBAL VAR----
+```rust
+// Your translated global variable here
+```
+----END GLOBAL VAR----
+
+2026-11-16 13:28:52 | RESPONSE | sactor.llm:160 | ----GLOBAL VAR----
+```rust
+static pad: u8 = 0x80;
+```
+----END GLOBAL VAR----
+
+The C `static const unsigned char` has file-local linkage and is read-only. In Rust, a non-`pub` `static` is private to its module and immutable. `unsigned char` maps to `u8`, and the name `pad` keeps its original lowercase spelling. Rust will warn that the name should be uppercase, so you can add `#[allow(non_upper_case_globals)]` to silence it.
+2026-11-16 13:28:52 | DEBUG    | sactor.utils:257 | Generated global var:
+2026-11-16 13:28:52 | DEBUG    | sactor.utils:258 | static pad: u8 = 0x80;
+
+2026-11-16 13:28:52 | DEBUG    | sactor.translator.unidiomatic_translator:335 | Translated global variable pad:
+2026-11-16 13:28:52 | DEBUG    | sactor.translator.unidiomatic_translator:336 | static pad: u8 = 0x80;
+
+2026-11-16 13:28:52 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt/Cargo.toml
+2026-11-16 13:28:54 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:28:54 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: md5_final (attempts: 0)
+2026-11-16 13:28:54 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+static void
+md5_final (md5_ctx *ctx, unsigned char digest[16])
+{
+	static const unsigned char pad = 0x80;
+	unsigned char length_bytes[8];
+
+	for (size_t i = 0; i < sizeof (length_bytes); ++i)
+	{
+		length_bytes[i] = (unsigned char) ((ctx->bit_len >> (8 * i)) & 0xffu);
+	}
+
+	md5_update (ctx, &pad, 1);
+
+	while (ctx->buffer_len != 56)
+	{
+		static const unsigned char zero = 0;
+		md5_update (ctx, &zero, 1);
+	}
+
+	md5_update (ctx, length_bytes, sizeof (length_bytes));
+
+	for (size_t i = 0; i < 4; ++i)
+	{
+		digest[i * 4] = (unsigned char) (ctx->state[i] & 0xffu);
+		digest[i * 4 + 1] = (unsigned char) ((ctx->state[i] >> 8) & 0xffu);
+		digest[i * 4 + 2] = (unsigned char) ((ctx->state[i] >> 16) & 0xffu);
+		digest[i * 4 + 3] = (unsigned char) ((ctx->state[i] >> 24) & 0xffu);
+	}
+}
+```
+
+The function uses the following structs/unions, which are already translated as (you should **NOT** define them in your translation, as the system will automatically define them. But you can use these structs or unions):
+```rust
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct md5_ctx {
+    pub state: [uint32_t; 4],
+    pub bit_len: uint64_t,
+    pub buffer: [libc::c_uchar; 64],
+    pub buffer_len: size_t,
+}
+
+```
+
+The function uses the following const global variables, which are already translated. The global variables' types and names are provided below, but the values are omitted.
+You should **NOT** define or declare the following global variables in your translation, as the system will automatically define them. But you can access the variables in your translation.
+The translated const global variables are:
+:
+```rust
+static zero: u8 ;
+static pad: u8 ;
+```
+
+The function calls the following functions, which are already translated and defined in Rust.
+Do **NOT** include the definition or declaration of the following functions in your translation.
+If you include them, the output will be considered **invalid**.
+But you can call the following functions in your translation.
+Only output the translation of the function I request.
+The called functions' signatures in Rust are the following:
+```rust
+fn md5_update (ctx : & mut md5_ctx , data : * const libc :: c_uchar , len : usize);
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:28:59 | RESPONSE | sactor.llm:160 | The function takes a `md5_ctx` and a 16-byte digest buffer. `md5_update` is called with `ctx: &mut md5_ctx`, so I pass `ctx` directly.
+
+The globals `pad` and `zero` are already defined as `static pad: u8` and `static zero: u8`. The C function declares them as locals, so I use the provided globals rather than redefining them. Declaring local statics with the same names would be legal and would shadow the globals, but using the globals avoids any conflict.
+
+The digest parameter is `digest[16]` in C, which decays to a pointer, so I use `*mut libc::c_uchar`. Writing through it requires `unsafe`.
+
+The `uint32_t` and `uint64_t` types are assumed to be aliases for `u32` and `u64`. The shifts use `u64` for `bit_len` and `u32` for `state`.
+
+----FUNCTION----
+```rust
+unsafe fn md5_final(ctx: &mut md5_ctx, digest: *mut libc::c_uchar) {
+    let mut length_bytes: [libc::c_uchar; 8] = [0; 8];
+
+    for i in 0..length_bytes.len() {
+        length_bytes[i] = ((ctx.bit_len >> (8 * i)) & 0xff) as libc::c_uchar;
+    }
+
+    md5_update(ctx, &pad as *const u8, 1);
+
+    while ctx.buffer_len != 56 {
+        md5_update(ctx, &zero as *const u8, 1);
+    }
+
+    md5_update(ctx, length_bytes.as_ptr(), length_bytes.len());
+
+    for i in 0..4usize {
+        let s = ctx.state[i];
+        *digest.add(i * 4) = (s & 0xff) as libc::c_uchar;
+        *digest.add(i * 4 + 1) = ((s >> 8) & 0xff) as libc::c_uchar;
+        *digest.add(i * 4 + 2) = ((s >> 16) & 0xff) as libc::c_uchar;
+        *digest.add(i * 4 + 3) = ((s >> 24) & 0xff) as libc::c_uchar;
+    }
+}
+```
+----END FUNCTION----
+2026-11-16 13:28:59 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:28:59 | DEBUG    | sactor.utils:258 | unsafe fn md5_final(ctx: &mut md5_ctx, digest: *mut libc::c_uchar) {
+    let mut length_bytes: [libc::c_uchar; 8] = [0; 8];
+
+    for i in 0..length_bytes.len() {
+        length_bytes[i] = ((ctx.bit_len >> (8 * i)) & 0xff) as libc::c_uchar;
+    }
+
+    md5_update(ctx, &pad as *const u8, 1);
+
+    while ctx.buffer_len != 56 {
+        md5_update(ctx, &zero as *const u8, 1);
+    }
+
+    md5_update(ctx, length_bytes.as_ptr(), length_bytes.len());
+
+    for i in 0..4usize {
+        let s = ctx.state[i];
+        *digest.add(i * 4) = (s & 0xff) as libc::c_uchar;
+        *digest.add(i * 4 + 1) = ((s >> 8) & 0xff) as libc::c_uchar;
+        *digest.add(i * 4 + 2) = ((s >> 16) & 0xff) as libc::c_uchar;
+        *digest.add(i * 4 + 3) = ((s >> 24) & 0xff) as libc::c_uchar;
+    }
+}
+
+2026-11-16 13:28:59 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function md5_final:
+2026-11-16 13:28:59 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | unsafe fn md5_final(ctx: &mut md5_ctx, digest: *mut libc::c_uchar) {
+    let mut length_bytes: [libc::c_uchar; 8] = [0; 8];
+    for i in 0..length_bytes.len() {
+        length_bytes[i] = ((ctx.bit_len >> (8 * i)) & 0xff) as libc::c_uchar;
+    }
+    md5_update(ctx, &pad as *const u8, 1);
+    while ctx.buffer_len != 56 {
+        md5_update(ctx, &zero as *const u8, 1);
+    }
+    md5_update(ctx, length_bytes.as_ptr(), length_bytes.len());
+    for i in 0..4usize {
+        let s = ctx.state[i];
+        *digest.add(i * 4) = (s & 0xff) as libc::c_uchar;
+        *digest.add(i * 4 + 1) = ((s >> 8) & 0xff) as libc::c_uchar;
+        *digest.add(i * 4 + 2) = ((s >> 16) & 0xff) as libc::c_uchar;
+        *digest.add(i * 4 + 3) = ((s >> 24) & 0xff) as libc::c_uchar;
+    }
+}
+
+2026-11-16 13:28:59 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt/Cargo.toml
+2026-11-16 13:29:01 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:29:01 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/Cargo.toml
+2026-11-16 13:29:07 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/md5_final', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/md5_final.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/target/debug', '-lm', '-lmd5_final']
+2026-11-16 13:29:07 | DEBUG    | sactor.sactor:425 | Checking function print_file_md5: struct_ready=True, struct_blockers=[]
+2026-11-16 13:29:07 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: print_file_md5 (attempts: 0)
+2026-11-16 13:29:07 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+static int
+print_file_md5 (const char *filename)
+{
+	unsigned char digest[16];
+	unsigned char buffer[4096];
+	md5_ctx ctx;
+	FILE *file = fopen (filename, "rb");
+
+	if (file == NULL)
+	{
+		perror ("fopen");
+		return -1;
+	}
+
+	md5_init (&ctx);
+
+	for (;;)
+	{
+		const size_t bytes_read = fread (buffer, 1, sizeof (buffer), file);
+
+		if (bytes_read > 0)
+		{
+			md5_update (&ctx, buffer, bytes_read);
+		}
+
+		if (bytes_read < sizeof (buffer))
+		{
+			if (ferror (file))
+			{
+				perror ("fread");
+				fclose (file);
+				return -1;
+			}
+			break;
+		}
+	}
+
+	fclose (file);
+	md5_final (&ctx, digest);
+
+	printf ("md5: ");
+	for (size_t i = 0; i < sizeof (digest); ++i)
+	{
+		printf ("%02x", digest[i]);
+	}
+	printf ("\n");
+	return 0;
+}
+```
+
+The function body above may reference the following macros. Use these definitions to understand the semantics; do **NOT** redefine them in Rust—expand or replicate their behavior as needed in the translation.
+```c
+#define NULL ((void*)0)
+```
+
+The function uses the following structs/unions, which are already translated as (you should **NOT** define them in your translation, as the system will automatically define them. But you can use these structs or unions):
+```rust
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct md5_ctx {
+    pub state: [uint32_t; 4],
+    pub bit_len: uint64_t,
+    pub buffer: [libc::c_uchar; 64],
+    pub buffer_len: size_t,
+}
+
+```
+
+The function calls the following functions, which are already translated and defined in Rust.
+Do **NOT** include the definition or declaration of the following functions in your translation.
+If you include them, the output will be considered **invalid**.
+But you can call the following functions in your translation.
+Only output the translation of the function I request.
+The called functions' signatures in Rust are the following:
+```rust
+fn md5_init (ctx : * mut md5_ctx);
+fn md5_update (ctx : & mut md5_ctx , data : * const libc :: c_uchar , len : usize);
+fn md5_final (ctx : & mut md5_ctx , digest : * mut libc :: c_uchar);
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:29:13 | RESPONSE | sactor.llm:160 | Notes on the translation:
+
+- `uint32_t`, `uint64_t` and `size_t` are used by the existing struct definition, so I assume they are already defined. I build the `md5_ctx` value with `std::mem::zeroed()` so I don't need those types by name.
+- `md5_init` takes `*mut md5_ctx`, so I pass `&mut ctx`, which coerces to a raw pointer.
+- `perror` and the stdio calls come from `libc`.
+- The `printf` calls are replaced with `libc::printf` and C string literals, to keep output going through the same C stdout buffer.
+
+----FUNCTION----
+```rust
+fn print_file_md5(filename: *const libc::c_char) -> libc::c_int {
+    unsafe {
+        let mut digest: [libc::c_uchar; 16] = [0; 16];
+        let mut buffer: [libc::c_uchar; 4096] = [0; 4096];
+        let mut ctx: md5_ctx = std::mem::zeroed();
+        let file = libc::fopen(filename, b"rb\0".as_ptr() as *const libc::c_char);
+
+        if file.is_null() {
+            libc::perror(b"fopen\0".as_ptr() as *const libc::c_char);
+            return -1;
+        }
+
+        md5_init(&mut ctx);
+
+        loop {
+            let bytes_read = libc::fread(
+                buffer.as_mut_ptr() as *mut libc::c_void,
+                1,
+                buffer.len(),
+                file,
+            );
+
+            if bytes_read > 0 {
+                md5_update(&mut ctx, buffer.as_ptr(), bytes_read as usize);
+            }
+
+            if (bytes_read as usize) < buffer.len() {
+                if libc::ferror(file) != 0 {
+                    libc::perror(b"fread\0".as_ptr() as *const libc::c_char);
+                    libc::fclose(file);
+                    return -1;
+                }
+                break;
+            }
+        }
+
+        libc::fclose(file);
+        md5_final(&mut ctx, digest.as_mut_ptr());
+
+        libc::printf(b"md5: \0".as_ptr() as *const libc::c_char);
+        for i in 0..digest.len() {
+            libc::printf(
+                b"%02x\0".as_ptr() as *const libc::c_char,
+                digest[i] as libc::c_uint,
+            );
+        }
+        libc::printf(b"\n\0".as_ptr() as *const libc::c_char);
+        0
+    }
+}
+```
+----END FUNCTION----
+2026-11-16 13:29:13 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:29:13 | DEBUG    | sactor.utils:258 | fn print_file_md5(filename: *const libc::c_char) -> libc::c_int {
+    unsafe {
+        let mut digest: [libc::c_uchar; 16] = [0; 16];
+        let mut buffer: [libc::c_uchar; 4096] = [0; 4096];
+        let mut ctx: md5_ctx = std::mem::zeroed();
+        let file = libc::fopen(filename, b"rb\0".as_ptr() as *const libc::c_char);
+
+        if file.is_null() {
+            libc::perror(b"fopen\0".as_ptr() as *const libc::c_char);
+            return -1;
+        }
+
+        md5_init(&mut ctx);
+
+        loop {
+            let bytes_read = libc::fread(
+                buffer.as_mut_ptr() as *mut libc::c_void,
+                1,
+                buffer.len(),
+                file,
+            );
+
+            if bytes_read > 0 {
+                md5_update(&mut ctx, buffer.as_ptr(), bytes_read as usize);
+            }
+
+            if (bytes_read as usize) < buffer.len() {
+                if libc::ferror(file) != 0 {
+                    libc::perror(b"fread\0".as_ptr() as *const libc::c_char);
+                    libc::fclose(file);
+                    return -1;
+                }
+                break;
+            }
+        }
+
+        libc::fclose(file);
+        md5_final(&mut ctx, digest.as_mut_ptr());
+
+        libc::printf(b"md5: \0".as_ptr() as *const libc::c_char);
+        for i in 0..digest.len() {
+            libc::printf(
+                b"%02x\0".as_ptr() as *const libc::c_char,
+                digest[i] as libc::c_uint,
+            );
+        }
+        libc::printf(b"\n\0".as_ptr() as *const libc::c_char);
+        0
+    }
+}
+
+2026-11-16 13:29:13 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function print_file_md5:
+2026-11-16 13:29:13 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | fn print_file_md5(filename: *const libc::c_char) -> libc::c_int {
+    unsafe {
+        let mut digest: [libc::c_uchar; 16] = [0; 16];
+        let mut buffer: [libc::c_uchar; 4096] = [0; 4096];
+        let mut ctx: md5_ctx = std::mem::zeroed();
+        let file = libc::fopen(filename, b"rb\0".as_ptr() as *const libc::c_char);
+        if file.is_null() {
+            libc::perror(b"fopen\0".as_ptr() as *const libc::c_char);
+            return -1;
+        }
+        md5_init(&mut ctx);
+        loop {
+            let bytes_read = libc::fread(
+                buffer.as_mut_ptr() as *mut libc::c_void,
+                1,
+                buffer.len(),
+                file,
+            );
+            if bytes_read > 0 {
+                md5_update(&mut ctx, buffer.as_ptr(), bytes_read as usize);
+            }
+            if (bytes_read as usize) < buffer.len() {
+                if libc::ferror(file) != 0 {
+                    libc::perror(b"fread\0".as_ptr() as *const libc::c_char);
+                    libc::fclose(file);
+                    return -1;
+                }
+                break;
+            }
+        }
+        libc::fclose(file);
+        md5_final(&mut ctx, digest.as_mut_ptr());
+        libc::printf(b"md5: \0".as_ptr() as *const libc::c_char);
+        for i in 0..digest.len() {
+            libc::printf(
+                b"%02x\0".as_ptr() as *const libc::c_char,
+                digest[i] as libc::c_uint,
+            );
+        }
+        libc::printf(b"\n\0".as_ptr() as *const libc::c_char);
+        0
+    }
+}
+
+2026-11-16 13:29:13 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt/Cargo.toml
+2026-11-16 13:29:15 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:29:15 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/Cargo.toml
+2026-11-16 13:29:21 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/print_file_md5', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/print_file_md5.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/target/debug', '-lm', '-lprint_file_md5']
+2026-11-16 13:29:21 | DEBUG    | sactor.sactor:425 | Checking function main: struct_ready=True, struct_blockers=[]
+2026-11-16 13:29:22 | INFO     | sactor.translator.unidiomatic_translator:102 | Enum bmp_error already translated
+2026-11-16 13:29:22 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: main (attempts: 0)
+2026-11-16 13:29:22 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+int
+main (int argc, char *argv[])
+{
+	if (argc != 3)
+	{
+		fprintf (stderr, "Usage: %s <width> <height>\n", argv[0]);
+		return 1;
+	}
+
+	char *endptr = NULL;
+	const long width = strtol (argv[1], &endptr, 10);
+	if (*argv[1] == '\0' || *endptr != '\0' || width <= 0)
+	{
+		fprintf (stderr, "Invalid width: %s\n", argv[1]);
+		return 1;
+	}
+
+	endptr = NULL;
+	const long height = strtol (argv[2], &endptr, 10);
+	if (*argv[2] == '\0' || *endptr != '\0' || height <= 0)
+	{
+		fprintf (stderr, "Invalid height: %s\n", argv[2]);
+		return 1;
+	}
+
+	struct timespec start_time;
+	struct timespec end_time;
+	srand (42);
+
+	if (get_now (&start_time) != 0)
+	{
+		fprintf (stderr, "Failed to get start time\n");
+		return 1;
+	}
+
+    // MAIN COMPUTATION START
+	bmp_img img;
+	bmp_img_init_df (&img, (int) width, (int) height);
+
+	for (long y = 0; y < height; y++)
+	{
+		for (long x = 0; x < width; x++)
+		{
+			const unsigned char red = (unsigned char) (rand () % 256);
+			const unsigned char green = (unsigned char) (rand () % 256);
+			const unsigned char blue = (unsigned char) (rand () % 256);
+			bmp_pixel_init (&img.img_pixels[y][x], red, green, blue);
+		}
+	}
+
+	const char *output_path = "../file/test.bmp";
+	if (bmp_img_write (&img, output_path) != BMP_OK)
+	{
+		fprintf (stderr, "Failed to write BMP file: %s\n", output_path);
+		bmp_img_free (&img);
+		return 1;
+	}
+
+	bmp_img_free (&img);
+
+    // MAIN COMPUTATION END
+	if (get_now (&end_time) != 0)
+	{
+		fprintf (stderr, "Failed to get end time\n");
+		return 1;
+	}
+
+	print_file_md5 (output_path);
+
+	double elapsed_seconds = (double)(end_time.tv_sec - start_time.tv_sec) +
+                             (double)(end_time.tv_nsec - start_time.tv_nsec) / 1000000000.0;
+    printf("elapsed_time_seconds: %.6f\n", elapsed_seconds);
+
+	return 0;
+}
+```
+
+The function is the `main` function, which is the entry point of the program. The function signature should be: `pub fn main() -> ()`.
+For `return 0;`, you can directly `return;` in Rust or ignore it if it's the last statement.
+For other return values, you can use `std::process::exit()` to return the value.
+For `argc` and `argv`, you can use `std::env::args()` to get the arguments.
+
+The function body above may reference the following macros. Use these definitions to understand the semantics; do **NOT** redefine them in Rust—expand or replicate their behavior as needed in the translation.
+```c
+#define stderr stderr
+#define NULL ((void*)0)
+```
+
+The function uses the following structs/unions, which are already translated as (you should **NOT** define them in your translation, as the system will automatically define them. But you can use these structs or unions):
+```rust
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct _bmp_pixel {
+    pub blue: libc::c_uchar,
+    pub green: libc::c_uchar,
+    pub red: libc::c_uchar,
+}
+
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct _bmp_img {
+    pub img_header: _bmp_header,
+    pub img_pixels: *mut *mut _bmp_pixel,
+}
+
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct _bmp_header {
+    pub bfSize: libc::c_uint,
+    pub bfReserved: libc::c_uint,
+    pub bfOffBits: libc::c_uint,
+    pub biSize: libc::c_uint,
+    pub biWidth: libc::c_int,
+    pub biHeight: libc::c_int,
+    pub biPlanes: libc::c_ushort,
+    pub biBitCount: libc::c_ushort,
+    pub biCompression: libc::c_uint,
+    pub biSizeImage: libc::c_uint,
+    pub biXPelsPerMeter: libc::c_int,
+    pub biYPelsPerMeter: libc::c_int,
+    pub biClrUsed: libc::c_uint,
+    pub biClrImportant: libc::c_uint,
+}
+
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct md5_ctx {
+    pub state: [uint32_t; 4],
+    pub bit_len: uint64_t,
+    pub buffer: [libc::c_uchar; 64],
+    pub buffer_len: size_t,
+}
+
+```
+
+The function uses some of the following stdio file descriptors: stderr. Which will be included as
+```rust
+extern "C" {
+    static mut stderr: *mut libc::FILE;
+}
+
+```
+You should **NOT** declare or define them in your translation, as the system will automatically define them. But you can use them in your translation.
+
+The function uses the following enums:
+```c
+BMP_OK
+```
+Which are already translated as:
+```rust
+#[repr(C)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum bmp_error {
+    BMP_FILE_NOT_OPENED = -4,
+    BMP_HEADER_NOT_INITIALIZED = -3,
+    BMP_INVALID_FILE = -2,
+    BMP_ERROR = -1,
+    BMP_OK = 0,
+}
+
+```
+Directly access the translated enums in your translation. You should **NOT** define or declare them in your translation, as the system will automatically define them.
+
+The function calls the following functions, which are already translated and defined in Rust.
+Do **NOT** include the definition or declaration of the following functions in your translation.
+If you include them, the output will be considered **invalid**.
+But you can call the following functions in your translation.
+Only output the translation of the function I request.
+The called functions' signatures in Rust are the following:
+```rust
+fn get_now (ts : * mut libc :: timespec) -> libc :: c_int;
+fn bmp_img_init_df (img : * mut _bmp_img , width : libc :: c_int , height : libc :: c_int);
+fn bmp_pixel_init (pxl : * mut _bmp_pixel , red : libc :: c_uchar , green : libc :: c_uchar , blue : libc :: c_uchar ,);
+fn bmp_img_write (img : * const _bmp_img , filename : * const libc :: c_char) -> bmp_error;
+fn bmp_img_free (img : * mut _bmp_img);
+fn print_file_md5 (filename : * const libc :: c_char) -> libc :: c_int;
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:29:31 | RESPONSE | sactor.llm:160 | I translated `main` using `libc` for `strtol`, `srand` and `rand`, with the already-translated helpers called inside `unsafe`.
+
+- **Arguments:** I collected `std::env::args()` into a `Vec<String>` and checked that its length is 3. Because `strtol` needs C strings, I build `CString`s from the arguments. An argument containing an interior NUL can't occur in real argv, so I use `unwrap_or_default` for it.
+- **Parsing:** For each of width and height, I call `libc::strtol` with the `endptr` check, and I reject an empty string, a non-empty `endptr`, or a value `<= 0`.
+- **Error messages:** These use `eprintln!`. The format is the same as the C `fprintf` to stderr, so I don't use the `stderr` extern.
+- **Computation:** `timespec` is zero-initialised with `std::mem::zeroed`. `bmp_img_init_df` needs a `_bmp_img`, so I zero-initialise that as well; the init function fills it in. The pixel loop indexes `*(*img.img_pixels.add(y)).add(x)`, matching `img_pixels[y][x]`.
+- **Output path:** It is a `CString` for `"../file/test.bmp"`.
+- **Elapsed time:** It is computed in `f64` exactly as in the C code and printed with `{:.6}`.
+
+----FUNCTION----
+```rust
+pub fn main() -> () {
+    use std::ffi::CString;
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() != 3 {
+        let name = if !args.is_empty() { args[0].clone() } else { String::new() };
+        eprintln!("Usage: {} <width> <height>", name);
+        std::process::exit(1);
+    }
+
+    unsafe {
+        let a1 = CString::new(args[1].as_bytes()).unwrap_or_default();
+        let mut endptr: *mut libc::c_char = std::ptr::null_mut();
+        let width: libc::c_long = libc::strtol(a1.as_ptr(), &mut endptr, 10);
+        if *a1.as_ptr() == 0 || *endptr != 0 || width <= 0 {
+            eprintln!("Invalid width: {}", args[1]);
+            std::process::exit(1);
+        }
+
+        let a2 = CString::new(args[2].as_bytes()).unwrap_or_default();
+        endptr = std::ptr::null_mut();
+        let height: libc::c_long = libc::strtol(a2.as_ptr(), &mut endptr, 10);
+        if *a2.as_ptr() == 0 || *endptr != 0 || height <= 0 {
+            eprintln!("Invalid height: {}", args[2]);
+            std::process::exit(1);
+        }
+
+        let mut start_time: libc::timespec = std::mem::zeroed();
+        let mut end_time: libc::timespec = std::mem::zeroed();
+        libc::srand(42);
+
+        if get_now(&mut start_time) != 0 {
+            eprintln!("Failed to get start time");
+            std::process::exit(1);
+        }
+
+        // MAIN COMPUTATION START
+        let mut img: _bmp_img = std::mem::zeroed();
+        bmp_img_init_df(&mut img, width as libc::c_int, height as libc::c_int);
+
+        for y in 0..height {
+            for x in 0..width {
+                let red = (libc::rand() % 256) as libc::c_uchar;
+                let green = (libc::rand() % 256) as libc::c_uchar;
+                let blue = (libc::rand() % 256) as libc::c_uchar;
+                let row = *img.img_pixels.offset(y as isize);
+                bmp_pixel_init(row.offset(x as isize), red, green, blue);
+            }
+        }
+
+        let output_path = "../file/test.bmp";
+        let c_output = CString::new(output_path).unwrap();
+        if bmp_img_write(&img, c_output.as_ptr()) != bmp_error::BMP_OK {
+            eprintln!("Failed to write BMP file: {}", output_path);
+            bmp_img_free(&mut img);
+            std::process::exit(1);
+        }
+
+        bmp_img_free(&mut img);
+
+        // MAIN COMPUTATION END
+        if get_now(&mut end_time) != 0 {
+            eprintln!("Failed to get end time");
+            std::process::exit(1);
+        }
+
+        print_file_md5(c_output.as_ptr());
+
+        let elapsed_seconds = (end_time.tv_sec - start_time.tv_sec) as f64
+            + (end_time.tv_nsec - start_time.tv_nsec) as f64 / 1000000000.0;
+        println!("elapsed_time_seconds: {:.6}", elapsed_seconds);
+    }
+}
+```
+----END FUNCTION----
+2026-11-16 13:29:31 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:29:31 | DEBUG    | sactor.utils:258 | pub fn main() -> () {
+    use std::ffi::CString;
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() != 3 {
+        let name = if !args.is_empty() { args[0].clone() } else { String::new() };
+        eprintln!("Usage: {} <width> <height>", name);
+        std::process::exit(1);
+    }
+
+    unsafe {
+        let a1 = CString::new(args[1].as_bytes()).unwrap_or_default();
+        let mut endptr: *mut libc::c_char = std::ptr::null_mut();
+        let width: libc::c_long = libc::strtol(a1.as_ptr(), &mut endptr, 10);
+        if *a1.as_ptr() == 0 || *endptr != 0 || width <= 0 {
+            eprintln!("Invalid width: {}", args[1]);
+            std::process::exit(1);
+        }
+
+        let a2 = CString::new(args[2].as_bytes()).unwrap_or_default();
+        endptr = std::ptr::null_mut();
+        let height: libc::c_long = libc::strtol(a2.as_ptr(), &mut endptr, 10);
+        if *a2.as_ptr() == 0 || *endptr != 0 || height <= 0 {
+            eprintln!("Invalid height: {}", args[2]);
+            std::process::exit(1);
+        }
+
+        let mut start_time: libc::timespec = std::mem::zeroed();
+        let mut end_time: libc::timespec = std::mem::zeroed();
+        libc::srand(42);
+
+        if get_now(&mut start_time) != 0 {
+            eprintln!("Failed to get start time");
+            std::process::exit(1);
+        }
+
+        // MAIN COMPUTATION START
+        let mut img: _bmp_img = std::mem::zeroed();
+        bmp_img_init_df(&mut img, width as libc::c_int, height as libc::c_int);
+
+        for y in 0..height {
+            for x in 0..width {
+                let red = (libc::rand() % 256) as libc::c_uchar;
+                let green = (libc::rand() % 256) as libc::c_uchar;
+                let blue = (libc::rand() % 256) as libc::c_uchar;
+                let row = *img.img_pixels.offset(y as isize);
+                bmp_pixel_init(row.offset(x as isize), red, green, blue);
+            }
+        }
+
+        let output_path = "../file/test.bmp";
+        let c_output = CString::new(output_path).unwrap();
+        if bmp_img_write(&img, c_output.as_ptr()) != bmp_error::BMP_OK {
+            eprintln!("Failed to write BMP file: {}", output_path);
+            bmp_img_free(&mut img);
+            std::process::exit(1);
+        }
+
+        bmp_img_free(&mut img);
+
+        // MAIN COMPUTATION END
+        if get_now(&mut end_time) != 0 {
+            eprintln!("Failed to get end time");
+            std::process::exit(1);
+        }
+
+        print_file_md5(c_output.as_ptr());
+
+        let elapsed_seconds = (end_time.tv_sec - start_time.tv_sec) as f64
+            + (end_time.tv_nsec - start_time.tv_nsec) as f64 / 1000000000.0;
+        println!("elapsed_time_seconds: {:.6}", elapsed_seconds);
+    }
+}
+
+2026-11-16 13:29:31 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function main:
+2026-11-16 13:29:31 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub fn main() -> () {
+    use std::ffi::CString;
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() != 3 {
+        let name = if !args.is_empty() { args[0].clone() } else { String::new() };
+        eprintln!("Usage: {} <width> <height>", name);
+        std::process::exit(1);
+    }
+    unsafe {
+        let a1 = CString::new(args[1].as_bytes()).unwrap_or_default();
+        let mut endptr: *mut libc::c_char = std::ptr::null_mut();
+        let width: libc::c_long = libc::strtol(a1.as_ptr(), &mut endptr, 10);
+        if *a1.as_ptr() == 0 || *endptr != 0 || width <= 0 {
+            eprintln!("Invalid width: {}", args[1]);
+            std::process::exit(1);
+        }
+        let a2 = CString::new(args[2].as_bytes()).unwrap_or_default();
+        endptr = std::ptr::null_mut();
+        let height: libc::c_long = libc::strtol(a2.as_ptr(), &mut endptr, 10);
+        if *a2.as_ptr() == 0 || *endptr != 0 || height <= 0 {
+            eprintln!("Invalid height: {}", args[2]);
+            std::process::exit(1);
+        }
+        let mut start_time: libc::timespec = std::mem::zeroed();
+        let mut end_time: libc::timespec = std::mem::zeroed();
+        libc::srand(42);
+        if get_now(&mut start_time) != 0 {
+            eprintln!("Failed to get start time");
+            std::process::exit(1);
+        }
+        let mut img: _bmp_img = std::mem::zeroed();
+        bmp_img_init_df(&mut img, width as libc::c_int, height as libc::c_int);
+        for y in 0..height {
+            for x in 0..width {
+                let red = (libc::rand() % 256) as libc::c_uchar;
+                let green = (libc::rand() % 256) as libc::c_uchar;
+                let blue = (libc::rand() % 256) as libc::c_uchar;
+                let row = *img.img_pixels.offset(y as isize);
+                bmp_pixel_init(row.offset(x as isize), red, green, blue);
+            }
+        }
+        let output_path = "../file/test.bmp";
+        let c_output = CString::new(output_path).unwrap();
+        if bmp_img_write(&img, c_output.as_ptr()) != bmp_error::BMP_OK {
+            eprintln!("Failed to write BMP file: {}", output_path);
+            bmp_img_free(&mut img);
+            std::process::exit(1);
+        }
+        bmp_img_free(&mut img);
+        if get_now(&mut end_time) != 0 {
+            eprintln!("Failed to get end time");
+            std::process::exit(1);
+        }
+        print_file_md5(c_output.as_ptr());
+        let elapsed_seconds = (end_time.tv_sec - start_time.tv_sec) as f64
+            + (end_time.tv_nsec - start_time.tv_nsec) as f64 / 1000000000.0;
+        println!("elapsed_time_seconds: {:.6}", elapsed_seconds);
+    }
+}
+
+2026-11-16 13:29:31 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt/Cargo.toml
+2026-11-16 13:29:33 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:29:33 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/Cargo.toml
+2026-11-16 13:29:48 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/main', '/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_c/main.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust/target/debug', '-lm', '-lmain']
+2026-11-16 13:29:50 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt/Cargo.toml
+2026-11-16 13:29:52 | ERROR    | sactor.verifier.verifier:282 | Rust code failed to compile
+2026-11-16 13:29:52 | ERROR    | sactor.combiner.program_combiner:136 | Failed to verify the combined code:     Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling build_attempt v0.1.0 (/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt)
+error[E0530]: let bindings cannot shadow statics
+   --> src/main.rs:163:13
+    |
+55  | / static s: [u32; 64] = [
+56  | |     7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9,
+57  | |     14, 20, 5, 9, 14, 20, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 6, 10, 15,
+58  | |     21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21,
+59  | | ];
+    | |__- the static `s` is defined here
+...
+163 |           let s = ctx.state[i];
+    |               ^ cannot be named the same as a static
+
+error[E0530]: let bindings cannot shadow statics
+   --> src/main.rs:219:9
+    |
+60  | static pad: u8 = 0x80;
+    | ---------------------- the static `pad` is defined here
+...
+219 |     let pad = (width % 4) as isize as usize;
+    |         ^^^ cannot be named the same as a static
+
+warning: type `__uint32_t` should have an upper camel case name
+ --> src/main.rs:4:10
+  |
+4 | pub type __uint32_t = libc::c_uint;
+  |          ^^^^^^^^^^ help: convert the identifier to upper camel case: `Uint32T`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `__uint64_t` should have an upper camel case name
+ --> src/main.rs:5:10
+  |
+5 | pub type __uint64_t = libc::c_ulong;
+  |          ^^^^^^^^^^ help: convert the identifier to upper camel case: `Uint64T`
+
+warning: variant `BMP_FILE_NOT_OPENED` should have an upper camel case name
+  --> src/main.rs:66:5
+   |
+66 |     BMP_FILE_NOT_OPENED = -4,
+   |     ^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `BmpFileNotOpened`
+
+warning: variant `BMP_HEADER_NOT_INITIALIZED` should have an upper camel case name
+  --> src/main.rs:67:5
+   |
+67 |     BMP_HEADER_NOT_INITIALIZED = -3,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `BmpHeaderNotInitialized`
+
+warning: variant `BMP_INVALID_FILE` should have an upper camel case name
+  --> src/main.rs:68:5
+   |
+68 |     BMP_INVALID_FILE = -2,
+   |     ^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `BmpInvalidFile`
+
+warning: variant `BMP_ERROR` should have an upper camel case name
+  --> src/main.rs:69:5
+   |
+69 |     BMP_ERROR = -1,
+   |     ^^^^^^^^^ help: convert the identifier to upper camel case: `BmpError`
+
+warning: variant `BMP_OK` should have an upper camel case name
+  --> src/main.rs:70:5
+   |
+70 |     BMP_OK = 0,
+   |     ^^^^^^ help: convert the identifier to upper camel case: `BmpOk`
+
+warning: use of deprecated type alias `libc::uint32_t`: Use u32 instead.
+ --> src/main.rs:2:11
+  |
+2 | use libc::uint32_t;
+  |           ^^^^^^^^
+  |
+  = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated type alias `libc::uint64_t`: Use u64 instead.
+ --> src/main.rs:3:11
+  |
+3 | use libc::uint64_t;
+  |           ^^^^^^^^
+
+warning: use of deprecated type alias `libc::uint32_t`: Use u32 instead.
+ --> src/main.rs:9:17
+  |
+9 |     pub state: [uint32_t; 4],
+  |                 ^^^^^^^^
+
+warning: use of deprecated type alias `libc::uint64_t`: Use u64 instead.
+  --> src/main.rs:10:18
+   |
+10 |     pub bit_len: uint64_t,
+   |                  ^^^^^^^^
+
+warning: unnecessary `unsafe` block
+   --> src/main.rs:122:28
+    |
+122 |         b = b.wrapping_add(unsafe { md5_left_rotate(sum, s[i]) });
+    |                            ^^^^^^ unnecessary `unsafe` block
+    |
+    = note: `#[warn(unused_unsafe)]` on by default
+
+For more information about this error, try `rustc --explain E0530`.
+warning: `build_attempt` (bin "build_attempt") generated 14 warnings (2 duplicates)
+error: could not compile `build_attempt` (bin "build_attempt") due to 2 previous errors; 14 warnings emitted
+

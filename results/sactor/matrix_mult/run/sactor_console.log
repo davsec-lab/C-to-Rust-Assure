@@ -1,0 +1,117 @@
+=== start 2026-11-16T13:25:05-08:00 matrix_mult
+usage: sactor translate [-h] [--log-dir LOG_DIR]
+                        [--test-command-path TEST_COMMAND_OVERRIDE] --type
+                        {bin,lib} [--entry-tu-file ENTRY_TU_FILE]
+                        [--config CONFIG_FILE] [--build-dir BUILD_DIR]
+                        [--result-dir RESULT_DIR] [--llm-stat LLM_STAT]
+                        [--no-verify] [--unidiomatic-only] [--idiomatic-only]
+                        [--continue-run-when-incomplete]
+                        [--extra-compile-command EXTRA_COMPILE_COMMAND]
+                        [--executable-object EXECUTABLE_OBJECT]
+                        [--link-args LINK_ARGS]
+                        [--compile-commands-file COMPILE_COMMANDS_FILE]
+                        [input_file] [test_command_path]
+sactor translate: error: argument --link-args: expected one argument
+=== end 2026-11-16T13:25:07-08:00 matrix_mult rc=2
+=== start 2026-11-16T13:29:53-08:00 matrix_mult
+2026-11-16 13:29:56 | INFO     | sactor.sactor:210 | -------------SACTOR Configuration-------------
+2026-11-16 13:29:56 | INFO     | sactor.sactor:211 | Input file: matrix_mult.c
+2026-11-16 13:29:56 | INFO     | sactor.sactor:212 | Test command: test_cmd.json
+2026-11-16 13:29:56 | INFO     | sactor.sactor:213 | Is executable: True
+2026-11-16 13:29:56 | INFO     | sactor.sactor:216 | Build directory: /home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build
+2026-11-16 13:29:56 | INFO     | sactor.sactor:217 | Result directory: /home/gabe/sactor_forklift/sactor-bench-oxivolve/matrix_mult/result_sonnet55
+2026-11-16 13:29:56 | INFO     | sactor.sactor:218 | Config file: /home/gabe/sactor_forklift/sactor/sactor.sonnet55.toml
+2026-11-16 13:29:56 | INFO     | sactor.sactor:219 | No verify: False
+2026-11-16 13:29:56 | INFO     | sactor.sactor:220 | Unidiomatic only: False
+2026-11-16 13:29:56 | INFO     | sactor.sactor:221 | LLM statistics base path: /home/gabe/sactor_forklift/sactor-bench-oxivolve/matrix_mult/result_sonnet55/llm_stat.json
+2026-11-16 13:29:56 | INFO     | sactor.sactor:222 | Extra compile command: None
+2026-11-16 13:29:56 | INFO     | sactor.sactor:223 | Compile commands file: 
+2026-11-16 13:29:56 | INFO     | sactor.sactor:224 | Link args: ['-lm']
+2026-11-16 13:29:56 | INFO     | sactor.sactor:225 | Idiomatic only: False
+2026-11-16 13:29:56 | INFO     | sactor.sactor:226 | Continue run when incomplete: False
+2026-11-16 13:29:56 | INFO     | sactor.sactor:227 | -------------End of Configuration-------------
+2026-11-16 13:29:57 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: allocate_matrix (attempts: 0)
+2026-11-16 13:30:03 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling allocate_matrix v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.00s
+2026-11-16 13:30:06 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: free_matrix (attempts: 0)
+2026-11-16 13:30:11 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling free_matrix v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.92s
+2026-11-16 13:30:14 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: fill_matrix (attempts: 0)
+2026-11-16 13:30:18 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+    Blocking waiting for file lock on package cache
+     Locking 1 package to latest compatible version
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+   Compiling libc v0.2.191
+   Compiling fill_matrix v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.25s
+2026-11-16 13:30:21 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: multiply_matrices (attempts: 0)
+2026-11-16 13:30:27 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling multiply_matrices v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.86s
+2026-11-16 13:30:29 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: print_matrix (attempts: 0)
+2026-11-16 13:30:34 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling print_matrix v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.85s
+2026-11-16 13:30:37 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: diff_timespec (attempts: 0)
+2026-11-16 13:30:43 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Blocking waiting for file lock on package cache
+    Updating crates.io index
+    Blocking waiting for file lock on package cache
+     Locking 1 package to latest compatible version
+    Blocking waiting for file lock on package cache
+   Compiling libc v0.2.191
+   Compiling diff_timespec v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.89s
+2026-11-16 13:30:46 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: main (attempts: 0)
+2026-11-16 13:30:54 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling main v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_matrix_mult/sactor/tmpvz1owk04/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.08s
+2026-11-16 13:31:06 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:31:08 | INFO     | sactor.combiner.program_combiner:259 | Found 11 warnings in the combined code
+2026-11-16 13:31:08 | INFO     | sactor.combiner.program_combiner:260 | Found 4 errors in the combined code
+2026-11-16 13:31:10 | WARNING  | sactor.thirdparty.crown:90 | crown preprocess messed up code; restoring original translation
+2026-11-16 13:31:10 | WARNING  | sactor.thirdparty.crown:103 | crown explicit-addr messed up code; restoring original translation
+2026-11-16 13:31:10 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: allocate_matrix (attempts: 0)
+2026-11-16 13:31:19 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:31:19 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function allocate_matrix after the compile check (FFI harness skipped)
+2026-11-16 13:31:19 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: free_matrix (attempts: 0)
+2026-11-16 13:31:27 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:31:27 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function free_matrix after the compile check (FFI harness skipped)
+2026-11-16 13:31:27 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: fill_matrix (attempts: 0)
+2026-11-16 13:31:42 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:31:42 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function fill_matrix after the compile check (FFI harness skipped)
+2026-11-16 13:31:42 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: multiply_matrices (attempts: 0)
+2026-11-16 13:31:52 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:31:52 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function multiply_matrices after the compile check (FFI harness skipped)
+2026-11-16 13:31:52 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: print_matrix (attempts: 0)
+2026-11-16 13:32:00 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:32:00 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function print_matrix after the compile check (FFI harness skipped)
+2026-11-16 13:32:00 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: diff_timespec (attempts: 0)
+2026-11-16 13:32:13 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:32:13 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function diff_timespec after the compile check (FFI harness skipped)
+2026-11-16 13:32:13 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: main (attempts: 0)
+2026-11-16 13:32:28 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:32:28 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function main after the compile check (FFI harness skipped)
+2026-11-16 13:32:30 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:32:33 | INFO     | sactor.combiner.program_combiner:259 | Found 1 warnings in the combined code
+2026-11-16 13:32:33 | INFO     | sactor.combiner.program_combiner:260 | Found 0 errors in the combined code
+=== end 2026-11-16T13:32:34-08:00 matrix_mult rc=0

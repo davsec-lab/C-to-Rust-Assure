@@ -1,0 +1,2260 @@
+2026-11-16 13:28:34 | INFO     | sactor.sactor:210 | -------------SACTOR Configuration-------------
+2026-11-16 13:28:34 | INFO     | sactor.sactor:211 | Input file: quicksort.c
+2026-11-16 13:28:34 | INFO     | sactor.sactor:212 | Test command: test_cmd.json
+2026-11-16 13:28:34 | INFO     | sactor.sactor:213 | Is executable: True
+2026-11-16 13:28:34 | INFO     | sactor.sactor:216 | Build directory: /home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build
+2026-11-16 13:28:34 | INFO     | sactor.sactor:217 | Result directory: /home/gabe/sactor_forklift/sactor-bench-oxivolve/quicksort/result_sonnet55
+2026-11-16 13:28:34 | INFO     | sactor.sactor:218 | Config file: /home/gabe/sactor_forklift/sactor/sactor.sonnet55.toml
+2026-11-16 13:28:34 | INFO     | sactor.sactor:219 | No verify: False
+2026-11-16 13:28:34 | INFO     | sactor.sactor:220 | Unidiomatic only: False
+2026-11-16 13:28:34 | INFO     | sactor.sactor:221 | LLM statistics base path: /home/gabe/sactor_forklift/sactor-bench-oxivolve/quicksort/result_sonnet55/llm_stat.json
+2026-11-16 13:28:34 | INFO     | sactor.sactor:222 | Extra compile command: None
+2026-11-16 13:28:34 | INFO     | sactor.sactor:223 | Compile commands file: 
+2026-11-16 13:28:34 | INFO     | sactor.sactor:224 | Link args: ['-lm']
+2026-11-16 13:28:34 | INFO     | sactor.sactor:225 | Idiomatic only: False
+2026-11-16 13:28:34 | INFO     | sactor.sactor:226 | Continue run when incomplete: False
+2026-11-16 13:28:34 | INFO     | sactor.sactor:227 | -------------End of Configuration-------------
+2026-11-16 13:28:34 | DEBUG    | sactor.sactor:284 | Total structs: 0; order groups: 0
+2026-11-16 13:28:34 | DEBUG    | sactor.sactor:286 | Total functions: 5; order groups: 5
+2026-11-16 13:28:34 | DEBUG    | sactor.sactor:288 | Struct order: []
+2026-11-16 13:28:34 | DEBUG    | sactor.sactor:289 | Function order: [[FunctionInfo(void swap ( int * a , int * b ))], [FunctionInfo(static double diff_timespec ( struct timespec * time1 , struct timespec * time0 ))], [FunctionInfo(int partition ( int arr [ ] , int low , int high ))], [FunctionInfo(void quicksort ( int arr [ ] , int low , int high ))], [FunctionInfo(int main ( int argc , char * argv [ ] ))]]
+2026-11-16 13:28:35 | DEBUG    | sactor.llm.llm:38 | Default model: 'claude-sonnet-5-5'
+2026-11-16 13:28:35 | DEBUG    | sactor.llm.llm:40 | Found 1 models in config
+2026-11-16 13:28:35 | DEBUG    | sactor.llm.llm:46 | Model mapping 0: 'claude-sonnet-5-5' -> 'anthropic/claude-sonnet-5-5': {'model': 'anthropic/claude-sonnet-5-5', 'api_key': '***REDACTED***', 'max_tokens': '***REDACTED***'}
+2026-11-16 13:28:35 | DEBUG    | sactor.thirdparty.c2rust:52 | Running c2rust command: ['c2rust', 'transpile', '--preserve-unused-functions', '/home/gabe/sactor_forklift/tmp/sactor/tmpjay25p76/c2rust/unfolded_typedefs.c', '--', '-I/usr/lib/llvm-19/lib/clang/19/include', '-I/usr/local/include', '-I/usr/include/x86_64-linux-gnu', '-I/usr/include']
+2026-11-16 13:28:35 | DEBUG    | sactor.sactor:425 | Checking function swap: struct_ready=True, struct_blockers=[]
+2026-11-16 13:28:35 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: swap (attempts: 0)
+2026-11-16 13:28:35 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+void swap(int *a, int *b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:28:37 | RESPONSE | sactor.llm:160 | In Rust, the closest equivalent to `int *` is `*mut i32`, so the function takes raw pointers and dereferences them in an `unsafe` block. This keeps the C semantics, including the case where `a` and `b` point to the same location, which a pair of `&mut` references would not allow.
+
+----FUNCTION----
+```rust
+pub unsafe extern "C" fn swap(a: *mut i32, b: *mut i32) {
+    let temp = *a;
+    *a = *b;
+    *b = temp;
+}
+```
+----END FUNCTION----
+2026-11-16 13:28:37 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:28:37 | DEBUG    | sactor.utils:258 | pub unsafe extern "C" fn swap(a: *mut i32, b: *mut i32) {
+    let temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+2026-11-16 13:28:37 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function swap:
+2026-11-16 13:28:37 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub unsafe extern "C" fn swap(a: *mut i32, b: *mut i32) {
+    let temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+2026-11-16 13:28:37 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/build_attempt/Cargo.toml
+2026-11-16 13:28:40 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:28:40 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/embed_test_rust/Cargo.toml
+2026-11-16 13:28:43 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/embed_test_c/swap', '/home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/embed_test_c/swap.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/embed_test_rust/target/debug', '-lm', '-lswap']
+2026-11-16 13:28:43 | DEBUG    | sactor.sactor:425 | Checking function diff_timespec: struct_ready=True, struct_blockers=[]
+2026-11-16 13:28:43 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: diff_timespec (attempts: 0)
+2026-11-16 13:28:43 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+static double diff_timespec(struct timespec *time1, struct timespec *time0)
+{
+    return (time1->tv_sec - time0->tv_sec) + (time1->tv_nsec - time0->tv_nsec) / 1000000000.0;
+}
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:28:47 | RESPONSE | sactor.llm:160 | In C, `tv_sec` is `time_t` and `tv_nsec` is `long`. The subtraction happens in integer types, and the result is then converted to double. `(tv_sec diff)` is converted to double when added to the double fraction. The Rust version mirrors this, using `libc::timespec` and casting each integer difference to `f64`.
+
+Overflow: C signed overflow is undefined behavior, so I use plain subtraction here, which panics in debug builds. To avoid that, I could use `wrapping_sub`, which is closer to what the C code does in practice. I chose `wrapping_sub`.
+
+----FUNCTION----
+```rust
+fn diff_timespec(time1: *const libc::timespec, time0: *const libc::timespec) -> f64 {
+    unsafe {
+        let sec = (*time1).tv_sec.wrapping_sub((*time0).tv_sec);
+        let nsec = (*time1).tv_nsec.wrapping_sub((*time0).tv_nsec);
+        (sec as f64) + (nsec as f64) / 1000000000.0
+    }
+}
+```
+----END FUNCTION----
+2026-11-16 13:28:47 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:28:47 | DEBUG    | sactor.utils:258 | fn diff_timespec(time1: *const libc::timespec, time0: *const libc::timespec) -> f64 {
+    unsafe {
+        let sec = (*time1).tv_sec.wrapping_sub((*time0).tv_sec);
+        let nsec = (*time1).tv_nsec.wrapping_sub((*time0).tv_nsec);
+        (sec as f64) + (nsec as f64) / 1000000000.0
+    }
+}
+
+2026-11-16 13:28:47 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function diff_timespec:
+2026-11-16 13:28:47 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | fn diff_timespec(time1: *const libc::timespec, time0: *const libc::timespec) -> f64 {
+    unsafe {
+        let sec = (*time1).tv_sec.wrapping_sub((*time0).tv_sec);
+        let nsec = (*time1).tv_nsec.wrapping_sub((*time0).tv_nsec);
+        (sec as f64) + (nsec as f64) / 1000000000.0
+    }
+}
+
+2026-11-16 13:28:47 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/build_attempt/Cargo.toml
+2026-11-16 13:28:49 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:28:49 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/embed_test_rust/Cargo.toml
+2026-11-16 13:28:51 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/embed_test_c/diff_timespec', '/home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/embed_test_c/diff_timespec.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/embed_test_rust/target/debug', '-lm', '-ldiff_timespec']
+2026-11-16 13:28:51 | DEBUG    | sactor.sactor:425 | Checking function partition: struct_ready=True, struct_blockers=[]
+2026-11-16 13:28:51 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: partition (attempts: 0)
+2026-11-16 13:28:51 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+int partition(int arr[], int low, int high) {
+    int pivot = arr[high];
+    int i = low;
+
+    for (int j = low; j < high; j++) {
+        if (arr[j] <= pivot) {
+            swap(&arr[i], &arr[j]);
+            i++;
+        }
+    }
+
+    swap(&arr[i], &arr[high]);
+    return i;
+}
+```
+
+The function calls the following functions, which are already translated and defined in Rust.
+Do **NOT** include the definition or declaration of the following functions in your translation.
+If you include them, the output will be considered **invalid**.
+But you can call the following functions in your translation.
+Only output the translation of the function I request.
+The called functions' signatures in Rust are the following:
+```rust
+fn swap (a : * mut i32 , b : * mut i32);
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:28:54 | RESPONSE | sactor.llm:160 | The function takes a raw pointer for `arr` and keeps the C signature. It calls the existing `swap` with raw element pointers obtained through `arr.offset`.
+
+----FUNCTION----
+```rust
+pub unsafe fn partition(arr: *mut i32, low: i32, high: i32) -> i32 {
+    let pivot = *arr.offset(high as isize);
+    let mut i = low;
+    let mut j = low;
+    while j < high {
+        if *arr.offset(j as isize) <= pivot {
+            swap(arr.offset(i as isize), arr.offset(j as isize));
+            i += 1;
+        }
+        j += 1;
+    }
+    swap(arr.offset(i as isize), arr.offset(high as isize));
+    i
+}
+```
+----END FUNCTION----
+2026-11-16 13:28:54 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:28:54 | DEBUG    | sactor.utils:258 | pub unsafe fn partition(arr: *mut i32, low: i32, high: i32) -> i32 {
+    let pivot = *arr.offset(high as isize);
+    let mut i = low;
+    let mut j = low;
+    while j < high {
+        if *arr.offset(j as isize) <= pivot {
+            swap(arr.offset(i as isize), arr.offset(j as isize));
+            i += 1;
+        }
+        j += 1;
+    }
+    swap(arr.offset(i as isize), arr.offset(high as isize));
+    i
+}
+
+2026-11-16 13:28:54 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function partition:
+2026-11-16 13:28:54 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub unsafe fn partition(arr: *mut i32, low: i32, high: i32) -> i32 {
+    let pivot = *arr.offset(high as isize);
+    let mut i = low;
+    let mut j = low;
+    while j < high {
+        if *arr.offset(j as isize) <= pivot {
+            swap(arr.offset(i as isize), arr.offset(j as isize));
+            i += 1;
+        }
+        j += 1;
+    }
+    swap(arr.offset(i as isize), arr.offset(high as isize));
+    i
+}
+
+2026-11-16 13:28:54 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/build_attempt/Cargo.toml
+2026-11-16 13:28:56 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:28:56 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/embed_test_rust/Cargo.toml
+2026-11-16 13:28:59 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/embed_test_c/partition', '/home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/embed_test_c/partition.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/embed_test_rust/target/debug', '-lm', '-lpartition']
+2026-11-16 13:28:59 | DEBUG    | sactor.sactor:425 | Checking function quicksort: struct_ready=True, struct_blockers=[]
+2026-11-16 13:28:59 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: quicksort (attempts: 0)
+2026-11-16 13:28:59 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+void quicksort(int arr[], int low, int high) {
+    if (low < high) {
+        int pi = partition(arr, low, high);
+        quicksort(arr, low, pi - 1);
+        quicksort(arr, pi + 1, high);
+    }
+}
+```
+
+The function calls the following functions, which are already translated and defined in Rust.
+Do **NOT** include the definition or declaration of the following functions in your translation.
+If you include them, the output will be considered **invalid**.
+But you can call the following functions in your translation.
+Only output the translation of the function I request.
+The called functions' signatures in Rust are the following:
+```rust
+fn partition (arr : * mut i32 , low : i32 , high : i32) -> i32;
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:29:02 | RESPONSE | sactor.llm:160 | The Rust version keeps the C signature, using a raw pointer for the array. `partition` is declared as a safe `fn` taking a raw pointer, so it can be called directly. The only unsafe part is the pointer itself, which is passed through unchanged. I used `pub fn` and `i32` for the integer types. Because `pi - 1` could overflow in theory, I used `wrapping_sub` to match C's behavior in practice.
+
+----FUNCTION----
+```rust
+pub fn quicksort(arr: *mut i32, low: i32, high: i32) {
+    if low < high {
+        let pi = partition(arr, low, high);
+        quicksort(arr, low, pi.wrapping_sub(1));
+        quicksort(arr, pi.wrapping_add(1), high);
+    }
+}
+```
+----END FUNCTION----
+2026-11-16 13:29:02 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:29:02 | DEBUG    | sactor.utils:258 | pub fn quicksort(arr: *mut i32, low: i32, high: i32) {
+    if low < high {
+        let pi = partition(arr, low, high);
+        quicksort(arr, low, pi.wrapping_sub(1));
+        quicksort(arr, pi.wrapping_add(1), high);
+    }
+}
+
+2026-11-16 13:29:02 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function quicksort:
+2026-11-16 13:29:02 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub fn quicksort(arr: *mut i32, low: i32, high: i32) {
+    if low < high {
+        let pi = partition(arr, low, high);
+        quicksort(arr, low, pi.wrapping_sub(1));
+        quicksort(arr, pi.wrapping_add(1), high);
+    }
+}
+
+2026-11-16 13:29:02 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/build_attempt/Cargo.toml
+2026-11-16 13:29:04 | ERROR    | sactor.verifier.verifier:282 | Rust code failed to compile
+2026-11-16 13:29:04 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: quicksort (attempts: 1)
+2026-11-16 13:29:04 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+void quicksort(int arr[], int low, int high) {
+    if (low < high) {
+        int pi = partition(arr, low, high);
+        quicksort(arr, low, pi - 1);
+        quicksort(arr, pi + 1, high);
+    }
+}
+```
+
+The function calls the following functions, which are already translated and defined in Rust.
+Do **NOT** include the definition or declaration of the following functions in your translation.
+If you include them, the output will be considered **invalid**.
+But you can call the following functions in your translation.
+Only output the translation of the function I request.
+The called functions' signatures in Rust are the following:
+```rust
+fn partition (arr : * mut i32 , low : i32 , high : i32) -> i32;
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+The last time, the function is translated as:
+```rust
+pub fn quicksort(arr: *mut i32, low: i32, high: i32) {
+    if low < high {
+        let pi = partition(arr, low, high);
+        quicksort(arr, low, pi.wrapping_sub(1));
+        quicksort(arr, pi.wrapping_add(1), high);
+    }
+}
+
+```
+It failed to compile with the following error message:
+```
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling build_attempt v0.1.0 (/home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/build_attempt)
+error[E0133]: call to unsafe function `partition` is unsafe and requires unsafe function or block
+  --> src/lib.rs:10:18
+   |
+10 |         let pi = partition(arr, low, high);
+   |                  ^^^^^^^^^^^^^^^^^^^^^^^^^ call to unsafe function
+   |
+   = note: consult the function's documentation for information on how to avoid undefined behavior
+
+For more information about this error, try `rustc --explain E0133`.
+error: could not compile `build_attempt` (lib) due to 1 previous error
+
+```
+Analyzing the error messages, think about the possible reasons, and try to avoid this error.
+
+2026-11-16 13:29:06 | RESPONSE | sactor.llm:160 | The error shows that `partition` is declared as an unsafe function (most likely inside an `extern` block), so calling it requires an `unsafe` block. I wrapped the call in `unsafe`. I also kept `pub fn` for `quicksort` and used `wrapping_sub` and `wrapping_add` to match C's behavior on overflow.
+
+----FUNCTION----
+```rust
+pub fn quicksort(arr: *mut i32, low: i32, high: i32) {
+    if low < high {
+        let pi = unsafe { partition(arr, low, high) };
+        quicksort(arr, low, pi.wrapping_sub(1));
+        quicksort(arr, pi.wrapping_add(1), high);
+    }
+}
+```
+----END FUNCTION----
+2026-11-16 13:29:06 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:29:06 | DEBUG    | sactor.utils:258 | pub fn quicksort(arr: *mut i32, low: i32, high: i32) {
+    if low < high {
+        let pi = unsafe { partition(arr, low, high) };
+        quicksort(arr, low, pi.wrapping_sub(1));
+        quicksort(arr, pi.wrapping_add(1), high);
+    }
+}
+
+2026-11-16 13:29:06 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function quicksort:
+2026-11-16 13:29:06 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub fn quicksort(arr: *mut i32, low: i32, high: i32) {
+    if low < high {
+        let pi = unsafe { partition(arr, low, high) };
+        quicksort(arr, low, pi.wrapping_sub(1));
+        quicksort(arr, pi.wrapping_add(1), high);
+    }
+}
+
+2026-11-16 13:29:06 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/build_attempt/Cargo.toml
+2026-11-16 13:29:08 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:29:08 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/embed_test_rust/Cargo.toml
+2026-11-16 13:29:13 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/embed_test_c/quicksort', '/home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/embed_test_c/quicksort.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/embed_test_rust/target/debug', '-lm', '-lquicksort']
+2026-11-16 13:29:13 | DEBUG    | sactor.sactor:425 | Checking function main: struct_ready=True, struct_blockers=[]
+2026-11-16 13:29:13 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: main (attempts: 0)
+2026-11-16 13:29:13 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        printf("Usage: %s <array_size>\n", argv[0]);
+        return 1;
+    }
+
+    int size = atoi(argv[1]);
+    if (size <= 0) {
+        printf("Error: array size must be a positive integer.\n");
+        return 1;
+    }
+
+    int *arr = (int *)malloc(size * sizeof(int));
+    if (!arr) {
+        printf("Error: Memory allocation failed.\n");
+        return 1;
+    }
+
+    srand(10000);
+    for (int i = 0; i < size; i++) {
+        arr[i] = rand();
+    }
+
+    struct timespec start_time, end_time;
+    double time_elapsed = 0;
+    clock_gettime(CLOCK_MONOTONIC, &start_time);
+
+    // MAIN COMPUTATION BEGIN
+    quicksort(arr, 0, size - 1);
+    // MAIN COMPUTATION END
+
+    clock_gettime(CLOCK_MONOTONIC, &end_time);
+    time_elapsed = diff_timespec(&end_time, &start_time);
+
+    printf("Time taken for quicksort of array size %d: %f seconds\n", size, time_elapsed);
+
+    free(arr);
+    return 0;
+}
+```
+
+The function is the `main` function, which is the entry point of the program. The function signature should be: `pub fn main() -> ()`.
+For `return 0;`, you can directly `return;` in Rust or ignore it if it's the last statement.
+For other return values, you can use `std::process::exit()` to return the value.
+For `argc` and `argv`, you can use `std::env::args()` to get the arguments.
+
+The function body above may reference the following macros. Use these definitions to understand the semantics; do **NOT** redefine them in Rust—expand or replicate their behavior as needed in the translation.
+```c
+#define CLOCK_MONOTONIC		1
+```
+
+The function calls the following functions, which are already translated and defined in Rust.
+Do **NOT** include the definition or declaration of the following functions in your translation.
+If you include them, the output will be considered **invalid**.
+But you can call the following functions in your translation.
+Only output the translation of the function I request.
+The called functions' signatures in Rust are the following:
+```rust
+fn quicksort (arr : * mut i32 , low : i32 , high : i32);
+fn diff_timespec (time1 : * const libc :: timespec , time0 : * const libc :: timespec) -> f64;
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:29:17 | RESPONSE | sactor.llm:160 | ----FUNCTION----
+```rust
+pub fn main() -> () {
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() != 2 {
+        println!("Usage: {} <array_size>", args[0]);
+        std::process::exit(1);
+    }
+
+    let size: i32 = unsafe {
+        let c = std::ffi::CString::new(args[1].clone()).unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
+        libc::atoi(c.as_ptr())
+    };
+    if size <= 0 {
+        println!("Error: array size must be a positive integer.");
+        std::process::exit(1);
+    }
+
+    unsafe {
+        let arr = libc::malloc((size as usize).wrapping_mul(std::mem::size_of::<i32>())) as *mut i32;
+        if arr.is_null() {
+            println!("Error: Memory allocation failed.");
+            std::process::exit(1);
+        }
+
+        libc::srand(10000);
+        for i in 0..size {
+            *arr.add(i as usize) = libc::rand();
+        }
+
+        let mut start_time: libc::timespec = std::mem::zeroed();
+        let mut end_time: libc::timespec = std::mem::zeroed();
+
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut start_time);
+
+        quicksort(arr, 0, size - 1);
+
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut end_time);
+        let time_elapsed: f64 = diff_timespec(&end_time, &start_time);
+
+        println!(
+            "Time taken for quicksort of array size {}: {:.6} seconds",
+            size, time_elapsed
+        );
+
+        libc::free(arr as *mut libc::c_void);
+    }
+}
+```
+----END FUNCTION----
+2026-11-16 13:29:17 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:29:17 | DEBUG    | sactor.utils:258 | pub fn main() -> () {
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() != 2 {
+        println!("Usage: {} <array_size>", args[0]);
+        std::process::exit(1);
+    }
+
+    let size: i32 = unsafe {
+        let c = std::ffi::CString::new(args[1].clone()).unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
+        libc::atoi(c.as_ptr())
+    };
+    if size <= 0 {
+        println!("Error: array size must be a positive integer.");
+        std::process::exit(1);
+    }
+
+    unsafe {
+        let arr = libc::malloc((size as usize).wrapping_mul(std::mem::size_of::<i32>())) as *mut i32;
+        if arr.is_null() {
+            println!("Error: Memory allocation failed.");
+            std::process::exit(1);
+        }
+
+        libc::srand(10000);
+        for i in 0..size {
+            *arr.add(i as usize) = libc::rand();
+        }
+
+        let mut start_time: libc::timespec = std::mem::zeroed();
+        let mut end_time: libc::timespec = std::mem::zeroed();
+
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut start_time);
+
+        quicksort(arr, 0, size - 1);
+
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut end_time);
+        let time_elapsed: f64 = diff_timespec(&end_time, &start_time);
+
+        println!(
+            "Time taken for quicksort of array size {}: {:.6} seconds",
+            size, time_elapsed
+        );
+
+        libc::free(arr as *mut libc::c_void);
+    }
+}
+
+2026-11-16 13:29:17 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function main:
+2026-11-16 13:29:17 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub fn main() -> () {
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() != 2 {
+        println!("Usage: {} <array_size>", args[0]);
+        std::process::exit(1);
+    }
+    let size: i32 = unsafe {
+        let c = std::ffi::CString::new(args[1].clone())
+            .unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
+        libc::atoi(c.as_ptr())
+    };
+    if size <= 0 {
+        println!("Error: array size must be a positive integer.");
+        std::process::exit(1);
+    }
+    unsafe {
+        let arr = libc::malloc((size as usize).wrapping_mul(std::mem::size_of::<i32>()))
+            as *mut i32;
+        if arr.is_null() {
+            println!("Error: Memory allocation failed.");
+            std::process::exit(1);
+        }
+        libc::srand(10000);
+        for i in 0..size {
+            *arr.add(i as usize) = libc::rand();
+        }
+        let mut start_time: libc::timespec = std::mem::zeroed();
+        let mut end_time: libc::timespec = std::mem::zeroed();
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut start_time);
+        quicksort(arr, 0, size - 1);
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut end_time);
+        let time_elapsed: f64 = diff_timespec(&end_time, &start_time);
+        println!(
+            "Time taken for quicksort of array size {}: {:.6} seconds", size,
+            time_elapsed
+        );
+        libc::free(arr as *mut libc::c_void);
+    }
+}
+
+2026-11-16 13:29:17 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/build_attempt/Cargo.toml
+2026-11-16 13:29:19 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:29:19 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/embed_test_rust/Cargo.toml
+2026-11-16 13:29:22 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/embed_test_c/main', '/home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/embed_test_c/main.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/embed_test_rust/target/debug', '-lm', '-lmain']
+2026-11-16 13:29:22 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/build_attempt/Cargo.toml
+2026-11-16 13:29:25 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:29:25 | DEBUG    | sactor.combiner.program_combiner:234 | Running clippy fix command: cargo clippy --fix --allow-no-vcs --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/program/Cargo.toml -- -A clippy::cmp_null
+2026-11-16 13:29:27 | INFO     | sactor.combiner.program_combiner:259 | Found 2 warnings in the combined code
+2026-11-16 13:29:27 | INFO     | sactor.combiner.program_combiner:260 | Found 5 errors in the combined code
+2026-11-16 13:29:28 | DEBUG    | sactor.thirdparty.crown:81 | Executing crown command: rustup run nightly-2023-01-26-x86_64-unknown-linux-gnu crown /home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/crown_analysis/src/lib.rs preprocess in-place
+2026-11-16 13:29:28 | WARNING  | sactor.thirdparty.crown:90 | crown preprocess messed up code; restoring original translation
+2026-11-16 13:29:28 | WARNING  | sactor.thirdparty.crown:103 | crown explicit-addr messed up code; restoring original translation
+2026-11-16 13:29:28 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: swap (attempts: 0)
+2026-11-16 13:29:28 | PROMPT   | sactor.llm:155 | 
+Translate the following unidiomatic Rust function into idiomatic Rust. Try to remove all the `unsafe` blocks and only use the safe Rust code or use the `unsafe` blocks only when necessary.
+Before translating, analyze the unsafe blocks one by one and how to convert them into safe Rust code.
+**libc may not be provided in the idiomatic code, so try to avoid using libc functions and types, and avoid using `std::ffi` module.**
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+```rust
+pub unsafe fn swap(a: *mut i32, b: *mut i32) {
+    let temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+```
+
+"Crown" is a pointer analysis tool that can help to identify the ownership, mutability and fatness of pointers. Following are the possible annotations for pointers:
+```
+fatness:
+    - `Ptr`: Single pointer
+    - `Arr`: Pointer is an array
+mutability:
+    - `Mut`: Mutable pointer
+    - `Imm`: Immutable pointer
+ownership:
+    - `Owning`: Owns the pointer
+    - `Transient`: Not owns the pointer
+````
+
+The following is the output of Crown for this function:
+```
+{'b': {'fatness': ['Ptr'], 'mutability': ['Mut'], 'ownership': ['Transient']}, 'a': {'fatness': ['Ptr'], 'mutability': ['Mut'], 'ownership': ['Transient']}}
+```
+Analyze the Crown output firstly, then translate the pointers in function arguments and return values with the help of the Crown output.
+Try to avoid using pointers in the function arguments and return values if possible.
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+
+Also output a minimal JSON spec that maps the unidiomatic Rust layout to the idiomatic Rust for the function arguments and return value.
+Full JSON Schema for the SPEC (do not output the schema; output only an instance that conforms to it):
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sactor://spec.schema.json",
+  "title": "Sactor Idiomatic Translation Spec",
+  "description": "Schema describing mappings between unidiomatic (repr(C)) Rust and idiomatic Rust for structs and function arguments.",
+  "$defs": {
+    "PtrShape": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ptr": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["slice", "cstring", "ref"] },
+            "len_from": { "type": "string", "description": "Name of the unidiomatic length field." },
+            "len_const": { "type": "integer", "minimum": 0, "description": "Constant element count for the pointer." },
+            "null": { "enum": ["nullable", "forbidden"], "description": "Whether the pointer can be NULL." }
+          },
+          "required": ["kind"]
+        }
+      },
+      "required": ["ptr"]
+    },
+    "UField": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "shape": {
+          "oneOf": [
+            { "const": "scalar", "description": "Scalar value (integer, float, bool, char, or any non-pointer data structures)" },
+            { "$ref": "#/$defs/PtrShape", "description": "Pointer type (raw pointer, slice, or C string)" }
+          ]
+        }
+      },
+      "required": ["name", "shape"]
+    },
+    "IField": {
+      "type": "object",
+      "description": "Idiomatic-side field path. Special convention: if name == 'ret', this Field describes the function return mapping.",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic field path or 'ret' for function return." },
+        "type": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "EnumDiscriminant": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tag": { "type": "string", "description": "u_field.name of the discriminant/tag" },
+        "equals": { "type": ["integer", "string"], "description": "Value of tag that selects this variant" }
+      },
+      "required": ["tag", "equals"]
+    },
+    "EnumVariant": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic enum variant name" },
+        "when": { "$ref": "#/$defs/EnumDiscriminant" },
+        "payload": { "type": "array", "items": { "$ref": "#/$defs/Field" } }
+      },
+      "required": ["name", "when"]
+    },
+    "Field": {
+      "type": "object",
+      "description": "Field mapping between unidiomatic C-style field and idiomatic Rust path.",
+      "properties": {
+        "u_field": { "$ref": "#/$defs/UField" },
+        "i_field": { "$ref": "#/$defs/IField" },
+        "ownership": { "type": "string", "enum": ["owning", "transient"], "description": "Optional ownership hint." },
+        "compare": {
+          "type": "string",
+          "enum": ["by_value", "by_slice", "skip"],
+          "description": "Comparison strategy for roundtrip tests. Use 'skip' generously for values that may legitimately diverge (raw pointers, aliasing views, externally-owned buffers, handles, allocator state, etc.) so the automated selftest stays permissive."
+        },
+        "llm_note": { "type": "string", "description": "Free-form note for LLM when automatic codegen is insufficient (e.g., aliasing/offset semantics)." }
+      },
+      "required": ["u_field", "i_field"]
+    },
+    "StructSpec": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "struct_name": { "type": "string", "description": "Name of the translated idiomatic struct." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 },
+        "i_kind": { "type": "string", "enum": ["struct", "enum"], "default": "struct" },
+        "i_type": { "type": "string", "description": "Idiomatic type name (useful when i_kind=enum)" },
+        "variants": { "type": "array", "items": { "$ref": "#/$defs/EnumVariant" } }
+      },
+      "required": ["fields", "i_kind", "i_type"]
+    },
+    "FunctionSpec": {
+      "type": "object",
+      "description": "Function argument/return mapping. Return values are expressed via a Field whose i_field.name == 'ret'.",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "function_name": { "type": "string", "description": "Name of the translated idiomatic function." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 }
+      },
+      "required": ["fields"]
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/StructSpec" },
+    { "$ref": "#/$defs/FunctionSpec" }
+  ]
+}
+
+```
+----SPEC----
+```json
+{
+  "function_name": "swap",
+  "fields": [
+    {
+      "u_field": {
+        "name": "...",
+        "type": "...",
+        "shape": "scalar" | {"ptr": {"kind": "slice|cstring|ref", "len_from": "?", "len_const": 1}}
+      },
+      "i_field": {
+        "name": "...",
+        "type": "..."
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+
+Few-shot examples (each with unidiomatic Rust signature, idiomatic Rust signature, and the SPEC):
+
+Example F1 (slice argument):
+Raw slice pointer plus length translated to &[T] parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn sum(xs: *const i32, n: usize) -> i32;
+```
+Idiomatic Rust:
+```rust
+pub fn sum(xs: &[i32]) -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "sum",
+  "fields": [
+    { "u_field": {"name": "xs", "type": "*const i32", "shape": { "ptr": { "kind": "slice", "len_from": "n" } }},
+      "i_field": {"name": "xs", "type": "&[i32]"} },
+    { "u_field": {"name": "n", "type": "usize", "shape": "scalar"},
+      "i_field": {"name": "xs.len", "type": "usize"} },
+    { "u_field": {"name": "ret", "type": "i32", "shape": "scalar"},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F2 (out pointer to return value):
+Mutable pointer output replaced by direct return.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn get_value(out_value: *mut i32);
+```
+Idiomatic Rust:
+```rust
+pub fn get_value() -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "get_value",
+  "fields": [
+    { "u_field": {"name": "out_value", "type": "*mut i32", "shape": { "ptr": { "kind": "ref" } }},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F3 (nullable cstring to Option<&str>):
+Nullable C string pointer converted to Option<&str> parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn set_name(name: *const libc::c_char);
+```
+Idiomatic Rust:
+```rust
+pub fn set_name(name: Option<&str>);
+```
+----SPEC----
+```json
+{
+  "function_name": "set_name",
+  "fields": [
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring", "null": "nullable" } }},
+      "i_field": {"name": "name", "type": "Option<&str>"} }
+  ]
+}
+```
+----END SPEC----
+
+2026-11-16 13:29:33 | RESPONSE | sactor.llm:160 | **Analysis of the unsafe code**
+
+- `let temp = *a;` dereferences a raw pointer. Crown reports `a` as a single (`Ptr`), mutable (`Mut`), transient (`Transient`) pointer. This maps to `&mut i32`.
+- `*a = *b;` reads through `b` and writes through `a`. Crown reports `b` with the same annotations, so it also maps to `&mut i32`.
+- `*b = temp;` writes through `b`. Nothing here needs `unsafe` once both parameters are references.
+
+Safe Rust references cannot alias, so `a` and `b` are guaranteed to be distinct. The body can then be `std::mem::swap(a, b)`. The pointer null checks are no longer needed, because references are never null.
+
+----FUNCTION----
+```rust
+pub fn swap(a: &mut i32, b: &mut i32) {
+    std::mem::swap(a, b);
+}
+```
+----END FUNCTION----
+
+----SPEC----
+```json
+{
+  "function_name": "swap",
+  "fields": [
+    {
+      "u_field": {
+        "name": "a",
+        "type": "*mut i32",
+        "shape": { "ptr": { "kind": "ref", "null": "forbidden" } }
+      },
+      "i_field": {
+        "name": "a",
+        "type": "&mut i32"
+      },
+      "ownership": "transient"
+    },
+    {
+      "u_field": {
+        "name": "b",
+        "type": "*mut i32",
+        "shape": { "ptr": { "kind": "ref", "null": "forbidden" } }
+      },
+      "i_field": {
+        "name": "b",
+        "type": "&mut i32"
+      },
+      "ownership": "transient"
+    }
+  ]
+}
+```
+----END SPEC----
+2026-11-16 13:29:33 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:29:33 | DEBUG    | sactor.utils:258 | pub fn swap(a: &mut i32, b: &mut i32) {
+    std::mem::swap(a, b);
+}
+
+2026-11-16 13:29:33 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/build_attempt/Cargo.toml
+2026-11-16 13:29:35 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:29:35 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function swap after the compile check (FFI harness skipped)
+2026-11-16 13:29:35 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: diff_timespec (attempts: 0)
+2026-11-16 13:29:35 | PROMPT   | sactor.llm:155 | 
+Translate the following unidiomatic Rust function into idiomatic Rust. Try to remove all the `unsafe` blocks and only use the safe Rust code or use the `unsafe` blocks only when necessary.
+Before translating, analyze the unsafe blocks one by one and how to convert them into safe Rust code.
+**libc may not be provided in the idiomatic code, so try to avoid using libc functions and types, and avoid using `std::ffi` module.**
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+```rust
+pub fn diff_timespec(time1: *const libc::timespec, time0: *const libc::timespec) -> f64 {
+    unsafe {
+        let sec = (*time1).tv_sec.wrapping_sub((*time0).tv_sec);
+        let nsec = (*time1).tv_nsec.wrapping_sub((*time0).tv_nsec);
+        (sec as f64) + (nsec as f64) / 1000000000.0
+    }
+}
+
+```
+
+"Crown" is a pointer analysis tool that can help to identify the ownership, mutability and fatness of pointers. Following are the possible annotations for pointers:
+```
+fatness:
+    - `Ptr`: Single pointer
+    - `Arr`: Pointer is an array
+mutability:
+    - `Mut`: Mutable pointer
+    - `Imm`: Immutable pointer
+ownership:
+    - `Owning`: Owns the pointer
+    - `Transient`: Not owns the pointer
+````
+
+The following is the output of Crown for this function:
+```
+{'time1': {'fatness': ['Ptr'], 'mutability': ['Imm'], 'ownership': ['Transient']}, 'time0': {'fatness': ['Ptr'], 'mutability': ['Imm'], 'ownership': ['Transient']}}
+```
+Analyze the Crown output firstly, then translate the pointers in function arguments and return values with the help of the Crown output.
+Try to avoid using pointers in the function arguments and return values if possible.
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+
+Also output a minimal JSON spec that maps the unidiomatic Rust layout to the idiomatic Rust for the function arguments and return value.
+Full JSON Schema for the SPEC (do not output the schema; output only an instance that conforms to it):
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sactor://spec.schema.json",
+  "title": "Sactor Idiomatic Translation Spec",
+  "description": "Schema describing mappings between unidiomatic (repr(C)) Rust and idiomatic Rust for structs and function arguments.",
+  "$defs": {
+    "PtrShape": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ptr": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["slice", "cstring", "ref"] },
+            "len_from": { "type": "string", "description": "Name of the unidiomatic length field." },
+            "len_const": { "type": "integer", "minimum": 0, "description": "Constant element count for the pointer." },
+            "null": { "enum": ["nullable", "forbidden"], "description": "Whether the pointer can be NULL." }
+          },
+          "required": ["kind"]
+        }
+      },
+      "required": ["ptr"]
+    },
+    "UField": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "shape": {
+          "oneOf": [
+            { "const": "scalar", "description": "Scalar value (integer, float, bool, char, or any non-pointer data structures)" },
+            { "$ref": "#/$defs/PtrShape", "description": "Pointer type (raw pointer, slice, or C string)" }
+          ]
+        }
+      },
+      "required": ["name", "shape"]
+    },
+    "IField": {
+      "type": "object",
+      "description": "Idiomatic-side field path. Special convention: if name == 'ret', this Field describes the function return mapping.",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic field path or 'ret' for function return." },
+        "type": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "EnumDiscriminant": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tag": { "type": "string", "description": "u_field.name of the discriminant/tag" },
+        "equals": { "type": ["integer", "string"], "description": "Value of tag that selects this variant" }
+      },
+      "required": ["tag", "equals"]
+    },
+    "EnumVariant": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic enum variant name" },
+        "when": { "$ref": "#/$defs/EnumDiscriminant" },
+        "payload": { "type": "array", "items": { "$ref": "#/$defs/Field" } }
+      },
+      "required": ["name", "when"]
+    },
+    "Field": {
+      "type": "object",
+      "description": "Field mapping between unidiomatic C-style field and idiomatic Rust path.",
+      "properties": {
+        "u_field": { "$ref": "#/$defs/UField" },
+        "i_field": { "$ref": "#/$defs/IField" },
+        "ownership": { "type": "string", "enum": ["owning", "transient"], "description": "Optional ownership hint." },
+        "compare": {
+          "type": "string",
+          "enum": ["by_value", "by_slice", "skip"],
+          "description": "Comparison strategy for roundtrip tests. Use 'skip' generously for values that may legitimately diverge (raw pointers, aliasing views, externally-owned buffers, handles, allocator state, etc.) so the automated selftest stays permissive."
+        },
+        "llm_note": { "type": "string", "description": "Free-form note for LLM when automatic codegen is insufficient (e.g., aliasing/offset semantics)." }
+      },
+      "required": ["u_field", "i_field"]
+    },
+    "StructSpec": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "struct_name": { "type": "string", "description": "Name of the translated idiomatic struct." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 },
+        "i_kind": { "type": "string", "enum": ["struct", "enum"], "default": "struct" },
+        "i_type": { "type": "string", "description": "Idiomatic type name (useful when i_kind=enum)" },
+        "variants": { "type": "array", "items": { "$ref": "#/$defs/EnumVariant" } }
+      },
+      "required": ["fields", "i_kind", "i_type"]
+    },
+    "FunctionSpec": {
+      "type": "object",
+      "description": "Function argument/return mapping. Return values are expressed via a Field whose i_field.name == 'ret'.",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "function_name": { "type": "string", "description": "Name of the translated idiomatic function." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 }
+      },
+      "required": ["fields"]
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/StructSpec" },
+    { "$ref": "#/$defs/FunctionSpec" }
+  ]
+}
+
+```
+----SPEC----
+```json
+{
+  "function_name": "diff_timespec",
+  "fields": [
+    {
+      "u_field": {
+        "name": "...",
+        "type": "...",
+        "shape": "scalar" | {"ptr": {"kind": "slice|cstring|ref", "len_from": "?", "len_const": 1}}
+      },
+      "i_field": {
+        "name": "...",
+        "type": "..."
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+
+Few-shot examples (each with unidiomatic Rust signature, idiomatic Rust signature, and the SPEC):
+
+Example F1 (slice argument):
+Raw slice pointer plus length translated to &[T] parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn sum(xs: *const i32, n: usize) -> i32;
+```
+Idiomatic Rust:
+```rust
+pub fn sum(xs: &[i32]) -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "sum",
+  "fields": [
+    { "u_field": {"name": "xs", "type": "*const i32", "shape": { "ptr": { "kind": "slice", "len_from": "n" } }},
+      "i_field": {"name": "xs", "type": "&[i32]"} },
+    { "u_field": {"name": "n", "type": "usize", "shape": "scalar"},
+      "i_field": {"name": "xs.len", "type": "usize"} },
+    { "u_field": {"name": "ret", "type": "i32", "shape": "scalar"},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F2 (out pointer to return value):
+Mutable pointer output replaced by direct return.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn get_value(out_value: *mut i32);
+```
+Idiomatic Rust:
+```rust
+pub fn get_value() -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "get_value",
+  "fields": [
+    { "u_field": {"name": "out_value", "type": "*mut i32", "shape": { "ptr": { "kind": "ref" } }},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F3 (nullable cstring to Option<&str>):
+Nullable C string pointer converted to Option<&str> parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn set_name(name: *const libc::c_char);
+```
+Idiomatic Rust:
+```rust
+pub fn set_name(name: Option<&str>);
+```
+----SPEC----
+```json
+{
+  "function_name": "set_name",
+  "fields": [
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring", "null": "nullable" } }},
+      "i_field": {"name": "name", "type": "Option<&str>"} }
+  ]
+}
+```
+----END SPEC----
+
+2026-11-16 13:29:41 | RESPONSE | sactor.llm:160 | **Analysis of the unsafe blocks**
+
+The function has a single `unsafe` block. It dereferences two raw pointers, `time1` and `time0`, to read `tv_sec` and `tv_nsec`.
+
+Crown reports both pointers as `Ptr`, `Imm` and `Transient`. Each is a single borrowed, read-only pointer, so each can become a shared reference, `&T`. The unsafe block then goes away.
+
+The `libc::timespec` type must also go. I define a local `Timespec` struct inside the function instead.
+
+The rule that the solution contains only one function and no extra items makes this awkward, so I use a tuple `(i64, i64)` of `(tv_sec, tv_nsec)` for each time. On 64-bit Linux, `tv_sec` and `tv_nsec` are both `i64` (`time_t` and `c_long`). The arithmetic stays the same and uses `wrapping_sub`.
+
+**Translation**
+
+----FUNCTION----
+```rust
+pub fn diff_timespec(time1: (i64, i64), time0: (i64, i64)) -> f64 {
+    let sec = time1.0.wrapping_sub(time0.0);
+    let nsec = time1.1.wrapping_sub(time0.1);
+    (sec as f64) + (nsec as f64) / 1000000000.0
+}
+```
+----END FUNCTION----
+
+----SPEC----
+```json
+{
+  "function_name": "diff_timespec",
+  "fields": [
+    {
+      "u_field": {
+        "name": "time1",
+        "type": "*const libc::timespec",
+        "shape": { "ptr": { "kind": "ref", "len_const": 1, "null": "forbidden" } }
+      },
+      "i_field": {
+        "name": "time1",
+        "type": "(i64, i64)"
+      },
+      "ownership": "transient",
+      "llm_note": "Tuple is (tv_sec, tv_nsec) read from the timespec."
+    },
+    {
+      "u_field": {
+        "name": "time0",
+        "type": "*const libc::timespec",
+        "shape": { "ptr": { "kind": "ref", "len_const": 1, "null": "forbidden" } }
+      },
+      "i_field": {
+        "name": "time0",
+        "type": "(i64, i64)"
+      },
+      "ownership": "transient",
+      "llm_note": "Tuple is (tv_sec, tv_nsec) read from the timespec."
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "f64",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "f64"
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+2026-11-16 13:29:41 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:29:41 | DEBUG    | sactor.utils:258 | pub fn diff_timespec(time1: (i64, i64), time0: (i64, i64)) -> f64 {
+    let sec = time1.0.wrapping_sub(time0.0);
+    let nsec = time1.1.wrapping_sub(time0.1);
+    (sec as f64) + (nsec as f64) / 1000000000.0
+}
+
+2026-11-16 13:29:41 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/build_attempt/Cargo.toml
+2026-11-16 13:29:43 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:29:43 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function diff_timespec after the compile check (FFI harness skipped)
+2026-11-16 13:29:43 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: partition (attempts: 0)
+2026-11-16 13:29:43 | PROMPT   | sactor.llm:155 | 
+Translate the following unidiomatic Rust function into idiomatic Rust. Try to remove all the `unsafe` blocks and only use the safe Rust code or use the `unsafe` blocks only when necessary.
+Before translating, analyze the unsafe blocks one by one and how to convert them into safe Rust code.
+**libc may not be provided in the idiomatic code, so try to avoid using libc functions and types, and avoid using `std::ffi` module.**
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+```rust
+pub unsafe fn partition(arr: *mut i32, low: i32, high: i32) -> i32 {
+    let pivot = *arr.offset(high as isize);
+    let mut i = low;
+    let mut j = low;
+    while j < high {
+        if *arr.offset(j as isize) <= pivot {
+            swap(arr.offset(i as isize), arr.offset(j as isize));
+            i += 1;
+        }
+        j += 1;
+    }
+    swap(arr.offset(i as isize), arr.offset(high as isize));
+    i
+}
+
+```
+
+"Crown" is a pointer analysis tool that can help to identify the ownership, mutability and fatness of pointers. Following are the possible annotations for pointers:
+```
+fatness:
+    - `Ptr`: Single pointer
+    - `Arr`: Pointer is an array
+mutability:
+    - `Mut`: Mutable pointer
+    - `Imm`: Immutable pointer
+ownership:
+    - `Owning`: Owns the pointer
+    - `Transient`: Not owns the pointer
+````
+
+The following is the output of Crown for this function:
+```
+{'arr': {'fatness': ['Arr'], 'mutability': ['Mut'], 'ownership': ['Transient']}}
+```
+Analyze the Crown output firstly, then translate the pointers in function arguments and return values with the help of the Crown output.
+Try to avoid using pointers in the function arguments and return values if possible.
+
+This function uses the following functions, which are already translated as (you don't need to include them in your translation, and **you can not modify them**):
+```rust
+fn swap (a : & mut i32 , b : & mut i32);
+fn swap (a : & mut i32 , b : & mut i32);
+fn swap (a : & mut i32 , b : & mut i32);
+fn swap (a : & mut i32 , b : & mut i32);
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+
+Also output a minimal JSON spec that maps the unidiomatic Rust layout to the idiomatic Rust for the function arguments and return value.
+Full JSON Schema for the SPEC (do not output the schema; output only an instance that conforms to it):
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sactor://spec.schema.json",
+  "title": "Sactor Idiomatic Translation Spec",
+  "description": "Schema describing mappings between unidiomatic (repr(C)) Rust and idiomatic Rust for structs and function arguments.",
+  "$defs": {
+    "PtrShape": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ptr": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["slice", "cstring", "ref"] },
+            "len_from": { "type": "string", "description": "Name of the unidiomatic length field." },
+            "len_const": { "type": "integer", "minimum": 0, "description": "Constant element count for the pointer." },
+            "null": { "enum": ["nullable", "forbidden"], "description": "Whether the pointer can be NULL." }
+          },
+          "required": ["kind"]
+        }
+      },
+      "required": ["ptr"]
+    },
+    "UField": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "shape": {
+          "oneOf": [
+            { "const": "scalar", "description": "Scalar value (integer, float, bool, char, or any non-pointer data structures)" },
+            { "$ref": "#/$defs/PtrShape", "description": "Pointer type (raw pointer, slice, or C string)" }
+          ]
+        }
+      },
+      "required": ["name", "shape"]
+    },
+    "IField": {
+      "type": "object",
+      "description": "Idiomatic-side field path. Special convention: if name == 'ret', this Field describes the function return mapping.",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic field path or 'ret' for function return." },
+        "type": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "EnumDiscriminant": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tag": { "type": "string", "description": "u_field.name of the discriminant/tag" },
+        "equals": { "type": ["integer", "string"], "description": "Value of tag that selects this variant" }
+      },
+      "required": ["tag", "equals"]
+    },
+    "EnumVariant": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic enum variant name" },
+        "when": { "$ref": "#/$defs/EnumDiscriminant" },
+        "payload": { "type": "array", "items": { "$ref": "#/$defs/Field" } }
+      },
+      "required": ["name", "when"]
+    },
+    "Field": {
+      "type": "object",
+      "description": "Field mapping between unidiomatic C-style field and idiomatic Rust path.",
+      "properties": {
+        "u_field": { "$ref": "#/$defs/UField" },
+        "i_field": { "$ref": "#/$defs/IField" },
+        "ownership": { "type": "string", "enum": ["owning", "transient"], "description": "Optional ownership hint." },
+        "compare": {
+          "type": "string",
+          "enum": ["by_value", "by_slice", "skip"],
+          "description": "Comparison strategy for roundtrip tests. Use 'skip' generously for values that may legitimately diverge (raw pointers, aliasing views, externally-owned buffers, handles, allocator state, etc.) so the automated selftest stays permissive."
+        },
+        "llm_note": { "type": "string", "description": "Free-form note for LLM when automatic codegen is insufficient (e.g., aliasing/offset semantics)." }
+      },
+      "required": ["u_field", "i_field"]
+    },
+    "StructSpec": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "struct_name": { "type": "string", "description": "Name of the translated idiomatic struct." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 },
+        "i_kind": { "type": "string", "enum": ["struct", "enum"], "default": "struct" },
+        "i_type": { "type": "string", "description": "Idiomatic type name (useful when i_kind=enum)" },
+        "variants": { "type": "array", "items": { "$ref": "#/$defs/EnumVariant" } }
+      },
+      "required": ["fields", "i_kind", "i_type"]
+    },
+    "FunctionSpec": {
+      "type": "object",
+      "description": "Function argument/return mapping. Return values are expressed via a Field whose i_field.name == 'ret'.",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "function_name": { "type": "string", "description": "Name of the translated idiomatic function." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 }
+      },
+      "required": ["fields"]
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/StructSpec" },
+    { "$ref": "#/$defs/FunctionSpec" }
+  ]
+}
+
+```
+----SPEC----
+```json
+{
+  "function_name": "partition",
+  "fields": [
+    {
+      "u_field": {
+        "name": "...",
+        "type": "...",
+        "shape": "scalar" | {"ptr": {"kind": "slice|cstring|ref", "len_from": "?", "len_const": 1}}
+      },
+      "i_field": {
+        "name": "...",
+        "type": "..."
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+
+Few-shot examples (each with unidiomatic Rust signature, idiomatic Rust signature, and the SPEC):
+
+Example F1 (slice argument):
+Raw slice pointer plus length translated to &[T] parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn sum(xs: *const i32, n: usize) -> i32;
+```
+Idiomatic Rust:
+```rust
+pub fn sum(xs: &[i32]) -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "sum",
+  "fields": [
+    { "u_field": {"name": "xs", "type": "*const i32", "shape": { "ptr": { "kind": "slice", "len_from": "n" } }},
+      "i_field": {"name": "xs", "type": "&[i32]"} },
+    { "u_field": {"name": "n", "type": "usize", "shape": "scalar"},
+      "i_field": {"name": "xs.len", "type": "usize"} },
+    { "u_field": {"name": "ret", "type": "i32", "shape": "scalar"},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F2 (out pointer to return value):
+Mutable pointer output replaced by direct return.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn get_value(out_value: *mut i32);
+```
+Idiomatic Rust:
+```rust
+pub fn get_value() -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "get_value",
+  "fields": [
+    { "u_field": {"name": "out_value", "type": "*mut i32", "shape": { "ptr": { "kind": "ref" } }},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F3 (nullable cstring to Option<&str>):
+Nullable C string pointer converted to Option<&str> parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn set_name(name: *const libc::c_char);
+```
+Idiomatic Rust:
+```rust
+pub fn set_name(name: Option<&str>);
+```
+----SPEC----
+```json
+{
+  "function_name": "set_name",
+  "fields": [
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring", "null": "nullable" } }},
+      "i_field": {"name": "name", "type": "Option<&str>"} }
+  ]
+}
+```
+----END SPEC----
+
+2026-11-16 13:29:51 | RESPONSE | sactor.llm:160 | **Analysis of the unsafe operations**
+
+1. `*arr.offset(high as isize)` reads the pivot through a raw pointer. Crown reports `arr` as a mutable, transient array pointer, so it is a borrowed, mutable slice. It becomes `arr: &mut [i32]`, and the read becomes `arr[high as usize]`, which is bounds-checked.
+2. `*arr.offset(j as isize)` is a raw read in the loop. It becomes `arr[j as usize]`.
+3. `swap(arr.offset(i), arr.offset(j))` creates two `&mut i32` into the same buffer. Safe Rust cannot hold both at once, and when `i == j` they would alias. `slice::swap(i, j)` does the same job safely and handles `i == j`. I use it instead of the provided `swap` helper.
+
+The function needs no `unsafe`. The signature keeps `low` and `high` as `i32` so the return value and behavior match the original.
+
+----FUNCTION----
+```rust
+pub fn partition(arr: &mut [i32], low: i32, high: i32) -> i32 {
+    let pivot = arr[high as usize];
+    let mut i = low;
+    let mut j = low;
+    while j < high {
+        if arr[j as usize] <= pivot {
+            arr.swap(i as usize, j as usize);
+            i += 1;
+        }
+        j += 1;
+    }
+    arr.swap(i as usize, high as usize);
+    i
+}
+```
+----END FUNCTION----
+
+----SPEC----
+```json
+{
+  "function_name": "partition",
+  "fields": [
+    {
+      "u_field": {
+        "name": "arr",
+        "type": "*mut i32",
+        "shape": { "ptr": { "kind": "slice", "null": "forbidden" } }
+      },
+      "i_field": { "name": "arr", "type": "&mut [i32]" },
+      "ownership": "transient",
+      "compare": "by_slice"
+    },
+    {
+      "u_field": { "name": "low", "type": "i32", "shape": "scalar" },
+      "i_field": { "name": "low", "type": "i32" }
+    },
+    {
+      "u_field": { "name": "high", "type": "i32", "shape": "scalar" },
+      "i_field": { "name": "high", "type": "i32" }
+    },
+    {
+      "u_field": { "name": "ret", "type": "i32", "shape": "scalar" },
+      "i_field": { "name": "ret", "type": "i32" }
+    }
+  ]
+}
+```
+----END SPEC----
+2026-11-16 13:29:51 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:29:51 | DEBUG    | sactor.utils:258 | pub fn partition(arr: &mut [i32], low: i32, high: i32) -> i32 {
+    let pivot = arr[high as usize];
+    let mut i = low;
+    let mut j = low;
+    while j < high {
+        if arr[j as usize] <= pivot {
+            arr.swap(i as usize, j as usize);
+            i += 1;
+        }
+        j += 1;
+    }
+    arr.swap(i as usize, high as usize);
+    i
+}
+
+2026-11-16 13:29:51 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/build_attempt/Cargo.toml
+2026-11-16 13:29:53 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:29:53 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function partition after the compile check (FFI harness skipped)
+2026-11-16 13:29:53 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: quicksort (attempts: 0)
+2026-11-16 13:29:53 | PROMPT   | sactor.llm:155 | 
+Translate the following unidiomatic Rust function into idiomatic Rust. Try to remove all the `unsafe` blocks and only use the safe Rust code or use the `unsafe` blocks only when necessary.
+Before translating, analyze the unsafe blocks one by one and how to convert them into safe Rust code.
+**libc may not be provided in the idiomatic code, so try to avoid using libc functions and types, and avoid using `std::ffi` module.**
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+```rust
+pub fn quicksort(arr: *mut i32, low: i32, high: i32) {
+    if low < high {
+        let pi = unsafe { partition(arr, low, high) };
+        quicksort(arr, low, pi.wrapping_sub(1));
+        quicksort(arr, pi.wrapping_add(1), high);
+    }
+}
+
+```
+
+"Crown" is a pointer analysis tool that can help to identify the ownership, mutability and fatness of pointers. Following are the possible annotations for pointers:
+```
+fatness:
+    - `Ptr`: Single pointer
+    - `Arr`: Pointer is an array
+mutability:
+    - `Mut`: Mutable pointer
+    - `Imm`: Immutable pointer
+ownership:
+    - `Owning`: Owns the pointer
+    - `Transient`: Not owns the pointer
+````
+
+The following is the output of Crown for this function:
+```
+{'arr': {'fatness': ['Arr'], 'mutability': ['Mut'], 'ownership': ['Owning']}}
+```
+Analyze the Crown output firstly, then translate the pointers in function arguments and return values with the help of the Crown output.
+Try to avoid using pointers in the function arguments and return values if possible.
+
+This function uses the following functions, which are already translated as (you don't need to include them in your translation, and **you can not modify them**):
+```rust
+fn partition (arr : & mut [i32] , low : i32 , high : i32) -> i32;
+fn partition (arr : & mut [i32] , low : i32 , high : i32) -> i32;
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+
+Also output a minimal JSON spec that maps the unidiomatic Rust layout to the idiomatic Rust for the function arguments and return value.
+Full JSON Schema for the SPEC (do not output the schema; output only an instance that conforms to it):
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sactor://spec.schema.json",
+  "title": "Sactor Idiomatic Translation Spec",
+  "description": "Schema describing mappings between unidiomatic (repr(C)) Rust and idiomatic Rust for structs and function arguments.",
+  "$defs": {
+    "PtrShape": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ptr": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["slice", "cstring", "ref"] },
+            "len_from": { "type": "string", "description": "Name of the unidiomatic length field." },
+            "len_const": { "type": "integer", "minimum": 0, "description": "Constant element count for the pointer." },
+            "null": { "enum": ["nullable", "forbidden"], "description": "Whether the pointer can be NULL." }
+          },
+          "required": ["kind"]
+        }
+      },
+      "required": ["ptr"]
+    },
+    "UField": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "shape": {
+          "oneOf": [
+            { "const": "scalar", "description": "Scalar value (integer, float, bool, char, or any non-pointer data structures)" },
+            { "$ref": "#/$defs/PtrShape", "description": "Pointer type (raw pointer, slice, or C string)" }
+          ]
+        }
+      },
+      "required": ["name", "shape"]
+    },
+    "IField": {
+      "type": "object",
+      "description": "Idiomatic-side field path. Special convention: if name == 'ret', this Field describes the function return mapping.",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic field path or 'ret' for function return." },
+        "type": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "EnumDiscriminant": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tag": { "type": "string", "description": "u_field.name of the discriminant/tag" },
+        "equals": { "type": ["integer", "string"], "description": "Value of tag that selects this variant" }
+      },
+      "required": ["tag", "equals"]
+    },
+    "EnumVariant": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic enum variant name" },
+        "when": { "$ref": "#/$defs/EnumDiscriminant" },
+        "payload": { "type": "array", "items": { "$ref": "#/$defs/Field" } }
+      },
+      "required": ["name", "when"]
+    },
+    "Field": {
+      "type": "object",
+      "description": "Field mapping between unidiomatic C-style field and idiomatic Rust path.",
+      "properties": {
+        "u_field": { "$ref": "#/$defs/UField" },
+        "i_field": { "$ref": "#/$defs/IField" },
+        "ownership": { "type": "string", "enum": ["owning", "transient"], "description": "Optional ownership hint." },
+        "compare": {
+          "type": "string",
+          "enum": ["by_value", "by_slice", "skip"],
+          "description": "Comparison strategy for roundtrip tests. Use 'skip' generously for values that may legitimately diverge (raw pointers, aliasing views, externally-owned buffers, handles, allocator state, etc.) so the automated selftest stays permissive."
+        },
+        "llm_note": { "type": "string", "description": "Free-form note for LLM when automatic codegen is insufficient (e.g., aliasing/offset semantics)." }
+      },
+      "required": ["u_field", "i_field"]
+    },
+    "StructSpec": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "struct_name": { "type": "string", "description": "Name of the translated idiomatic struct." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 },
+        "i_kind": { "type": "string", "enum": ["struct", "enum"], "default": "struct" },
+        "i_type": { "type": "string", "description": "Idiomatic type name (useful when i_kind=enum)" },
+        "variants": { "type": "array", "items": { "$ref": "#/$defs/EnumVariant" } }
+      },
+      "required": ["fields", "i_kind", "i_type"]
+    },
+    "FunctionSpec": {
+      "type": "object",
+      "description": "Function argument/return mapping. Return values are expressed via a Field whose i_field.name == 'ret'.",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "function_name": { "type": "string", "description": "Name of the translated idiomatic function." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 }
+      },
+      "required": ["fields"]
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/StructSpec" },
+    { "$ref": "#/$defs/FunctionSpec" }
+  ]
+}
+
+```
+----SPEC----
+```json
+{
+  "function_name": "quicksort",
+  "fields": [
+    {
+      "u_field": {
+        "name": "...",
+        "type": "...",
+        "shape": "scalar" | {"ptr": {"kind": "slice|cstring|ref", "len_from": "?", "len_const": 1}}
+      },
+      "i_field": {
+        "name": "...",
+        "type": "..."
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+
+Few-shot examples (each with unidiomatic Rust signature, idiomatic Rust signature, and the SPEC):
+
+Example F1 (slice argument):
+Raw slice pointer plus length translated to &[T] parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn sum(xs: *const i32, n: usize) -> i32;
+```
+Idiomatic Rust:
+```rust
+pub fn sum(xs: &[i32]) -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "sum",
+  "fields": [
+    { "u_field": {"name": "xs", "type": "*const i32", "shape": { "ptr": { "kind": "slice", "len_from": "n" } }},
+      "i_field": {"name": "xs", "type": "&[i32]"} },
+    { "u_field": {"name": "n", "type": "usize", "shape": "scalar"},
+      "i_field": {"name": "xs.len", "type": "usize"} },
+    { "u_field": {"name": "ret", "type": "i32", "shape": "scalar"},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F2 (out pointer to return value):
+Mutable pointer output replaced by direct return.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn get_value(out_value: *mut i32);
+```
+Idiomatic Rust:
+```rust
+pub fn get_value() -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "get_value",
+  "fields": [
+    { "u_field": {"name": "out_value", "type": "*mut i32", "shape": { "ptr": { "kind": "ref" } }},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F3 (nullable cstring to Option<&str>):
+Nullable C string pointer converted to Option<&str> parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn set_name(name: *const libc::c_char);
+```
+Idiomatic Rust:
+```rust
+pub fn set_name(name: Option<&str>);
+```
+----SPEC----
+```json
+{
+  "function_name": "set_name",
+  "fields": [
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring", "null": "nullable" } }},
+      "i_field": {"name": "name", "type": "Option<&str>"} }
+  ]
+}
+```
+----END SPEC----
+
+2026-11-16 13:30:00 | RESPONSE | sactor.llm:160 | **Analysis of the unsafe blocks**
+
+- There is one `unsafe` block, which calls `partition(arr, low, high)` with a raw pointer. `partition` is already translated to take `&mut [i32]`, so the call is safe once `arr` is a slice. The block can be removed.
+
+**Crown output**
+
+- `arr` is `Arr`, `Mut` and `Owning`. It is a mutable array pointer, so it becomes `&mut [i32]`. The function only reads and writes the elements and does not free or return the buffer, so a borrow is enough and no ownership transfer is needed.
+- `low` and `high` are plain `i32` indices and stay as they are.
+
+**Recursion**
+
+- The recursive calls reborrow `arr` implicitly, so passing `arr` twice in sequence compiles.
+- I kept `wrapping_sub` and `wrapping_add` to preserve the original overflow behaviour.
+
+----FUNCTION----
+```rust
+pub fn quicksort(arr: &mut [i32], low: i32, high: i32) {
+    if low < high {
+        let pi = partition(arr, low, high);
+        quicksort(arr, low, pi.wrapping_sub(1));
+        quicksort(arr, pi.wrapping_add(1), high);
+    }
+}
+```
+----END FUNCTION----
+
+----SPEC----
+```json
+{
+  "function_name": "quicksort",
+  "fields": [
+    {
+      "u_field": {
+        "name": "arr",
+        "type": "*mut i32",
+        "shape": { "ptr": { "kind": "slice", "null": "forbidden" } }
+      },
+      "i_field": {
+        "name": "arr",
+        "type": "&mut [i32]"
+      },
+      "ownership": "transient"
+    },
+    {
+      "u_field": {
+        "name": "low",
+        "type": "i32",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "low",
+        "type": "i32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "high",
+        "type": "i32",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "high",
+        "type": "i32"
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+2026-11-16 13:30:00 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:30:00 | DEBUG    | sactor.utils:258 | pub fn quicksort(arr: &mut [i32], low: i32, high: i32) {
+    if low < high {
+        let pi = partition(arr, low, high);
+        quicksort(arr, low, pi.wrapping_sub(1));
+        quicksort(arr, pi.wrapping_add(1), high);
+    }
+}
+
+2026-11-16 13:30:00 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/build_attempt/Cargo.toml
+2026-11-16 13:30:02 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:30:02 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function quicksort after the compile check (FFI harness skipped)
+2026-11-16 13:30:02 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: main (attempts: 0)
+2026-11-16 13:30:02 | PROMPT   | sactor.llm:155 | 
+Translate the following unidiomatic Rust function into idiomatic Rust. Try to remove all the `unsafe` blocks and only use the safe Rust code or use the `unsafe` blocks only when necessary.
+Before translating, analyze the unsafe blocks one by one and how to convert them into safe Rust code.
+**libc may not be provided in the idiomatic code, so try to avoid using libc functions and types, and avoid using `std::ffi` module.**
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+```rust
+pub fn main() -> () {
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() != 2 {
+        println!("Usage: {} <array_size>", args[0]);
+        std::process::exit(1);
+    }
+    let size: i32 = unsafe {
+        let c = std::ffi::CString::new(args[1].clone())
+            .unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
+        libc::atoi(c.as_ptr())
+    };
+    if size <= 0 {
+        println!("Error: array size must be a positive integer.");
+        std::process::exit(1);
+    }
+    unsafe {
+        let arr =
+            libc::malloc((size as usize).wrapping_mul(std::mem::size_of::<i32>())) as *mut i32;
+        if arr.is_null() {
+            println!("Error: Memory allocation failed.");
+            std::process::exit(1);
+        }
+        libc::srand(10000);
+        for i in 0..size {
+            *arr.add(i as usize) = libc::rand();
+        }
+        let mut start_time: libc::timespec = std::mem::zeroed();
+        let mut end_time: libc::timespec = std::mem::zeroed();
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut start_time);
+        quicksort(arr, 0, size - 1);
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut end_time);
+        let time_elapsed: f64 = diff_timespec(&end_time, &start_time);
+        println!(
+            "Time taken for quicksort of array size {}: {:.6} seconds",
+            size, time_elapsed
+        );
+        libc::free(arr as *mut libc::c_void);
+    }
+}
+
+```
+
+This function uses the following functions, which are already translated as (you don't need to include them in your translation, and **you can not modify them**):
+```rust
+fn quicksort (arr : & mut [i32] , low : i32 , high : i32);
+fn quicksort (arr : & mut [i32] , low : i32 , high : i32);
+fn diff_timespec (time1 : (i64 , i64) , time0 : (i64 , i64)) -> f64;
+fn diff_timespec (time1 : (i64 , i64) , time0 : (i64 , i64)) -> f64;
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+Few-shot examples (each with unidiomatic Rust signature, idiomatic Rust signature, and the SPEC):
+
+Example F1 (slice argument):
+Raw slice pointer plus length translated to &[T] parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn sum(xs: *const i32, n: usize) -> i32;
+```
+Idiomatic Rust:
+```rust
+pub fn sum(xs: &[i32]) -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "sum",
+  "fields": [
+    { "u_field": {"name": "xs", "type": "*const i32", "shape": { "ptr": { "kind": "slice", "len_from": "n" } }},
+      "i_field": {"name": "xs", "type": "&[i32]"} },
+    { "u_field": {"name": "n", "type": "usize", "shape": "scalar"},
+      "i_field": {"name": "xs.len", "type": "usize"} },
+    { "u_field": {"name": "ret", "type": "i32", "shape": "scalar"},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F2 (out pointer to return value):
+Mutable pointer output replaced by direct return.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn get_value(out_value: *mut i32);
+```
+Idiomatic Rust:
+```rust
+pub fn get_value() -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "get_value",
+  "fields": [
+    { "u_field": {"name": "out_value", "type": "*mut i32", "shape": { "ptr": { "kind": "ref" } }},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F3 (nullable cstring to Option<&str>):
+Nullable C string pointer converted to Option<&str> parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn set_name(name: *const libc::c_char);
+```
+Idiomatic Rust:
+```rust
+pub fn set_name(name: Option<&str>);
+```
+----SPEC----
+```json
+{
+  "function_name": "set_name",
+  "fields": [
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring", "null": "nullable" } }},
+      "i_field": {"name": "name", "type": "Option<&str>"} }
+  ]
+}
+```
+----END SPEC----
+
+2026-11-16 13:30:14 | RESPONSE | sactor.llm:160 | Analysis of each unsafe block:
+
+1. **`atoi` via `CString`**: this only parses a leading integer. It can be done in safe Rust by skipping leading whitespace, reading an optional sign, then taking leading digits. The `CString` and `libc` are not needed.
+2. **`malloc` / `free`**: replaced by a `Vec<i32>`. `try_reserve_exact` keeps the "allocation failed" behaviour, and the memory is freed automatically on drop.
+3. **`srand` / `rand`**: replaced by a small seeded LCG that yields 31-bit non-negative values like `rand()`. The sequence will not match glibc's, but it is still a deterministic pseudo-random sequence.
+4. **`clock_gettime` with `timespec`**: replaced by `std::time::Instant`. The elapsed time is converted to the `(i64, i64)` (seconds, nanoseconds) tuples that `diff_timespec` expects, with the start at `(0, 0)`.
+5. **Raw pointer array indexing**: replaced by the slice `&mut arr[..]` passed to `quicksort`.
+
+----FUNCTION----
+```rust
+pub fn main() -> () {
+    // Helper emulating C's atoi (without UB on overflow: saturates)
+    fn atoi(s: &str) -> i32 {
+        let s = s.trim_start();
+        let mut chars = s.chars().peekable();
+        let mut neg = false;
+        if let Some(&c) = chars.peek() {
+            if c == '+' || c == '-' {
+                neg = c == '-';
+                chars.next();
+            }
+        }
+        let mut val: i64 = 0;
+        for c in chars {
+            if let Some(d) = c.to_digit(10) {
+                val = (val * 10 + d as i64).min(i64::from(i32::MAX) + 1);
+            } else {
+                break;
+            }
+        }
+        if neg {
+            val = -val;
+        }
+        val.clamp(i64::from(i32::MIN), i64::from(i32::MAX)) as i32
+    }
+
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() != 2 {
+        println!("Usage: {} <array_size>", args[0]);
+        std::process::exit(1);
+    }
+    let size: i32 = atoi(&args[1]);
+    if size <= 0 {
+        println!("Error: array size must be a positive integer.");
+        std::process::exit(1);
+    }
+
+    let mut arr: Vec<i32> = Vec::new();
+    if arr.try_reserve_exact(size as usize).is_err() {
+        println!("Error: Memory allocation failed.");
+        std::process::exit(1);
+    }
+
+    // Simple deterministic LCG producing non-negative 31-bit values
+    let mut state: u64 = 10000;
+    for _ in 0..size {
+        state = state
+            .wrapping_mul(6364136223846793005)
+            .wrapping_add(1442695040888963407);
+        arr.push((state >> 33) as i32);
+    }
+
+    let base = std::time::Instant::now();
+    let start_time: (i64, i64) = (0, 0);
+    quicksort(&mut arr[..], 0, size - 1);
+    let elapsed = base.elapsed();
+    let end_time: (i64, i64) = (elapsed.as_secs() as i64, elapsed.subsec_nanos() as i64);
+
+    let time_elapsed: f64 = diff_timespec(end_time, start_time);
+    println!(
+        "Time taken for quicksort of array size {}: {:.6} seconds",
+        size, time_elapsed
+    );
+}
+```
+----END FUNCTION----
+2026-11-16 13:30:14 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:30:14 | DEBUG    | sactor.utils:258 | pub fn main() -> () {
+    // Helper emulating C's atoi (without UB on overflow: saturates)
+    fn atoi(s: &str) -> i32 {
+        let s = s.trim_start();
+        let mut chars = s.chars().peekable();
+        let mut neg = false;
+        if let Some(&c) = chars.peek() {
+            if c == '+' || c == '-' {
+                neg = c == '-';
+                chars.next();
+            }
+        }
+        let mut val: i64 = 0;
+        for c in chars {
+            if let Some(d) = c.to_digit(10) {
+                val = (val * 10 + d as i64).min(i64::from(i32::MAX) + 1);
+            } else {
+                break;
+            }
+        }
+        if neg {
+            val = -val;
+        }
+        val.clamp(i64::from(i32::MIN), i64::from(i32::MAX)) as i32
+    }
+
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() != 2 {
+        println!("Usage: {} <array_size>", args[0]);
+        std::process::exit(1);
+    }
+    let size: i32 = atoi(&args[1]);
+    if size <= 0 {
+        println!("Error: array size must be a positive integer.");
+        std::process::exit(1);
+    }
+
+    let mut arr: Vec<i32> = Vec::new();
+    if arr.try_reserve_exact(size as usize).is_err() {
+        println!("Error: Memory allocation failed.");
+        std::process::exit(1);
+    }
+
+    // Simple deterministic LCG producing non-negative 31-bit values
+    let mut state: u64 = 10000;
+    for _ in 0..size {
+        state = state
+            .wrapping_mul(6364136223846793005)
+            .wrapping_add(1442695040888963407);
+        arr.push((state >> 33) as i32);
+    }
+
+    let base = std::time::Instant::now();
+    let start_time: (i64, i64) = (0, 0);
+    quicksort(&mut arr[..], 0, size - 1);
+    let elapsed = base.elapsed();
+    let end_time: (i64, i64) = (elapsed.as_secs() as i64, elapsed.subsec_nanos() as i64);
+
+    let time_elapsed: f64 = diff_timespec(end_time, start_time);
+    println!(
+        "Time taken for quicksort of array size {}: {:.6} seconds",
+        size, time_elapsed
+    );
+}
+
+2026-11-16 13:30:14 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/build_attempt/Cargo.toml
+2026-11-16 13:30:16 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:30:16 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function main after the compile check (FFI harness skipped)
+2026-11-16 13:30:16 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/build_attempt/Cargo.toml
+2026-11-16 13:30:18 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:30:18 | DEBUG    | sactor.combiner.program_combiner:234 | Running clippy fix command: cargo clippy --fix --allow-no-vcs --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/program/Cargo.toml -- -A clippy::cmp_null
+2026-11-16 13:30:21 | INFO     | sactor.combiner.program_combiner:259 | Found 0 warnings in the combined code
+2026-11-16 13:30:21 | INFO     | sactor.combiner.program_combiner:260 | Found 0 errors in the combined code

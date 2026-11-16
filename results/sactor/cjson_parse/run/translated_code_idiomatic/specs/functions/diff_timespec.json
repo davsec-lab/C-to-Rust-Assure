@@ -1,0 +1,53 @@
+{
+  "function_name": "diff_timespec",
+  "fields": [
+    {
+      "u_field": {
+        "name": "time1",
+        "type": "*const libc::timespec",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "time1",
+        "type": "(i64, i64)"
+      },
+      "ownership": "transient",
+      "llm_note": "Pointee timespec is passed by value as (tv_sec, tv_nsec)."
+    },
+    {
+      "u_field": {
+        "name": "time0",
+        "type": "*const libc::timespec",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "time0",
+        "type": "(i64, i64)"
+      },
+      "ownership": "transient",
+      "llm_note": "Pointee timespec is passed by value as (tv_sec, tv_nsec)."
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "f64",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "f64"
+      }
+    }
+  ],
+  "idiomatic_name": "diff_timespec"
+}

@@ -1,0 +1,45 @@
+{
+  "function_name": "quicksort",
+  "fields": [
+    {
+      "u_field": {
+        "name": "arr",
+        "type": "*mut i32",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "arr",
+        "type": "&mut [i32]"
+      },
+      "ownership": "transient"
+    },
+    {
+      "u_field": {
+        "name": "low",
+        "type": "i32",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "low",
+        "type": "i32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "high",
+        "type": "i32",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "high",
+        "type": "i32"
+      }
+    }
+  ],
+  "idiomatic_name": "quicksort"
+}

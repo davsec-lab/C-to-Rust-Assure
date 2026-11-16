@@ -1,0 +1,3721 @@
+2026-11-16 13:25:50 | INFO     | sactor.sactor:210 | -------------SACTOR Configuration-------------
+2026-11-16 13:25:50 | INFO     | sactor.sactor:211 | Input file: kmeans.c
+2026-11-16 13:25:50 | INFO     | sactor.sactor:212 | Test command: test_cmd.json
+2026-11-16 13:25:50 | INFO     | sactor.sactor:213 | Is executable: True
+2026-11-16 13:25:50 | INFO     | sactor.sactor:216 | Build directory: /home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build
+2026-11-16 13:25:50 | INFO     | sactor.sactor:217 | Result directory: /home/gabe/sactor_forklift/sactor-bench-oxivolve/kmeans/result_sonnet55
+2026-11-16 13:25:50 | INFO     | sactor.sactor:218 | Config file: /home/gabe/sactor_forklift/sactor/sactor.sonnet55.toml
+2026-11-16 13:25:50 | INFO     | sactor.sactor:219 | No verify: False
+2026-11-16 13:25:50 | INFO     | sactor.sactor:220 | Unidiomatic only: False
+2026-11-16 13:25:50 | INFO     | sactor.sactor:221 | LLM statistics base path: /home/gabe/sactor_forklift/sactor-bench-oxivolve/kmeans/result_sonnet55/llm_stat.json
+2026-11-16 13:25:50 | INFO     | sactor.sactor:222 | Extra compile command: None
+2026-11-16 13:25:50 | INFO     | sactor.sactor:223 | Compile commands file: 
+2026-11-16 13:25:50 | INFO     | sactor.sactor:224 | Link args: ['-lm']
+2026-11-16 13:25:50 | INFO     | sactor.sactor:225 | Idiomatic only: False
+2026-11-16 13:25:50 | INFO     | sactor.sactor:226 | Continue run when incomplete: False
+2026-11-16 13:25:50 | INFO     | sactor.sactor:227 | -------------End of Configuration-------------
+2026-11-16 13:25:51 | DEBUG    | sactor.sactor:284 | Total structs: 2; order groups: 2
+2026-11-16 13:25:51 | DEBUG    | sactor.sactor:286 | Total functions: 6; order groups: 6
+2026-11-16 13:25:51 | DEBUG    | sactor.sactor:288 | Struct order: [[StructInfo(Cluster)], [StructInfo(Point)]]
+2026-11-16 13:25:51 | DEBUG    | sactor.sactor:289 | Function order: [[FunctionInfo(static double diff_timespec ( struct timespec * time1 , struct timespec * time0 ))], [FunctionInfo(double distance ( struct Point p , struct Cluster c ))], [FunctionInfo(void update_centroids ( struct Point * points , int n , struct Cluster * clusters , int k ))], [FunctionInfo(void assign_clusters ( struct Point * points , int n , struct Cluster * clusters , int k ))], [FunctionInfo(void kmeans ( struct Point * points , int n , struct Cluster * clusters , int k , int max_iter ))], [FunctionInfo(int main ( int argc , char * argv [ ] ))]]
+2026-11-16 13:25:51 | DEBUG    | sactor.llm.llm:38 | Default model: 'claude-sonnet-5-5'
+2026-11-16 13:25:51 | DEBUG    | sactor.llm.llm:40 | Found 1 models in config
+2026-11-16 13:25:51 | DEBUG    | sactor.llm.llm:46 | Model mapping 0: 'claude-sonnet-5-5' -> 'anthropic/claude-sonnet-5-5': {'model': 'anthropic/claude-sonnet-5-5', 'api_key': '***REDACTED***', 'max_tokens': '***REDACTED***'}
+2026-11-16 13:25:51 | DEBUG    | sactor.thirdparty.c2rust:52 | Running c2rust command: ['c2rust', 'transpile', '--preserve-unused-functions', '/home/gabe/sactor_forklift/tmp/sactor/tmprmf3hhuy/c2rust/unfolded_typedefs.c', '--', '-I/usr/lib/llvm-19/lib/clang/19/include', '-I/usr/local/include', '-I/usr/include/x86_64-linux-gnu', '-I/usr/include']
+2026-11-16 13:25:52 | DEBUG    | sactor.sactor:425 | Checking function diff_timespec: struct_ready=True, struct_blockers=[]
+2026-11-16 13:25:52 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: diff_timespec (attempts: 0)
+2026-11-16 13:25:52 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+static double diff_timespec(struct timespec *time1, struct timespec *time0)
+{
+    return (time1->tv_sec - time0->tv_sec) + (time1->tv_nsec - time0->tv_nsec) / 1000000000.0;
+}
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:25:55 | RESPONSE | sactor.llm:160 | Here is the Rust translation. It takes raw pointers to `libc::timespec`, matching the C signature.
+
+In C, `tv_sec` is `time_t` and `tv_nsec` is `long`. Their difference is computed in the integer type and then converted to `double`. I keep that behaviour by subtracting the integers first and then casting. I use `wrapping_sub` to avoid a debug-mode overflow panic, because C would just wrap or invoke UB on overflow.
+
+----FUNCTION----
+```rust
+unsafe fn diff_timespec(time1: *mut libc::timespec, time0: *mut libc::timespec) -> f64 {
+    let sec = (*time1).tv_sec.wrapping_sub((*time0).tv_sec);
+    let nsec = (*time1).tv_nsec.wrapping_sub((*time0).tv_nsec);
+    (sec as f64) + (nsec as f64) / 1000000000.0
+}
+```
+----END FUNCTION----
+2026-11-16 13:25:55 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:25:55 | DEBUG    | sactor.utils:258 | unsafe fn diff_timespec(time1: *mut libc::timespec, time0: *mut libc::timespec) -> f64 {
+    let sec = (*time1).tv_sec.wrapping_sub((*time0).tv_sec);
+    let nsec = (*time1).tv_nsec.wrapping_sub((*time0).tv_nsec);
+    (sec as f64) + (nsec as f64) / 1000000000.0
+}
+
+2026-11-16 13:25:55 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function diff_timespec:
+2026-11-16 13:25:55 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | unsafe fn diff_timespec(time1: *mut libc::timespec, time0: *mut libc::timespec) -> f64 {
+    let sec = (*time1).tv_sec.wrapping_sub((*time0).tv_sec);
+    let nsec = (*time1).tv_nsec.wrapping_sub((*time0).tv_nsec);
+    (sec as f64) + (nsec as f64) / 1000000000.0
+}
+
+2026-11-16 13:25:55 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/build_attempt/Cargo.toml
+2026-11-16 13:25:57 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:25:57 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/embed_test_rust/Cargo.toml
+2026-11-16 13:26:00 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/embed_test_c/diff_timespec', '/home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/embed_test_c/diff_timespec.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/embed_test_rust/target/debug', '-lm', '-ldiff_timespec']
+2026-11-16 13:26:00 | DEBUG    | sactor.sactor:425 | Checking function distance: struct_ready=True, struct_blockers=[]
+2026-11-16 13:26:00 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: distance (attempts: 0)
+2026-11-16 13:26:00 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+double distance(Point p, Cluster c) {
+    return sqrt((p.x - c.x) * (p.x - c.x) + (p.y - c.y) * (p.y - c.y));
+}
+```
+
+The function uses the following structs/unions, which are already translated as (you should **NOT** define them in your translation, as the system will automatically define them. But you can use these structs or unions):
+```rust
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct Cluster {
+    pub x: libc::c_double,
+    pub y: libc::c_double,
+}
+
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct Point {
+    pub x: libc::c_double,
+    pub y: libc::c_double,
+    pub cluster_id: libc::c_int,
+    pub cluster_distance: libc::c_double,
+}
+
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:26:02 | RESPONSE | sactor.llm:160 | This translation uses `f64::sqrt` from the standard library, so `libc` is not needed. The struct fields are `libc::c_double`, which is an alias for `f64`.
+
+----FUNCTION----
+```rust
+pub fn distance(p: Point, c: Cluster) -> f64 {
+    ((p.x - c.x) * (p.x - c.x) + (p.y - c.y) * (p.y - c.y)).sqrt()
+}
+```
+----END FUNCTION----
+2026-11-16 13:26:02 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:26:02 | DEBUG    | sactor.utils:258 | pub fn distance(p: Point, c: Cluster) -> f64 {
+    ((p.x - c.x) * (p.x - c.x) + (p.y - c.y) * (p.y - c.y)).sqrt()
+}
+
+2026-11-16 13:26:02 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function distance:
+2026-11-16 13:26:02 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub fn distance(p: Point, c: Cluster) -> f64 {
+    ((p.x - c.x) * (p.x - c.x) + (p.y - c.y) * (p.y - c.y)).sqrt()
+}
+
+2026-11-16 13:26:02 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/build_attempt/Cargo.toml
+2026-11-16 13:26:04 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:26:04 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/embed_test_rust/Cargo.toml
+2026-11-16 13:26:07 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/embed_test_c/distance', '/home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/embed_test_c/distance.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/embed_test_rust/target/debug', '-lm', '-ldistance']
+2026-11-16 13:26:07 | DEBUG    | sactor.sactor:425 | Checking function update_centroids: struct_ready=True, struct_blockers=[]
+2026-11-16 13:26:08 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: update_centroids (attempts: 0)
+2026-11-16 13:26:08 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+void update_centroids(Point *points, int n, Cluster *clusters, int k) {
+    int *count = calloc(k, sizeof(int));
+    double *sum_x = calloc(k, sizeof(double));
+    double *sum_y = calloc(k, sizeof(double));
+
+    for (int i = 0; i < n; i++) {
+        int cid = points[i].cluster_id;
+        count[cid]++;
+        sum_x[cid] += points[i].x;
+        sum_y[cid] += points[i].y;
+    }
+
+    for (int j = 0; j < k; j++) {
+        if (count[j] > 0) {
+            clusters[j].x = sum_x[j] / count[j];
+            clusters[j].y = sum_y[j] / count[j];
+        }
+    }
+
+    free(count);
+    free(sum_x);
+    free(sum_y);
+}
+```
+
+The function uses the following structs/unions, which are already translated as (you should **NOT** define them in your translation, as the system will automatically define them. But you can use these structs or unions):
+```rust
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct Cluster {
+    pub x: libc::c_double,
+    pub y: libc::c_double,
+}
+
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct Point {
+    pub x: libc::c_double,
+    pub y: libc::c_double,
+    pub cluster_id: libc::c_int,
+    pub cluster_distance: libc::c_double,
+}
+
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:26:13 | RESPONSE | sactor.llm:160 | The function keeps the C signature and raw pointers, so it stays an `unsafe` function over `Point` and `Cluster` pointers. I kept `calloc` and `free` from `libc` to stay close to the original.
+
+- `calloc` zero-initialises the buffers, as in the C code.
+- `count[cid]` is `int` and is converted to `f64` in the division, which matches C's implicit conversion.
+- `cluster_id` is not bounds-checked, as in the original, so an out-of-range id is undefined behaviour in both versions.
+
+----FUNCTION----
+```rust
+pub unsafe extern "C" fn update_centroids(points: *mut Point, n: libc::c_int, clusters: *mut Cluster, k: libc::c_int) {
+    let count = libc::calloc(k as libc::size_t, std::mem::size_of::<libc::c_int>()) as *mut libc::c_int;
+    let sum_x = libc::calloc(k as libc::size_t, std::mem::size_of::<libc::c_double>()) as *mut libc::c_double;
+    let sum_y = libc::calloc(k as libc::size_t, std::mem::size_of::<libc::c_double>()) as *mut libc::c_double;
+
+    let mut i: libc::c_int = 0;
+    while i < n {
+        let p = &*points.offset(i as isize);
+        let cid = p.cluster_id as isize;
+        *count.offset(cid) += 1;
+        *sum_x.offset(cid) += p.x;
+        *sum_y.offset(cid) += p.y;
+        i += 1;
+    }
+
+    let mut j: libc::c_int = 0;
+    while j < k {
+        let c = *count.offset(j as isize);
+        if c > 0 {
+            let cl = &mut *clusters.offset(j as isize);
+            cl.x = *sum_x.offset(j as isize) / (c as libc::c_double);
+            cl.y = *sum_y.offset(j as isize) / (c as libc::c_double);
+        }
+        j += 1;
+    }
+
+    libc::free(count as *mut libc::c_void);
+    libc::free(sum_x as *mut libc::c_void);
+    libc::free(sum_y as *mut libc::c_void);
+}
+```
+----END FUNCTION----
+2026-11-16 13:26:13 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:26:13 | DEBUG    | sactor.utils:258 | pub unsafe extern "C" fn update_centroids(points: *mut Point, n: libc::c_int, clusters: *mut Cluster, k: libc::c_int) {
+    let count = libc::calloc(k as libc::size_t, std::mem::size_of::<libc::c_int>()) as *mut libc::c_int;
+    let sum_x = libc::calloc(k as libc::size_t, std::mem::size_of::<libc::c_double>()) as *mut libc::c_double;
+    let sum_y = libc::calloc(k as libc::size_t, std::mem::size_of::<libc::c_double>()) as *mut libc::c_double;
+
+    let mut i: libc::c_int = 0;
+    while i < n {
+        let p = &*points.offset(i as isize);
+        let cid = p.cluster_id as isize;
+        *count.offset(cid) += 1;
+        *sum_x.offset(cid) += p.x;
+        *sum_y.offset(cid) += p.y;
+        i += 1;
+    }
+
+    let mut j: libc::c_int = 0;
+    while j < k {
+        let c = *count.offset(j as isize);
+        if c > 0 {
+            let cl = &mut *clusters.offset(j as isize);
+            cl.x = *sum_x.offset(j as isize) / (c as libc::c_double);
+            cl.y = *sum_y.offset(j as isize) / (c as libc::c_double);
+        }
+        j += 1;
+    }
+
+    libc::free(count as *mut libc::c_void);
+    libc::free(sum_x as *mut libc::c_void);
+    libc::free(sum_y as *mut libc::c_void);
+}
+
+2026-11-16 13:26:13 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function update_centroids:
+2026-11-16 13:26:13 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub unsafe extern "C" fn update_centroids(
+    points: *mut Point,
+    n: libc::c_int,
+    clusters: *mut Cluster,
+    k: libc::c_int,
+) {
+    let count = libc::calloc(k as libc::size_t, std::mem::size_of::<libc::c_int>())
+        as *mut libc::c_int;
+    let sum_x = libc::calloc(k as libc::size_t, std::mem::size_of::<libc::c_double>())
+        as *mut libc::c_double;
+    let sum_y = libc::calloc(k as libc::size_t, std::mem::size_of::<libc::c_double>())
+        as *mut libc::c_double;
+    let mut i: libc::c_int = 0;
+    while i < n {
+        let p = &*points.offset(i as isize);
+        let cid = p.cluster_id as isize;
+        *count.offset(cid) += 1;
+        *sum_x.offset(cid) += p.x;
+        *sum_y.offset(cid) += p.y;
+        i += 1;
+    }
+    let mut j: libc::c_int = 0;
+    while j < k {
+        let c = *count.offset(j as isize);
+        if c > 0 {
+            let cl = &mut *clusters.offset(j as isize);
+            cl.x = *sum_x.offset(j as isize) / (c as libc::c_double);
+            cl.y = *sum_y.offset(j as isize) / (c as libc::c_double);
+        }
+        j += 1;
+    }
+    libc::free(count as *mut libc::c_void);
+    libc::free(sum_x as *mut libc::c_void);
+    libc::free(sum_y as *mut libc::c_void);
+}
+
+2026-11-16 13:26:13 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/build_attempt/Cargo.toml
+2026-11-16 13:26:15 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:26:15 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/embed_test_rust/Cargo.toml
+2026-11-16 13:26:18 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/embed_test_c/update_centroids', '/home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/embed_test_c/update_centroids.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/embed_test_rust/target/debug', '-lm', '-lupdate_centroids']
+2026-11-16 13:26:18 | DEBUG    | sactor.sactor:425 | Checking function assign_clusters: struct_ready=True, struct_blockers=[]
+2026-11-16 13:26:18 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: assign_clusters (attempts: 0)
+2026-11-16 13:26:18 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+void assign_clusters(Point *points, int n, Cluster *clusters, int k) {
+    for (int i = 0; i < n; i++) {
+        double min_dist = DBL_MAX;
+        int best_cluster = -1;
+        for (int j = 0; j < k; j++) {
+            double d = distance(points[i], clusters[j]);
+            if (d < min_dist) {
+                min_dist = d;
+                best_cluster = j;
+            }
+        }
+        points[i].cluster_id = best_cluster;
+        points[i].cluster_distance = min_dist;
+    }
+}
+```
+
+The function body above may reference the following macros. Use these definitions to understand the semantics; do **NOT** redefine them in Rust—expand or replicate their behavior as needed in the translation.
+```c
+#define DBL_MAX __DBL_MAX__
+```
+
+The function uses the following structs/unions, which are already translated as (you should **NOT** define them in your translation, as the system will automatically define them. But you can use these structs or unions):
+```rust
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct Cluster {
+    pub x: libc::c_double,
+    pub y: libc::c_double,
+}
+
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct Point {
+    pub x: libc::c_double,
+    pub y: libc::c_double,
+    pub cluster_id: libc::c_int,
+    pub cluster_distance: libc::c_double,
+}
+
+```
+
+The function calls the following functions, which are already translated and defined in Rust.
+Do **NOT** include the definition or declaration of the following functions in your translation.
+If you include them, the output will be considered **invalid**.
+But you can call the following functions in your translation.
+Only output the translation of the function I request.
+The called functions' signatures in Rust are the following:
+```rust
+fn distance (p : Point , c : Cluster) -> f64;
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:26:21 | RESPONSE | sactor.llm:160 | I translated this with raw pointers to keep the C signature. Points and clusters are `Copy`, so they can be read by value and passed to `distance`. `f64::MAX` stands in for `DBL_MAX`.
+
+----FUNCTION----
+```rust
+pub unsafe extern "C" fn assign_clusters(points: *mut Point, n: libc::c_int, clusters: *mut Cluster, k: libc::c_int) {
+    let mut i: libc::c_int = 0;
+    while i < n {
+        let mut min_dist: f64 = f64::MAX;
+        let mut best_cluster: libc::c_int = -1;
+        let mut j: libc::c_int = 0;
+        while j < k {
+            let d: f64 = distance(*points.offset(i as isize), *clusters.offset(j as isize));
+            if d < min_dist {
+                min_dist = d;
+                best_cluster = j;
+            }
+            j += 1;
+        }
+        (*points.offset(i as isize)).cluster_id = best_cluster;
+        (*points.offset(i as isize)).cluster_distance = min_dist;
+        i += 1;
+    }
+}
+```
+----END FUNCTION----
+2026-11-16 13:26:21 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:26:21 | DEBUG    | sactor.utils:258 | pub unsafe extern "C" fn assign_clusters(points: *mut Point, n: libc::c_int, clusters: *mut Cluster, k: libc::c_int) {
+    let mut i: libc::c_int = 0;
+    while i < n {
+        let mut min_dist: f64 = f64::MAX;
+        let mut best_cluster: libc::c_int = -1;
+        let mut j: libc::c_int = 0;
+        while j < k {
+            let d: f64 = distance(*points.offset(i as isize), *clusters.offset(j as isize));
+            if d < min_dist {
+                min_dist = d;
+                best_cluster = j;
+            }
+            j += 1;
+        }
+        (*points.offset(i as isize)).cluster_id = best_cluster;
+        (*points.offset(i as isize)).cluster_distance = min_dist;
+        i += 1;
+    }
+}
+
+2026-11-16 13:26:21 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function assign_clusters:
+2026-11-16 13:26:21 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub unsafe extern "C" fn assign_clusters(
+    points: *mut Point,
+    n: libc::c_int,
+    clusters: *mut Cluster,
+    k: libc::c_int,
+) {
+    let mut i: libc::c_int = 0;
+    while i < n {
+        let mut min_dist: f64 = f64::MAX;
+        let mut best_cluster: libc::c_int = -1;
+        let mut j: libc::c_int = 0;
+        while j < k {
+            let d: f64 = distance(
+                *points.offset(i as isize),
+                *clusters.offset(j as isize),
+            );
+            if d < min_dist {
+                min_dist = d;
+                best_cluster = j;
+            }
+            j += 1;
+        }
+        (*points.offset(i as isize)).cluster_id = best_cluster;
+        (*points.offset(i as isize)).cluster_distance = min_dist;
+        i += 1;
+    }
+}
+
+2026-11-16 13:26:21 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/build_attempt/Cargo.toml
+2026-11-16 13:26:23 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:26:23 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/embed_test_rust/Cargo.toml
+2026-11-16 13:26:28 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/embed_test_c/assign_clusters', '/home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/embed_test_c/assign_clusters.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/embed_test_rust/target/debug', '-lm', '-lassign_clusters']
+2026-11-16 13:26:28 | DEBUG    | sactor.sactor:425 | Checking function kmeans: struct_ready=True, struct_blockers=[]
+2026-11-16 13:26:28 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: kmeans (attempts: 0)
+2026-11-16 13:26:28 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+void kmeans(Point *points, int n, Cluster *clusters, int k, int max_iter) {
+    // Initialize centroids to first k points
+    for (int j = 0; j < k; j++) {
+        clusters[j].x = points[j].x;
+        clusters[j].y = points[j].y;
+    }
+
+    for (int iter = 0; iter < max_iter; iter++) {
+        assign_clusters(points, n, clusters, k);
+        update_centroids(points, n, clusters, k);
+    }
+}
+```
+
+The function uses the following structs/unions, which are already translated as (you should **NOT** define them in your translation, as the system will automatically define them. But you can use these structs or unions):
+```rust
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct Cluster {
+    pub x: libc::c_double,
+    pub y: libc::c_double,
+}
+
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct Point {
+    pub x: libc::c_double,
+    pub y: libc::c_double,
+    pub cluster_id: libc::c_int,
+    pub cluster_distance: libc::c_double,
+}
+
+```
+
+The function calls the following functions, which are already translated and defined in Rust.
+Do **NOT** include the definition or declaration of the following functions in your translation.
+If you include them, the output will be considered **invalid**.
+But you can call the following functions in your translation.
+Only output the translation of the function I request.
+The called functions' signatures in Rust are the following:
+```rust
+fn assign_clusters (points : * mut Point , n : libc :: c_int , clusters : * mut Cluster , k : libc :: c_int ,);
+fn update_centroids (points : * mut Point , n : libc :: c_int , clusters : * mut Cluster , k : libc :: c_int ,);
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:26:31 | RESPONSE | sactor.llm:160 | ----FUNCTION----
+```rust
+pub unsafe fn kmeans(points: *mut Point, n: libc::c_int, clusters: *mut Cluster, k: libc::c_int, max_iter: libc::c_int) {
+    let mut j: libc::c_int = 0;
+    while j < k {
+        (*clusters.offset(j as isize)).x = (*points.offset(j as isize)).x;
+        (*clusters.offset(j as isize)).y = (*points.offset(j as isize)).y;
+        j += 1;
+    }
+
+    let mut iter: libc::c_int = 0;
+    while iter < max_iter {
+        assign_clusters(points, n, clusters, k);
+        update_centroids(points, n, clusters, k);
+        iter += 1;
+    }
+}
+```
+----END FUNCTION----
+2026-11-16 13:26:31 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:26:31 | DEBUG    | sactor.utils:258 | pub unsafe fn kmeans(points: *mut Point, n: libc::c_int, clusters: *mut Cluster, k: libc::c_int, max_iter: libc::c_int) {
+    let mut j: libc::c_int = 0;
+    while j < k {
+        (*clusters.offset(j as isize)).x = (*points.offset(j as isize)).x;
+        (*clusters.offset(j as isize)).y = (*points.offset(j as isize)).y;
+        j += 1;
+    }
+
+    let mut iter: libc::c_int = 0;
+    while iter < max_iter {
+        assign_clusters(points, n, clusters, k);
+        update_centroids(points, n, clusters, k);
+        iter += 1;
+    }
+}
+
+2026-11-16 13:26:31 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function kmeans:
+2026-11-16 13:26:31 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub unsafe fn kmeans(
+    points: *mut Point,
+    n: libc::c_int,
+    clusters: *mut Cluster,
+    k: libc::c_int,
+    max_iter: libc::c_int,
+) {
+    let mut j: libc::c_int = 0;
+    while j < k {
+        (*clusters.offset(j as isize)).x = (*points.offset(j as isize)).x;
+        (*clusters.offset(j as isize)).y = (*points.offset(j as isize)).y;
+        j += 1;
+    }
+    let mut iter: libc::c_int = 0;
+    while iter < max_iter {
+        assign_clusters(points, n, clusters, k);
+        update_centroids(points, n, clusters, k);
+        iter += 1;
+    }
+}
+
+2026-11-16 13:26:31 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/build_attempt/Cargo.toml
+2026-11-16 13:26:33 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:26:33 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/embed_test_rust/Cargo.toml
+2026-11-16 13:26:39 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/embed_test_c/kmeans', '/home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/embed_test_c/kmeans.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/embed_test_rust/target/debug', '-lm', '-lkmeans']
+2026-11-16 13:26:39 | DEBUG    | sactor.sactor:425 | Checking function main: struct_ready=True, struct_blockers=[]
+2026-11-16 13:26:40 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: main (attempts: 0)
+2026-11-16 13:26:40 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+int main(int argc, char *argv[]) {
+    if (argc < 3) {
+        printf("Usage: %s <num_points> <k> [max_iter]\n", argv[0]);
+        return 1;
+    }
+
+    int num_points = atoi(argv[1]);
+    int k = atoi(argv[2]);
+    int max_iter = (argc >= 4) ? atoi(argv[3]) : 100;
+
+    if (num_points <= 0 || k <= 0 || k > num_points) {
+        printf("Error: num_points > 0, k > 0, and k <= num_points required.\n");
+        return 1;
+    }
+
+    srand(42);
+    Point *points = malloc(num_points * sizeof(Point));
+    for (int i = 0; i < num_points; i++) {
+        points[i].x = (double)rand() / RAND_MAX * 100.0;
+        points[i].y = (double)rand() / RAND_MAX * 100.0;
+        points[i].cluster_id = -1;
+        points[i].cluster_distance = DBL_MAX;
+    }
+
+    Cluster *clusters = malloc(k * sizeof(Cluster));
+
+    struct timespec start_time, end_time;
+    double time_elapsed = 0;
+    clock_gettime(CLOCK_MONOTONIC, &start_time);
+
+    // MAIN COMPUTATION BEGIN
+    kmeans(points, num_points, clusters, k, max_iter);
+    // MAIN COMPUTATION END
+
+    clock_gettime(CLOCK_MONOTONIC, &end_time);
+    time_elapsed = diff_timespec(&end_time, &start_time);
+
+    printf("Time taken for k-means clustering of %d points into %d clusters: %f seconds\n", num_points, k, time_elapsed);
+
+    free(points);
+    free(clusters);
+    return 0;
+}
+```
+
+The function is the `main` function, which is the entry point of the program. The function signature should be: `pub fn main() -> ()`.
+For `return 0;`, you can directly `return;` in Rust or ignore it if it's the last statement.
+For other return values, you can use `std::process::exit()` to return the value.
+For `argc` and `argv`, you can use `std::env::args()` to get the arguments.
+
+The function body above may reference the following macros. Use these definitions to understand the semantics; do **NOT** redefine them in Rust—expand or replicate their behavior as needed in the translation.
+```c
+#define RAND_MAX	2147483647
+#define DBL_MAX __DBL_MAX__
+#define CLOCK_MONOTONIC		1
+```
+
+The function uses the following structs/unions, which are already translated as (you should **NOT** define them in your translation, as the system will automatically define them. But you can use these structs or unions):
+```rust
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct Cluster {
+    pub x: libc::c_double,
+    pub y: libc::c_double,
+}
+
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct Point {
+    pub x: libc::c_double,
+    pub y: libc::c_double,
+    pub cluster_id: libc::c_int,
+    pub cluster_distance: libc::c_double,
+}
+
+```
+
+The function calls the following functions, which are already translated and defined in Rust.
+Do **NOT** include the definition or declaration of the following functions in your translation.
+If you include them, the output will be considered **invalid**.
+But you can call the following functions in your translation.
+Only output the translation of the function I request.
+The called functions' signatures in Rust are the following:
+```rust
+fn kmeans (points : * mut Point , n : libc :: c_int , clusters : * mut Cluster , k : libc :: c_int , max_iter : libc :: c_int ,);
+fn diff_timespec (time1 : * mut libc :: timespec , time0 : * mut libc :: timespec) -> f64;
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:26:45 | RESPONSE | sactor.llm:160 | ----FUNCTION----
+```rust
+pub fn main() -> () {
+    let args: Vec<String> = std::env::args().collect();
+    let argc = args.len();
+    if argc < 3 {
+        println!("Usage: {} <num_points> <k> [max_iter]", args[0]);
+        std::process::exit(1);
+    }
+
+    unsafe {
+        let to_c = |s: &String| -> libc::c_int {
+            let cs = std::ffi::CString::new(s.as_bytes().to_vec()).unwrap_or_else(|_| std::ffi::CString::new("0").unwrap());
+            libc::atoi(cs.as_ptr())
+        };
+
+        let num_points: libc::c_int = to_c(&args[1]);
+        let k: libc::c_int = to_c(&args[2]);
+        let max_iter: libc::c_int = if argc >= 4 { to_c(&args[3]) } else { 100 };
+
+        if num_points <= 0 || k <= 0 || k > num_points {
+            println!("Error: num_points > 0, k > 0, and k <= num_points required.");
+            std::process::exit(1);
+        }
+
+        libc::srand(42);
+        let points = libc::malloc((num_points as usize) * std::mem::size_of::<Point>()) as *mut Point;
+        for i in 0..(num_points as usize) {
+            let p = points.add(i);
+            (*p).x = (libc::rand() as f64) / 2147483647.0 * 100.0;
+            (*p).y = (libc::rand() as f64) / 2147483647.0 * 100.0;
+            (*p).cluster_id = -1;
+            (*p).cluster_distance = f64::MAX;
+        }
+
+        let clusters = libc::malloc((k as usize) * std::mem::size_of::<Cluster>()) as *mut Cluster;
+
+        let mut start_time: libc::timespec = std::mem::zeroed();
+        let mut end_time: libc::timespec = std::mem::zeroed();
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut start_time);
+
+        kmeans(points, num_points, clusters, k, max_iter);
+
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut end_time);
+        let time_elapsed: f64 = diff_timespec(&mut end_time, &mut start_time);
+
+        println!(
+            "Time taken for k-means clustering of {} points into {} clusters: {:.6} seconds",
+            num_points, k, time_elapsed
+        );
+
+        libc::free(points as *mut libc::c_void);
+        libc::free(clusters as *mut libc::c_void);
+    }
+}
+```
+----END FUNCTION----
+2026-11-16 13:26:45 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:26:45 | DEBUG    | sactor.utils:258 | pub fn main() -> () {
+    let args: Vec<String> = std::env::args().collect();
+    let argc = args.len();
+    if argc < 3 {
+        println!("Usage: {} <num_points> <k> [max_iter]", args[0]);
+        std::process::exit(1);
+    }
+
+    unsafe {
+        let to_c = |s: &String| -> libc::c_int {
+            let cs = std::ffi::CString::new(s.as_bytes().to_vec()).unwrap_or_else(|_| std::ffi::CString::new("0").unwrap());
+            libc::atoi(cs.as_ptr())
+        };
+
+        let num_points: libc::c_int = to_c(&args[1]);
+        let k: libc::c_int = to_c(&args[2]);
+        let max_iter: libc::c_int = if argc >= 4 { to_c(&args[3]) } else { 100 };
+
+        if num_points <= 0 || k <= 0 || k > num_points {
+            println!("Error: num_points > 0, k > 0, and k <= num_points required.");
+            std::process::exit(1);
+        }
+
+        libc::srand(42);
+        let points = libc::malloc((num_points as usize) * std::mem::size_of::<Point>()) as *mut Point;
+        for i in 0..(num_points as usize) {
+            let p = points.add(i);
+            (*p).x = (libc::rand() as f64) / 2147483647.0 * 100.0;
+            (*p).y = (libc::rand() as f64) / 2147483647.0 * 100.0;
+            (*p).cluster_id = -1;
+            (*p).cluster_distance = f64::MAX;
+        }
+
+        let clusters = libc::malloc((k as usize) * std::mem::size_of::<Cluster>()) as *mut Cluster;
+
+        let mut start_time: libc::timespec = std::mem::zeroed();
+        let mut end_time: libc::timespec = std::mem::zeroed();
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut start_time);
+
+        kmeans(points, num_points, clusters, k, max_iter);
+
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut end_time);
+        let time_elapsed: f64 = diff_timespec(&mut end_time, &mut start_time);
+
+        println!(
+            "Time taken for k-means clustering of {} points into {} clusters: {:.6} seconds",
+            num_points, k, time_elapsed
+        );
+
+        libc::free(points as *mut libc::c_void);
+        libc::free(clusters as *mut libc::c_void);
+    }
+}
+
+2026-11-16 13:26:45 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function main:
+2026-11-16 13:26:45 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub fn main() -> () {
+    let args: Vec<String> = std::env::args().collect();
+    let argc = args.len();
+    if argc < 3 {
+        println!("Usage: {} <num_points> <k> [max_iter]", args[0]);
+        std::process::exit(1);
+    }
+    unsafe {
+        let to_c = |s: &String| -> libc::c_int {
+            let cs = std::ffi::CString::new(s.as_bytes().to_vec())
+                .unwrap_or_else(|_| std::ffi::CString::new("0").unwrap());
+            libc::atoi(cs.as_ptr())
+        };
+        let num_points: libc::c_int = to_c(&args[1]);
+        let k: libc::c_int = to_c(&args[2]);
+        let max_iter: libc::c_int = if argc >= 4 { to_c(&args[3]) } else { 100 };
+        if num_points <= 0 || k <= 0 || k > num_points {
+            println!("Error: num_points > 0, k > 0, and k <= num_points required.");
+            std::process::exit(1);
+        }
+        libc::srand(42);
+        let points = libc::malloc((num_points as usize) * std::mem::size_of::<Point>())
+            as *mut Point;
+        for i in 0..(num_points as usize) {
+            let p = points.add(i);
+            (*p).x = (libc::rand() as f64) / 2147483647.0 * 100.0;
+            (*p).y = (libc::rand() as f64) / 2147483647.0 * 100.0;
+            (*p).cluster_id = -1;
+            (*p).cluster_distance = f64::MAX;
+        }
+        let clusters = libc::malloc((k as usize) * std::mem::size_of::<Cluster>())
+            as *mut Cluster;
+        let mut start_time: libc::timespec = std::mem::zeroed();
+        let mut end_time: libc::timespec = std::mem::zeroed();
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut start_time);
+        kmeans(points, num_points, clusters, k, max_iter);
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut end_time);
+        let time_elapsed: f64 = diff_timespec(&mut end_time, &mut start_time);
+        println!(
+            "Time taken for k-means clustering of {} points into {} clusters: {:.6} seconds",
+            num_points, k, time_elapsed
+        );
+        libc::free(points as *mut libc::c_void);
+        libc::free(clusters as *mut libc::c_void);
+    }
+}
+
+2026-11-16 13:26:45 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/build_attempt/Cargo.toml
+2026-11-16 13:26:47 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:26:47 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/embed_test_rust/Cargo.toml
+2026-11-16 13:26:53 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/embed_test_c/main', '/home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/embed_test_c/main.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/embed_test_rust/target/debug', '-lm', '-lmain']
+2026-11-16 13:26:53 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/build_attempt/Cargo.toml
+2026-11-16 13:26:56 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:26:56 | DEBUG    | sactor.combiner.program_combiner:234 | Running clippy fix command: cargo clippy --fix --allow-no-vcs --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/program/Cargo.toml -- -A clippy::cmp_null
+2026-11-16 13:27:01 | INFO     | sactor.combiner.program_combiner:259 | Found 4 warnings in the combined code
+2026-11-16 13:27:01 | INFO     | sactor.combiner.program_combiner:260 | Found 0 errors in the combined code
+2026-11-16 13:27:04 | DEBUG    | sactor.thirdparty.crown:81 | Executing crown command: rustup run nightly-2023-01-26-x86_64-unknown-linux-gnu crown /home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/crown_analysis/src/lib.rs preprocess in-place
+2026-11-16 13:27:09 | WARNING  | sactor.thirdparty.crown:90 | crown preprocess messed up code; restoring original translation
+2026-11-16 13:27:09 | WARNING  | sactor.thirdparty.crown:103 | crown explicit-addr messed up code; restoring original translation
+2026-11-16 13:27:11 | INFO     | sactor.translator.idiomatic_translator:634 | Translating struct: Cluster (attempts: 0)
+2026-11-16 13:27:11 | PROMPT   | sactor.llm:155 | 
+Translate the following Rust struct to idiomatic Rust. Try to avoid using raw pointers in the translation of the struct.
+If the struct is designed as a cloneable struct, try to add/implement the `Clone` trait for the struct.
+```rust
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct Cluster {
+    pub x: libc::c_double,
+    pub y: libc::c_double,
+}
+
+```
+
+Output the translated struct into this format (wrap with the following tags):
+----STRUCT----
+```rust
+// Your translated struct here
+```
+----END STRUCT----
+
+Also output a minimal JSON spec that maps the unidiomatic Rust layout to the idiomatic Rust struct.
+If you rename the idiomatic type, set the `i_type` field accordingly (still set it even if unchanged).
+
+Naming guardrails (do not skip):
+- The repr(C) type must stay exactly `CCluster` (same casing as the original C identifier). Never CamelCase or otherwise rename the C-side type.
+- Do not re-declare the repr(C) struct; assume `pub struct CCluster` already exists in the compiled crate and only reference it.
+- Do not emit conversion functions nor reference the repr(C) alias (e.g. `CCluster`) directly; keep the output strictly to the idiomatic Rust type and any pure-Rust helper methods. The verifier will synthesize the bridging code.
+- If you rename the idiomatic type, the converters must be emitted exactly as `unsafe fn CCluster_to_<idiomatic_name>_mut(...)` and `unsafe fn <idiomatic_name>_to_CCluster_mut(...)`.
+- When the C layout uses typedefs such as `uint32_t` or `uint8_t`, either import them from `libc` or map them to the corresponding Rust primitives (e.g. `u32`, `u8`). The generated code must compile without missing typedefs.
+Full JSON Schema for the SPEC (do not output the schema; output only an instance that conforms to it):
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sactor://spec.schema.json",
+  "title": "Sactor Idiomatic Translation Spec",
+  "description": "Schema describing mappings between unidiomatic (repr(C)) Rust and idiomatic Rust for structs and function arguments.",
+  "$defs": {
+    "PtrShape": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ptr": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["slice", "cstring", "ref"] },
+            "len_from": { "type": "string", "description": "Name of the unidiomatic length field." },
+            "len_const": { "type": "integer", "minimum": 0, "description": "Constant element count for the pointer." },
+            "null": { "enum": ["nullable", "forbidden"], "description": "Whether the pointer can be NULL." }
+          },
+          "required": ["kind"]
+        }
+      },
+      "required": ["ptr"]
+    },
+    "UField": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "shape": {
+          "oneOf": [
+            { "const": "scalar", "description": "Scalar value (integer, float, bool, char, or any non-pointer data structures)" },
+            { "$ref": "#/$defs/PtrShape", "description": "Pointer type (raw pointer, slice, or C string)" }
+          ]
+        }
+      },
+      "required": ["name", "shape"]
+    },
+    "IField": {
+      "type": "object",
+      "description": "Idiomatic-side field path. Special convention: if name == 'ret', this Field describes the function return mapping.",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic field path or 'ret' for function return." },
+        "type": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "EnumDiscriminant": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tag": { "type": "string", "description": "u_field.name of the discriminant/tag" },
+        "equals": { "type": ["integer", "string"], "description": "Value of tag that selects this variant" }
+      },
+      "required": ["tag", "equals"]
+    },
+    "EnumVariant": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic enum variant name" },
+        "when": { "$ref": "#/$defs/EnumDiscriminant" },
+        "payload": { "type": "array", "items": { "$ref": "#/$defs/Field" } }
+      },
+      "required": ["name", "when"]
+    },
+    "Field": {
+      "type": "object",
+      "description": "Field mapping between unidiomatic C-style field and idiomatic Rust path.",
+      "properties": {
+        "u_field": { "$ref": "#/$defs/UField" },
+        "i_field": { "$ref": "#/$defs/IField" },
+        "ownership": { "type": "string", "enum": ["owning", "transient"], "description": "Optional ownership hint." },
+        "compare": {
+          "type": "string",
+          "enum": ["by_value", "by_slice", "skip"],
+          "description": "Comparison strategy for roundtrip tests. Use 'skip' generously for values that may legitimately diverge (raw pointers, aliasing views, externally-owned buffers, handles, allocator state, etc.) so the automated selftest stays permissive."
+        },
+        "llm_note": { "type": "string", "description": "Free-form note for LLM when automatic codegen is insufficient (e.g., aliasing/offset semantics)." }
+      },
+      "required": ["u_field", "i_field"]
+    },
+    "StructSpec": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "struct_name": { "type": "string", "description": "Name of the translated idiomatic struct." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 },
+        "i_kind": { "type": "string", "enum": ["struct", "enum"], "default": "struct" },
+        "i_type": { "type": "string", "description": "Idiomatic type name (useful when i_kind=enum)" },
+        "variants": { "type": "array", "items": { "$ref": "#/$defs/EnumVariant" } }
+      },
+      "required": ["fields", "i_kind", "i_type"]
+    },
+    "FunctionSpec": {
+      "type": "object",
+      "description": "Function argument/return mapping. Return values are expressed via a Field whose i_field.name == 'ret'.",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "function_name": { "type": "string", "description": "Name of the translated idiomatic function." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 }
+      },
+      "required": ["fields"]
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/StructSpec" },
+    { "$ref": "#/$defs/FunctionSpec" }
+  ]
+}
+
+```
+Format:
+----SPEC----
+```json
+{
+  "struct_name": "Cluster",
+  "i_kind": "struct",
+  "i_type": "<Idiomatic type name (use the same as struct_name if unchanged)>",
+  "fields": [
+    {
+      "u_field": {
+        "name": "...",
+        "type": "...",
+        "shape": "scalar" | {"ptr": {"kind": "slice|cstring|ref", "len_from": "?", "len_const": 1}}
+      },
+      "i_field": {
+        "name": "...",
+        "type": "..."
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+
+Few-shot examples (each includes unidiomatic Rust, idiomatic Rust, and the SPEC):
+
+Example S1 (scalar + cstring + slice):
+Basic struct with scalar field, C string, and slice with explicit length.
+Unidiomatic Rust:
+```rust
+#[repr(C)]
+pub struct A {
+    pub num: u32,
+    pub name: *const libc::c_char,
+    pub data: *const u8,
+    pub data_len: usize,
+}
+```
+Idiomatic Rust:
+```rust
+pub struct A {
+    pub num: u32,
+    pub name: String,
+    pub data: Vec<u8>,
+}
+```
+----SPEC----
+```json
+{
+  "struct_name": "A",
+  "i_kind": "struct",
+  "i_type": "A",
+  "fields": [
+    { "u_field": {"name": "num", "type": "u32", "shape": "scalar"},
+      "i_field": {"name": "num", "type": "u32"} },
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring" } }},
+      "i_field": {"name": "name", "type": "String"} },
+    { "u_field": {"name": "data", "type": "*const u8", "shape": { "ptr": { "kind": "slice", "len_from": "data_len" } }},
+      "i_field": {"name": "data", "type": "Vec<u8>"} },
+    { "u_field": {"name": "data_len", "type": "usize", "shape": "scalar"},
+      "i_field": {"name": "data.len", "type": "usize"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example S2 (nested dot paths + ref pointer):
+Nested field paths and pointer treated as borrowed reference.
+Unidiomatic Rust:
+```rust
+#[repr(C)]
+pub struct Inner { pub x: i32, pub name: *const libc::c_char }
+#[repr(C)]
+pub struct Outer { pub id: u32, pub inn: Inner, pub pval: *const u32 }
+```
+Idiomatic Rust:
+```rust
+pub struct Inner { pub x: i32, pub name: String }
+pub struct Outer { pub id: u32, pub inner: Inner, pub val: u32 }
+```
+----SPEC----
+```json
+{
+  "struct_name": "Outer",
+  "i_kind": "struct",
+  "i_type": "Outer",
+  "fields": [
+    { "u_field": {"name": "id", "type": "u32", "shape": "scalar"},
+      "i_field": {"name": "id", "type": "u32"} },
+    { "u_field": {"name": "inn.x", "type": "i32", "shape": "scalar"},
+      "i_field": {"name": "inner.x", "type": "i32"} },
+    { "u_field": {"name": "inn.name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring" } }},
+      "i_field": {"name": "inner.name", "type": "String"} },
+    { "u_field": {"name": "pval", "type": "*const u32", "shape": { "ptr": { "kind": "ref" } }},
+      "i_field": {"name": "val", "type": "u32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example S3 (nullable cstring to Option):
+Nullable pointer mapped to Option<String> idiomatic field.
+Unidiomatic Rust:
+```rust
+#[repr(C)]
+pub struct S { pub name: *const libc::c_char }
+```
+Idiomatic Rust:
+```rust
+pub struct S { pub name: Option<String> }
+```
+----SPEC----
+```json
+{
+  "struct_name": "S",
+  "i_kind": "struct",
+  "i_type": "S",
+  "fields": [
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring", "null": "nullable" } }},
+      "i_field": {"name": "name", "type": "Option<String>"} }
+  ]
+}
+```
+----END SPEC----
+
+2026-11-16 13:27:14 | RESPONSE | sactor.llm:160 | The struct holds only two `f64` scalars, so it has no pointers to remove. The idiomatic version keeps the same name, replaces `libc::c_double` with `f64`, and drops `#[repr(C)]`. It derives `Clone`, `Copy`, `Debug`, and `PartialEq`.
+
+----STRUCT----
+```rust
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub struct Cluster {
+    pub x: f64,
+    pub y: f64,
+}
+```
+----END STRUCT----
+
+----SPEC----
+```json
+{
+  "struct_name": "Cluster",
+  "i_kind": "struct",
+  "i_type": "Cluster",
+  "fields": [
+    {
+      "u_field": {
+        "name": "x",
+        "type": "libc::c_double",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "x",
+        "type": "f64"
+      }
+    },
+    {
+      "u_field": {
+        "name": "y",
+        "type": "libc::c_double",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "y",
+        "type": "f64"
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+2026-11-16 13:27:14 | DEBUG    | sactor.utils:257 | Generated struct:
+2026-11-16 13:27:14 | DEBUG    | sactor.utils:258 | #[derive(Copy, Clone, Debug, PartialEq)]
+pub struct Cluster {
+    pub x: f64,
+    pub y: f64,
+}
+
+2026-11-16 13:27:14 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/build_attempt/Cargo.toml
+2026-11-16 13:27:16 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:27:16 | INFO     | sactor.verifier.idiomatic_verifier:1268 | No test commands configured; accepting idiomatic struct Cluster after the compile check (converter harness skipped)
+2026-11-16 13:27:16 | INFO     | sactor.translator.idiomatic_translator:634 | Translating struct: Point (attempts: 0)
+2026-11-16 13:27:16 | PROMPT   | sactor.llm:155 | 
+Translate the following Rust struct to idiomatic Rust. Try to avoid using raw pointers in the translation of the struct.
+If the struct is designed as a cloneable struct, try to add/implement the `Clone` trait for the struct.
+```rust
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
+pub struct Point {
+    pub x: libc::c_double,
+    pub y: libc::c_double,
+    pub cluster_id: libc::c_int,
+    pub cluster_distance: libc::c_double,
+}
+
+```
+
+Output the translated struct into this format (wrap with the following tags):
+----STRUCT----
+```rust
+// Your translated struct here
+```
+----END STRUCT----
+
+Also output a minimal JSON spec that maps the unidiomatic Rust layout to the idiomatic Rust struct.
+If you rename the idiomatic type, set the `i_type` field accordingly (still set it even if unchanged).
+
+Naming guardrails (do not skip):
+- The repr(C) type must stay exactly `CPoint` (same casing as the original C identifier). Never CamelCase or otherwise rename the C-side type.
+- Do not re-declare the repr(C) struct; assume `pub struct CPoint` already exists in the compiled crate and only reference it.
+- Do not emit conversion functions nor reference the repr(C) alias (e.g. `CPoint`) directly; keep the output strictly to the idiomatic Rust type and any pure-Rust helper methods. The verifier will synthesize the bridging code.
+- If you rename the idiomatic type, the converters must be emitted exactly as `unsafe fn CPoint_to_<idiomatic_name>_mut(...)` and `unsafe fn <idiomatic_name>_to_CPoint_mut(...)`.
+- When the C layout uses typedefs such as `uint32_t` or `uint8_t`, either import them from `libc` or map them to the corresponding Rust primitives (e.g. `u32`, `u8`). The generated code must compile without missing typedefs.
+Full JSON Schema for the SPEC (do not output the schema; output only an instance that conforms to it):
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sactor://spec.schema.json",
+  "title": "Sactor Idiomatic Translation Spec",
+  "description": "Schema describing mappings between unidiomatic (repr(C)) Rust and idiomatic Rust for structs and function arguments.",
+  "$defs": {
+    "PtrShape": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ptr": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["slice", "cstring", "ref"] },
+            "len_from": { "type": "string", "description": "Name of the unidiomatic length field." },
+            "len_const": { "type": "integer", "minimum": 0, "description": "Constant element count for the pointer." },
+            "null": { "enum": ["nullable", "forbidden"], "description": "Whether the pointer can be NULL." }
+          },
+          "required": ["kind"]
+        }
+      },
+      "required": ["ptr"]
+    },
+    "UField": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "shape": {
+          "oneOf": [
+            { "const": "scalar", "description": "Scalar value (integer, float, bool, char, or any non-pointer data structures)" },
+            { "$ref": "#/$defs/PtrShape", "description": "Pointer type (raw pointer, slice, or C string)" }
+          ]
+        }
+      },
+      "required": ["name", "shape"]
+    },
+    "IField": {
+      "type": "object",
+      "description": "Idiomatic-side field path. Special convention: if name == 'ret', this Field describes the function return mapping.",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic field path or 'ret' for function return." },
+        "type": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "EnumDiscriminant": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tag": { "type": "string", "description": "u_field.name of the discriminant/tag" },
+        "equals": { "type": ["integer", "string"], "description": "Value of tag that selects this variant" }
+      },
+      "required": ["tag", "equals"]
+    },
+    "EnumVariant": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic enum variant name" },
+        "when": { "$ref": "#/$defs/EnumDiscriminant" },
+        "payload": { "type": "array", "items": { "$ref": "#/$defs/Field" } }
+      },
+      "required": ["name", "when"]
+    },
+    "Field": {
+      "type": "object",
+      "description": "Field mapping between unidiomatic C-style field and idiomatic Rust path.",
+      "properties": {
+        "u_field": { "$ref": "#/$defs/UField" },
+        "i_field": { "$ref": "#/$defs/IField" },
+        "ownership": { "type": "string", "enum": ["owning", "transient"], "description": "Optional ownership hint." },
+        "compare": {
+          "type": "string",
+          "enum": ["by_value", "by_slice", "skip"],
+          "description": "Comparison strategy for roundtrip tests. Use 'skip' generously for values that may legitimately diverge (raw pointers, aliasing views, externally-owned buffers, handles, allocator state, etc.) so the automated selftest stays permissive."
+        },
+        "llm_note": { "type": "string", "description": "Free-form note for LLM when automatic codegen is insufficient (e.g., aliasing/offset semantics)." }
+      },
+      "required": ["u_field", "i_field"]
+    },
+    "StructSpec": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "struct_name": { "type": "string", "description": "Name of the translated idiomatic struct." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 },
+        "i_kind": { "type": "string", "enum": ["struct", "enum"], "default": "struct" },
+        "i_type": { "type": "string", "description": "Idiomatic type name (useful when i_kind=enum)" },
+        "variants": { "type": "array", "items": { "$ref": "#/$defs/EnumVariant" } }
+      },
+      "required": ["fields", "i_kind", "i_type"]
+    },
+    "FunctionSpec": {
+      "type": "object",
+      "description": "Function argument/return mapping. Return values are expressed via a Field whose i_field.name == 'ret'.",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "function_name": { "type": "string", "description": "Name of the translated idiomatic function." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 }
+      },
+      "required": ["fields"]
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/StructSpec" },
+    { "$ref": "#/$defs/FunctionSpec" }
+  ]
+}
+
+```
+Format:
+----SPEC----
+```json
+{
+  "struct_name": "Point",
+  "i_kind": "struct",
+  "i_type": "<Idiomatic type name (use the same as struct_name if unchanged)>",
+  "fields": [
+    {
+      "u_field": {
+        "name": "...",
+        "type": "...",
+        "shape": "scalar" | {"ptr": {"kind": "slice|cstring|ref", "len_from": "?", "len_const": 1}}
+      },
+      "i_field": {
+        "name": "...",
+        "type": "..."
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+
+Few-shot examples (each includes unidiomatic Rust, idiomatic Rust, and the SPEC):
+
+Example S1 (scalar + cstring + slice):
+Basic struct with scalar field, C string, and slice with explicit length.
+Unidiomatic Rust:
+```rust
+#[repr(C)]
+pub struct A {
+    pub num: u32,
+    pub name: *const libc::c_char,
+    pub data: *const u8,
+    pub data_len: usize,
+}
+```
+Idiomatic Rust:
+```rust
+pub struct A {
+    pub num: u32,
+    pub name: String,
+    pub data: Vec<u8>,
+}
+```
+----SPEC----
+```json
+{
+  "struct_name": "A",
+  "i_kind": "struct",
+  "i_type": "A",
+  "fields": [
+    { "u_field": {"name": "num", "type": "u32", "shape": "scalar"},
+      "i_field": {"name": "num", "type": "u32"} },
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring" } }},
+      "i_field": {"name": "name", "type": "String"} },
+    { "u_field": {"name": "data", "type": "*const u8", "shape": { "ptr": { "kind": "slice", "len_from": "data_len" } }},
+      "i_field": {"name": "data", "type": "Vec<u8>"} },
+    { "u_field": {"name": "data_len", "type": "usize", "shape": "scalar"},
+      "i_field": {"name": "data.len", "type": "usize"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example S2 (nested dot paths + ref pointer):
+Nested field paths and pointer treated as borrowed reference.
+Unidiomatic Rust:
+```rust
+#[repr(C)]
+pub struct Inner { pub x: i32, pub name: *const libc::c_char }
+#[repr(C)]
+pub struct Outer { pub id: u32, pub inn: Inner, pub pval: *const u32 }
+```
+Idiomatic Rust:
+```rust
+pub struct Inner { pub x: i32, pub name: String }
+pub struct Outer { pub id: u32, pub inner: Inner, pub val: u32 }
+```
+----SPEC----
+```json
+{
+  "struct_name": "Outer",
+  "i_kind": "struct",
+  "i_type": "Outer",
+  "fields": [
+    { "u_field": {"name": "id", "type": "u32", "shape": "scalar"},
+      "i_field": {"name": "id", "type": "u32"} },
+    { "u_field": {"name": "inn.x", "type": "i32", "shape": "scalar"},
+      "i_field": {"name": "inner.x", "type": "i32"} },
+    { "u_field": {"name": "inn.name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring" } }},
+      "i_field": {"name": "inner.name", "type": "String"} },
+    { "u_field": {"name": "pval", "type": "*const u32", "shape": { "ptr": { "kind": "ref" } }},
+      "i_field": {"name": "val", "type": "u32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example S3 (nullable cstring to Option):
+Nullable pointer mapped to Option<String> idiomatic field.
+Unidiomatic Rust:
+```rust
+#[repr(C)]
+pub struct S { pub name: *const libc::c_char }
+```
+Idiomatic Rust:
+```rust
+pub struct S { pub name: Option<String> }
+```
+----SPEC----
+```json
+{
+  "struct_name": "S",
+  "i_kind": "struct",
+  "i_type": "S",
+  "fields": [
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring", "null": "nullable" } }},
+      "i_field": {"name": "name", "type": "Option<String>"} }
+  ]
+}
+```
+----END SPEC----
+
+2026-11-16 13:27:20 | RESPONSE | sactor.llm:160 | The struct contains only scalar fields, so no pointers need translating. I replaced the libc types with Rust primitives (`f64`, `i32`) and kept `Clone`, `Copy`, and `Debug`. The idiomatic type keeps the name `Point`.
+
+----STRUCT----
+```rust
+#[derive(Copy, Clone, Debug)]
+pub struct Point {
+    pub x: f64,
+    pub y: f64,
+    pub cluster_id: i32,
+    pub cluster_distance: f64,
+}
+```
+----END STRUCT----
+
+----SPEC----
+```json
+{
+  "struct_name": "Point",
+  "i_kind": "struct",
+  "i_type": "Point",
+  "fields": [
+    {
+      "u_field": {"name": "x", "type": "libc::c_double", "shape": "scalar"},
+      "i_field": {"name": "x", "type": "f64"}
+    },
+    {
+      "u_field": {"name": "y", "type": "libc::c_double", "shape": "scalar"},
+      "i_field": {"name": "y", "type": "f64"}
+    },
+    {
+      "u_field": {"name": "cluster_id", "type": "libc::c_int", "shape": "scalar"},
+      "i_field": {"name": "cluster_id", "type": "i32"}
+    },
+    {
+      "u_field": {"name": "cluster_distance", "type": "libc::c_double", "shape": "scalar"},
+      "i_field": {"name": "cluster_distance", "type": "f64"}
+    }
+  ]
+}
+```
+----END SPEC----
+2026-11-16 13:27:20 | DEBUG    | sactor.utils:257 | Generated struct:
+2026-11-16 13:27:20 | DEBUG    | sactor.utils:258 | #[derive(Copy, Clone, Debug)]
+pub struct Point {
+    pub x: f64,
+    pub y: f64,
+    pub cluster_id: i32,
+    pub cluster_distance: f64,
+}
+
+2026-11-16 13:27:20 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/build_attempt/Cargo.toml
+2026-11-16 13:27:22 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:27:22 | INFO     | sactor.verifier.idiomatic_verifier:1268 | No test commands configured; accepting idiomatic struct Point after the compile check (converter harness skipped)
+2026-11-16 13:27:22 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: diff_timespec (attempts: 0)
+2026-11-16 13:27:22 | PROMPT   | sactor.llm:155 | 
+Translate the following unidiomatic Rust function into idiomatic Rust. Try to remove all the `unsafe` blocks and only use the safe Rust code or use the `unsafe` blocks only when necessary.
+Before translating, analyze the unsafe blocks one by one and how to convert them into safe Rust code.
+**libc may not be provided in the idiomatic code, so try to avoid using libc functions and types, and avoid using `std::ffi` module.**
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+```rust
+pub unsafe fn diff_timespec(time1: *mut libc::timespec, time0: *mut libc::timespec) -> f64 {
+    let sec = (*time1).tv_sec.wrapping_sub((*time0).tv_sec);
+    let nsec = (*time1).tv_nsec.wrapping_sub((*time0).tv_nsec);
+    (sec as f64) + (nsec as f64) / 1000000000.0
+}
+
+```
+
+"Crown" is a pointer analysis tool that can help to identify the ownership, mutability and fatness of pointers. Following are the possible annotations for pointers:
+```
+fatness:
+    - `Ptr`: Single pointer
+    - `Arr`: Pointer is an array
+mutability:
+    - `Mut`: Mutable pointer
+    - `Imm`: Immutable pointer
+ownership:
+    - `Owning`: Owns the pointer
+    - `Transient`: Not owns the pointer
+````
+
+The following is the output of Crown for this function:
+```
+{'time1': {'fatness': ['Ptr'], 'mutability': ['Imm'], 'ownership': ['Transient']}, 'time0': {'fatness': ['Ptr'], 'mutability': ['Imm'], 'ownership': ['Transient']}}
+```
+Analyze the Crown output firstly, then translate the pointers in function arguments and return values with the help of the Crown output.
+Try to avoid using pointers in the function arguments and return values if possible.
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+
+Also output a minimal JSON spec that maps the unidiomatic Rust layout to the idiomatic Rust for the function arguments and return value.
+Full JSON Schema for the SPEC (do not output the schema; output only an instance that conforms to it):
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sactor://spec.schema.json",
+  "title": "Sactor Idiomatic Translation Spec",
+  "description": "Schema describing mappings between unidiomatic (repr(C)) Rust and idiomatic Rust for structs and function arguments.",
+  "$defs": {
+    "PtrShape": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ptr": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["slice", "cstring", "ref"] },
+            "len_from": { "type": "string", "description": "Name of the unidiomatic length field." },
+            "len_const": { "type": "integer", "minimum": 0, "description": "Constant element count for the pointer." },
+            "null": { "enum": ["nullable", "forbidden"], "description": "Whether the pointer can be NULL." }
+          },
+          "required": ["kind"]
+        }
+      },
+      "required": ["ptr"]
+    },
+    "UField": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "shape": {
+          "oneOf": [
+            { "const": "scalar", "description": "Scalar value (integer, float, bool, char, or any non-pointer data structures)" },
+            { "$ref": "#/$defs/PtrShape", "description": "Pointer type (raw pointer, slice, or C string)" }
+          ]
+        }
+      },
+      "required": ["name", "shape"]
+    },
+    "IField": {
+      "type": "object",
+      "description": "Idiomatic-side field path. Special convention: if name == 'ret', this Field describes the function return mapping.",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic field path or 'ret' for function return." },
+        "type": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "EnumDiscriminant": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tag": { "type": "string", "description": "u_field.name of the discriminant/tag" },
+        "equals": { "type": ["integer", "string"], "description": "Value of tag that selects this variant" }
+      },
+      "required": ["tag", "equals"]
+    },
+    "EnumVariant": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic enum variant name" },
+        "when": { "$ref": "#/$defs/EnumDiscriminant" },
+        "payload": { "type": "array", "items": { "$ref": "#/$defs/Field" } }
+      },
+      "required": ["name", "when"]
+    },
+    "Field": {
+      "type": "object",
+      "description": "Field mapping between unidiomatic C-style field and idiomatic Rust path.",
+      "properties": {
+        "u_field": { "$ref": "#/$defs/UField" },
+        "i_field": { "$ref": "#/$defs/IField" },
+        "ownership": { "type": "string", "enum": ["owning", "transient"], "description": "Optional ownership hint." },
+        "compare": {
+          "type": "string",
+          "enum": ["by_value", "by_slice", "skip"],
+          "description": "Comparison strategy for roundtrip tests. Use 'skip' generously for values that may legitimately diverge (raw pointers, aliasing views, externally-owned buffers, handles, allocator state, etc.) so the automated selftest stays permissive."
+        },
+        "llm_note": { "type": "string", "description": "Free-form note for LLM when automatic codegen is insufficient (e.g., aliasing/offset semantics)." }
+      },
+      "required": ["u_field", "i_field"]
+    },
+    "StructSpec": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "struct_name": { "type": "string", "description": "Name of the translated idiomatic struct." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 },
+        "i_kind": { "type": "string", "enum": ["struct", "enum"], "default": "struct" },
+        "i_type": { "type": "string", "description": "Idiomatic type name (useful when i_kind=enum)" },
+        "variants": { "type": "array", "items": { "$ref": "#/$defs/EnumVariant" } }
+      },
+      "required": ["fields", "i_kind", "i_type"]
+    },
+    "FunctionSpec": {
+      "type": "object",
+      "description": "Function argument/return mapping. Return values are expressed via a Field whose i_field.name == 'ret'.",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "function_name": { "type": "string", "description": "Name of the translated idiomatic function." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 }
+      },
+      "required": ["fields"]
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/StructSpec" },
+    { "$ref": "#/$defs/FunctionSpec" }
+  ]
+}
+
+```
+----SPEC----
+```json
+{
+  "function_name": "diff_timespec",
+  "fields": [
+    {
+      "u_field": {
+        "name": "...",
+        "type": "...",
+        "shape": "scalar" | {"ptr": {"kind": "slice|cstring|ref", "len_from": "?", "len_const": 1}}
+      },
+      "i_field": {
+        "name": "...",
+        "type": "..."
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+
+Few-shot examples (each with unidiomatic Rust signature, idiomatic Rust signature, and the SPEC):
+
+Example F1 (slice argument):
+Raw slice pointer plus length translated to &[T] parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn sum(xs: *const i32, n: usize) -> i32;
+```
+Idiomatic Rust:
+```rust
+pub fn sum(xs: &[i32]) -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "sum",
+  "fields": [
+    { "u_field": {"name": "xs", "type": "*const i32", "shape": { "ptr": { "kind": "slice", "len_from": "n" } }},
+      "i_field": {"name": "xs", "type": "&[i32]"} },
+    { "u_field": {"name": "n", "type": "usize", "shape": "scalar"},
+      "i_field": {"name": "xs.len", "type": "usize"} },
+    { "u_field": {"name": "ret", "type": "i32", "shape": "scalar"},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F2 (out pointer to return value):
+Mutable pointer output replaced by direct return.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn get_value(out_value: *mut i32);
+```
+Idiomatic Rust:
+```rust
+pub fn get_value() -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "get_value",
+  "fields": [
+    { "u_field": {"name": "out_value", "type": "*mut i32", "shape": { "ptr": { "kind": "ref" } }},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F3 (nullable cstring to Option<&str>):
+Nullable C string pointer converted to Option<&str> parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn set_name(name: *const libc::c_char);
+```
+Idiomatic Rust:
+```rust
+pub fn set_name(name: Option<&str>);
+```
+----SPEC----
+```json
+{
+  "function_name": "set_name",
+  "fields": [
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring", "null": "nullable" } }},
+      "i_field": {"name": "name", "type": "Option<&str>"} }
+  ]
+}
+```
+----END SPEC----
+
+2026-11-16 13:27:28 | RESPONSE | sactor.llm:160 | **Analysis of unsafe blocks**
+
+The function has no explicit `unsafe` blocks. It is declared `unsafe fn` and dereferences two raw pointers, `time1` and `time0`.
+
+Crown reports that both pointers are single (`Ptr`), immutable (`Imm`) and transient (`Transient`). That means neither is an array, neither is written through, and the function does not own either one. Both can therefore become shared references, `&Timespec`.
+
+Since libc types are not allowed, I define a local `Timespec` struct with the same fields (`tv_sec: i64`, `tv_nsec: i64`) inside the function. A nested definition is not visible to callers, though. In practice the caller would pass their own type, so the signature uses `(i64, i64)` tuples. This avoids both libc and a helper type outside the function.
+
+The tuples are `(tv_sec, tv_nsec)`. The `wrapping_sub` calls stay, to preserve the original behavior. The result is the same `f64` computation.
+
+No `unsafe` is needed.
+
+----FUNCTION----
+```rust
+pub fn diff_timespec(time1: (i64, i64), time0: (i64, i64)) -> f64 {
+    let sec = time1.0.wrapping_sub(time0.0);
+    let nsec = time1.1.wrapping_sub(time0.1);
+    (sec as f64) + (nsec as f64) / 1000000000.0
+}
+```
+----END FUNCTION----
+
+----SPEC----
+```json
+{
+  "function_name": "diff_timespec",
+  "fields": [
+    {
+      "u_field": {
+        "name": "time1",
+        "type": "*mut libc::timespec",
+        "shape": { "ptr": { "kind": "ref", "null": "forbidden" } }
+      },
+      "i_field": {
+        "name": "time1",
+        "type": "(i64, i64)"
+      },
+      "ownership": "transient",
+      "compare": "by_value",
+      "llm_note": "Tuple is (tv_sec, tv_nsec) copied from the timespec struct."
+    },
+    {
+      "u_field": {
+        "name": "time0",
+        "type": "*mut libc::timespec",
+        "shape": { "ptr": { "kind": "ref", "null": "forbidden" } }
+      },
+      "i_field": {
+        "name": "time0",
+        "type": "(i64, i64)"
+      },
+      "ownership": "transient",
+      "compare": "by_value",
+      "llm_note": "Tuple is (tv_sec, tv_nsec) copied from the timespec struct."
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "f64",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "f64"
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+2026-11-16 13:27:28 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:27:28 | DEBUG    | sactor.utils:258 | pub fn diff_timespec(time1: (i64, i64), time0: (i64, i64)) -> f64 {
+    let sec = time1.0.wrapping_sub(time0.0);
+    let nsec = time1.1.wrapping_sub(time0.1);
+    (sec as f64) + (nsec as f64) / 1000000000.0
+}
+
+2026-11-16 13:27:29 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/build_attempt/Cargo.toml
+2026-11-16 13:27:30 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:27:30 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function diff_timespec after the compile check (FFI harness skipped)
+2026-11-16 13:27:32 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: distance (attempts: 0)
+2026-11-16 13:27:32 | PROMPT   | sactor.llm:155 | 
+Translate the following unidiomatic Rust function into idiomatic Rust. Try to remove all the `unsafe` blocks and only use the safe Rust code or use the `unsafe` blocks only when necessary.
+Before translating, analyze the unsafe blocks one by one and how to convert them into safe Rust code.
+**libc may not be provided in the idiomatic code, so try to avoid using libc functions and types, and avoid using `std::ffi` module.**
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+```rust
+pub fn distance(p: Point, c: Cluster) -> f64 {
+    ((p.x - c.x) * (p.x - c.x) + (p.y - c.y) * (p.y - c.y)).sqrt()
+}
+
+```
+
+This function uses the following structs/unions, which are already translated as (you don't need to include them in your translation, and **you can not modify them**):
+```rust
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub struct Cluster {
+    pub x: f64,
+    pub y: f64,
+}
+
+#[derive(Copy, Clone, Debug)]
+pub struct Point {
+    pub x: f64,
+    pub y: f64,
+    pub cluster_id: i32,
+    pub cluster_distance: f64,
+}
+
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+
+Also output a minimal JSON spec that maps the unidiomatic Rust layout to the idiomatic Rust for the function arguments and return value.
+Full JSON Schema for the SPEC (do not output the schema; output only an instance that conforms to it):
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sactor://spec.schema.json",
+  "title": "Sactor Idiomatic Translation Spec",
+  "description": "Schema describing mappings between unidiomatic (repr(C)) Rust and idiomatic Rust for structs and function arguments.",
+  "$defs": {
+    "PtrShape": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ptr": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["slice", "cstring", "ref"] },
+            "len_from": { "type": "string", "description": "Name of the unidiomatic length field." },
+            "len_const": { "type": "integer", "minimum": 0, "description": "Constant element count for the pointer." },
+            "null": { "enum": ["nullable", "forbidden"], "description": "Whether the pointer can be NULL." }
+          },
+          "required": ["kind"]
+        }
+      },
+      "required": ["ptr"]
+    },
+    "UField": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "shape": {
+          "oneOf": [
+            { "const": "scalar", "description": "Scalar value (integer, float, bool, char, or any non-pointer data structures)" },
+            { "$ref": "#/$defs/PtrShape", "description": "Pointer type (raw pointer, slice, or C string)" }
+          ]
+        }
+      },
+      "required": ["name", "shape"]
+    },
+    "IField": {
+      "type": "object",
+      "description": "Idiomatic-side field path. Special convention: if name == 'ret', this Field describes the function return mapping.",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic field path or 'ret' for function return." },
+        "type": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "EnumDiscriminant": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tag": { "type": "string", "description": "u_field.name of the discriminant/tag" },
+        "equals": { "type": ["integer", "string"], "description": "Value of tag that selects this variant" }
+      },
+      "required": ["tag", "equals"]
+    },
+    "EnumVariant": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic enum variant name" },
+        "when": { "$ref": "#/$defs/EnumDiscriminant" },
+        "payload": { "type": "array", "items": { "$ref": "#/$defs/Field" } }
+      },
+      "required": ["name", "when"]
+    },
+    "Field": {
+      "type": "object",
+      "description": "Field mapping between unidiomatic C-style field and idiomatic Rust path.",
+      "properties": {
+        "u_field": { "$ref": "#/$defs/UField" },
+        "i_field": { "$ref": "#/$defs/IField" },
+        "ownership": { "type": "string", "enum": ["owning", "transient"], "description": "Optional ownership hint." },
+        "compare": {
+          "type": "string",
+          "enum": ["by_value", "by_slice", "skip"],
+          "description": "Comparison strategy for roundtrip tests. Use 'skip' generously for values that may legitimately diverge (raw pointers, aliasing views, externally-owned buffers, handles, allocator state, etc.) so the automated selftest stays permissive."
+        },
+        "llm_note": { "type": "string", "description": "Free-form note for LLM when automatic codegen is insufficient (e.g., aliasing/offset semantics)." }
+      },
+      "required": ["u_field", "i_field"]
+    },
+    "StructSpec": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "struct_name": { "type": "string", "description": "Name of the translated idiomatic struct." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 },
+        "i_kind": { "type": "string", "enum": ["struct", "enum"], "default": "struct" },
+        "i_type": { "type": "string", "description": "Idiomatic type name (useful when i_kind=enum)" },
+        "variants": { "type": "array", "items": { "$ref": "#/$defs/EnumVariant" } }
+      },
+      "required": ["fields", "i_kind", "i_type"]
+    },
+    "FunctionSpec": {
+      "type": "object",
+      "description": "Function argument/return mapping. Return values are expressed via a Field whose i_field.name == 'ret'.",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "function_name": { "type": "string", "description": "Name of the translated idiomatic function." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 }
+      },
+      "required": ["fields"]
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/StructSpec" },
+    { "$ref": "#/$defs/FunctionSpec" }
+  ]
+}
+
+```
+----SPEC----
+```json
+{
+  "function_name": "distance",
+  "fields": [
+    {
+      "u_field": {
+        "name": "...",
+        "type": "...",
+        "shape": "scalar" | {"ptr": {"kind": "slice|cstring|ref", "len_from": "?", "len_const": 1}}
+      },
+      "i_field": {
+        "name": "...",
+        "type": "..."
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+
+Few-shot examples (each with unidiomatic Rust signature, idiomatic Rust signature, and the SPEC):
+
+Example F1 (slice argument):
+Raw slice pointer plus length translated to &[T] parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn sum(xs: *const i32, n: usize) -> i32;
+```
+Idiomatic Rust:
+```rust
+pub fn sum(xs: &[i32]) -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "sum",
+  "fields": [
+    { "u_field": {"name": "xs", "type": "*const i32", "shape": { "ptr": { "kind": "slice", "len_from": "n" } }},
+      "i_field": {"name": "xs", "type": "&[i32]"} },
+    { "u_field": {"name": "n", "type": "usize", "shape": "scalar"},
+      "i_field": {"name": "xs.len", "type": "usize"} },
+    { "u_field": {"name": "ret", "type": "i32", "shape": "scalar"},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F2 (out pointer to return value):
+Mutable pointer output replaced by direct return.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn get_value(out_value: *mut i32);
+```
+Idiomatic Rust:
+```rust
+pub fn get_value() -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "get_value",
+  "fields": [
+    { "u_field": {"name": "out_value", "type": "*mut i32", "shape": { "ptr": { "kind": "ref" } }},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F3 (nullable cstring to Option<&str>):
+Nullable C string pointer converted to Option<&str> parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn set_name(name: *const libc::c_char);
+```
+Idiomatic Rust:
+```rust
+pub fn set_name(name: Option<&str>);
+```
+----SPEC----
+```json
+{
+  "function_name": "set_name",
+  "fields": [
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring", "null": "nullable" } }},
+      "i_field": {"name": "name", "type": "Option<&str>"} }
+  ]
+}
+```
+----END SPEC----
+
+2026-11-16 13:27:36 | RESPONSE | sactor.llm:160 | The function contains no `unsafe` blocks, so there is nothing to convert. It takes `Point` and `Cluster` by value (both are `Copy`) and uses only arithmetic and `sqrt`. It is already idiomatic safe Rust, so I only made small readability changes: named local variables for the differences, and `dx.hypot(dy)` replaced with the explicit square-root form so the numerical behavior stays the same as the original.
+
+The spec maps each argument and the return value to itself. Both structs are plain data, so they are scalar shapes.
+
+----FUNCTION----
+```rust
+pub fn distance(p: Point, c: Cluster) -> f64 {
+    let dx = p.x - c.x;
+    let dy = p.y - c.y;
+    (dx * dx + dy * dy).sqrt()
+}
+```
+----END FUNCTION----
+
+----SPEC----
+```json
+{
+  "function_name": "distance",
+  "fields": [
+    {
+      "u_field": {
+        "name": "p",
+        "type": "Point",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "p",
+        "type": "Point"
+      }
+    },
+    {
+      "u_field": {
+        "name": "c",
+        "type": "Cluster",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "c",
+        "type": "Cluster"
+      }
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "f64",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "f64"
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+2026-11-16 13:27:36 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:27:36 | DEBUG    | sactor.utils:258 | pub fn distance(p: Point, c: Cluster) -> f64 {
+    let dx = p.x - c.x;
+    let dy = p.y - c.y;
+    (dx * dx + dy * dy).sqrt()
+}
+
+2026-11-16 13:27:36 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/build_attempt/Cargo.toml
+2026-11-16 13:27:38 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:27:38 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function distance after the compile check (FFI harness skipped)
+2026-11-16 13:27:38 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: update_centroids (attempts: 0)
+2026-11-16 13:27:38 | PROMPT   | sactor.llm:155 | 
+Translate the following unidiomatic Rust function into idiomatic Rust. Try to remove all the `unsafe` blocks and only use the safe Rust code or use the `unsafe` blocks only when necessary.
+Before translating, analyze the unsafe blocks one by one and how to convert them into safe Rust code.
+**libc may not be provided in the idiomatic code, so try to avoid using libc functions and types, and avoid using `std::ffi` module.**
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+```rust
+pub unsafe fn update_centroids(
+    points: *mut Point,
+    n: libc::c_int,
+    clusters: *mut Cluster,
+    k: libc::c_int,
+) {
+    let count =
+        libc::calloc(k as libc::size_t, std::mem::size_of::<libc::c_int>()) as *mut libc::c_int;
+    let sum_x = libc::calloc(k as libc::size_t, std::mem::size_of::<libc::c_double>())
+        as *mut libc::c_double;
+    let sum_y = libc::calloc(k as libc::size_t, std::mem::size_of::<libc::c_double>())
+        as *mut libc::c_double;
+    let mut i: libc::c_int = 0;
+    while i < n {
+        let p = &*points.offset(i as isize);
+        let cid = p.cluster_id as isize;
+        *count.offset(cid) += 1;
+        *sum_x.offset(cid) += p.x;
+        *sum_y.offset(cid) += p.y;
+        i += 1;
+    }
+    let mut j: libc::c_int = 0;
+    while j < k {
+        let c = *count.offset(j as isize);
+        if c > 0 {
+            let cl = &mut *clusters.offset(j as isize);
+            cl.x = *sum_x.offset(j as isize) / (c as libc::c_double);
+            cl.y = *sum_y.offset(j as isize) / (c as libc::c_double);
+        }
+        j += 1;
+    }
+    libc::free(count as *mut libc::c_void);
+    libc::free(sum_x as *mut libc::c_void);
+    libc::free(sum_y as *mut libc::c_void);
+}
+
+```
+
+"Crown" is a pointer analysis tool that can help to identify the ownership, mutability and fatness of pointers. Following are the possible annotations for pointers:
+```
+fatness:
+    - `Ptr`: Single pointer
+    - `Arr`: Pointer is an array
+mutability:
+    - `Mut`: Mutable pointer
+    - `Imm`: Immutable pointer
+ownership:
+    - `Owning`: Owns the pointer
+    - `Transient`: Not owns the pointer
+````
+
+The following is the output of Crown for this function:
+```
+{'points': {'fatness': ['Arr'], 'mutability': ['Imm'], 'ownership': ['Transient']}, 'sum_x': {'fatness': ['Arr'], 'mutability': ['Mut'], 'ownership': ['Owning']}, 'clusters': {'fatness': ['Arr'], 'mutability': ['Mut'], 'ownership': ['Transient']}, 'fresh0': {'fatness': ['Ptr'], 'mutability': ['Mut'], 'ownership': ['Transient']}, 'count': {'fatness': ['Arr'], 'mutability': ['Mut'], 'ownership': ['Owning']}, 'sum_y': {'fatness': ['Arr'], 'mutability': ['Mut'], 'ownership': ['Owning']}}
+```
+Analyze the Crown output firstly, then translate the pointers in function arguments and return values with the help of the Crown output.
+Try to avoid using pointers in the function arguments and return values if possible.
+
+This function uses the following structs/unions, which are already translated as (you don't need to include them in your translation, and **you can not modify them**):
+```rust
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub struct Cluster {
+    pub x: f64,
+    pub y: f64,
+}
+
+#[derive(Copy, Clone, Debug)]
+pub struct Point {
+    pub x: f64,
+    pub y: f64,
+    pub cluster_id: i32,
+    pub cluster_distance: f64,
+}
+
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+
+Also output a minimal JSON spec that maps the unidiomatic Rust layout to the idiomatic Rust for the function arguments and return value.
+Full JSON Schema for the SPEC (do not output the schema; output only an instance that conforms to it):
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sactor://spec.schema.json",
+  "title": "Sactor Idiomatic Translation Spec",
+  "description": "Schema describing mappings between unidiomatic (repr(C)) Rust and idiomatic Rust for structs and function arguments.",
+  "$defs": {
+    "PtrShape": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ptr": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["slice", "cstring", "ref"] },
+            "len_from": { "type": "string", "description": "Name of the unidiomatic length field." },
+            "len_const": { "type": "integer", "minimum": 0, "description": "Constant element count for the pointer." },
+            "null": { "enum": ["nullable", "forbidden"], "description": "Whether the pointer can be NULL." }
+          },
+          "required": ["kind"]
+        }
+      },
+      "required": ["ptr"]
+    },
+    "UField": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "shape": {
+          "oneOf": [
+            { "const": "scalar", "description": "Scalar value (integer, float, bool, char, or any non-pointer data structures)" },
+            { "$ref": "#/$defs/PtrShape", "description": "Pointer type (raw pointer, slice, or C string)" }
+          ]
+        }
+      },
+      "required": ["name", "shape"]
+    },
+    "IField": {
+      "type": "object",
+      "description": "Idiomatic-side field path. Special convention: if name == 'ret', this Field describes the function return mapping.",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic field path or 'ret' for function return." },
+        "type": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "EnumDiscriminant": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tag": { "type": "string", "description": "u_field.name of the discriminant/tag" },
+        "equals": { "type": ["integer", "string"], "description": "Value of tag that selects this variant" }
+      },
+      "required": ["tag", "equals"]
+    },
+    "EnumVariant": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic enum variant name" },
+        "when": { "$ref": "#/$defs/EnumDiscriminant" },
+        "payload": { "type": "array", "items": { "$ref": "#/$defs/Field" } }
+      },
+      "required": ["name", "when"]
+    },
+    "Field": {
+      "type": "object",
+      "description": "Field mapping between unidiomatic C-style field and idiomatic Rust path.",
+      "properties": {
+        "u_field": { "$ref": "#/$defs/UField" },
+        "i_field": { "$ref": "#/$defs/IField" },
+        "ownership": { "type": "string", "enum": ["owning", "transient"], "description": "Optional ownership hint." },
+        "compare": {
+          "type": "string",
+          "enum": ["by_value", "by_slice", "skip"],
+          "description": "Comparison strategy for roundtrip tests. Use 'skip' generously for values that may legitimately diverge (raw pointers, aliasing views, externally-owned buffers, handles, allocator state, etc.) so the automated selftest stays permissive."
+        },
+        "llm_note": { "type": "string", "description": "Free-form note for LLM when automatic codegen is insufficient (e.g., aliasing/offset semantics)." }
+      },
+      "required": ["u_field", "i_field"]
+    },
+    "StructSpec": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "struct_name": { "type": "string", "description": "Name of the translated idiomatic struct." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 },
+        "i_kind": { "type": "string", "enum": ["struct", "enum"], "default": "struct" },
+        "i_type": { "type": "string", "description": "Idiomatic type name (useful when i_kind=enum)" },
+        "variants": { "type": "array", "items": { "$ref": "#/$defs/EnumVariant" } }
+      },
+      "required": ["fields", "i_kind", "i_type"]
+    },
+    "FunctionSpec": {
+      "type": "object",
+      "description": "Function argument/return mapping. Return values are expressed via a Field whose i_field.name == 'ret'.",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "function_name": { "type": "string", "description": "Name of the translated idiomatic function." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 }
+      },
+      "required": ["fields"]
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/StructSpec" },
+    { "$ref": "#/$defs/FunctionSpec" }
+  ]
+}
+
+```
+----SPEC----
+```json
+{
+  "function_name": "update_centroids",
+  "fields": [
+    {
+      "u_field": {
+        "name": "...",
+        "type": "...",
+        "shape": "scalar" | {"ptr": {"kind": "slice|cstring|ref", "len_from": "?", "len_const": 1}}
+      },
+      "i_field": {
+        "name": "...",
+        "type": "..."
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+
+Few-shot examples (each with unidiomatic Rust signature, idiomatic Rust signature, and the SPEC):
+
+Example F1 (slice argument):
+Raw slice pointer plus length translated to &[T] parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn sum(xs: *const i32, n: usize) -> i32;
+```
+Idiomatic Rust:
+```rust
+pub fn sum(xs: &[i32]) -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "sum",
+  "fields": [
+    { "u_field": {"name": "xs", "type": "*const i32", "shape": { "ptr": { "kind": "slice", "len_from": "n" } }},
+      "i_field": {"name": "xs", "type": "&[i32]"} },
+    { "u_field": {"name": "n", "type": "usize", "shape": "scalar"},
+      "i_field": {"name": "xs.len", "type": "usize"} },
+    { "u_field": {"name": "ret", "type": "i32", "shape": "scalar"},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F2 (out pointer to return value):
+Mutable pointer output replaced by direct return.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn get_value(out_value: *mut i32);
+```
+Idiomatic Rust:
+```rust
+pub fn get_value() -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "get_value",
+  "fields": [
+    { "u_field": {"name": "out_value", "type": "*mut i32", "shape": { "ptr": { "kind": "ref" } }},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F3 (nullable cstring to Option<&str>):
+Nullable C string pointer converted to Option<&str> parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn set_name(name: *const libc::c_char);
+```
+Idiomatic Rust:
+```rust
+pub fn set_name(name: Option<&str>);
+```
+----SPEC----
+```json
+{
+  "function_name": "set_name",
+  "fields": [
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring", "null": "nullable" } }},
+      "i_field": {"name": "name", "type": "Option<&str>"} }
+  ]
+}
+```
+----END SPEC----
+
+2026-11-16 13:27:45 | RESPONSE | sactor.llm:160 | **Analysis of the unsafe operations**
+
+1. **`calloc` for `count`, `sum_x` and `sum_y`.** Crown marks these as owning, mutable arrays. They are replaced with `vec![0; k]` and `vec![0.0; k]`, which are zero-initialised and freed automatically. The `libc::free` calls disappear.
+2. **`points: *mut Point`.** Crown marks this as an immutable, transient array whose length is `n`. It becomes `&[Point]`, and `n` is dropped because it is `points.len()`.
+3. **`clusters: *mut Cluster`.** Crown marks this as a mutable, transient array whose length is `k`. It becomes `&mut [Cluster]`, and `k` is dropped because it is `clusters.len()`.
+4. **Pointer offsets and dereferences.** These become safe slice indexing and iteration.
+5. **Original loop bounds.** The original code reads `n` points and updates `k` clusters. Using the slice lengths keeps this behaviour, assuming `n == points.len()` and `k == clusters.len()`.
+
+No `unsafe` is needed.
+
+----FUNCTION----
+```rust
+pub fn update_centroids(points: &[Point], clusters: &mut [Cluster]) {
+    let k = clusters.len();
+    let mut count: Vec<i32> = vec![0; k];
+    let mut sum_x: Vec<f64> = vec![0.0; k];
+    let mut sum_y: Vec<f64> = vec![0.0; k];
+
+    for p in points {
+        let cid = p.cluster_id as usize;
+        count[cid] += 1;
+        sum_x[cid] += p.x;
+        sum_y[cid] += p.y;
+    }
+
+    for (j, cl) in clusters.iter_mut().enumerate() {
+        let c = count[j];
+        if c > 0 {
+            cl.x = sum_x[j] / (c as f64);
+            cl.y = sum_y[j] / (c as f64);
+        }
+    }
+}
+```
+----END FUNCTION----
+
+----SPEC----
+```json
+{
+  "function_name": "update_centroids",
+  "fields": [
+    {
+      "u_field": {
+        "name": "points",
+        "type": "*mut Point",
+        "shape": { "ptr": { "kind": "slice", "len_from": "n", "null": "forbidden" } }
+      },
+      "i_field": { "name": "points", "type": "&[Point]" }
+    },
+    {
+      "u_field": { "name": "n", "type": "libc::c_int", "shape": "scalar" },
+      "i_field": { "name": "points.len", "type": "usize" }
+    },
+    {
+      "u_field": {
+        "name": "clusters",
+        "type": "*mut Cluster",
+        "shape": { "ptr": { "kind": "slice", "len_from": "k", "null": "forbidden" } }
+      },
+      "i_field": { "name": "clusters", "type": "&mut [Cluster]" }
+    },
+    {
+      "u_field": { "name": "k", "type": "libc::c_int", "shape": "scalar" },
+      "i_field": { "name": "clusters.len", "type": "usize" }
+    }
+  ]
+}
+```
+----END SPEC----
+2026-11-16 13:27:45 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:27:45 | DEBUG    | sactor.utils:258 | pub fn update_centroids(points: &[Point], clusters: &mut [Cluster]) {
+    let k = clusters.len();
+    let mut count: Vec<i32> = vec![0; k];
+    let mut sum_x: Vec<f64> = vec![0.0; k];
+    let mut sum_y: Vec<f64> = vec![0.0; k];
+
+    for p in points {
+        let cid = p.cluster_id as usize;
+        count[cid] += 1;
+        sum_x[cid] += p.x;
+        sum_y[cid] += p.y;
+    }
+
+    for (j, cl) in clusters.iter_mut().enumerate() {
+        let c = count[j];
+        if c > 0 {
+            cl.x = sum_x[j] / (c as f64);
+            cl.y = sum_y[j] / (c as f64);
+        }
+    }
+}
+
+2026-11-16 13:27:45 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/build_attempt/Cargo.toml
+2026-11-16 13:27:47 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:27:47 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function update_centroids after the compile check (FFI harness skipped)
+2026-11-16 13:27:47 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: assign_clusters (attempts: 0)
+2026-11-16 13:27:47 | PROMPT   | sactor.llm:155 | 
+Translate the following unidiomatic Rust function into idiomatic Rust. Try to remove all the `unsafe` blocks and only use the safe Rust code or use the `unsafe` blocks only when necessary.
+Before translating, analyze the unsafe blocks one by one and how to convert them into safe Rust code.
+**libc may not be provided in the idiomatic code, so try to avoid using libc functions and types, and avoid using `std::ffi` module.**
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+```rust
+pub unsafe fn assign_clusters(
+    points: *mut Point,
+    n: libc::c_int,
+    clusters: *mut Cluster,
+    k: libc::c_int,
+) {
+    let mut i: libc::c_int = 0;
+    while i < n {
+        let mut min_dist: f64 = f64::MAX;
+        let mut best_cluster: libc::c_int = -1;
+        let mut j: libc::c_int = 0;
+        while j < k {
+            let d: f64 = distance(*points.offset(i as isize), *clusters.offset(j as isize));
+            if d < min_dist {
+                min_dist = d;
+                best_cluster = j;
+            }
+            j += 1;
+        }
+        (*points.offset(i as isize)).cluster_id = best_cluster;
+        (*points.offset(i as isize)).cluster_distance = min_dist;
+        i += 1;
+    }
+}
+
+```
+
+"Crown" is a pointer analysis tool that can help to identify the ownership, mutability and fatness of pointers. Following are the possible annotations for pointers:
+```
+fatness:
+    - `Ptr`: Single pointer
+    - `Arr`: Pointer is an array
+mutability:
+    - `Mut`: Mutable pointer
+    - `Imm`: Immutable pointer
+ownership:
+    - `Owning`: Owns the pointer
+    - `Transient`: Not owns the pointer
+````
+
+The following is the output of Crown for this function:
+```
+{'points': {'fatness': ['Arr'], 'mutability': ['Mut'], 'ownership': ['Transient']}, 'clusters': {'fatness': ['Arr'], 'mutability': ['Imm'], 'ownership': ['Transient']}}
+```
+Analyze the Crown output firstly, then translate the pointers in function arguments and return values with the help of the Crown output.
+Try to avoid using pointers in the function arguments and return values if possible.
+
+This function uses the following structs/unions, which are already translated as (you don't need to include them in your translation, and **you can not modify them**):
+```rust
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub struct Cluster {
+    pub x: f64,
+    pub y: f64,
+}
+
+#[derive(Copy, Clone, Debug)]
+pub struct Point {
+    pub x: f64,
+    pub y: f64,
+    pub cluster_id: i32,
+    pub cluster_distance: f64,
+}
+
+```
+
+This function uses the following functions, which are already translated as (you don't need to include them in your translation, and **you can not modify them**):
+```rust
+fn distance (p : Point , c : Cluster) -> f64;
+fn distance (p : Point , c : Cluster) -> f64;
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+
+Also output a minimal JSON spec that maps the unidiomatic Rust layout to the idiomatic Rust for the function arguments and return value.
+Full JSON Schema for the SPEC (do not output the schema; output only an instance that conforms to it):
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sactor://spec.schema.json",
+  "title": "Sactor Idiomatic Translation Spec",
+  "description": "Schema describing mappings between unidiomatic (repr(C)) Rust and idiomatic Rust for structs and function arguments.",
+  "$defs": {
+    "PtrShape": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ptr": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["slice", "cstring", "ref"] },
+            "len_from": { "type": "string", "description": "Name of the unidiomatic length field." },
+            "len_const": { "type": "integer", "minimum": 0, "description": "Constant element count for the pointer." },
+            "null": { "enum": ["nullable", "forbidden"], "description": "Whether the pointer can be NULL." }
+          },
+          "required": ["kind"]
+        }
+      },
+      "required": ["ptr"]
+    },
+    "UField": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "shape": {
+          "oneOf": [
+            { "const": "scalar", "description": "Scalar value (integer, float, bool, char, or any non-pointer data structures)" },
+            { "$ref": "#/$defs/PtrShape", "description": "Pointer type (raw pointer, slice, or C string)" }
+          ]
+        }
+      },
+      "required": ["name", "shape"]
+    },
+    "IField": {
+      "type": "object",
+      "description": "Idiomatic-side field path. Special convention: if name == 'ret', this Field describes the function return mapping.",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic field path or 'ret' for function return." },
+        "type": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "EnumDiscriminant": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tag": { "type": "string", "description": "u_field.name of the discriminant/tag" },
+        "equals": { "type": ["integer", "string"], "description": "Value of tag that selects this variant" }
+      },
+      "required": ["tag", "equals"]
+    },
+    "EnumVariant": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic enum variant name" },
+        "when": { "$ref": "#/$defs/EnumDiscriminant" },
+        "payload": { "type": "array", "items": { "$ref": "#/$defs/Field" } }
+      },
+      "required": ["name", "when"]
+    },
+    "Field": {
+      "type": "object",
+      "description": "Field mapping between unidiomatic C-style field and idiomatic Rust path.",
+      "properties": {
+        "u_field": { "$ref": "#/$defs/UField" },
+        "i_field": { "$ref": "#/$defs/IField" },
+        "ownership": { "type": "string", "enum": ["owning", "transient"], "description": "Optional ownership hint." },
+        "compare": {
+          "type": "string",
+          "enum": ["by_value", "by_slice", "skip"],
+          "description": "Comparison strategy for roundtrip tests. Use 'skip' generously for values that may legitimately diverge (raw pointers, aliasing views, externally-owned buffers, handles, allocator state, etc.) so the automated selftest stays permissive."
+        },
+        "llm_note": { "type": "string", "description": "Free-form note for LLM when automatic codegen is insufficient (e.g., aliasing/offset semantics)." }
+      },
+      "required": ["u_field", "i_field"]
+    },
+    "StructSpec": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "struct_name": { "type": "string", "description": "Name of the translated idiomatic struct." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 },
+        "i_kind": { "type": "string", "enum": ["struct", "enum"], "default": "struct" },
+        "i_type": { "type": "string", "description": "Idiomatic type name (useful when i_kind=enum)" },
+        "variants": { "type": "array", "items": { "$ref": "#/$defs/EnumVariant" } }
+      },
+      "required": ["fields", "i_kind", "i_type"]
+    },
+    "FunctionSpec": {
+      "type": "object",
+      "description": "Function argument/return mapping. Return values are expressed via a Field whose i_field.name == 'ret'.",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "function_name": { "type": "string", "description": "Name of the translated idiomatic function." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 }
+      },
+      "required": ["fields"]
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/StructSpec" },
+    { "$ref": "#/$defs/FunctionSpec" }
+  ]
+}
+
+```
+----SPEC----
+```json
+{
+  "function_name": "assign_clusters",
+  "fields": [
+    {
+      "u_field": {
+        "name": "...",
+        "type": "...",
+        "shape": "scalar" | {"ptr": {"kind": "slice|cstring|ref", "len_from": "?", "len_const": 1}}
+      },
+      "i_field": {
+        "name": "...",
+        "type": "..."
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+
+Few-shot examples (each with unidiomatic Rust signature, idiomatic Rust signature, and the SPEC):
+
+Example F1 (slice argument):
+Raw slice pointer plus length translated to &[T] parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn sum(xs: *const i32, n: usize) -> i32;
+```
+Idiomatic Rust:
+```rust
+pub fn sum(xs: &[i32]) -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "sum",
+  "fields": [
+    { "u_field": {"name": "xs", "type": "*const i32", "shape": { "ptr": { "kind": "slice", "len_from": "n" } }},
+      "i_field": {"name": "xs", "type": "&[i32]"} },
+    { "u_field": {"name": "n", "type": "usize", "shape": "scalar"},
+      "i_field": {"name": "xs.len", "type": "usize"} },
+    { "u_field": {"name": "ret", "type": "i32", "shape": "scalar"},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F2 (out pointer to return value):
+Mutable pointer output replaced by direct return.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn get_value(out_value: *mut i32);
+```
+Idiomatic Rust:
+```rust
+pub fn get_value() -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "get_value",
+  "fields": [
+    { "u_field": {"name": "out_value", "type": "*mut i32", "shape": { "ptr": { "kind": "ref" } }},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F3 (nullable cstring to Option<&str>):
+Nullable C string pointer converted to Option<&str> parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn set_name(name: *const libc::c_char);
+```
+Idiomatic Rust:
+```rust
+pub fn set_name(name: Option<&str>);
+```
+----SPEC----
+```json
+{
+  "function_name": "set_name",
+  "fields": [
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring", "null": "nullable" } }},
+      "i_field": {"name": "name", "type": "Option<&str>"} }
+  ]
+}
+```
+----END SPEC----
+
+2026-11-16 13:27:54 | RESPONSE | sactor.llm:160 | **Analysis of the unsafe operations**
+
+1. `*points.offset(i)` is read as a `Point` by value (it is `Copy`), and `(*points.offset(i)).cluster_id = ...` writes through the pointer. Crown reports `points` as a mutable array that the function does not own, so it becomes `&mut [Point]`. The length `n` is folded into the slice.
+2. `*clusters.offset(j)` is read as a `Cluster` by value. Crown reports `clusters` as an immutable array that the function does not own, so it becomes `&[Cluster]`. The length `k` is folded into the slice.
+3. Iterating over slices removes all index arithmetic, so no `unsafe` is needed.
+
+**Behaviour details**
+
+- If no cluster has a distance below `f64::MAX` (for example `k == 0` or the distances are NaN), `best_cluster` stays `-1`. I keep that behaviour.
+- The original loops `i < n` and `j < k`. With slices, the lengths come from the slices themselves.
+- I keep the strict `<` comparison and use `enumerate` to produce the index as `i32`.
+
+----FUNCTION----
+```rust
+pub fn assign_clusters(points: &mut [Point], clusters: &[Cluster]) {
+    for point in points.iter_mut() {
+        let mut min_dist: f64 = f64::MAX;
+        let mut best_cluster: i32 = -1;
+        for (j, cluster) in clusters.iter().enumerate() {
+            let d: f64 = distance(*point, *cluster);
+            if d < min_dist {
+                min_dist = d;
+                best_cluster = j as i32;
+            }
+        }
+        point.cluster_id = best_cluster;
+        point.cluster_distance = min_dist;
+    }
+}
+```
+----END FUNCTION----
+
+----SPEC----
+```json
+{
+  "function_name": "assign_clusters",
+  "fields": [
+    {
+      "u_field": {
+        "name": "points",
+        "type": "*mut Point",
+        "shape": { "ptr": { "kind": "slice", "len_from": "n", "null": "forbidden" } }
+      },
+      "i_field": { "name": "points", "type": "&mut [Point]" },
+      "ownership": "transient",
+      "compare": "by_slice"
+    },
+    {
+      "u_field": { "name": "n", "type": "libc::c_int", "shape": "scalar" },
+      "i_field": { "name": "points.len", "type": "usize" }
+    },
+    {
+      "u_field": {
+        "name": "clusters",
+        "type": "*mut Cluster",
+        "shape": { "ptr": { "kind": "slice", "len_from": "k", "null": "forbidden" } }
+      },
+      "i_field": { "name": "clusters", "type": "&[Cluster]" },
+      "ownership": "transient",
+      "compare": "by_slice"
+    },
+    {
+      "u_field": { "name": "k", "type": "libc::c_int", "shape": "scalar" },
+      "i_field": { "name": "clusters.len", "type": "usize" }
+    }
+  ]
+}
+```
+----END SPEC----
+2026-11-16 13:27:54 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:27:54 | DEBUG    | sactor.utils:258 | pub fn assign_clusters(points: &mut [Point], clusters: &[Cluster]) {
+    for point in points.iter_mut() {
+        let mut min_dist: f64 = f64::MAX;
+        let mut best_cluster: i32 = -1;
+        for (j, cluster) in clusters.iter().enumerate() {
+            let d: f64 = distance(*point, *cluster);
+            if d < min_dist {
+                min_dist = d;
+                best_cluster = j as i32;
+            }
+        }
+        point.cluster_id = best_cluster;
+        point.cluster_distance = min_dist;
+    }
+}
+
+2026-11-16 13:27:54 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/build_attempt/Cargo.toml
+2026-11-16 13:27:56 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:27:56 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function assign_clusters after the compile check (FFI harness skipped)
+2026-11-16 13:27:56 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: kmeans (attempts: 0)
+2026-11-16 13:27:56 | PROMPT   | sactor.llm:155 | 
+Translate the following unidiomatic Rust function into idiomatic Rust. Try to remove all the `unsafe` blocks and only use the safe Rust code or use the `unsafe` blocks only when necessary.
+Before translating, analyze the unsafe blocks one by one and how to convert them into safe Rust code.
+**libc may not be provided in the idiomatic code, so try to avoid using libc functions and types, and avoid using `std::ffi` module.**
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+```rust
+pub unsafe fn kmeans(
+    points: *mut Point,
+    n: libc::c_int,
+    clusters: *mut Cluster,
+    k: libc::c_int,
+    max_iter: libc::c_int,
+) {
+    let mut j: libc::c_int = 0;
+    while j < k {
+        (*clusters.offset(j as isize)).x = (*points.offset(j as isize)).x;
+        (*clusters.offset(j as isize)).y = (*points.offset(j as isize)).y;
+        j += 1;
+    }
+    let mut iter: libc::c_int = 0;
+    while iter < max_iter {
+        assign_clusters(points, n, clusters, k);
+        update_centroids(points, n, clusters, k);
+        iter += 1;
+    }
+}
+
+```
+
+"Crown" is a pointer analysis tool that can help to identify the ownership, mutability and fatness of pointers. Following are the possible annotations for pointers:
+```
+fatness:
+    - `Ptr`: Single pointer
+    - `Arr`: Pointer is an array
+mutability:
+    - `Mut`: Mutable pointer
+    - `Imm`: Immutable pointer
+ownership:
+    - `Owning`: Owns the pointer
+    - `Transient`: Not owns the pointer
+````
+
+The following is the output of Crown for this function:
+```
+{'clusters': {'fatness': ['Arr'], 'mutability': ['Mut'], 'ownership': ['Transient']}, 'points': {'fatness': ['Arr'], 'mutability': ['Mut'], 'ownership': ['Owning']}}
+```
+Analyze the Crown output firstly, then translate the pointers in function arguments and return values with the help of the Crown output.
+Try to avoid using pointers in the function arguments and return values if possible.
+
+This function uses the following structs/unions, which are already translated as (you don't need to include them in your translation, and **you can not modify them**):
+```rust
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub struct Cluster {
+    pub x: f64,
+    pub y: f64,
+}
+
+#[derive(Copy, Clone, Debug)]
+pub struct Point {
+    pub x: f64,
+    pub y: f64,
+    pub cluster_id: i32,
+    pub cluster_distance: f64,
+}
+
+```
+
+This function uses the following functions, which are already translated as (you don't need to include them in your translation, and **you can not modify them**):
+```rust
+fn assign_clusters (points : & mut [Point] , clusters : & [Cluster]);
+fn assign_clusters (points : & mut [Point] , clusters : & [Cluster]);
+fn update_centroids (points : & [Point] , clusters : & mut [Cluster]);
+fn update_centroids (points : & [Point] , clusters : & mut [Cluster]);
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+
+Also output a minimal JSON spec that maps the unidiomatic Rust layout to the idiomatic Rust for the function arguments and return value.
+Full JSON Schema for the SPEC (do not output the schema; output only an instance that conforms to it):
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sactor://spec.schema.json",
+  "title": "Sactor Idiomatic Translation Spec",
+  "description": "Schema describing mappings between unidiomatic (repr(C)) Rust and idiomatic Rust for structs and function arguments.",
+  "$defs": {
+    "PtrShape": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ptr": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["slice", "cstring", "ref"] },
+            "len_from": { "type": "string", "description": "Name of the unidiomatic length field." },
+            "len_const": { "type": "integer", "minimum": 0, "description": "Constant element count for the pointer." },
+            "null": { "enum": ["nullable", "forbidden"], "description": "Whether the pointer can be NULL." }
+          },
+          "required": ["kind"]
+        }
+      },
+      "required": ["ptr"]
+    },
+    "UField": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "shape": {
+          "oneOf": [
+            { "const": "scalar", "description": "Scalar value (integer, float, bool, char, or any non-pointer data structures)" },
+            { "$ref": "#/$defs/PtrShape", "description": "Pointer type (raw pointer, slice, or C string)" }
+          ]
+        }
+      },
+      "required": ["name", "shape"]
+    },
+    "IField": {
+      "type": "object",
+      "description": "Idiomatic-side field path. Special convention: if name == 'ret', this Field describes the function return mapping.",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic field path or 'ret' for function return." },
+        "type": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "EnumDiscriminant": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tag": { "type": "string", "description": "u_field.name of the discriminant/tag" },
+        "equals": { "type": ["integer", "string"], "description": "Value of tag that selects this variant" }
+      },
+      "required": ["tag", "equals"]
+    },
+    "EnumVariant": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic enum variant name" },
+        "when": { "$ref": "#/$defs/EnumDiscriminant" },
+        "payload": { "type": "array", "items": { "$ref": "#/$defs/Field" } }
+      },
+      "required": ["name", "when"]
+    },
+    "Field": {
+      "type": "object",
+      "description": "Field mapping between unidiomatic C-style field and idiomatic Rust path.",
+      "properties": {
+        "u_field": { "$ref": "#/$defs/UField" },
+        "i_field": { "$ref": "#/$defs/IField" },
+        "ownership": { "type": "string", "enum": ["owning", "transient"], "description": "Optional ownership hint." },
+        "compare": {
+          "type": "string",
+          "enum": ["by_value", "by_slice", "skip"],
+          "description": "Comparison strategy for roundtrip tests. Use 'skip' generously for values that may legitimately diverge (raw pointers, aliasing views, externally-owned buffers, handles, allocator state, etc.) so the automated selftest stays permissive."
+        },
+        "llm_note": { "type": "string", "description": "Free-form note for LLM when automatic codegen is insufficient (e.g., aliasing/offset semantics)." }
+      },
+      "required": ["u_field", "i_field"]
+    },
+    "StructSpec": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "struct_name": { "type": "string", "description": "Name of the translated idiomatic struct." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 },
+        "i_kind": { "type": "string", "enum": ["struct", "enum"], "default": "struct" },
+        "i_type": { "type": "string", "description": "Idiomatic type name (useful when i_kind=enum)" },
+        "variants": { "type": "array", "items": { "$ref": "#/$defs/EnumVariant" } }
+      },
+      "required": ["fields", "i_kind", "i_type"]
+    },
+    "FunctionSpec": {
+      "type": "object",
+      "description": "Function argument/return mapping. Return values are expressed via a Field whose i_field.name == 'ret'.",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "function_name": { "type": "string", "description": "Name of the translated idiomatic function." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 }
+      },
+      "required": ["fields"]
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/StructSpec" },
+    { "$ref": "#/$defs/FunctionSpec" }
+  ]
+}
+
+```
+----SPEC----
+```json
+{
+  "function_name": "kmeans",
+  "fields": [
+    {
+      "u_field": {
+        "name": "...",
+        "type": "...",
+        "shape": "scalar" | {"ptr": {"kind": "slice|cstring|ref", "len_from": "?", "len_const": 1}}
+      },
+      "i_field": {
+        "name": "...",
+        "type": "..."
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+
+Few-shot examples (each with unidiomatic Rust signature, idiomatic Rust signature, and the SPEC):
+
+Example F1 (slice argument):
+Raw slice pointer plus length translated to &[T] parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn sum(xs: *const i32, n: usize) -> i32;
+```
+Idiomatic Rust:
+```rust
+pub fn sum(xs: &[i32]) -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "sum",
+  "fields": [
+    { "u_field": {"name": "xs", "type": "*const i32", "shape": { "ptr": { "kind": "slice", "len_from": "n" } }},
+      "i_field": {"name": "xs", "type": "&[i32]"} },
+    { "u_field": {"name": "n", "type": "usize", "shape": "scalar"},
+      "i_field": {"name": "xs.len", "type": "usize"} },
+    { "u_field": {"name": "ret", "type": "i32", "shape": "scalar"},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F2 (out pointer to return value):
+Mutable pointer output replaced by direct return.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn get_value(out_value: *mut i32);
+```
+Idiomatic Rust:
+```rust
+pub fn get_value() -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "get_value",
+  "fields": [
+    { "u_field": {"name": "out_value", "type": "*mut i32", "shape": { "ptr": { "kind": "ref" } }},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F3 (nullable cstring to Option<&str>):
+Nullable C string pointer converted to Option<&str> parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn set_name(name: *const libc::c_char);
+```
+Idiomatic Rust:
+```rust
+pub fn set_name(name: Option<&str>);
+```
+----SPEC----
+```json
+{
+  "function_name": "set_name",
+  "fields": [
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring", "null": "nullable" } }},
+      "i_field": {"name": "name", "type": "Option<&str>"} }
+  ]
+}
+```
+----END SPEC----
+
+2026-11-16 13:28:03 | RESPONSE | sactor.llm:160 | **Analysis of the unsafe code**
+
+1. `(*clusters.offset(j)).x = (*points.offset(j)).x;` and the `y` line are raw pointer reads and writes. `points` and `clusters` are arrays (`Arr`), so they become the slices `&mut [Point]` and `&mut [Cluster]`. Indexing a slice is safe and bounds-checked.
+2. The calls to `assign_clusters` and `update_centroids` take raw pointers and lengths in the unsafe version. The translated versions take slices, so they can be called safely.
+3. `n` is the length of `points` and `k` is the length of `clusters`. Both are dropped and taken from the slice lengths. The original loop copies the first `k` points into the clusters, so I use `min(k, n)` for safety. If `k > n`, the original would read out of bounds, so I do not try to preserve that behavior.
+4. `points` is marked `Mut` by Crown and the callee `assign_clusters` mutates it, so `&mut [Point]` is correct. `clusters` is `&mut [Cluster]`.
+5. `max_iter` stays a scalar. I use `i32` to keep the original type, and the loop `for _ in 0..max_iter` does nothing when it is non-positive, matching the C loop.
+
+No `unsafe` is needed.
+
+----FUNCTION----
+```rust
+pub fn kmeans(points: &mut [Point], clusters: &mut [Cluster], max_iter: i32) {
+    let count = clusters.len().min(points.len());
+    for j in 0..count {
+        clusters[j].x = points[j].x;
+        clusters[j].y = points[j].y;
+    }
+    for _ in 0..max_iter {
+        assign_clusters(points, clusters);
+        update_centroids(points, clusters);
+    }
+}
+```
+----END FUNCTION----
+
+----SPEC----
+```json
+{
+  "function_name": "kmeans",
+  "fields": [
+    {
+      "u_field": {
+        "name": "points",
+        "type": "*mut Point",
+        "shape": { "ptr": { "kind": "slice", "len_from": "n", "null": "forbidden" } }
+      },
+      "i_field": { "name": "points", "type": "&mut [Point]" }
+    },
+    {
+      "u_field": { "name": "n", "type": "libc::c_int", "shape": "scalar" },
+      "i_field": { "name": "points.len", "type": "usize" }
+    },
+    {
+      "u_field": {
+        "name": "clusters",
+        "type": "*mut Cluster",
+        "shape": { "ptr": { "kind": "slice", "len_from": "k", "null": "forbidden" } }
+      },
+      "i_field": { "name": "clusters", "type": "&mut [Cluster]" }
+    },
+    {
+      "u_field": { "name": "k", "type": "libc::c_int", "shape": "scalar" },
+      "i_field": { "name": "clusters.len", "type": "usize" }
+    },
+    {
+      "u_field": { "name": "max_iter", "type": "libc::c_int", "shape": "scalar" },
+      "i_field": { "name": "max_iter", "type": "i32" }
+    }
+  ]
+}
+```
+----END SPEC----
+2026-11-16 13:28:03 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:28:03 | DEBUG    | sactor.utils:258 | pub fn kmeans(points: &mut [Point], clusters: &mut [Cluster], max_iter: i32) {
+    let count = clusters.len().min(points.len());
+    for j in 0..count {
+        clusters[j].x = points[j].x;
+        clusters[j].y = points[j].y;
+    }
+    for _ in 0..max_iter {
+        assign_clusters(points, clusters);
+        update_centroids(points, clusters);
+    }
+}
+
+2026-11-16 13:28:03 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/build_attempt/Cargo.toml
+2026-11-16 13:28:05 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:28:05 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function kmeans after the compile check (FFI harness skipped)
+2026-11-16 13:28:05 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: main (attempts: 0)
+2026-11-16 13:28:05 | PROMPT   | sactor.llm:155 | 
+Translate the following unidiomatic Rust function into idiomatic Rust. Try to remove all the `unsafe` blocks and only use the safe Rust code or use the `unsafe` blocks only when necessary.
+Before translating, analyze the unsafe blocks one by one and how to convert them into safe Rust code.
+**libc may not be provided in the idiomatic code, so try to avoid using libc functions and types, and avoid using `std::ffi` module.**
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+```rust
+pub fn main() -> () {
+    let args: Vec<String> = std::env::args().collect();
+    let argc = args.len();
+    if argc < 3 {
+        println!("Usage: {} <num_points> <k> [max_iter]", args[0]);
+        std::process::exit(1);
+    }
+    unsafe {
+        let to_c = |s: &String| -> libc::c_int {
+            let cs = std::ffi::CString::new(s.as_bytes().to_vec())
+                .unwrap_or_else(|_| std::ffi::CString::new("0").unwrap());
+            libc::atoi(cs.as_ptr())
+        };
+        let num_points: libc::c_int = to_c(&args[1]);
+        let k: libc::c_int = to_c(&args[2]);
+        let max_iter: libc::c_int = if argc >= 4 { to_c(&args[3]) } else { 100 };
+        if num_points <= 0 || k <= 0 || k > num_points {
+            println!("Error: num_points > 0, k > 0, and k <= num_points required.");
+            std::process::exit(1);
+        }
+        libc::srand(42);
+        let points =
+            libc::malloc((num_points as usize) * std::mem::size_of::<Point>()) as *mut Point;
+        for i in 0..(num_points as usize) {
+            let p = points.add(i);
+            (*p).x = (libc::rand() as f64) / 2147483647.0 * 100.0;
+            (*p).y = (libc::rand() as f64) / 2147483647.0 * 100.0;
+            (*p).cluster_id = -1;
+            (*p).cluster_distance = f64::MAX;
+        }
+        let clusters = libc::malloc((k as usize) * std::mem::size_of::<Cluster>()) as *mut Cluster;
+        let mut start_time: libc::timespec = std::mem::zeroed();
+        let mut end_time: libc::timespec = std::mem::zeroed();
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut start_time);
+        kmeans(points, num_points, clusters, k, max_iter);
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut end_time);
+        let time_elapsed: f64 = diff_timespec(&mut end_time, &mut start_time);
+        println!(
+            "Time taken for k-means clustering of {} points into {} clusters: {:.6} seconds",
+            num_points, k, time_elapsed
+        );
+        libc::free(points as *mut libc::c_void);
+        libc::free(clusters as *mut libc::c_void);
+    }
+}
+
+```
+
+This function uses the following structs/unions, which are already translated as (you don't need to include them in your translation, and **you can not modify them**):
+```rust
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub struct Cluster {
+    pub x: f64,
+    pub y: f64,
+}
+
+#[derive(Copy, Clone, Debug)]
+pub struct Point {
+    pub x: f64,
+    pub y: f64,
+    pub cluster_id: i32,
+    pub cluster_distance: f64,
+}
+
+```
+
+This function uses the following functions, which are already translated as (you don't need to include them in your translation, and **you can not modify them**):
+```rust
+fn kmeans (points : & mut [Point] , clusters : & mut [Cluster] , max_iter : i32);
+fn kmeans (points : & mut [Point] , clusters : & mut [Cluster] , max_iter : i32);
+fn diff_timespec (time1 : (i64 , i64) , time0 : (i64 , i64)) -> f64;
+fn diff_timespec (time1 : (i64 , i64) , time0 : (i64 , i64)) -> f64;
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+Few-shot examples (each with unidiomatic Rust signature, idiomatic Rust signature, and the SPEC):
+
+Example F1 (slice argument):
+Raw slice pointer plus length translated to &[T] parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn sum(xs: *const i32, n: usize) -> i32;
+```
+Idiomatic Rust:
+```rust
+pub fn sum(xs: &[i32]) -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "sum",
+  "fields": [
+    { "u_field": {"name": "xs", "type": "*const i32", "shape": { "ptr": { "kind": "slice", "len_from": "n" } }},
+      "i_field": {"name": "xs", "type": "&[i32]"} },
+    { "u_field": {"name": "n", "type": "usize", "shape": "scalar"},
+      "i_field": {"name": "xs.len", "type": "usize"} },
+    { "u_field": {"name": "ret", "type": "i32", "shape": "scalar"},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F2 (out pointer to return value):
+Mutable pointer output replaced by direct return.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn get_value(out_value: *mut i32);
+```
+Idiomatic Rust:
+```rust
+pub fn get_value() -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "get_value",
+  "fields": [
+    { "u_field": {"name": "out_value", "type": "*mut i32", "shape": { "ptr": { "kind": "ref" } }},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F3 (nullable cstring to Option<&str>):
+Nullable C string pointer converted to Option<&str> parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn set_name(name: *const libc::c_char);
+```
+Idiomatic Rust:
+```rust
+pub fn set_name(name: Option<&str>);
+```
+----SPEC----
+```json
+{
+  "function_name": "set_name",
+  "fields": [
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring", "null": "nullable" } }},
+      "i_field": {"name": "name", "type": "Option<&str>"} }
+  ]
+}
+```
+----END SPEC----
+
+2026-11-16 13:28:24 | RESPONSE | sactor.llm:160 | **Analysis of the unsafe blocks**
+
+1. `CString::new` plus `libc::atoi`: these parse an integer from a string. I replaced them with a small safe helper inside `main`. It skips leading whitespace, accepts an optional sign, reads digits and stops at the first non-digit, as `atoi` does. Invalid input gives 0, and values are clamped to the `i32` range instead of overflowing.
+2. `libc::srand(42)` and `libc::rand()`: global C PRNG state. I replaced them with a local generator that follows glibc's `TYPE_3` additive feedback algorithm. It uses a plain `Vec<u32>` and gives the same sequence as glibc for seed 42.
+3. `libc::malloc` and `libc::free` for `points` and `clusters`: replaced by `Vec<Point>` and `Vec<Cluster>`, which free themselves. `kmeans` takes slices, so the lengths are no longer passed separately.
+4. `libc::clock_gettime` and `timespec`: replaced by `std::time::Instant`. The elapsed time is converted to the `(i64, i64)` tuples that `diff_timespec` expects, with the start as `(0, 0)` and the end as the elapsed time.
+5. Raw pointer writes `(*p).x = ...`: replaced by building `Point` values directly in a `Vec`.
+
+No unsafe code remains.
+
+----FUNCTION----
+```rust
+pub fn main() -> () {
+    // Helper: emulate C atoi semantics safely.
+    fn parse_int(s: &str) -> i32 {
+        let bytes = s.as_bytes();
+        let mut i = 0;
+        while i < bytes.len() && (bytes[i] == b' ' || (bytes[i] >= 9 && bytes[i] <= 13)) {
+            i += 1;
+        }
+        let mut neg = false;
+        if i < bytes.len() && (bytes[i] == b'+' || bytes[i] == b'-') {
+            neg = bytes[i] == b'-';
+            i += 1;
+        }
+        let mut val: i64 = 0;
+        while i < bytes.len() && bytes[i].is_ascii_digit() {
+            val = val * 10 + (bytes[i] - b'0') as i64;
+            if val > i32::MAX as i64 + 1 {
+                val = i32::MAX as i64 + 1;
+            }
+            i += 1;
+        }
+        if neg {
+            val = -val;
+        }
+        val.clamp(i32::MIN as i64, i32::MAX as i64) as i32
+    }
+
+    // Helper: glibc-compatible rand() generator (TYPE_3).
+    fn make_rng(seed: u32) -> impl FnMut() -> u32 {
+        let mut r: Vec<u32> = Vec::with_capacity(34);
+        r.push(if seed == 0 { 1 } else { seed });
+        for i in 1..31 {
+            let prev = r[i - 1] as i32 as i64;
+            let mut w = (16807i64 * prev) % 2147483647;
+            if w < 0 {
+                w += 2147483647;
+            }
+            r.push(w as u32);
+        }
+        for i in 31..34 {
+            let v = r[i - 31];
+            r.push(v);
+        }
+        for _ in 34..344 {
+            let n = r.len();
+            let v = r[n - 31].wrapping_add(r[n - 3]);
+            r.push(v);
+        }
+        move || {
+            let n = r.len();
+            let v = r[n - 31].wrapping_add(r[n - 3]);
+            r.push(v);
+            v >> 1
+        }
+    }
+
+    let args: Vec<String> = std::env::args().collect();
+    let argc = args.len();
+    if argc < 3 {
+        println!(
+            "Usage: {} <num_points> <k> [max_iter]",
+            args.get(0).map(|s| s.as_str()).unwrap_or("program")
+        );
+        std::process::exit(1);
+    }
+    let num_points: i32 = parse_int(&args[1]);
+    let k: i32 = parse_int(&args[2]);
+    let max_iter: i32 = if argc >= 4 { parse_int(&args[3]) } else { 100 };
+    if num_points <= 0 || k <= 0 || k > num_points {
+        println!("Error: num_points > 0, k > 0, and k <= num_points required.");
+        std::process::exit(1);
+    }
+
+    let mut rng = make_rng(42);
+    let mut points: Vec<Point> = Vec::with_capacity(num_points as usize);
+    for _ in 0..(num_points as usize) {
+        let x = (rng() as f64) / 2147483647.0 * 100.0;
+        let y = (rng() as f64) / 2147483647.0 * 100.0;
+        points.push(Point {
+            x,
+            y,
+            cluster_id: -1,
+            cluster_distance: f64::MAX,
+        });
+    }
+    let mut clusters: Vec<Cluster> = vec![Cluster { x: 0.0, y: 0.0 }; k as usize];
+
+    let start = std::time::Instant::now();
+    kmeans(&mut points, &mut clusters, max_iter);
+    let elapsed = start.elapsed();
+
+    let start_time: (i64, i64) = (0, 0);
+    let end_time: (i64, i64) = (elapsed.as_secs() as i64, elapsed.subsec_nanos() as i64);
+    let time_elapsed: f64 = diff_timespec(end_time, start_time);
+    println!(
+        "Time taken for k-means clustering of {} points into {} clusters: {:.6} seconds",
+        num_points, k, time_elapsed
+    );
+}
+```
+----END FUNCTION----
+2026-11-16 13:28:24 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:28:24 | DEBUG    | sactor.utils:258 | pub fn main() -> () {
+    // Helper: emulate C atoi semantics safely.
+    fn parse_int(s: &str) -> i32 {
+        let bytes = s.as_bytes();
+        let mut i = 0;
+        while i < bytes.len() && (bytes[i] == b' ' || (bytes[i] >= 9 && bytes[i] <= 13)) {
+            i += 1;
+        }
+        let mut neg = false;
+        if i < bytes.len() && (bytes[i] == b'+' || bytes[i] == b'-') {
+            neg = bytes[i] == b'-';
+            i += 1;
+        }
+        let mut val: i64 = 0;
+        while i < bytes.len() && bytes[i].is_ascii_digit() {
+            val = val * 10 + (bytes[i] - b'0') as i64;
+            if val > i32::MAX as i64 + 1 {
+                val = i32::MAX as i64 + 1;
+            }
+            i += 1;
+        }
+        if neg {
+            val = -val;
+        }
+        val.clamp(i32::MIN as i64, i32::MAX as i64) as i32
+    }
+
+    // Helper: glibc-compatible rand() generator (TYPE_3).
+    fn make_rng(seed: u32) -> impl FnMut() -> u32 {
+        let mut r: Vec<u32> = Vec::with_capacity(34);
+        r.push(if seed == 0 { 1 } else { seed });
+        for i in 1..31 {
+            let prev = r[i - 1] as i32 as i64;
+            let mut w = (16807i64 * prev) % 2147483647;
+            if w < 0 {
+                w += 2147483647;
+            }
+            r.push(w as u32);
+        }
+        for i in 31..34 {
+            let v = r[i - 31];
+            r.push(v);
+        }
+        for _ in 34..344 {
+            let n = r.len();
+            let v = r[n - 31].wrapping_add(r[n - 3]);
+            r.push(v);
+        }
+        move || {
+            let n = r.len();
+            let v = r[n - 31].wrapping_add(r[n - 3]);
+            r.push(v);
+            v >> 1
+        }
+    }
+
+    let args: Vec<String> = std::env::args().collect();
+    let argc = args.len();
+    if argc < 3 {
+        println!(
+            "Usage: {} <num_points> <k> [max_iter]",
+            args.get(0).map(|s| s.as_str()).unwrap_or("program")
+        );
+        std::process::exit(1);
+    }
+    let num_points: i32 = parse_int(&args[1]);
+    let k: i32 = parse_int(&args[2]);
+    let max_iter: i32 = if argc >= 4 { parse_int(&args[3]) } else { 100 };
+    if num_points <= 0 || k <= 0 || k > num_points {
+        println!("Error: num_points > 0, k > 0, and k <= num_points required.");
+        std::process::exit(1);
+    }
+
+    let mut rng = make_rng(42);
+    let mut points: Vec<Point> = Vec::with_capacity(num_points as usize);
+    for _ in 0..(num_points as usize) {
+        let x = (rng() as f64) / 2147483647.0 * 100.0;
+        let y = (rng() as f64) / 2147483647.0 * 100.0;
+        points.push(Point {
+            x,
+            y,
+            cluster_id: -1,
+            cluster_distance: f64::MAX,
+        });
+    }
+    let mut clusters: Vec<Cluster> = vec![Cluster { x: 0.0, y: 0.0 }; k as usize];
+
+    let start = std::time::Instant::now();
+    kmeans(&mut points, &mut clusters, max_iter);
+    let elapsed = start.elapsed();
+
+    let start_time: (i64, i64) = (0, 0);
+    let end_time: (i64, i64) = (elapsed.as_secs() as i64, elapsed.subsec_nanos() as i64);
+    let time_elapsed: f64 = diff_timespec(end_time, start_time);
+    println!(
+        "Time taken for k-means clustering of {} points into {} clusters: {:.6} seconds",
+        num_points, k, time_elapsed
+    );
+}
+
+2026-11-16 13:28:24 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/build_attempt/Cargo.toml
+2026-11-16 13:28:26 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:28:26 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function main after the compile check (FFI harness skipped)
+2026-11-16 13:28:26 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/build_attempt/Cargo.toml
+2026-11-16 13:28:28 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:28:28 | DEBUG    | sactor.combiner.program_combiner:234 | Running clippy fix command: cargo clippy --fix --allow-no-vcs --manifest-path /home/gabe/sactor_forklift/tmp/sactor/tmps_4aaj6r/build/program/Cargo.toml -- -A clippy::cmp_null
+2026-11-16 13:28:31 | INFO     | sactor.combiner.program_combiner:259 | Found 0 warnings in the combined code
+2026-11-16 13:28:31 | INFO     | sactor.combiner.program_combiner:260 | Found 0 errors in the combined code

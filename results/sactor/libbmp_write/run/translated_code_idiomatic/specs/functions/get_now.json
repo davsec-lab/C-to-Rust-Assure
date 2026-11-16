@@ -1,0 +1,38 @@
+{
+  "function_name": "get_now",
+  "fields": [
+    {
+      "u_field": {
+        "name": "ts",
+        "type": "*mut libc::timespec",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "(i64, i64)"
+      },
+      "ownership": "transient",
+      "compare": "skip",
+      "llm_note": "Out-pointer timespec replaced by returned (tv_sec, tv_nsec) tuple measured from a process-wide monotonic anchor."
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "(i64, i64)"
+      },
+      "compare": "skip",
+      "llm_note": "Status code dropped since Instant::now cannot fail."
+    }
+  ],
+  "idiomatic_name": "get_now"
+}

@@ -1,0 +1,35 @@
+{
+  "function_name": "csv_increase_buffer",
+  "fields": [
+    {
+      "u_field": {
+        "name": "p",
+        "type": "*mut csv_parser",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "p",
+        "type": "&mut csv_parser"
+      },
+      "ownership": "transient",
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "i32"
+      }
+    }
+  ],
+  "idiomatic_name": "csv_increase_buffer"
+}

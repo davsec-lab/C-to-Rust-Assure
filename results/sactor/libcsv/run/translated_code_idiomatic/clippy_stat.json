@@ -1,0 +1,13 @@
+{
+    "total_warnings": 15,
+    "total_errors": 0,
+    "warnings": {
+        "non_camel_case_types": 1,
+        "unused_assignments": 12,
+        "clippy::type_complexity": 2
+    },
+    "errors": {},
+    "total_tokens": 2039,
+    "unsafe_tokens": 0,
+    "unsafe_fraction": 0.0
+}

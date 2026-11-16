@@ -1,0 +1,24 @@
+{
+  "function_name": "freeGraph",
+  "fields": [
+    {
+      "u_field": {
+        "name": "graph",
+        "type": "*mut Graph",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "graph",
+        "type": "Graph"
+      },
+      "ownership": "owning",
+      "compare": "skip"
+    }
+  ],
+  "idiomatic_name": "freeGraph"
+}

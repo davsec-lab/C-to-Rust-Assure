@@ -1,0 +1,34 @@
+{
+  "function_name": "md5_final",
+  "fields": [
+    {
+      "u_field": {
+        "name": "ctx",
+        "type": "&mut md5_ctx",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ctx",
+        "type": "&mut md5_ctx"
+      }
+    },
+    {
+      "u_field": {
+        "name": "digest",
+        "type": "*mut libc::c_uchar",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_const": 16,
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "digest",
+        "type": "&mut [u8; 16]"
+      }
+    }
+  ],
+  "idiomatic_name": "md5_final"
+}

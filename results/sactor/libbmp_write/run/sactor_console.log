@@ -1,0 +1,1728 @@
+=== start 2026-11-16T13:25:02-08:00 libbmp_write
+usage: sactor translate [-h] [--log-dir LOG_DIR]
+                        [--test-command-path TEST_COMMAND_OVERRIDE] --type
+                        {bin,lib} [--entry-tu-file ENTRY_TU_FILE]
+                        [--config CONFIG_FILE] [--build-dir BUILD_DIR]
+                        [--result-dir RESULT_DIR] [--llm-stat LLM_STAT]
+                        [--no-verify] [--unidiomatic-only] [--idiomatic-only]
+                        [--continue-run-when-incomplete]
+                        [--extra-compile-command EXTRA_COMPILE_COMMAND]
+                        [--executable-object EXECUTABLE_OBJECT]
+                        [--link-args LINK_ARGS]
+                        [--compile-commands-file COMPILE_COMMANDS_FILE]
+                        [input_file] [test_command_path]
+sactor translate: error: argument --link-args: expected one argument
+=== end 2026-11-16T13:25:05-08:00 libbmp_write rc=2
+=== start 2026-11-16T13:25:41-08:00 libbmp_write
+2026-11-16 13:25:44 | INFO     | sactor.sactor:210 | -------------SACTOR Configuration-------------
+2026-11-16 13:25:44 | INFO     | sactor.sactor:211 | Input file: libbmp_write.c
+2026-11-16 13:25:44 | INFO     | sactor.sactor:212 | Test command: test_cmd.json
+2026-11-16 13:25:44 | INFO     | sactor.sactor:213 | Is executable: True
+2026-11-16 13:25:44 | INFO     | sactor.sactor:216 | Build directory: /home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build
+2026-11-16 13:25:44 | INFO     | sactor.sactor:217 | Result directory: /home/gabe/sactor_forklift/sactor-bench-oxivolve/libbmp_write/result_sonnet55
+2026-11-16 13:25:44 | INFO     | sactor.sactor:218 | Config file: /home/gabe/sactor_forklift/sactor/sactor.sonnet55.toml
+2026-11-16 13:25:44 | INFO     | sactor.sactor:219 | No verify: False
+2026-11-16 13:25:44 | INFO     | sactor.sactor:220 | Unidiomatic only: False
+2026-11-16 13:25:44 | INFO     | sactor.sactor:221 | LLM statistics base path: /home/gabe/sactor_forklift/sactor-bench-oxivolve/libbmp_write/result_sonnet55/llm_stat.json
+2026-11-16 13:25:44 | INFO     | sactor.sactor:222 | Extra compile command: None
+2026-11-16 13:25:44 | INFO     | sactor.sactor:223 | Compile commands file: 
+2026-11-16 13:25:44 | INFO     | sactor.sactor:224 | Link args: ['-lm']
+2026-11-16 13:25:44 | INFO     | sactor.sactor:225 | Idiomatic only: False
+2026-11-16 13:25:44 | INFO     | sactor.sactor:226 | Continue run when incomplete: False
+2026-11-16 13:25:44 | INFO     | sactor.sactor:227 | -------------End of Configuration-------------
+2026-11-16 13:25:46 | INFO     | sactor.translator.unidiomatic_translator:633 | Struct/Union _bmp_pixel already translated
+2026-11-16 13:25:46 | INFO     | sactor.translator.unidiomatic_translator:633 | Struct/Union _bmp_header already translated
+2026-11-16 13:25:46 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: md5_left_rotate (attempts: 0)
+2026-11-16 13:25:52 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling md5_left_rotate v0.1.0 (/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.98s
+2026-11-16 13:25:55 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: md5_init (attempts: 0)
+2026-11-16 13:25:59 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling md5_init v0.1.0 (/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust)
+warning: type `__uint32_t` should have an upper camel case name
+ --> src/lib.rs:4:10
+  |
+4 | pub type __uint32_t = libc::c_uint;
+  |          ^^^^^^^^^^ help: convert the identifier to upper camel case: `Uint32T`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `__uint64_t` should have an upper camel case name
+ --> src/lib.rs:5:10
+  |
+5 | pub type __uint64_t = libc::c_ulong;
+  |          ^^^^^^^^^^ help: convert the identifier to upper camel case: `Uint64T`
+
+warning: use of deprecated type alias `libc::uint64_t`: Use u64 instead.
+ --> src/lib.rs:1:11
+  |
+1 | use libc::uint64_t;
+  |           ^^^^^^^^
+  |
+  = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated type alias `libc::uint32_t`: Use u32 instead.
+ --> src/lib.rs:2:11
+  |
+2 | use libc::uint32_t;
+  |           ^^^^^^^^
+
+warning: use of deprecated type alias `libc::uint32_t`: Use u32 instead.
+ --> src/lib.rs:9:17
+  |
+9 |     pub state: [uint32_t; 4],
+  |                 ^^^^^^^^
+
+warning: use of deprecated type alias `libc::uint64_t`: Use u64 instead.
+  --> src/lib.rs:10:18
+   |
+10 |     pub bit_len: uint64_t,
+   |                  ^^^^^^^^
+
+warning: `md5_init` (lib) generated 8 warnings (2 duplicates)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.92s
+2026-11-16 13:26:02 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: bmp_header_init_df (attempts: 0)
+2026-11-16 13:26:11 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling bmp_header_init_df v0.1.0 (/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust)
+warning: structure field `bfSize` should have a snake case name
+  --> src/lib.rs:11:9
+   |
+11 |     pub bfSize: libc::c_uint,
+   |         ^^^^^^ help: convert the identifier to snake case: `bf_size`
+   |
+   = note: `#[warn(non_snake_case)]` on by default
+
+warning: structure field `bfReserved` should have a snake case name
+  --> src/lib.rs:12:9
+   |
+12 |     pub bfReserved: libc::c_uint,
+   |         ^^^^^^^^^^ help: convert the identifier to snake case: `bf_reserved`
+
+warning: structure field `bfOffBits` should have a snake case name
+  --> src/lib.rs:13:9
+   |
+13 |     pub bfOffBits: libc::c_uint,
+   |         ^^^^^^^^^ help: convert the identifier to snake case: `bf_off_bits`
+
+warning: structure field `biSize` should have a snake case name
+  --> src/lib.rs:14:9
+   |
+14 |     pub biSize: libc::c_uint,
+   |         ^^^^^^ help: convert the identifier to snake case: `bi_size`
+
+warning: structure field `biWidth` should have a snake case name
+  --> src/lib.rs:15:9
+   |
+15 |     pub biWidth: libc::c_int,
+   |         ^^^^^^^ help: convert the identifier to snake case: `bi_width`
+
+warning: structure field `biHeight` should have a snake case name
+  --> src/lib.rs:16:9
+   |
+16 |     pub biHeight: libc::c_int,
+   |         ^^^^^^^^ help: convert the identifier to snake case: `bi_height`
+
+warning: structure field `biPlanes` should have a snake case name
+  --> src/lib.rs:17:9
+   |
+17 |     pub biPlanes: libc::c_ushort,
+   |         ^^^^^^^^ help: convert the identifier to snake case: `bi_planes`
+
+warning: structure field `biBitCount` should have a snake case name
+  --> src/lib.rs:18:9
+   |
+18 |     pub biBitCount: libc::c_ushort,
+   |         ^^^^^^^^^^ help: convert the identifier to snake case: `bi_bit_count`
+
+warning: structure field `biCompression` should have a snake case name
+  --> src/lib.rs:19:9
+   |
+19 |     pub biCompression: libc::c_uint,
+   |         ^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_compression`
+
+warning: structure field `biSizeImage` should have a snake case name
+  --> src/lib.rs:20:9
+   |
+20 |     pub biSizeImage: libc::c_uint,
+   |         ^^^^^^^^^^^ help: convert the identifier to snake case: `bi_size_image`
+
+warning: structure field `biXPelsPerMeter` should have a snake case name
+  --> src/lib.rs:21:9
+   |
+21 |     pub biXPelsPerMeter: libc::c_int,
+   |         ^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_xpels_per_meter`
+
+warning: structure field `biYPelsPerMeter` should have a snake case name
+  --> src/lib.rs:22:9
+   |
+22 |     pub biYPelsPerMeter: libc::c_int,
+   |         ^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_ypels_per_meter`
+
+warning: structure field `biClrUsed` should have a snake case name
+  --> src/lib.rs:23:9
+   |
+23 |     pub biClrUsed: libc::c_uint,
+   |         ^^^^^^^^^ help: convert the identifier to snake case: `bi_clr_used`
+
+warning: structure field `biClrImportant` should have a snake case name
+  --> src/lib.rs:24:9
+   |
+24 |     pub biClrImportant: libc::c_uint,
+   |         ^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_clr_important`
+
+warning: `bmp_header_init_df` (lib) generated 14 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.89s
+2026-11-16 13:26:15 | INFO     | sactor.translator.unidiomatic_translator:201 | Translating enum: bmp_error (attempts: 0)
+2026-11-16 13:26:20 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:26:20 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: bmp_header_write (attempts: 0)
+2026-11-16 13:26:26 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling bmp_header_write v0.1.0 (/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust)
+warning: variant `BMP_FILE_NOT_OPENED` should have an upper camel case name
+  --> src/lib.rs:22:5
+   |
+22 |     BMP_FILE_NOT_OPENED = -4,
+   |     ^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `BmpFileNotOpened`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: variant `BMP_HEADER_NOT_INITIALIZED` should have an upper camel case name
+  --> src/lib.rs:23:5
+   |
+23 |     BMP_HEADER_NOT_INITIALIZED = -3,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `BmpHeaderNotInitialized`
+
+warning: variant `BMP_INVALID_FILE` should have an upper camel case name
+  --> src/lib.rs:24:5
+   |
+24 |     BMP_INVALID_FILE = -2,
+   |     ^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `BmpInvalidFile`
+
+warning: variant `BMP_ERROR` should have an upper camel case name
+  --> src/lib.rs:25:5
+   |
+25 |     BMP_ERROR = -1,
+   |     ^^^^^^^^^ help: convert the identifier to upper camel case: `BmpError`
+
+warning: variant `BMP_OK` should have an upper camel case name
+  --> src/lib.rs:26:5
+   |
+26 |     BMP_OK = 0,
+   |     ^^^^^^ help: convert the identifier to upper camel case: `BmpOk`
+
+warning: structure field `bfSize` should have a snake case name
+ --> src/lib.rs:4:9
+  |
+4 |     pub bfSize: libc::c_uint,
+  |         ^^^^^^ help: convert the identifier to snake case: `bf_size`
+  |
+  = note: `#[warn(non_snake_case)]` on by default
+
+warning: structure field `bfReserved` should have a snake case name
+ --> src/lib.rs:5:9
+  |
+5 |     pub bfReserved: libc::c_uint,
+  |         ^^^^^^^^^^ help: convert the identifier to snake case: `bf_reserved`
+
+warning: structure field `bfOffBits` should have a snake case name
+ --> src/lib.rs:6:9
+  |
+6 |     pub bfOffBits: libc::c_uint,
+  |         ^^^^^^^^^ help: convert the identifier to snake case: `bf_off_bits`
+
+warning: structure field `biSize` should have a snake case name
+ --> src/lib.rs:7:9
+  |
+7 |     pub biSize: libc::c_uint,
+  |         ^^^^^^ help: convert the identifier to snake case: `bi_size`
+
+warning: structure field `biWidth` should have a snake case name
+ --> src/lib.rs:8:9
+  |
+8 |     pub biWidth: libc::c_int,
+  |         ^^^^^^^ help: convert the identifier to snake case: `bi_width`
+
+warning: structure field `biHeight` should have a snake case name
+ --> src/lib.rs:9:9
+  |
+9 |     pub biHeight: libc::c_int,
+  |         ^^^^^^^^ help: convert the identifier to snake case: `bi_height`
+
+warning: structure field `biPlanes` should have a snake case name
+  --> src/lib.rs:10:9
+   |
+10 |     pub biPlanes: libc::c_ushort,
+   |         ^^^^^^^^ help: convert the identifier to snake case: `bi_planes`
+
+warning: structure field `biBitCount` should have a snake case name
+  --> src/lib.rs:11:9
+   |
+11 |     pub biBitCount: libc::c_ushort,
+   |         ^^^^^^^^^^ help: convert the identifier to snake case: `bi_bit_count`
+
+warning: structure field `biCompression` should have a snake case name
+  --> src/lib.rs:12:9
+   |
+12 |     pub biCompression: libc::c_uint,
+   |         ^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_compression`
+
+warning: structure field `biSizeImage` should have a snake case name
+  --> src/lib.rs:13:9
+   |
+13 |     pub biSizeImage: libc::c_uint,
+   |         ^^^^^^^^^^^ help: convert the identifier to snake case: `bi_size_image`
+
+warning: structure field `biXPelsPerMeter` should have a snake case name
+  --> src/lib.rs:14:9
+   |
+14 |     pub biXPelsPerMeter: libc::c_int,
+   |         ^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_xpels_per_meter`
+
+warning: structure field `biYPelsPerMeter` should have a snake case name
+  --> src/lib.rs:15:9
+   |
+15 |     pub biYPelsPerMeter: libc::c_int,
+   |         ^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_ypels_per_meter`
+
+warning: structure field `biClrUsed` should have a snake case name
+  --> src/lib.rs:16:9
+   |
+16 |     pub biClrUsed: libc::c_uint,
+   |         ^^^^^^^^^ help: convert the identifier to snake case: `bi_clr_used`
+
+warning: structure field `biClrImportant` should have a snake case name
+  --> src/lib.rs:17:9
+   |
+17 |     pub biClrImportant: libc::c_uint,
+   |         ^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_clr_important`
+
+warning: `bmp_header_write` (lib) generated 19 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.99s
+2026-11-16 13:26:30 | INFO     | sactor.translator.unidiomatic_translator:102 | Enum bmp_error already translated
+2026-11-16 13:26:30 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: bmp_header_read (attempts: 0)
+2026-11-16 13:26:35 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling bmp_header_read v0.1.0 (/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust)
+warning: variant `BMP_FILE_NOT_OPENED` should have an upper camel case name
+  --> src/lib.rs:22:5
+   |
+22 |     BMP_FILE_NOT_OPENED = -4,
+   |     ^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `BmpFileNotOpened`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: variant `BMP_HEADER_NOT_INITIALIZED` should have an upper camel case name
+  --> src/lib.rs:23:5
+   |
+23 |     BMP_HEADER_NOT_INITIALIZED = -3,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `BmpHeaderNotInitialized`
+
+warning: variant `BMP_INVALID_FILE` should have an upper camel case name
+  --> src/lib.rs:24:5
+   |
+24 |     BMP_INVALID_FILE = -2,
+   |     ^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `BmpInvalidFile`
+
+warning: variant `BMP_ERROR` should have an upper camel case name
+  --> src/lib.rs:25:5
+   |
+25 |     BMP_ERROR = -1,
+   |     ^^^^^^^^^ help: convert the identifier to upper camel case: `BmpError`
+
+warning: variant `BMP_OK` should have an upper camel case name
+  --> src/lib.rs:26:5
+   |
+26 |     BMP_OK = 0,
+   |     ^^^^^^ help: convert the identifier to upper camel case: `BmpOk`
+
+warning: structure field `bfSize` should have a snake case name
+ --> src/lib.rs:4:9
+  |
+4 |     pub bfSize: libc::c_uint,
+  |         ^^^^^^ help: convert the identifier to snake case: `bf_size`
+  |
+  = note: `#[warn(non_snake_case)]` on by default
+
+warning: structure field `bfReserved` should have a snake case name
+ --> src/lib.rs:5:9
+  |
+5 |     pub bfReserved: libc::c_uint,
+  |         ^^^^^^^^^^ help: convert the identifier to snake case: `bf_reserved`
+
+warning: structure field `bfOffBits` should have a snake case name
+ --> src/lib.rs:6:9
+  |
+6 |     pub bfOffBits: libc::c_uint,
+  |         ^^^^^^^^^ help: convert the identifier to snake case: `bf_off_bits`
+
+warning: structure field `biSize` should have a snake case name
+ --> src/lib.rs:7:9
+  |
+7 |     pub biSize: libc::c_uint,
+  |         ^^^^^^ help: convert the identifier to snake case: `bi_size`
+
+warning: structure field `biWidth` should have a snake case name
+ --> src/lib.rs:8:9
+  |
+8 |     pub biWidth: libc::c_int,
+  |         ^^^^^^^ help: convert the identifier to snake case: `bi_width`
+
+warning: structure field `biHeight` should have a snake case name
+ --> src/lib.rs:9:9
+  |
+9 |     pub biHeight: libc::c_int,
+  |         ^^^^^^^^ help: convert the identifier to snake case: `bi_height`
+
+warning: structure field `biPlanes` should have a snake case name
+  --> src/lib.rs:10:9
+   |
+10 |     pub biPlanes: libc::c_ushort,
+   |         ^^^^^^^^ help: convert the identifier to snake case: `bi_planes`
+
+warning: structure field `biBitCount` should have a snake case name
+  --> src/lib.rs:11:9
+   |
+11 |     pub biBitCount: libc::c_ushort,
+   |         ^^^^^^^^^^ help: convert the identifier to snake case: `bi_bit_count`
+
+warning: structure field `biCompression` should have a snake case name
+  --> src/lib.rs:12:9
+   |
+12 |     pub biCompression: libc::c_uint,
+   |         ^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_compression`
+
+warning: structure field `biSizeImage` should have a snake case name
+  --> src/lib.rs:13:9
+   |
+13 |     pub biSizeImage: libc::c_uint,
+   |         ^^^^^^^^^^^ help: convert the identifier to snake case: `bi_size_image`
+
+warning: structure field `biXPelsPerMeter` should have a snake case name
+  --> src/lib.rs:14:9
+   |
+14 |     pub biXPelsPerMeter: libc::c_int,
+   |         ^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_xpels_per_meter`
+
+warning: structure field `biYPelsPerMeter` should have a snake case name
+  --> src/lib.rs:15:9
+   |
+15 |     pub biYPelsPerMeter: libc::c_int,
+   |         ^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_ypels_per_meter`
+
+warning: structure field `biClrUsed` should have a snake case name
+  --> src/lib.rs:16:9
+   |
+16 |     pub biClrUsed: libc::c_uint,
+   |         ^^^^^^^^^ help: convert the identifier to snake case: `bi_clr_used`
+
+warning: structure field `biClrImportant` should have a snake case name
+  --> src/lib.rs:17:9
+   |
+17 |     pub biClrImportant: libc::c_uint,
+   |         ^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_clr_important`
+
+warning: `bmp_header_read` (lib) generated 19 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.98s
+2026-11-16 13:26:38 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: bmp_pixel_init (attempts: 0)
+2026-11-16 13:26:43 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling bmp_pixel_init v0.1.0 (/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.94s
+2026-11-16 13:26:47 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: bmp_img_alloc (attempts: 0)
+2026-11-16 13:26:55 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling bmp_img_alloc v0.1.0 (/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust)
+warning: structure field `bfSize` should have a snake case name
+  --> src/lib.rs:17:9
+   |
+17 |     pub bfSize: libc::c_uint,
+   |         ^^^^^^ help: convert the identifier to snake case: `bf_size`
+   |
+   = note: `#[warn(non_snake_case)]` on by default
+
+warning: structure field `bfReserved` should have a snake case name
+  --> src/lib.rs:18:9
+   |
+18 |     pub bfReserved: libc::c_uint,
+   |         ^^^^^^^^^^ help: convert the identifier to snake case: `bf_reserved`
+
+warning: structure field `bfOffBits` should have a snake case name
+  --> src/lib.rs:19:9
+   |
+19 |     pub bfOffBits: libc::c_uint,
+   |         ^^^^^^^^^ help: convert the identifier to snake case: `bf_off_bits`
+
+warning: structure field `biSize` should have a snake case name
+  --> src/lib.rs:20:9
+   |
+20 |     pub biSize: libc::c_uint,
+   |         ^^^^^^ help: convert the identifier to snake case: `bi_size`
+
+warning: structure field `biWidth` should have a snake case name
+  --> src/lib.rs:21:9
+   |
+21 |     pub biWidth: libc::c_int,
+   |         ^^^^^^^ help: convert the identifier to snake case: `bi_width`
+
+warning: structure field `biHeight` should have a snake case name
+  --> src/lib.rs:22:9
+   |
+22 |     pub biHeight: libc::c_int,
+   |         ^^^^^^^^ help: convert the identifier to snake case: `bi_height`
+
+warning: structure field `biPlanes` should have a snake case name
+  --> src/lib.rs:23:9
+   |
+23 |     pub biPlanes: libc::c_ushort,
+   |         ^^^^^^^^ help: convert the identifier to snake case: `bi_planes`
+
+warning: structure field `biBitCount` should have a snake case name
+  --> src/lib.rs:24:9
+   |
+24 |     pub biBitCount: libc::c_ushort,
+   |         ^^^^^^^^^^ help: convert the identifier to snake case: `bi_bit_count`
+
+warning: structure field `biCompression` should have a snake case name
+  --> src/lib.rs:25:9
+   |
+25 |     pub biCompression: libc::c_uint,
+   |         ^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_compression`
+
+warning: structure field `biSizeImage` should have a snake case name
+  --> src/lib.rs:26:9
+   |
+26 |     pub biSizeImage: libc::c_uint,
+   |         ^^^^^^^^^^^ help: convert the identifier to snake case: `bi_size_image`
+
+warning: structure field `biXPelsPerMeter` should have a snake case name
+  --> src/lib.rs:27:9
+   |
+27 |     pub biXPelsPerMeter: libc::c_int,
+   |         ^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_xpels_per_meter`
+
+warning: structure field `biYPelsPerMeter` should have a snake case name
+  --> src/lib.rs:28:9
+   |
+28 |     pub biYPelsPerMeter: libc::c_int,
+   |         ^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_ypels_per_meter`
+
+warning: structure field `biClrUsed` should have a snake case name
+  --> src/lib.rs:29:9
+   |
+29 |     pub biClrUsed: libc::c_uint,
+   |         ^^^^^^^^^ help: convert the identifier to snake case: `bi_clr_used`
+
+warning: structure field `biClrImportant` should have a snake case name
+  --> src/lib.rs:30:9
+   |
+30 |     pub biClrImportant: libc::c_uint,
+   |         ^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_clr_important`
+
+warning: `bmp_img_alloc` (lib) generated 14 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.96s
+2026-11-16 13:26:58 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: bmp_img_free (attempts: 0)
+2026-11-16 13:27:03 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling bmp_img_free v0.1.0 (/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust)
+warning: structure field `bfSize` should have a snake case name
+  --> src/lib.rs:17:9
+   |
+17 |     pub bfSize: libc::c_uint,
+   |         ^^^^^^ help: convert the identifier to snake case: `bf_size`
+   |
+   = note: `#[warn(non_snake_case)]` on by default
+
+warning: structure field `bfReserved` should have a snake case name
+  --> src/lib.rs:18:9
+   |
+18 |     pub bfReserved: libc::c_uint,
+   |         ^^^^^^^^^^ help: convert the identifier to snake case: `bf_reserved`
+
+warning: structure field `bfOffBits` should have a snake case name
+  --> src/lib.rs:19:9
+   |
+19 |     pub bfOffBits: libc::c_uint,
+   |         ^^^^^^^^^ help: convert the identifier to snake case: `bf_off_bits`
+
+warning: structure field `biSize` should have a snake case name
+  --> src/lib.rs:20:9
+   |
+20 |     pub biSize: libc::c_uint,
+   |         ^^^^^^ help: convert the identifier to snake case: `bi_size`
+
+warning: structure field `biWidth` should have a snake case name
+  --> src/lib.rs:21:9
+   |
+21 |     pub biWidth: libc::c_int,
+   |         ^^^^^^^ help: convert the identifier to snake case: `bi_width`
+
+warning: structure field `biHeight` should have a snake case name
+  --> src/lib.rs:22:9
+   |
+22 |     pub biHeight: libc::c_int,
+   |         ^^^^^^^^ help: convert the identifier to snake case: `bi_height`
+
+warning: structure field `biPlanes` should have a snake case name
+  --> src/lib.rs:23:9
+   |
+23 |     pub biPlanes: libc::c_ushort,
+   |         ^^^^^^^^ help: convert the identifier to snake case: `bi_planes`
+
+warning: structure field `biBitCount` should have a snake case name
+  --> src/lib.rs:24:9
+   |
+24 |     pub biBitCount: libc::c_ushort,
+   |         ^^^^^^^^^^ help: convert the identifier to snake case: `bi_bit_count`
+
+warning: structure field `biCompression` should have a snake case name
+  --> src/lib.rs:25:9
+   |
+25 |     pub biCompression: libc::c_uint,
+   |         ^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_compression`
+
+warning: structure field `biSizeImage` should have a snake case name
+  --> src/lib.rs:26:9
+   |
+26 |     pub biSizeImage: libc::c_uint,
+   |         ^^^^^^^^^^^ help: convert the identifier to snake case: `bi_size_image`
+
+warning: structure field `biXPelsPerMeter` should have a snake case name
+  --> src/lib.rs:27:9
+   |
+27 |     pub biXPelsPerMeter: libc::c_int,
+   |         ^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_xpels_per_meter`
+
+warning: structure field `biYPelsPerMeter` should have a snake case name
+  --> src/lib.rs:28:9
+   |
+28 |     pub biYPelsPerMeter: libc::c_int,
+   |         ^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_ypels_per_meter`
+
+warning: structure field `biClrUsed` should have a snake case name
+  --> src/lib.rs:29:9
+   |
+29 |     pub biClrUsed: libc::c_uint,
+   |         ^^^^^^^^^ help: convert the identifier to snake case: `bi_clr_used`
+
+warning: structure field `biClrImportant` should have a snake case name
+  --> src/lib.rs:30:9
+   |
+30 |     pub biClrImportant: libc::c_uint,
+   |         ^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_clr_important`
+
+warning: `bmp_img_free` (lib) generated 14 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.92s
+2026-11-16 13:27:07 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: bmp_row_index (attempts: 0)
+2026-11-16 13:27:12 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling bmp_row_index v0.1.0 (/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust)
+warning: structure field `bfSize` should have a snake case name
+ --> src/lib.rs:4:9
+  |
+4 |     pub bfSize: libc::c_uint,
+  |         ^^^^^^ help: convert the identifier to snake case: `bf_size`
+  |
+  = note: `#[warn(non_snake_case)]` on by default
+
+warning: structure field `bfReserved` should have a snake case name
+ --> src/lib.rs:5:9
+  |
+5 |     pub bfReserved: libc::c_uint,
+  |         ^^^^^^^^^^ help: convert the identifier to snake case: `bf_reserved`
+
+warning: structure field `bfOffBits` should have a snake case name
+ --> src/lib.rs:6:9
+  |
+6 |     pub bfOffBits: libc::c_uint,
+  |         ^^^^^^^^^ help: convert the identifier to snake case: `bf_off_bits`
+
+warning: structure field `biSize` should have a snake case name
+ --> src/lib.rs:7:9
+  |
+7 |     pub biSize: libc::c_uint,
+  |         ^^^^^^ help: convert the identifier to snake case: `bi_size`
+
+warning: structure field `biWidth` should have a snake case name
+ --> src/lib.rs:8:9
+  |
+8 |     pub biWidth: libc::c_int,
+  |         ^^^^^^^ help: convert the identifier to snake case: `bi_width`
+
+warning: structure field `biHeight` should have a snake case name
+ --> src/lib.rs:9:9
+  |
+9 |     pub biHeight: libc::c_int,
+  |         ^^^^^^^^ help: convert the identifier to snake case: `bi_height`
+
+warning: structure field `biPlanes` should have a snake case name
+  --> src/lib.rs:10:9
+   |
+10 |     pub biPlanes: libc::c_ushort,
+   |         ^^^^^^^^ help: convert the identifier to snake case: `bi_planes`
+
+warning: structure field `biBitCount` should have a snake case name
+  --> src/lib.rs:11:9
+   |
+11 |     pub biBitCount: libc::c_ushort,
+   |         ^^^^^^^^^^ help: convert the identifier to snake case: `bi_bit_count`
+
+warning: structure field `biCompression` should have a snake case name
+  --> src/lib.rs:12:9
+   |
+12 |     pub biCompression: libc::c_uint,
+   |         ^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_compression`
+
+warning: structure field `biSizeImage` should have a snake case name
+  --> src/lib.rs:13:9
+   |
+13 |     pub biSizeImage: libc::c_uint,
+   |         ^^^^^^^^^^^ help: convert the identifier to snake case: `bi_size_image`
+
+warning: structure field `biXPelsPerMeter` should have a snake case name
+  --> src/lib.rs:14:9
+   |
+14 |     pub biXPelsPerMeter: libc::c_int,
+   |         ^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_xpels_per_meter`
+
+warning: structure field `biYPelsPerMeter` should have a snake case name
+  --> src/lib.rs:15:9
+   |
+15 |     pub biYPelsPerMeter: libc::c_int,
+   |         ^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_ypels_per_meter`
+
+warning: structure field `biClrUsed` should have a snake case name
+  --> src/lib.rs:16:9
+   |
+16 |     pub biClrUsed: libc::c_uint,
+   |         ^^^^^^^^^ help: convert the identifier to snake case: `bi_clr_used`
+
+warning: structure field `biClrImportant` should have a snake case name
+  --> src/lib.rs:17:9
+   |
+17 |     pub biClrImportant: libc::c_uint,
+   |         ^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_clr_important`
+
+warning: `bmp_row_index` (lib) generated 14 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.86s
+2026-11-16 13:27:15 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: get_now (attempts: 0)
+2026-11-16 13:27:19 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling get_now v0.1.0 (/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.97s
+2026-11-16 13:27:22 | INFO     | sactor.translator.unidiomatic_translator:497 | Translating global variable: s (attempts: 0)
+2026-11-16 13:27:27 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:27:27 | INFO     | sactor.translator.unidiomatic_translator:497 | Translating global variable: k (attempts: 0)
+2026-11-16 13:27:33 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:27:34 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: md5_transform (attempts: 0)
+2026-11-16 13:27:41 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling md5_transform v0.1.0 (/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust)
+warning: type `__uint32_t` should have an upper camel case name
+ --> src/lib.rs:8:10
+  |
+8 | pub type __uint32_t = libc::c_uint;
+  |          ^^^^^^^^^^ help: convert the identifier to upper camel case: `Uint32T`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `__uint64_t` should have an upper camel case name
+ --> src/lib.rs:9:10
+  |
+9 | pub type __uint64_t = libc::c_ulong;
+  |          ^^^^^^^^^^ help: convert the identifier to upper camel case: `Uint64T`
+
+warning: use of deprecated type alias `libc::uint64_t`: Use u64 instead.
+ --> src/lib.rs:2:11
+  |
+2 | use libc::uint64_t;
+  |           ^^^^^^^^
+  |
+  = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated type alias `libc::uint32_t`: Use u32 instead.
+ --> src/lib.rs:3:11
+  |
+3 | use libc::uint32_t;
+  |           ^^^^^^^^
+
+warning: use of deprecated type alias `libc::uint32_t`: Use u32 instead.
+  --> src/lib.rs:13:17
+   |
+13 |     pub state: [uint32_t; 4],
+   |                 ^^^^^^^^
+
+warning: use of deprecated type alias `libc::uint64_t`: Use u64 instead.
+  --> src/lib.rs:14:18
+   |
+14 |     pub bit_len: uint64_t,
+   |                  ^^^^^^^^
+
+warning: static variable `s` should have an upper case name
+  --> src/lib.rs:18:8
+   |
+18 | static s: [u32; 64] = [
+   |        ^ help: convert the identifier to upper case (notice the capitalization): `S`
+   |
+   = note: `#[warn(non_upper_case_globals)]` on by default
+
+warning: static variable `k` should have an upper case name
+  --> src/lib.rs:84:8
+   |
+84 | static k: [u32; 64] = [
+   |        ^ help: convert the identifier to upper case (notice the capitalization): `K`
+
+warning: `md5_transform` (lib) generated 10 warnings (2 duplicates)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.13s
+2026-11-16 13:27:45 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: bmp_img_init_df (attempts: 0)
+2026-11-16 13:27:49 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling bmp_img_init_df v0.1.0 (/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust)
+warning: structure field `bfSize` should have a snake case name
+  --> src/lib.rs:26:9
+   |
+26 |     pub bfSize: libc::c_uint,
+   |         ^^^^^^ help: convert the identifier to snake case: `bf_size`
+   |
+   = note: `#[warn(non_snake_case)]` on by default
+
+warning: structure field `bfReserved` should have a snake case name
+  --> src/lib.rs:27:9
+   |
+27 |     pub bfReserved: libc::c_uint,
+   |         ^^^^^^^^^^ help: convert the identifier to snake case: `bf_reserved`
+
+warning: structure field `bfOffBits` should have a snake case name
+  --> src/lib.rs:28:9
+   |
+28 |     pub bfOffBits: libc::c_uint,
+   |         ^^^^^^^^^ help: convert the identifier to snake case: `bf_off_bits`
+
+warning: structure field `biSize` should have a snake case name
+  --> src/lib.rs:29:9
+   |
+29 |     pub biSize: libc::c_uint,
+   |         ^^^^^^ help: convert the identifier to snake case: `bi_size`
+
+warning: structure field `biWidth` should have a snake case name
+  --> src/lib.rs:30:9
+   |
+30 |     pub biWidth: libc::c_int,
+   |         ^^^^^^^ help: convert the identifier to snake case: `bi_width`
+
+warning: structure field `biHeight` should have a snake case name
+  --> src/lib.rs:31:9
+   |
+31 |     pub biHeight: libc::c_int,
+   |         ^^^^^^^^ help: convert the identifier to snake case: `bi_height`
+
+warning: structure field `biPlanes` should have a snake case name
+  --> src/lib.rs:32:9
+   |
+32 |     pub biPlanes: libc::c_ushort,
+   |         ^^^^^^^^ help: convert the identifier to snake case: `bi_planes`
+
+warning: structure field `biBitCount` should have a snake case name
+  --> src/lib.rs:33:9
+   |
+33 |     pub biBitCount: libc::c_ushort,
+   |         ^^^^^^^^^^ help: convert the identifier to snake case: `bi_bit_count`
+
+warning: structure field `biCompression` should have a snake case name
+  --> src/lib.rs:34:9
+   |
+34 |     pub biCompression: libc::c_uint,
+   |         ^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_compression`
+
+warning: structure field `biSizeImage` should have a snake case name
+  --> src/lib.rs:35:9
+   |
+35 |     pub biSizeImage: libc::c_uint,
+   |         ^^^^^^^^^^^ help: convert the identifier to snake case: `bi_size_image`
+
+warning: structure field `biXPelsPerMeter` should have a snake case name
+  --> src/lib.rs:36:9
+   |
+36 |     pub biXPelsPerMeter: libc::c_int,
+   |         ^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_xpels_per_meter`
+
+warning: structure field `biYPelsPerMeter` should have a snake case name
+  --> src/lib.rs:37:9
+   |
+37 |     pub biYPelsPerMeter: libc::c_int,
+   |         ^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_ypels_per_meter`
+
+warning: structure field `biClrUsed` should have a snake case name
+  --> src/lib.rs:38:9
+   |
+38 |     pub biClrUsed: libc::c_uint,
+   |         ^^^^^^^^^ help: convert the identifier to snake case: `bi_clr_used`
+
+warning: structure field `biClrImportant` should have a snake case name
+  --> src/lib.rs:39:9
+   |
+39 |     pub biClrImportant: libc::c_uint,
+   |         ^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_clr_important`
+
+warning: `bmp_img_init_df` (lib) generated 14 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.89s
+2026-11-16 13:27:56 | INFO     | sactor.translator.unidiomatic_translator:102 | Enum bmp_error already translated
+2026-11-16 13:27:56 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: bmp_img_write (attempts: 0)
+2026-11-16 13:28:05 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling bmp_img_write v0.1.0 (/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust)
+warning: variant `BMP_FILE_NOT_OPENED` should have an upper camel case name
+  --> src/lib.rs:43:5
+   |
+43 |     BMP_FILE_NOT_OPENED = -4,
+   |     ^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `BmpFileNotOpened`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: variant `BMP_HEADER_NOT_INITIALIZED` should have an upper camel case name
+  --> src/lib.rs:44:5
+   |
+44 |     BMP_HEADER_NOT_INITIALIZED = -3,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `BmpHeaderNotInitialized`
+
+warning: variant `BMP_INVALID_FILE` should have an upper camel case name
+  --> src/lib.rs:45:5
+   |
+45 |     BMP_INVALID_FILE = -2,
+   |     ^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `BmpInvalidFile`
+
+warning: variant `BMP_ERROR` should have an upper camel case name
+  --> src/lib.rs:46:5
+   |
+46 |     BMP_ERROR = -1,
+   |     ^^^^^^^^^ help: convert the identifier to upper camel case: `BmpError`
+
+warning: variant `BMP_OK` should have an upper camel case name
+  --> src/lib.rs:47:5
+   |
+47 |     BMP_OK = 0,
+   |     ^^^^^^ help: convert the identifier to upper camel case: `BmpOk`
+
+warning: structure field `bfSize` should have a snake case name
+  --> src/lib.rs:25:9
+   |
+25 |     pub bfSize: libc::c_uint,
+   |         ^^^^^^ help: convert the identifier to snake case: `bf_size`
+   |
+   = note: `#[warn(non_snake_case)]` on by default
+
+warning: structure field `bfReserved` should have a snake case name
+  --> src/lib.rs:26:9
+   |
+26 |     pub bfReserved: libc::c_uint,
+   |         ^^^^^^^^^^ help: convert the identifier to snake case: `bf_reserved`
+
+warning: structure field `bfOffBits` should have a snake case name
+  --> src/lib.rs:27:9
+   |
+27 |     pub bfOffBits: libc::c_uint,
+   |         ^^^^^^^^^ help: convert the identifier to snake case: `bf_off_bits`
+
+warning: structure field `biSize` should have a snake case name
+  --> src/lib.rs:28:9
+   |
+28 |     pub biSize: libc::c_uint,
+   |         ^^^^^^ help: convert the identifier to snake case: `bi_size`
+
+warning: structure field `biWidth` should have a snake case name
+  --> src/lib.rs:29:9
+   |
+29 |     pub biWidth: libc::c_int,
+   |         ^^^^^^^ help: convert the identifier to snake case: `bi_width`
+
+warning: structure field `biHeight` should have a snake case name
+  --> src/lib.rs:30:9
+   |
+30 |     pub biHeight: libc::c_int,
+   |         ^^^^^^^^ help: convert the identifier to snake case: `bi_height`
+
+warning: structure field `biPlanes` should have a snake case name
+  --> src/lib.rs:31:9
+   |
+31 |     pub biPlanes: libc::c_ushort,
+   |         ^^^^^^^^ help: convert the identifier to snake case: `bi_planes`
+
+warning: structure field `biBitCount` should have a snake case name
+  --> src/lib.rs:32:9
+   |
+32 |     pub biBitCount: libc::c_ushort,
+   |         ^^^^^^^^^^ help: convert the identifier to snake case: `bi_bit_count`
+
+warning: structure field `biCompression` should have a snake case name
+  --> src/lib.rs:33:9
+   |
+33 |     pub biCompression: libc::c_uint,
+   |         ^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_compression`
+
+warning: structure field `biSizeImage` should have a snake case name
+  --> src/lib.rs:34:9
+   |
+34 |     pub biSizeImage: libc::c_uint,
+   |         ^^^^^^^^^^^ help: convert the identifier to snake case: `bi_size_image`
+
+warning: structure field `biXPelsPerMeter` should have a snake case name
+  --> src/lib.rs:35:9
+   |
+35 |     pub biXPelsPerMeter: libc::c_int,
+   |         ^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_xpels_per_meter`
+
+warning: structure field `biYPelsPerMeter` should have a snake case name
+  --> src/lib.rs:36:9
+   |
+36 |     pub biYPelsPerMeter: libc::c_int,
+   |         ^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_ypels_per_meter`
+
+warning: structure field `biClrUsed` should have a snake case name
+  --> src/lib.rs:37:9
+   |
+37 |     pub biClrUsed: libc::c_uint,
+   |         ^^^^^^^^^ help: convert the identifier to snake case: `bi_clr_used`
+
+warning: structure field `biClrImportant` should have a snake case name
+  --> src/lib.rs:38:9
+   |
+38 |     pub biClrImportant: libc::c_uint,
+   |         ^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_clr_important`
+
+warning: `bmp_img_write` (lib) generated 19 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.96s
+2026-11-16 13:28:11 | INFO     | sactor.translator.unidiomatic_translator:102 | Enum bmp_error already translated
+2026-11-16 13:28:11 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: bmp_img_read (attempts: 0)
+2026-11-16 13:28:18 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling bmp_img_read v0.1.0 (/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust)
+warning: variant `BMP_FILE_NOT_OPENED` should have an upper camel case name
+  --> src/lib.rs:41:5
+   |
+41 |     BMP_FILE_NOT_OPENED = -4,
+   |     ^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `BmpFileNotOpened`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: variant `BMP_HEADER_NOT_INITIALIZED` should have an upper camel case name
+  --> src/lib.rs:42:5
+   |
+42 |     BMP_HEADER_NOT_INITIALIZED = -3,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `BmpHeaderNotInitialized`
+
+warning: variant `BMP_INVALID_FILE` should have an upper camel case name
+  --> src/lib.rs:43:5
+   |
+43 |     BMP_INVALID_FILE = -2,
+   |     ^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `BmpInvalidFile`
+
+warning: variant `BMP_ERROR` should have an upper camel case name
+  --> src/lib.rs:44:5
+   |
+44 |     BMP_ERROR = -1,
+   |     ^^^^^^^^^ help: convert the identifier to upper camel case: `BmpError`
+
+warning: variant `BMP_OK` should have an upper camel case name
+  --> src/lib.rs:45:5
+   |
+45 |     BMP_OK = 0,
+   |     ^^^^^^ help: convert the identifier to upper camel case: `BmpOk`
+
+warning: structure field `bfSize` should have a snake case name
+  --> src/lib.rs:23:9
+   |
+23 |     pub bfSize: libc::c_uint,
+   |         ^^^^^^ help: convert the identifier to snake case: `bf_size`
+   |
+   = note: `#[warn(non_snake_case)]` on by default
+
+warning: structure field `bfReserved` should have a snake case name
+  --> src/lib.rs:24:9
+   |
+24 |     pub bfReserved: libc::c_uint,
+   |         ^^^^^^^^^^ help: convert the identifier to snake case: `bf_reserved`
+
+warning: structure field `bfOffBits` should have a snake case name
+  --> src/lib.rs:25:9
+   |
+25 |     pub bfOffBits: libc::c_uint,
+   |         ^^^^^^^^^ help: convert the identifier to snake case: `bf_off_bits`
+
+warning: structure field `biSize` should have a snake case name
+  --> src/lib.rs:26:9
+   |
+26 |     pub biSize: libc::c_uint,
+   |         ^^^^^^ help: convert the identifier to snake case: `bi_size`
+
+warning: structure field `biWidth` should have a snake case name
+  --> src/lib.rs:27:9
+   |
+27 |     pub biWidth: libc::c_int,
+   |         ^^^^^^^ help: convert the identifier to snake case: `bi_width`
+
+warning: structure field `biHeight` should have a snake case name
+  --> src/lib.rs:28:9
+   |
+28 |     pub biHeight: libc::c_int,
+   |         ^^^^^^^^ help: convert the identifier to snake case: `bi_height`
+
+warning: structure field `biPlanes` should have a snake case name
+  --> src/lib.rs:29:9
+   |
+29 |     pub biPlanes: libc::c_ushort,
+   |         ^^^^^^^^ help: convert the identifier to snake case: `bi_planes`
+
+warning: structure field `biBitCount` should have a snake case name
+  --> src/lib.rs:30:9
+   |
+30 |     pub biBitCount: libc::c_ushort,
+   |         ^^^^^^^^^^ help: convert the identifier to snake case: `bi_bit_count`
+
+warning: structure field `biCompression` should have a snake case name
+  --> src/lib.rs:31:9
+   |
+31 |     pub biCompression: libc::c_uint,
+   |         ^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_compression`
+
+warning: structure field `biSizeImage` should have a snake case name
+  --> src/lib.rs:32:9
+   |
+32 |     pub biSizeImage: libc::c_uint,
+   |         ^^^^^^^^^^^ help: convert the identifier to snake case: `bi_size_image`
+
+warning: structure field `biXPelsPerMeter` should have a snake case name
+  --> src/lib.rs:33:9
+   |
+33 |     pub biXPelsPerMeter: libc::c_int,
+   |         ^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_xpels_per_meter`
+
+warning: structure field `biYPelsPerMeter` should have a snake case name
+  --> src/lib.rs:34:9
+   |
+34 |     pub biYPelsPerMeter: libc::c_int,
+   |         ^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_ypels_per_meter`
+
+warning: structure field `biClrUsed` should have a snake case name
+  --> src/lib.rs:35:9
+   |
+35 |     pub biClrUsed: libc::c_uint,
+   |         ^^^^^^^^^ help: convert the identifier to snake case: `bi_clr_used`
+
+warning: structure field `biClrImportant` should have a snake case name
+  --> src/lib.rs:36:9
+   |
+36 |     pub biClrImportant: libc::c_uint,
+   |         ^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_clr_important`
+
+warning: `bmp_img_read` (lib) generated 19 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.89s
+2026-11-16 13:28:26 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: md5_update (attempts: 0)
+2026-11-16 13:28:33 | ERROR    | sactor.verifier.verifier:282 | Rust code failed to compile
+2026-11-16 13:28:33 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: md5_update (attempts: 1)
+2026-11-16 13:28:40 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Blocking waiting for file lock on package cache
+    Updating crates.io index
+    Blocking waiting for file lock on package cache
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling md5_update v0.1.0 (/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust)
+warning: type `__uint32_t` should have an upper camel case name
+ --> src/lib.rs:8:10
+  |
+8 | pub type __uint32_t = libc::c_uint;
+  |          ^^^^^^^^^^ help: convert the identifier to upper camel case: `Uint32T`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `__uint64_t` should have an upper camel case name
+ --> src/lib.rs:9:10
+  |
+9 | pub type __uint64_t = libc::c_ulong;
+  |          ^^^^^^^^^^ help: convert the identifier to upper camel case: `Uint64T`
+
+warning: use of deprecated type alias `libc::uint64_t`: Use u64 instead.
+ --> src/lib.rs:2:11
+  |
+2 | use libc::uint64_t;
+  |           ^^^^^^^^
+  |
+  = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated type alias `libc::uint32_t`: Use u32 instead.
+ --> src/lib.rs:3:11
+  |
+3 | use libc::uint32_t;
+  |           ^^^^^^^^
+
+warning: use of deprecated type alias `libc::uint32_t`: Use u32 instead.
+  --> src/lib.rs:13:17
+   |
+13 |     pub state: [uint32_t; 4],
+   |                 ^^^^^^^^
+
+warning: use of deprecated type alias `libc::uint64_t`: Use u64 instead.
+  --> src/lib.rs:14:18
+   |
+14 |     pub bit_len: uint64_t,
+   |                  ^^^^^^^^
+
+warning: `md5_update` (lib) generated 8 warnings (2 duplicates)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.23s
+2026-11-16 13:28:45 | INFO     | sactor.translator.unidiomatic_translator:497 | Translating global variable: zero (attempts: 0)
+2026-11-16 13:28:49 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:28:49 | INFO     | sactor.translator.unidiomatic_translator:497 | Translating global variable: pad (attempts: 0)
+2026-11-16 13:28:54 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:28:54 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: md5_final (attempts: 0)
+2026-11-16 13:29:01 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling md5_final v0.1.0 (/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust)
+warning: type `__uint32_t` should have an upper camel case name
+ --> src/lib.rs:8:10
+  |
+8 | pub type __uint32_t = libc::c_uint;
+  |          ^^^^^^^^^^ help: convert the identifier to upper camel case: `Uint32T`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `__uint64_t` should have an upper camel case name
+ --> src/lib.rs:9:10
+  |
+9 | pub type __uint64_t = libc::c_ulong;
+  |          ^^^^^^^^^^ help: convert the identifier to upper camel case: `Uint64T`
+
+warning: use of deprecated type alias `libc::uint64_t`: Use u64 instead.
+ --> src/lib.rs:2:11
+  |
+2 | use libc::uint64_t;
+  |           ^^^^^^^^
+  |
+  = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated type alias `libc::uint32_t`: Use u32 instead.
+ --> src/lib.rs:3:11
+  |
+3 | use libc::uint32_t;
+  |           ^^^^^^^^
+
+warning: use of deprecated type alias `libc::uint32_t`: Use u32 instead.
+  --> src/lib.rs:13:17
+   |
+13 |     pub state: [uint32_t; 4],
+   |                 ^^^^^^^^
+
+warning: use of deprecated type alias `libc::uint64_t`: Use u64 instead.
+  --> src/lib.rs:14:18
+   |
+14 |     pub bit_len: uint64_t,
+   |                  ^^^^^^^^
+
+warning: static variable `pad` should have an upper case name
+  --> src/lib.rs:20:8
+   |
+20 | static pad: u8 = 0x80;
+   |        ^^^ help: convert the identifier to upper case: `PAD`
+   |
+   = note: `#[warn(non_upper_case_globals)]` on by default
+
+warning: `md5_final` (lib) generated 9 warnings (2 duplicates)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.92s
+2026-11-16 13:29:07 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: print_file_md5 (attempts: 0)
+2026-11-16 13:29:15 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling print_file_md5 v0.1.0 (/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust)
+warning: type `__uint32_t` should have an upper camel case name
+  --> src/lib.rs:10:10
+   |
+10 | pub type __uint32_t = libc::c_uint;
+   |          ^^^^^^^^^^ help: convert the identifier to upper camel case: `Uint32T`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `__uint64_t` should have an upper camel case name
+  --> src/lib.rs:11:10
+   |
+11 | pub type __uint64_t = libc::c_ulong;
+   |          ^^^^^^^^^^ help: convert the identifier to upper camel case: `Uint64T`
+
+warning: use of deprecated type alias `libc::uint64_t`: Use u64 instead.
+ --> src/lib.rs:2:11
+  |
+2 | use libc::uint64_t;
+  |           ^^^^^^^^
+  |
+  = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated type alias `libc::uint32_t`: Use u32 instead.
+ --> src/lib.rs:3:11
+  |
+3 | use libc::uint32_t;
+  |           ^^^^^^^^
+
+warning: use of deprecated type alias `libc::uint32_t`: Use u32 instead.
+  --> src/lib.rs:15:17
+   |
+15 |     pub state: [uint32_t; 4],
+   |                 ^^^^^^^^
+
+warning: use of deprecated type alias `libc::uint64_t`: Use u64 instead.
+  --> src/lib.rs:16:18
+   |
+16 |     pub bit_len: uint64_t,
+   |                  ^^^^^^^^
+
+warning: `print_file_md5` (lib) generated 8 warnings (2 duplicates)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.25s
+2026-11-16 13:29:22 | INFO     | sactor.translator.unidiomatic_translator:102 | Enum bmp_error already translated
+2026-11-16 13:29:22 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: main (attempts: 0)
+2026-11-16 13:29:33 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling main v0.1.0 (/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/embed_test_rust)
+warning: type `__uint32_t` should have an upper camel case name
+  --> src/lib.rs:49:10
+   |
+49 | pub type __uint32_t = libc::c_uint;
+   |          ^^^^^^^^^^ help: convert the identifier to upper camel case: `Uint32T`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `__uint64_t` should have an upper camel case name
+  --> src/lib.rs:50:10
+   |
+50 | pub type __uint64_t = libc::c_ulong;
+   |          ^^^^^^^^^^ help: convert the identifier to upper camel case: `Uint64T`
+
+warning: variant `BMP_FILE_NOT_OPENED` should have an upper camel case name
+  --> src/lib.rs:62:5
+   |
+62 |     BMP_FILE_NOT_OPENED = -4,
+   |     ^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `BmpFileNotOpened`
+
+warning: variant `BMP_HEADER_NOT_INITIALIZED` should have an upper camel case name
+  --> src/lib.rs:63:5
+   |
+63 |     BMP_HEADER_NOT_INITIALIZED = -3,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `BmpHeaderNotInitialized`
+
+warning: variant `BMP_INVALID_FILE` should have an upper camel case name
+  --> src/lib.rs:64:5
+   |
+64 |     BMP_INVALID_FILE = -2,
+   |     ^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `BmpInvalidFile`
+
+warning: variant `BMP_ERROR` should have an upper camel case name
+  --> src/lib.rs:65:5
+   |
+65 |     BMP_ERROR = -1,
+   |     ^^^^^^^^^ help: convert the identifier to upper camel case: `BmpError`
+
+warning: variant `BMP_OK` should have an upper camel case name
+  --> src/lib.rs:66:5
+   |
+66 |     BMP_OK = 0,
+   |     ^^^^^^ help: convert the identifier to upper camel case: `BmpOk`
+
+warning: use of deprecated type alias `libc::uint64_t`: Use u64 instead.
+ --> src/lib.rs:2:11
+  |
+2 | use libc::uint64_t;
+  |           ^^^^^^^^
+  |
+  = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated type alias `libc::uint32_t`: Use u32 instead.
+ --> src/lib.rs:3:11
+  |
+3 | use libc::uint32_t;
+  |           ^^^^^^^^
+
+warning: use of deprecated type alias `libc::uint32_t`: Use u32 instead.
+  --> src/lib.rs:54:17
+   |
+54 |     pub state: [uint32_t; 4],
+   |                 ^^^^^^^^
+
+warning: use of deprecated type alias `libc::uint64_t`: Use u64 instead.
+  --> src/lib.rs:55:18
+   |
+55 |     pub bit_len: uint64_t,
+   |                  ^^^^^^^^
+
+warning: static `stderr` is never used
+  --> src/lib.rs:69:16
+   |
+69 |     static mut stderr: *mut libc::FILE;
+   |                ^^^^^^
+   |
+   = note: `#[warn(dead_code)]` on by default
+
+warning: structure field `bfSize` should have a snake case name
+  --> src/lib.rs:34:9
+   |
+34 |     pub bfSize: libc::c_uint,
+   |         ^^^^^^ help: convert the identifier to snake case: `bf_size`
+   |
+   = note: `#[warn(non_snake_case)]` on by default
+
+warning: structure field `bfReserved` should have a snake case name
+  --> src/lib.rs:35:9
+   |
+35 |     pub bfReserved: libc::c_uint,
+   |         ^^^^^^^^^^ help: convert the identifier to snake case: `bf_reserved`
+
+warning: structure field `bfOffBits` should have a snake case name
+  --> src/lib.rs:36:9
+   |
+36 |     pub bfOffBits: libc::c_uint,
+   |         ^^^^^^^^^ help: convert the identifier to snake case: `bf_off_bits`
+
+warning: structure field `biSize` should have a snake case name
+  --> src/lib.rs:37:9
+   |
+37 |     pub biSize: libc::c_uint,
+   |         ^^^^^^ help: convert the identifier to snake case: `bi_size`
+
+warning: structure field `biWidth` should have a snake case name
+  --> src/lib.rs:38:9
+   |
+38 |     pub biWidth: libc::c_int,
+   |         ^^^^^^^ help: convert the identifier to snake case: `bi_width`
+
+warning: structure field `biHeight` should have a snake case name
+  --> src/lib.rs:39:9
+   |
+39 |     pub biHeight: libc::c_int,
+   |         ^^^^^^^^ help: convert the identifier to snake case: `bi_height`
+
+warning: structure field `biPlanes` should have a snake case name
+  --> src/lib.rs:40:9
+   |
+40 |     pub biPlanes: libc::c_ushort,
+   |         ^^^^^^^^ help: convert the identifier to snake case: `bi_planes`
+
+warning: structure field `biBitCount` should have a snake case name
+  --> src/lib.rs:41:9
+   |
+41 |     pub biBitCount: libc::c_ushort,
+   |         ^^^^^^^^^^ help: convert the identifier to snake case: `bi_bit_count`
+
+warning: structure field `biCompression` should have a snake case name
+  --> src/lib.rs:42:9
+   |
+42 |     pub biCompression: libc::c_uint,
+   |         ^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_compression`
+
+warning: structure field `biSizeImage` should have a snake case name
+  --> src/lib.rs:43:9
+   |
+43 |     pub biSizeImage: libc::c_uint,
+   |         ^^^^^^^^^^^ help: convert the identifier to snake case: `bi_size_image`
+
+warning: structure field `biXPelsPerMeter` should have a snake case name
+  --> src/lib.rs:44:9
+   |
+44 |     pub biXPelsPerMeter: libc::c_int,
+   |         ^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_xpels_per_meter`
+
+warning: structure field `biYPelsPerMeter` should have a snake case name
+  --> src/lib.rs:45:9
+   |
+45 |     pub biYPelsPerMeter: libc::c_int,
+   |         ^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_ypels_per_meter`
+
+warning: structure field `biClrUsed` should have a snake case name
+  --> src/lib.rs:46:9
+   |
+46 |     pub biClrUsed: libc::c_uint,
+   |         ^^^^^^^^^ help: convert the identifier to snake case: `bi_clr_used`
+
+warning: structure field `biClrImportant` should have a snake case name
+  --> src/lib.rs:47:9
+   |
+47 |     pub biClrImportant: libc::c_uint,
+   |         ^^^^^^^^^^^^^^ help: convert the identifier to snake case: `bi_clr_important`
+
+warning: `main` (lib) generated 28 warnings (2 duplicates)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.02s
+2026-11-16 13:29:52 | ERROR    | sactor.verifier.verifier:282 | Rust code failed to compile
+2026-11-16 13:29:52 | ERROR    | sactor.combiner.program_combiner:136 | Failed to verify the combined code:     Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling build_attempt v0.1.0 (/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt)
+error[E0530]: let bindings cannot shadow statics
+   --> src/main.rs:163:13
+    |
+55  | / static s: [u32; 64] = [
+56  | |     7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9,
+57  | |     14, 20, 5, 9, 14, 20, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 6, 10, 15,
+58  | |     21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21,
+59  | | ];
+    | |__- the static `s` is defined here
+...
+163 |           let s = ctx.state[i];
+    |               ^ cannot be named the same as a static
+
+error[E0530]: let bindings cannot shadow statics
+   --> src/main.rs:219:9
+    |
+60  | static pad: u8 = 0x80;
+    | ---------------------- the static `pad` is defined here
+...
+219 |     let pad = (width % 4) as isize as usize;
+    |         ^^^ cannot be named the same as a static
+
+warning: type `__uint32_t` should have an upper camel case name
+ --> src/main.rs:4:10
+  |
+4 | pub type __uint32_t = libc::c_uint;
+  |          ^^^^^^^^^^ help: convert the identifier to upper camel case: `Uint32T`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `__uint64_t` should have an upper camel case name
+ --> src/main.rs:5:10
+  |
+5 | pub type __uint64_t = libc::c_ulong;
+  |          ^^^^^^^^^^ help: convert the identifier to upper camel case: `Uint64T`
+
+warning: variant `BMP_FILE_NOT_OPENED` should have an upper camel case name
+  --> src/main.rs:66:5
+   |
+66 |     BMP_FILE_NOT_OPENED = -4,
+   |     ^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `BmpFileNotOpened`
+
+warning: variant `BMP_HEADER_NOT_INITIALIZED` should have an upper camel case name
+  --> src/main.rs:67:5
+   |
+67 |     BMP_HEADER_NOT_INITIALIZED = -3,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `BmpHeaderNotInitialized`
+
+warning: variant `BMP_INVALID_FILE` should have an upper camel case name
+  --> src/main.rs:68:5
+   |
+68 |     BMP_INVALID_FILE = -2,
+   |     ^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `BmpInvalidFile`
+
+warning: variant `BMP_ERROR` should have an upper camel case name
+  --> src/main.rs:69:5
+   |
+69 |     BMP_ERROR = -1,
+   |     ^^^^^^^^^ help: convert the identifier to upper camel case: `BmpError`
+
+warning: variant `BMP_OK` should have an upper camel case name
+  --> src/main.rs:70:5
+   |
+70 |     BMP_OK = 0,
+   |     ^^^^^^ help: convert the identifier to upper camel case: `BmpOk`
+
+warning: use of deprecated type alias `libc::uint32_t`: Use u32 instead.
+ --> src/main.rs:2:11
+  |
+2 | use libc::uint32_t;
+  |           ^^^^^^^^
+  |
+  = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated type alias `libc::uint64_t`: Use u64 instead.
+ --> src/main.rs:3:11
+  |
+3 | use libc::uint64_t;
+  |           ^^^^^^^^
+
+warning: use of deprecated type alias `libc::uint32_t`: Use u32 instead.
+ --> src/main.rs:9:17
+  |
+9 |     pub state: [uint32_t; 4],
+  |                 ^^^^^^^^
+
+warning: use of deprecated type alias `libc::uint64_t`: Use u64 instead.
+  --> src/main.rs:10:18
+   |
+10 |     pub bit_len: uint64_t,
+   |                  ^^^^^^^^
+
+warning: unnecessary `unsafe` block
+   --> src/main.rs:122:28
+    |
+122 |         b = b.wrapping_add(unsafe { md5_left_rotate(sum, s[i]) });
+    |                            ^^^^^^ unnecessary `unsafe` block
+    |
+    = note: `#[warn(unused_unsafe)]` on by default
+
+For more information about this error, try `rustc --explain E0530`.
+warning: `build_attempt` (bin "build_attempt") generated 14 warnings (2 duplicates)
+error: could not compile `build_attempt` (bin "build_attempt") due to 2 previous errors; 14 warnings emitted
+
+usage: sactor [-h] [--log-dir LOG_DIR]
+              {translate,run-tests,generate-tests} ...
+sactor: error: Failed to combine translated code for unidiomatic translation: CombineResult.COMPILE_FAILED
+=== end 2026-11-16T13:29:53-08:00 libbmp_write rc=2
+=== start 2026-11-16T13:31:40-08:00 libbmp_write
+2026-11-16 13:31:44 | INFO     | sactor.sactor:210 | -------------SACTOR Configuration-------------
+2026-11-16 13:31:44 | INFO     | sactor.sactor:211 | Input file: libbmp_write.c
+2026-11-16 13:31:44 | INFO     | sactor.sactor:212 | Test command: test_cmd.json
+2026-11-16 13:31:44 | INFO     | sactor.sactor:213 | Is executable: True
+2026-11-16 13:31:44 | INFO     | sactor.sactor:216 | Build directory: /home/gabe/sactor_forklift/tmp/oxivolve_libbmp_write/sactor/tmpq3op1822/build
+2026-11-16 13:31:44 | INFO     | sactor.sactor:217 | Result directory: /home/gabe/sactor_forklift/sactor-bench-oxivolve/libbmp_write/result_sonnet55
+2026-11-16 13:31:44 | INFO     | sactor.sactor:218 | Config file: /home/gabe/sactor_forklift/sactor/sactor.sonnet55.toml
+2026-11-16 13:31:44 | INFO     | sactor.sactor:219 | No verify: False
+2026-11-16 13:31:44 | INFO     | sactor.sactor:220 | Unidiomatic only: False
+2026-11-16 13:31:44 | INFO     | sactor.sactor:221 | LLM statistics base path: /home/gabe/sactor_forklift/sactor-bench-oxivolve/libbmp_write/result_sonnet55/llm_stat.json
+2026-11-16 13:31:44 | INFO     | sactor.sactor:222 | Extra compile command: None
+2026-11-16 13:31:44 | INFO     | sactor.sactor:223 | Compile commands file: 
+2026-11-16 13:31:44 | INFO     | sactor.sactor:224 | Link args: ['-lm']
+2026-11-16 13:31:44 | INFO     | sactor.sactor:225 | Idiomatic only: False
+2026-11-16 13:31:44 | INFO     | sactor.sactor:226 | Continue run when incomplete: False
+2026-11-16 13:31:44 | INFO     | sactor.sactor:227 | -------------End of Configuration-------------
+2026-11-16 13:31:45 | INFO     | sactor.translator.unidiomatic_translator:633 | Struct/Union md5_ctx already translated
+2026-11-16 13:31:45 | INFO     | sactor.translator.unidiomatic_translator:633 | Struct/Union _bmp_header already translated
+2026-11-16 13:31:45 | INFO     | sactor.translator.unidiomatic_translator:633 | Struct/Union _bmp_pixel already translated
+2026-11-16 13:31:45 | INFO     | sactor.translator.unidiomatic_translator:633 | Struct/Union _bmp_img already translated
+2026-11-16 13:31:45 | INFO     | sactor.translator.unidiomatic_translator:912 | Function md5_left_rotate already translated
+2026-11-16 13:31:45 | INFO     | sactor.translator.unidiomatic_translator:912 | Function md5_init already translated
+2026-11-16 13:31:45 | INFO     | sactor.translator.unidiomatic_translator:912 | Function bmp_header_init_df already translated
+2026-11-16 13:31:45 | INFO     | sactor.translator.unidiomatic_translator:912 | Function bmp_header_write already translated
+2026-11-16 13:31:45 | INFO     | sactor.translator.unidiomatic_translator:912 | Function bmp_header_read already translated
+2026-11-16 13:31:45 | INFO     | sactor.translator.unidiomatic_translator:912 | Function bmp_pixel_init already translated
+2026-11-16 13:31:45 | INFO     | sactor.translator.unidiomatic_translator:912 | Function bmp_img_alloc already translated
+2026-11-16 13:31:45 | INFO     | sactor.translator.unidiomatic_translator:912 | Function bmp_img_free already translated
+2026-11-16 13:31:45 | INFO     | sactor.translator.unidiomatic_translator:912 | Function bmp_row_index already translated
+2026-11-16 13:31:45 | INFO     | sactor.translator.unidiomatic_translator:912 | Function get_now already translated
+2026-11-16 13:31:45 | INFO     | sactor.translator.unidiomatic_translator:912 | Function md5_transform already translated
+2026-11-16 13:31:45 | INFO     | sactor.translator.unidiomatic_translator:912 | Function bmp_img_init_df already translated
+2026-11-16 13:31:45 | INFO     | sactor.translator.unidiomatic_translator:912 | Function bmp_img_write already translated
+2026-11-16 13:31:45 | INFO     | sactor.translator.unidiomatic_translator:912 | Function bmp_img_read already translated
+2026-11-16 13:31:45 | INFO     | sactor.translator.unidiomatic_translator:912 | Function md5_update already translated
+2026-11-16 13:31:45 | INFO     | sactor.translator.unidiomatic_translator:912 | Function md5_final already translated
+2026-11-16 13:31:45 | INFO     | sactor.translator.unidiomatic_translator:912 | Function print_file_md5 already translated
+2026-11-16 13:31:45 | INFO     | sactor.translator.unidiomatic_translator:912 | Function main already translated
+2026-11-16 13:31:47 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:31:50 | INFO     | sactor.combiner.program_combiner:259 | Found 57 warnings in the combined code
+2026-11-16 13:31:50 | INFO     | sactor.combiner.program_combiner:260 | Found 1 errors in the combined code
+2026-11-16 13:31:54 | WARNING  | sactor.thirdparty.crown:90 | crown preprocess messed up code; restoring original translation
+2026-11-16 13:31:54 | WARNING  | sactor.thirdparty.crown:103 | crown explicit-addr messed up code; restoring original translation
+2026-11-16 13:31:55 | INFO     | sactor.translator.idiomatic_translator:634 | Translating struct: md5_ctx (attempts: 0)
+2026-11-16 13:32:01 | ERROR    | sactor.verifier.verifier:282 | Rust code failed to compile
+2026-11-16 13:32:01 | INFO     | sactor.translator.idiomatic_translator:634 | Translating struct: md5_ctx (attempts: 1)
+2026-11-16 13:32:09 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:32:09 | INFO     | sactor.verifier.idiomatic_verifier:1268 | No test commands configured; accepting idiomatic struct md5_ctx after the compile check (converter harness skipped)
+2026-11-16 13:32:09 | INFO     | sactor.translator.idiomatic_translator:634 | Translating struct: _bmp_header (attempts: 0)
+2026-11-16 13:32:19 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:32:19 | INFO     | sactor.verifier.idiomatic_verifier:1268 | No test commands configured; accepting idiomatic struct _bmp_header after the compile check (converter harness skipped)
+2026-11-16 13:32:19 | INFO     | sactor.translator.idiomatic_translator:634 | Translating struct: _bmp_pixel (attempts: 0)
+2026-11-16 13:32:25 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:32:25 | INFO     | sactor.verifier.idiomatic_verifier:1268 | No test commands configured; accepting idiomatic struct _bmp_pixel after the compile check (converter harness skipped)
+2026-11-16 13:32:25 | INFO     | sactor.translator.idiomatic_translator:634 | Translating struct: _bmp_img (attempts: 0)
+2026-11-16 13:32:33 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:32:33 | INFO     | sactor.verifier.idiomatic_verifier:1268 | No test commands configured; accepting idiomatic struct _bmp_img after the compile check (converter harness skipped)
+2026-11-16 13:32:33 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: md5_left_rotate (attempts: 0)
+2026-11-16 13:32:41 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:32:41 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function md5_left_rotate after the compile check (FFI harness skipped)
+2026-11-16 13:32:41 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: md5_init (attempts: 0)
+2026-11-16 13:32:48 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:32:48 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function md5_init after the compile check (FFI harness skipped)
+2026-11-16 13:32:48 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: bmp_header_init_df (attempts: 0)
+2026-11-16 13:32:59 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:32:59 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function bmp_header_init_df after the compile check (FFI harness skipped)
+2026-11-16 13:32:59 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: bmp_header_write (attempts: 0)
+2026-11-16 13:32:59 | INFO     | sactor.translator.idiomatic_translator:234 | Translating enum: bmp_error (attempts: 0)
+2026-11-16 13:33:07 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:33:21 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:33:21 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function bmp_header_write after the compile check (FFI harness skipped)
+2026-11-16 13:33:21 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: bmp_header_read (attempts: 0)
+2026-11-16 13:33:21 | INFO     | sactor.translator.idiomatic_translator:223 | Enum bmp_error already translated
+2026-11-16 13:33:37 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:33:37 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function bmp_header_read after the compile check (FFI harness skipped)
+2026-11-16 13:33:37 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: bmp_pixel_init (attempts: 0)
+2026-11-16 13:33:45 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:33:45 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function bmp_pixel_init after the compile check (FFI harness skipped)
+2026-11-16 13:33:45 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: bmp_img_alloc (attempts: 0)
+2026-11-16 13:33:54 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:33:54 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function bmp_img_alloc after the compile check (FFI harness skipped)
+2026-11-16 13:33:54 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: bmp_img_free (attempts: 0)
+2026-11-16 13:34:00 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:34:00 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function bmp_img_free after the compile check (FFI harness skipped)
+2026-11-16 13:34:00 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: bmp_row_index (attempts: 0)
+2026-11-16 13:34:07 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:34:07 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function bmp_row_index after the compile check (FFI harness skipped)
+2026-11-16 13:34:07 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: get_now (attempts: 0)
+2026-11-16 13:34:16 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:34:16 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function get_now after the compile check (FFI harness skipped)
+2026-11-16 13:34:16 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: md5_transform (attempts: 0)
+2026-11-16 13:34:16 | INFO     | sactor.translator.idiomatic_translator:421 | Translating global variable: k (attempts: 0)
+2026-11-16 13:34:23 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:34:23 | WARNING  | sactor.translator.idiomatic_translator:1766 | Failed to parse global variable k with Rust parser: Item 'k' not found. Using fallback method.
+2026-11-16 13:34:23 | INFO     | sactor.translator.idiomatic_translator:421 | Translating global variable: s (attempts: 0)
+2026-11-16 13:34:28 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:34:28 | WARNING  | sactor.translator.idiomatic_translator:1766 | Failed to parse global variable s with Rust parser: Item 's' not found. Using fallback method.
+2026-11-16 13:34:39 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:34:39 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function md5_transform after the compile check (FFI harness skipped)
+2026-11-16 13:34:39 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: bmp_img_init_df (attempts: 0)
+2026-11-16 13:34:46 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:34:46 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function bmp_img_init_df after the compile check (FFI harness skipped)
+2026-11-16 13:34:46 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: bmp_img_write (attempts: 0)
+2026-11-16 13:34:46 | INFO     | sactor.translator.idiomatic_translator:223 | Enum bmp_error already translated
+2026-11-16 13:34:57 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:34:57 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function bmp_img_write after the compile check (FFI harness skipped)
+2026-11-16 13:34:57 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: bmp_img_read (attempts: 0)
+2026-11-16 13:34:57 | INFO     | sactor.translator.idiomatic_translator:223 | Enum bmp_error already translated
+2026-11-16 13:35:13 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:35:13 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function bmp_img_read after the compile check (FFI harness skipped)
+2026-11-16 13:35:13 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: md5_update (attempts: 0)
+2026-11-16 13:35:21 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:35:21 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function md5_update after the compile check (FFI harness skipped)
+2026-11-16 13:35:21 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: md5_final (attempts: 0)
+2026-11-16 13:35:21 | INFO     | sactor.translator.idiomatic_translator:421 | Translating global variable: pad (attempts: 0)
+2026-11-16 13:35:26 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:35:26 | WARNING  | sactor.translator.idiomatic_translator:1766 | Failed to parse global variable pad with Rust parser: Item 'pad' not found. Using fallback method.
+2026-11-16 13:35:26 | INFO     | sactor.translator.idiomatic_translator:421 | Translating global variable: zero (attempts: 0)
+2026-11-16 13:35:29 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:35:29 | WARNING  | sactor.translator.idiomatic_translator:1766 | Failed to parse global variable zero with Rust parser: Item 'zero' not found. Using fallback method.
+2026-11-16 13:35:37 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:35:37 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function md5_final after the compile check (FFI harness skipped)
+2026-11-16 13:35:37 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: print_file_md5 (attempts: 0)
+2026-11-16 13:35:46 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:35:46 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function print_file_md5 after the compile check (FFI harness skipped)
+2026-11-16 13:35:46 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: main (attempts: 0)
+2026-11-16 13:35:46 | INFO     | sactor.translator.idiomatic_translator:223 | Enum bmp_error already translated
+2026-11-16 13:36:11 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:36:11 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function main after the compile check (FFI harness skipped)
+2026-11-16 13:36:13 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:36:16 | INFO     | sactor.combiner.program_combiner:259 | Found 18 warnings in the combined code
+2026-11-16 13:36:16 | INFO     | sactor.combiner.program_combiner:260 | Found 0 errors in the combined code
+=== end 2026-11-16T13:36:18-08:00 libbmp_write rc=0

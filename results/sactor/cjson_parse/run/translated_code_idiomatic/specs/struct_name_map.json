@@ -1,0 +1,6 @@
+{
+  "cJSON": "cJSON",
+  "internal_hooks": "internal_hooks",
+  "error": "error",
+  "parse_buffer": "parse_buffer"
+}

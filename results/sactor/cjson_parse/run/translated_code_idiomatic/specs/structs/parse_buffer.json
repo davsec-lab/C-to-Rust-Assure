@@ -1,0 +1,71 @@
+{
+  "struct_name": "parse_buffer",
+  "i_kind": "struct",
+  "i_type": "parse_buffer",
+  "fields": [
+    {
+      "u_field": {
+        "name": "content",
+        "type": "*const c_uchar",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_from": "length",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "content",
+        "type": "&[u8]"
+      },
+      "ownership": "transient",
+      "compare": "by_slice"
+    },
+    {
+      "u_field": {
+        "name": "length",
+        "type": "size_t",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "content.len",
+        "type": "usize"
+      }
+    },
+    {
+      "u_field": {
+        "name": "offset",
+        "type": "size_t",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "offset",
+        "type": "usize"
+      }
+    },
+    {
+      "u_field": {
+        "name": "depth",
+        "type": "size_t",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "depth",
+        "type": "usize"
+      }
+    },
+    {
+      "u_field": {
+        "name": "hooks",
+        "type": "internal_hooks",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "hooks",
+        "type": "internal_hooks"
+      },
+      "compare": "skip"
+    }
+  ]
+}

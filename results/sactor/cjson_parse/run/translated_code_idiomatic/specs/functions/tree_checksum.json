@@ -1,0 +1,34 @@
+{
+  "function_name": "tree_checksum",
+  "fields": [
+    {
+      "u_field": {
+        "name": "item",
+        "type": "*const cJSON",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "item",
+        "type": "Option<&cJSON>"
+      },
+      "ownership": "transient"
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "libc::c_double",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "f64"
+      }
+    }
+  ],
+  "idiomatic_name": "tree_checksum"
+}

@@ -1,0 +1,80 @@
+{
+  "function_name": "csv_fini",
+  "fields": [
+    {
+      "u_field": {
+        "name": "p",
+        "type": "*mut csv_parser",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "p",
+        "type": "&mut csv_parser"
+      },
+      "ownership": "transient",
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "cb1",
+        "type": "Option<unsafe extern \"C\" fn(*mut c_void, size_t, *mut c_void)>",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "cb1",
+        "type": "Option<&mut dyn FnMut(Option<&[u8]>)>"
+      },
+      "compare": "skip",
+      "llm_note": "C callback (buffer pointer + length + data) becomes a closure receiving Option<&[u8]>; None corresponds to the NULL buffer pointer."
+    },
+    {
+      "u_field": {
+        "name": "cb2",
+        "type": "Option<unsafe extern \"C\" fn(c_int, *mut c_void)>",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "cb2",
+        "type": "Option<&mut dyn FnMut(i32)>"
+      },
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "data",
+        "type": "*mut c_void",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "cb1/cb2 captured state",
+        "type": "closure captures"
+      },
+      "ownership": "transient",
+      "compare": "skip",
+      "llm_note": "The opaque user data pointer is removed; the closures capture whatever state they need."
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "i32"
+      },
+      "compare": "by_value"
+    }
+  ],
+  "idiomatic_name": "csv_fini"
+}

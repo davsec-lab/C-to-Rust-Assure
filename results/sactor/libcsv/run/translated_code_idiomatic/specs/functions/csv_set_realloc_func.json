@@ -1,0 +1,37 @@
+{
+  "function_name": "csv_set_realloc_func",
+  "fields": [
+    {
+      "u_field": {
+        "name": "p",
+        "type": "*mut csv_parser",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "p",
+        "type": "Option<&mut csv_parser>"
+      },
+      "ownership": "transient",
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "f",
+        "type": "Option<unsafe extern \"C\" fn(*mut libc::c_void, libc::size_t) -> *mut libc::c_void>",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "f",
+        "type": "Option<fn(usize) -> usize>"
+      },
+      "compare": "skip",
+      "llm_note": "The idiomatic csv_parser has no realloc_func field because Vec manages allocation, so the callback is accepted but not stored."
+    }
+  ],
+  "idiomatic_name": "csv_set_realloc_func"
+}

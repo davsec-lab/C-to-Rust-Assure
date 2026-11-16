@@ -1,0 +1,54 @@
+diff --git a/sactor/_resources/sactor.default.toml b/sactor/_resources/sactor.default.toml
+index 951ef37..fe50258 100644
+--- a/sactor/_resources/sactor.default.toml
++++ b/sactor/_resources/sactor.default.toml
+@@ -22,6 +22,9 @@ timeout_seconds = 60
+ timeout_seconds = 60
+ 
+ [verifier]
++# If true, an idiomatic function that contains `unsafe` (blocks, `unsafe fn`, unsafe fn-pointer types)
++# is still accepted when it compiles; a warning with the unsafe token count is logged instead.
++allow_unsafe_in_idiomatic = false
+ 
+ [verifier.selftest]
+ enabled = true
+diff --git a/sactor/translator/unidiomatic_translator.py b/sactor/translator/unidiomatic_translator.py
+index 85baa44..da849eb 100644
+--- a/sactor/translator/unidiomatic_translator.py
++++ b/sactor/translator/unidiomatic_translator.py
+@@ -670,6 +670,13 @@ Error: Failed to parse the result from LLM, result is not wrapped by the tags as
+         rust_s_u = rust_ast_parser.add_derive_to_struct_union(
+             rust_s_u, struct_union.name, "Debug")
+         rust_s_u = rust_ast_parser.unidiomatic_types_cleanup(rust_s_u)
++        # When any included header has an inline-asm function (e.g. <linux/perf_event.h>), c2rust adds
++        # `use c2rust_asm_casts::AsmCastTrait; use core::arch::asm;` to its file and get_struct_definition
++        # copies them. A struct definition never needs them, and c2rust_asm_casts is not a dependency of
++        # the build crate, so keeping them makes every later compile check fail (sssp: unresolved import).
++        rust_s_u = "\n".join(
++            line for line in rust_s_u.splitlines()
++            if line.strip() not in ("use c2rust_asm_casts::AsmCastTrait;", "use core::arch::asm;"))
+ 
+         self.mark_translation_success("struct", struct_union.name)
+         # Save the translated struct/union
+diff --git a/sactor/verifier/idiomatic_verifier.py b/sactor/verifier/idiomatic_verifier.py
+index 2ddc189..6268ff5 100644
+--- a/sactor/verifier/idiomatic_verifier.py
++++ b/sactor/verifier/idiomatic_verifier.py
+@@ -1069,8 +1069,15 @@ Output only the two functions in this format:
+         # legitimately contain `unsafe` that is not this function's doing.
+         total, unsafe = rust_ast_parser.count_unsafe_tokens(function_code)
+         if unsafe > 0:
+-            # TODO: may allow unsafe blocks in the future
+-            return (VerifyResult.COMPILE_ERROR, "Unsafe blocks are not allowed in the idiomatic code")
++            if not self.config.get('verifier', {}).get('allow_unsafe_in_idiomatic', False):
++                return (VerifyResult.COMPILE_ERROR, "Unsafe blocks are not allowed in the idiomatic code")
++            logger.warning(
++                "Idiomatic function %s contains unsafe (%d of %d tokens); accepted because "
++                "verifier.allow_unsafe_in_idiomatic is set",
++                function.name,
++                unsafe,
++                total,
++            )
+ 
+         # Try to compile the Rust code
+         function_name = function.name

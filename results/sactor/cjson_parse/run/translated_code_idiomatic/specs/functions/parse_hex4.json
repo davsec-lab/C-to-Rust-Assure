@@ -1,0 +1,37 @@
+{
+  "function_name": "parse_hex4",
+  "fields": [
+    {
+      "u_field": {
+        "name": "input",
+        "type": "*const u8",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_const": 4,
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "input",
+        "type": "&[u8]"
+      },
+      "ownership": "transient",
+      "compare": "by_slice"
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "u32",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "u32"
+      },
+      "compare": "by_value"
+    }
+  ],
+  "idiomatic_name": "parse_hex4"
+}

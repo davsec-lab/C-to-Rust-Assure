@@ -1,0 +1,15 @@
+{
+    "total_warnings": 50,
+    "total_errors": 0,
+    "warnings": {
+        "unused_assignments": 12,
+        "clippy::manual_c_str_literals": 13,
+        "clippy::missing_safety_doc": 23,
+        "clippy::unnecessary_unwrap": 1,
+        "clippy::needless_range_loop": 1
+    },
+    "errors": {},
+    "total_tokens": 2725,
+    "unsafe_tokens": 2716,
+    "unsafe_fraction": 0.996697247706422
+}

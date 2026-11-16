@@ -1,0 +1,4250 @@
+2026-11-16 13:29:40 | INFO     | sactor.sactor:210 | -------------SACTOR Configuration-------------
+2026-11-16 13:29:40 | INFO     | sactor.sactor:211 | Input file: pagerank.c
+2026-11-16 13:29:40 | INFO     | sactor.sactor:212 | Test command: test_cmd.json
+2026-11-16 13:29:40 | INFO     | sactor.sactor:213 | Is executable: True
+2026-11-16 13:29:40 | INFO     | sactor.sactor:216 | Build directory: /home/gabe/sactor_forklift/tmp/oxivolve_pagerank/sactor/tmpi2y64buw/build
+2026-11-16 13:29:40 | INFO     | sactor.sactor:217 | Result directory: /home/gabe/sactor_forklift/sactor-bench-oxivolve/pagerank/result_sonnet55
+2026-11-16 13:29:40 | INFO     | sactor.sactor:218 | Config file: /home/gabe/sactor_forklift/sactor/sactor.sonnet55.toml
+2026-11-16 13:29:40 | INFO     | sactor.sactor:219 | No verify: False
+2026-11-16 13:29:40 | INFO     | sactor.sactor:220 | Unidiomatic only: False
+2026-11-16 13:29:40 | INFO     | sactor.sactor:221 | LLM statistics base path: /home/gabe/sactor_forklift/sactor-bench-oxivolve/pagerank/result_sonnet55/llm_stat.json
+2026-11-16 13:29:40 | INFO     | sactor.sactor:222 | Extra compile command: None
+2026-11-16 13:29:40 | INFO     | sactor.sactor:223 | Compile commands file: 
+2026-11-16 13:29:40 | INFO     | sactor.sactor:224 | Link args: ['-lm']
+2026-11-16 13:29:40 | INFO     | sactor.sactor:225 | Idiomatic only: False
+2026-11-16 13:29:40 | INFO     | sactor.sactor:226 | Continue run when incomplete: False
+2026-11-16 13:29:40 | INFO     | sactor.sactor:227 | -------------End of Configuration-------------
+2026-11-16 13:29:40 | DEBUG    | sactor.sactor:284 | Total structs: 0; order groups: 0
+2026-11-16 13:29:40 | DEBUG    | sactor.sactor:286 | Total functions: 3; order groups: 3
+2026-11-16 13:29:40 | DEBUG    | sactor.sactor:288 | Struct order: []
+2026-11-16 13:29:40 | DEBUG    | sactor.sactor:289 | Function order: [[FunctionInfo(int detect_indexing ( const char * filename ))], [FunctionInfo(static double diff_timespec ( struct timespec * time1 , struct timespec * time0 ))], [FunctionInfo(int main ( int argc , char * argv [ ] ))]]
+2026-11-16 13:29:41 | DEBUG    | sactor.llm.llm:38 | Default model: 'claude-sonnet-5-5'
+2026-11-16 13:29:41 | DEBUG    | sactor.llm.llm:40 | Found 1 models in config
+2026-11-16 13:29:41 | DEBUG    | sactor.llm.llm:46 | Model mapping 0: 'claude-sonnet-5-5' -> 'anthropic/claude-sonnet-5-5': {'model': 'anthropic/claude-sonnet-5-5', 'api_key': '***REDACTED***', 'max_tokens': '***REDACTED***'}
+2026-11-16 13:29:41 | DEBUG    | sactor.thirdparty.c2rust:52 | Running c2rust command: ['c2rust', 'transpile', '--preserve-unused-functions', '/home/gabe/sactor_forklift/tmp/oxivolve_pagerank/sactor/tmp3bpgs2so/c2rust/unfolded_typedefs.c', '--', '-I/usr/lib/llvm-19/lib/clang/19/include', '-I/usr/local/include', '-I/usr/include/x86_64-linux-gnu', '-I/usr/include']
+2026-11-16 13:29:41 | DEBUG    | sactor.sactor:425 | Checking function detect_indexing: struct_ready=True, struct_blockers=[]
+2026-11-16 13:29:41 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: detect_indexing (attempts: 0)
+2026-11-16 13:29:41 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+int detect_indexing(const char *filename) {
+    FILE *fp = fopen(filename, "r");
+    if (!fp) {
+        return 1; // Default to 1-indexed if can't open file
+    }
+    
+    int min_node = INT_MAX;
+    int samples = 0;
+    char line[256];
+    
+    while (fgets(line, sizeof(line), fp) && samples < 100) {
+        if (line[0] == '#') {
+            continue; // Skip header lines
+        }
+        
+        int fromnode, tonode;
+        if (sscanf(line, "%d %d", &fromnode, &tonode) == 2) {
+            if (fromnode < min_node) {
+                min_node = fromnode;
+            }
+            if (tonode < min_node) {
+                min_node = tonode;
+            }
+            samples++;
+        }
+    }
+    
+    fclose(fp);
+    
+    // If minimum node ID is 0, graph is 0-indexed
+    // If minimum node ID is 1, graph is 1-indexed
+    int is_one_indexed = (min_node != 0);
+    printf("Detected indexing: %s (min node ID: %d)\n", 
+           is_one_indexed ? "1-indexed" : "0-indexed", min_node);
+    
+    return is_one_indexed;
+}
+```
+
+The function body above may reference the following macros. Use these definitions to understand the semantics; do **NOT** redefine them in Rust—expand or replicate their behavior as needed in the translation.
+```c
+#define INT_MAX   __INT_MAX__
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:29:49 | RESPONSE | sactor.llm:160 | I'll use libc directly (fopen, fgets, sscanf, fclose, printf) to keep behavior identical.
+
+Details:
+- `filename` is `*const c_char`, and `fopen` is called with `"r"`.
+- The loop condition is `fgets(...) && samples < 100`, so fgets is called first and then samples is checked. I keep that order.
+- `sscanf` with `"%d %d"` is called through libc's variadic binding.
+- `printf` is also called through libc.
+
+```rust
+pub unsafe fn detect_indexing(filename: *const libc::c_char) -> libc::c_int {
+    let fp = libc::fopen(filename, b"r\0".as_ptr() as *const libc::c_char);
+    if fp.is_null() {
+        return 1;
+    }
+
+    let mut min_node: libc::c_int = libc::c_int::MAX;
+    let mut samples: libc::c_int = 0;
+    let mut line: [libc::c_char; 256] = [0; 256];
+
+    while !libc::fgets(line.as_mut_ptr(), line.len() as libc::c_int, fp).is_null() && samples < 100 {
+        if line[0] == b'#' as libc::c_char {
+            continue;
+        }
+
+        let mut fromnode: libc::c_int = 0;
+        let mut tonode: libc::c_int = 0;
+        let n = libc::sscanf(
+            line.as_ptr(),
+            b"%d %d\0".as_ptr() as *const libc::c_char,
+            &mut fromnode as *mut libc::c_int,
+            &mut tonode as *mut libc::c_int,
+        );
+        if n == 2 {
+            if fromnode < min_node {
+                min_node = fromnode;
+            }
+            if tonode < min_node {
+                min_node = tonode;
+            }
+            samples += 1;
+        }
+    }
+
+    libc::fclose(fp);
+
+    let is_one_indexed: libc::c_int = if min_node != 0 { 1 } else { 0 };
+    let s: &[u8] = if is_one_indexed != 0 {
+        b"1-indexed\0"
+    } else {
+        b"0-indexed\0"
+    };
+    libc::printf(
+        b"Detected indexing: %s (min node ID: %d)\n\0".as_ptr() as *const libc::c_char,
+        s.as_ptr() as *const libc::c_char,
+        min_node,
+    );
+
+    is_one_indexed
+}
+```
+
+----FUNCTION----
+```rust
+pub unsafe fn detect_indexing(filename: *const libc::c_char) -> libc::c_int {
+    let fp = libc::fopen(filename, b"r\0".as_ptr() as *const libc::c_char);
+    if fp.is_null() {
+        return 1;
+    }
+
+    let mut min_node: libc::c_int = libc::c_int::MAX;
+    let mut samples: libc::c_int = 0;
+    let mut line: [libc::c_char; 256] = [0; 256];
+
+    while !libc::fgets(line.as_mut_ptr(), line.len() as libc::c_int, fp).is_null() && samples < 100 {
+        if line[0] == b'#' as libc::c_char {
+            continue;
+        }
+
+        let mut fromnode: libc::c_int = 0;
+        let mut tonode: libc::c_int = 0;
+        let n = libc::sscanf(
+            line.as_ptr(),
+            b"%d %d\0".as_ptr() as *const libc::c_char,
+            &mut fromnode as *mut libc::c_int,
+            &mut tonode as *mut libc::c_int,
+        );
+        if n == 2 {
+            if fromnode < min_node {
+                min_node = fromnode;
+            }
+            if tonode < min_node {
+                min_node = tonode;
+            }
+            samples += 1;
+        }
+    }
+
+    libc::fclose(fp);
+
+    let is_one_indexed: libc::c_int = if min_node != 0 { 1 } else { 0 };
+    let s: &[u8] = if is_one_indexed != 0 {
+        b"1-indexed\0"
+    } else {
+        b"0-indexed\0"
+    };
+    libc::printf(
+        b"Detected indexing: %s (min node ID: %d)\n\0".as_ptr() as *const libc::c_char,
+        s.as_ptr() as *const libc::c_char,
+        min_node,
+    );
+
+    is_one_indexed
+}
+```
+----END FUNCTION----
+2026-11-16 13:29:49 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:29:49 | DEBUG    | sactor.utils:258 | pub unsafe fn detect_indexing(filename: *const libc::c_char) -> libc::c_int {
+    let fp = libc::fopen(filename, b"r\0".as_ptr() as *const libc::c_char);
+    if fp.is_null() {
+        return 1;
+    }
+
+    let mut min_node: libc::c_int = libc::c_int::MAX;
+    let mut samples: libc::c_int = 0;
+    let mut line: [libc::c_char; 256] = [0; 256];
+
+    while !libc::fgets(line.as_mut_ptr(), line.len() as libc::c_int, fp).is_null() && samples < 100 {
+        if line[0] == b'#' as libc::c_char {
+            continue;
+        }
+
+        let mut fromnode: libc::c_int = 0;
+        let mut tonode: libc::c_int = 0;
+        let n = libc::sscanf(
+            line.as_ptr(),
+            b"%d %d\0".as_ptr() as *const libc::c_char,
+            &mut fromnode as *mut libc::c_int,
+            &mut tonode as *mut libc::c_int,
+        );
+        if n == 2 {
+            if fromnode < min_node {
+                min_node = fromnode;
+            }
+            if tonode < min_node {
+                min_node = tonode;
+            }
+            samples += 1;
+        }
+    }
+
+    libc::fclose(fp);
+
+    let is_one_indexed: libc::c_int = if min_node != 0 { 1 } else { 0 };
+    let s: &[u8] = if is_one_indexed != 0 {
+        b"1-indexed\0"
+    } else {
+        b"0-indexed\0"
+    };
+    libc::printf(
+        b"Detected indexing: %s (min node ID: %d)\n\0".as_ptr() as *const libc::c_char,
+        s.as_ptr() as *const libc::c_char,
+        min_node,
+    );
+
+    is_one_indexed
+}
+
+2026-11-16 13:29:49 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function detect_indexing:
+2026-11-16 13:29:49 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub unsafe fn detect_indexing(filename: *const libc::c_char) -> libc::c_int {
+    let fp = libc::fopen(filename, b"r\0".as_ptr() as *const libc::c_char);
+    if fp.is_null() {
+        return 1;
+    }
+    let mut min_node: libc::c_int = libc::c_int::MAX;
+    let mut samples: libc::c_int = 0;
+    let mut line: [libc::c_char; 256] = [0; 256];
+    while !libc::fgets(line.as_mut_ptr(), line.len() as libc::c_int, fp).is_null()
+        && samples < 100
+    {
+        if line[0] == b'#' as libc::c_char {
+            continue;
+        }
+        let mut fromnode: libc::c_int = 0;
+        let mut tonode: libc::c_int = 0;
+        let n = libc::sscanf(
+            line.as_ptr(),
+            b"%d %d\0".as_ptr() as *const libc::c_char,
+            &mut fromnode as *mut libc::c_int,
+            &mut tonode as *mut libc::c_int,
+        );
+        if n == 2 {
+            if fromnode < min_node {
+                min_node = fromnode;
+            }
+            if tonode < min_node {
+                min_node = tonode;
+            }
+            samples += 1;
+        }
+    }
+    libc::fclose(fp);
+    let is_one_indexed: libc::c_int = if min_node != 0 { 1 } else { 0 };
+    let s: &[u8] = if is_one_indexed != 0 { b"1-indexed\0" } else { b"0-indexed\0" };
+    libc::printf(
+        b"Detected indexing: %s (min node ID: %d)\n\0".as_ptr() as *const libc::c_char,
+        s.as_ptr() as *const libc::c_char,
+        min_node,
+    );
+    is_one_indexed
+}
+
+2026-11-16 13:29:50 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_pagerank/sactor/tmpi2y64buw/build/build_attempt/Cargo.toml
+2026-11-16 13:29:52 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:29:52 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_pagerank/sactor/tmpi2y64buw/build/embed_test_rust/Cargo.toml
+2026-11-16 13:29:55 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/oxivolve_pagerank/sactor/tmpi2y64buw/build/embed_test_c/detect_indexing', '/home/gabe/sactor_forklift/tmp/oxivolve_pagerank/sactor/tmpi2y64buw/build/embed_test_c/detect_indexing.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/oxivolve_pagerank/sactor/tmpi2y64buw/build/embed_test_rust/target/debug', '-lm', '-ldetect_indexing']
+2026-11-16 13:29:55 | DEBUG    | sactor.sactor:425 | Checking function diff_timespec: struct_ready=True, struct_blockers=[]
+2026-11-16 13:29:55 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: diff_timespec (attempts: 0)
+2026-11-16 13:29:55 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+static double diff_timespec(struct timespec *time1, struct timespec *time0)
+{
+    return (time1->tv_sec - time0->tv_sec) + (time1->tv_nsec - time0->tv_nsec) / 1000000000.0;
+}
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:30:00 | RESPONSE | sactor.llm:160 | The C function reads two `timespec` pointers, so the Rust version takes `*mut libc::timespec` to match. `tv_sec` is `time_t` and `tv_nsec` is `long`. In C, the subtraction happens in the integer type first, and the integer result is converted to `double` when it is added.
+
+The C expression is `(sec diff) + (nsec diff) / 1e9`. The seconds difference is an integer that gets converted to `double` for the addition. The nanoseconds difference is an integer divided by a `double`, so it is converted to `double` first.
+
+In Rust:
+- Use `wrapping_sub` to avoid overflow panics in debug builds, as C would simply wrap (or invoke UB for signed overflow, which is not worth replicating).
+- Cast the results to `f64`.
+
+```rust
+unsafe fn diff_timespec(time1: *mut libc::timespec, time0: *mut libc::timespec) -> f64
+```
+
+The function is declared `static` in C, so it is private. A plain `fn` in Rust is private by default. I'm using `unsafe fn` because it dereferences raw pointers.
+
+----FUNCTION----
+```rust
+unsafe fn diff_timespec(time1: *mut libc::timespec, time0: *mut libc::timespec) -> f64 {
+    let sec = (*time1).tv_sec.wrapping_sub((*time0).tv_sec);
+    let nsec = (*time1).tv_nsec.wrapping_sub((*time0).tv_nsec);
+    (sec as f64) + (nsec as f64) / 1000000000.0
+}
+```
+----END FUNCTION----
+2026-11-16 13:30:00 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:30:00 | DEBUG    | sactor.utils:258 | unsafe fn diff_timespec(time1: *mut libc::timespec, time0: *mut libc::timespec) -> f64 {
+    let sec = (*time1).tv_sec.wrapping_sub((*time0).tv_sec);
+    let nsec = (*time1).tv_nsec.wrapping_sub((*time0).tv_nsec);
+    (sec as f64) + (nsec as f64) / 1000000000.0
+}
+
+2026-11-16 13:30:00 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function diff_timespec:
+2026-11-16 13:30:00 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | unsafe fn diff_timespec(time1: *mut libc::timespec, time0: *mut libc::timespec) -> f64 {
+    let sec = (*time1).tv_sec.wrapping_sub((*time0).tv_sec);
+    let nsec = (*time1).tv_nsec.wrapping_sub((*time0).tv_nsec);
+    (sec as f64) + (nsec as f64) / 1000000000.0
+}
+
+2026-11-16 13:30:00 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_pagerank/sactor/tmpi2y64buw/build/build_attempt/Cargo.toml
+2026-11-16 13:30:02 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:30:02 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_pagerank/sactor/tmpi2y64buw/build/embed_test_rust/Cargo.toml
+2026-11-16 13:30:05 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/oxivolve_pagerank/sactor/tmpi2y64buw/build/embed_test_c/diff_timespec', '/home/gabe/sactor_forklift/tmp/oxivolve_pagerank/sactor/tmpi2y64buw/build/embed_test_c/diff_timespec.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/oxivolve_pagerank/sactor/tmpi2y64buw/build/embed_test_rust/target/debug', '-lm', '-ldiff_timespec']
+2026-11-16 13:30:05 | DEBUG    | sactor.sactor:425 | Checking function main: struct_ready=True, struct_blockers=[]
+2026-11-16 13:30:05 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: main (attempts: 0)
+2026-11-16 13:30:05 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+int main(int argc, char *argv[])
+{
+    /*************************** TIME, VARIABLES ***************************/
+
+    // Check CLI arguments
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <graph_file>\n", argv[0]);
+        fprintf(stderr, "  graph_file: Path to the graph edge list file\n");
+        exit(1);
+    }
+
+    char *filename = argv[1];
+
+    /******************* OPEN FILE + NUM OF NODES/EDGES ********************/
+
+    // Open the data set
+    FILE *fp;
+    if ((fp = fopen(filename, "r")) == NULL) {
+        fprintf(stderr, "[Error] Cannot open the file: %s\n", filename);
+        exit(1);
+    }
+
+    // Read the data set and get the number of nodes (n) and edges (e)
+    int n = 0, e = 0;
+    char ch;
+    char str[256];
+    ch = getc(fp);
+    while (ch == '#') {
+        if (fgets(str, sizeof(str) - 1, fp) == NULL) break;
+        // Expected header like: "# Nodes: <n> Edges: <e>"
+        sscanf(str, "%*s %d %*s %d", &n, &e);
+        ch = getc(fp);
+    }
+    if (ch != EOF) ungetc(ch, fp);
+
+    // DEBUG: Print the number of nodes and edges
+    printf("\nGraph data:\n\n  Nodes: %d, Edges: %d \n\n", n, e);
+
+    /************************* CSR STRUCTURES *****************************/
+    float *val     = (float*)calloc(e, sizeof(float));
+    int   *col_ind = (int*)  calloc(e, sizeof(int));
+    int   *row_ptr = (int*)  calloc(n + 1, sizeof(int));
+
+    if (!val || !col_ind || !row_ptr) {
+        fprintf(stderr, "Allocation failed\n");
+        fclose(fp);
+        exit(1);
+    }
+
+    // Detect if the graph uses 0-indexed or 1-indexed nodes
+    int is_one_indexed = detect_indexing(filename);
+
+    // The first row always starts at position 0
+    row_ptr[0] = 0;
+
+    int fromnode, tonode;
+    int cur_row = 0;
+    int i = 0;
+    int elrow = 0;   // elements for current row
+    int curel = 0;   // cumulative elements
+    int valid_edges = 0;
+
+    while (!feof(fp)) {
+        if (fscanf(fp, "%d%d", &fromnode, &tonode) != 2) break;
+
+        // Convert to 0-indexed only if the graph is 1-indexed
+        if (is_one_indexed) {
+            fromnode--;
+            tonode--;
+        }
+
+        // Bounds check for consistency with Rust impl
+        if (fromnode >= n || tonode >= n || fromnode < 0 || tonode < 0) {
+            continue;
+        }
+
+        valid_edges++;
+
+        if (fromnode > cur_row) {
+            curel += elrow;
+            for (int k = cur_row + 1; k <= fromnode; k++) {
+                row_ptr[k] = curel;
+            }
+            elrow = 0;
+            cur_row = fromnode;
+        }
+        if (i < e) {
+            val[i] = 1.0f;
+            col_ind[i] = tonode;
+            elrow++;
+            i++;
+        } else {
+            // Defensive: avoid writing past allocated E
+            break;
+        }
+    }
+    row_ptr[cur_row + 1] = curel + elrow;
+
+    printf("Valid edges processed: %d\n", valid_edges);
+
+    // Fix the stochastization
+    int *out_link = (int*)calloc(n, sizeof(int));
+    if (!out_link) {
+        fprintf(stderr, "Allocation failed\n");
+        free(val); free(col_ind); free(row_ptr);
+        fclose(fp);
+        exit(1);
+    }
+
+    int rowel = 0;
+    for (i = 0; i < n; i++) {
+        if (row_ptr[i + 1] != 0) {
+            rowel = row_ptr[i + 1] - row_ptr[i];
+            out_link[i] = rowel;
+        }
+    }
+
+    int curcol = 0;
+    for (i = 0; i < n; i++) {
+        rowel = row_ptr[i + 1] - row_ptr[i];
+        for (int j = 0; j < rowel; j++) {
+            if (out_link[i] > 0) {
+                val[curcol] = val[curcol] / out_link[i];
+            }
+            curcol++;
+        }
+    }
+
+    /******************* INITIALIZATION OF P, DAMPING FACTOR ************************/
+    float d = 0.85f;
+    float *p = (float*)calloc(n, sizeof(float));
+    float *p_new = (float*)calloc(n, sizeof(float));
+    if (!p || !p_new) {
+        fprintf(stderr, "Allocation failed\n");
+        free(val); free(col_ind); free(row_ptr); free(out_link);
+        fclose(fp);
+        exit(1);
+    }
+    for (i = 0; i < n; i++) p[i] = 1.0f / (float)n;
+
+    /*************************** PageRank LOOP  **************************/
+    int looping = 1;
+    int k_iter = 0;
+
+    struct timespec start_time, end_time;
+    double time_elapsed = 0;
+    clock_gettime(CLOCK_MONOTONIC, &start_time);
+
+    // MAIN COMPUTATION BEGIN
+    while (looping) {
+        // reset p_new
+        for (i = 0; i < n; i++) p_new[i] = 0.0f;
+
+        int curcol2 = 0;
+        for (i = 0; i < n; i++) {
+            int row_begin = row_ptr[i];
+            int row_end   = row_ptr[i + 1];
+            int row_cnt   = row_end - row_begin;
+            for (int j = 0; j < row_cnt; j++) {
+                if (curcol2 < valid_edges && col_ind[curcol2] < n) {
+                    p_new[col_ind[curcol2]] += val[curcol2] * p[i];
+                }
+                curcol2++;
+            }
+        }
+
+        // damping
+        for (i = 0; i < n; i++) {
+            p_new[i] = d * p_new[i] + (1.0f - d) / (float)n;
+        }
+
+        // convergence check
+        float error = 0.0f;
+        for (i = 0; i < n; i++) error += fabsf(p_new[i] - p[i]);
+
+        if (error < 0.000001f) {
+            looping = 0;
+        }
+
+        // update
+        for (i = 0; i < n; i++) p[i] = p_new[i];
+        k_iter++;
+    }
+    // MAIN COMPUTATION END
+
+    clock_gettime(CLOCK_MONOTONIC, &end_time);
+    time_elapsed = diff_timespec(&end_time, &start_time);
+
+    /*************************** CONCLUSIONS *******************************/
+    printf("Time taken for PageRank on graph %s (%d nodes, %d edges): %f seconds\n", filename, n, valid_edges, time_elapsed);
+    printf("\nNumber of iteration to converge: %d \n\n", k_iter);
+    // printf("Final Pagerank values:\n\n[");
+    // for (i = 0; i < n; i++) {
+    //     printf("%.8f", p[i]);
+    //     if (i != (n - 1)) printf(", ");
+    // }
+    printf("]\n\n");
+
+    // Clean up
+    free(val);
+    free(col_ind);
+    free(row_ptr);
+    free(out_link);
+    free(p);
+    free(p_new);
+    fclose(fp);
+
+    return 0;
+}
+```
+
+The function is the `main` function, which is the entry point of the program. The function signature should be: `pub fn main() -> ()`.
+For `return 0;`, you can directly `return;` in Rust or ignore it if it's the last statement.
+For other return values, you can use `std::process::exit()` to return the value.
+For `argc` and `argv`, you can use `std::env::args()` to get the arguments.
+
+The function body above may reference the following macros. Use these definitions to understand the semantics; do **NOT** redefine them in Rust—expand or replicate their behavior as needed in the translation.
+```c
+#define stderr stderr
+#define CLOCK_MONOTONIC		1
+#define NULL ((void*)0)
+#define EOF (-1)
+```
+
+The function uses some of the following stdio file descriptors: stderr. Which will be included as
+```rust
+extern "C" {
+    static mut stderr: *mut libc::FILE;
+}
+
+```
+You should **NOT** declare or define them in your translation, as the system will automatically define them. But you can use them in your translation.
+
+The function calls the following functions, which are already translated and defined in Rust.
+Do **NOT** include the definition or declaration of the following functions in your translation.
+If you include them, the output will be considered **invalid**.
+But you can call the following functions in your translation.
+Only output the translation of the function I request.
+The called functions' signatures in Rust are the following:
+```rust
+fn detect_indexing (filename : * const libc :: c_char) -> libc :: c_int;
+fn diff_timespec (time1 : * mut libc :: timespec , time0 : * mut libc :: timespec) -> f64;
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:30:31 | RESPONSE | sactor.llm:160 | ----FUNCTION----
+```rust
+pub fn main() -> () {
+    unsafe {
+        let args: Vec<String> = std::env::args().collect();
+        if args.len() != 2 {
+            let a0 = std::ffi::CString::new(args.get(0).cloned().unwrap_or_default()).unwrap();
+            libc::fprintf(stderr, b"Usage: %s <graph_file>\n\0".as_ptr() as *const libc::c_char, a0.as_ptr());
+            libc::fprintf(stderr, b"  graph_file: Path to the graph edge list file\n\0".as_ptr() as *const libc::c_char);
+            std::process::exit(1);
+        }
+
+        let filename_c = std::ffi::CString::new(args[1].clone()).unwrap();
+        let filename: *const libc::c_char = filename_c.as_ptr();
+
+        let fp = libc::fopen(filename, b"r\0".as_ptr() as *const libc::c_char);
+        if fp.is_null() {
+            libc::fprintf(stderr, b"[Error] Cannot open the file: %s\n\0".as_ptr() as *const libc::c_char, filename);
+            std::process::exit(1);
+        }
+
+        let mut n: libc::c_int = 0;
+        let mut e: libc::c_int = 0;
+        let mut str_buf: [libc::c_char; 256] = [0; 256];
+        let mut ch: i32 = libc::getc(fp) as i8 as i32;
+        while ch == '#' as i32 {
+            if libc::fgets(str_buf.as_mut_ptr(), (256 - 1) as libc::c_int, fp).is_null() {
+                break;
+            }
+            libc::sscanf(
+                str_buf.as_ptr(),
+                b"%*s %d %*s %d\0".as_ptr() as *const libc::c_char,
+                &mut n as *mut libc::c_int,
+                &mut e as *mut libc::c_int,
+            );
+            ch = libc::getc(fp) as i8 as i32;
+        }
+        if ch != -1 {
+            libc::ungetc(ch, fp);
+        }
+
+        libc::printf(
+            b"\nGraph data:\n\n  Nodes: %d, Edges: %d \n\n\0".as_ptr() as *const libc::c_char,
+            n,
+            e,
+        );
+
+        let val = libc::calloc(e as libc::size_t, std::mem::size_of::<f32>()) as *mut f32;
+        let col_ind = libc::calloc(e as libc::size_t, std::mem::size_of::<i32>()) as *mut i32;
+        let row_ptr = libc::calloc((n + 1) as libc::size_t, std::mem::size_of::<i32>()) as *mut i32;
+
+        if val.is_null() || col_ind.is_null() || row_ptr.is_null() {
+            libc::fprintf(stderr, b"Allocation failed\n\0".as_ptr() as *const libc::c_char);
+            libc::fclose(fp);
+            std::process::exit(1);
+        }
+
+        let is_one_indexed = detect_indexing(filename);
+
+        *row_ptr = 0;
+
+        let mut fromnode: libc::c_int = 0;
+        let mut tonode: libc::c_int = 0;
+        let mut cur_row: i32 = 0;
+        let mut i: i32 = 0;
+        let mut elrow: i32 = 0;
+        let mut curel: i32 = 0;
+        let mut valid_edges: i32 = 0;
+
+        while libc::feof(fp) == 0 {
+            if libc::fscanf(
+                fp,
+                b"%d%d\0".as_ptr() as *const libc::c_char,
+                &mut fromnode as *mut libc::c_int,
+                &mut tonode as *mut libc::c_int,
+            ) != 2
+            {
+                break;
+            }
+
+            if is_one_indexed != 0 {
+                fromnode -= 1;
+                tonode -= 1;
+            }
+
+            if fromnode >= n || tonode >= n || fromnode < 0 || tonode < 0 {
+                continue;
+            }
+
+            valid_edges += 1;
+
+            if fromnode > cur_row {
+                curel += elrow;
+                let mut k = cur_row + 1;
+                while k <= fromnode {
+                    *row_ptr.add(k as usize) = curel;
+                    k += 1;
+                }
+                elrow = 0;
+                cur_row = fromnode;
+            }
+            if i < e {
+                *val.add(i as usize) = 1.0f32;
+                *col_ind.add(i as usize) = tonode;
+                elrow += 1;
+                i += 1;
+            } else {
+                break;
+            }
+        }
+        *row_ptr.add((cur_row + 1) as usize) = curel + elrow;
+
+        libc::printf(b"Valid edges processed: %d\n\0".as_ptr() as *const libc::c_char, valid_edges);
+
+        let out_link = libc::calloc(n as libc::size_t, std::mem::size_of::<i32>()) as *mut i32;
+        if out_link.is_null() {
+            libc::fprintf(stderr, b"Allocation failed\n\0".as_ptr() as *const libc::c_char);
+            libc::free(val as *mut libc::c_void);
+            libc::free(col_ind as *mut libc::c_void);
+            libc::free(row_ptr as *mut libc::c_void);
+            libc::fclose(fp);
+            std::process::exit(1);
+        }
+
+        let mut rowel: i32;
+        i = 0;
+        while i < n {
+            if *row_ptr.add((i + 1) as usize) != 0 {
+                rowel = *row_ptr.add((i + 1) as usize) - *row_ptr.add(i as usize);
+                *out_link.add(i as usize) = rowel;
+            }
+            i += 1;
+        }
+
+        let mut curcol: i32 = 0;
+        i = 0;
+        while i < n {
+            rowel = *row_ptr.add((i + 1) as usize) - *row_ptr.add(i as usize);
+            let mut j = 0;
+            while j < rowel {
+                if *out_link.add(i as usize) > 0 {
+                    *val.add(curcol as usize) =
+                        *val.add(curcol as usize) / (*out_link.add(i as usize) as f32);
+                }
+                curcol += 1;
+                j += 1;
+            }
+            i += 1;
+        }
+
+        let d: f32 = 0.85f32;
+        let p = libc::calloc(n as libc::size_t, std::mem::size_of::<f32>()) as *mut f32;
+        let p_new = libc::calloc(n as libc::size_t, std::mem::size_of::<f32>()) as *mut f32;
+        if p.is_null() || p_new.is_null() {
+            libc::fprintf(stderr, b"Allocation failed\n\0".as_ptr() as *const libc::c_char);
+            libc::free(val as *mut libc::c_void);
+            libc::free(col_ind as *mut libc::c_void);
+            libc::free(row_ptr as *mut libc::c_void);
+            libc::free(out_link as *mut libc::c_void);
+            libc::fclose(fp);
+            std::process::exit(1);
+        }
+        i = 0;
+        while i < n {
+            *p.add(i as usize) = 1.0f32 / (n as f32);
+            i += 1;
+        }
+
+        let mut looping = 1;
+        let mut k_iter: i32 = 0;
+
+        let mut start_time: libc::timespec = std::mem::zeroed();
+        let mut end_time: libc::timespec = std::mem::zeroed();
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut start_time);
+
+        while looping != 0 {
+            i = 0;
+            while i < n {
+                *p_new.add(i as usize) = 0.0f32;
+                i += 1;
+            }
+
+            let mut curcol2: i32 = 0;
+            i = 0;
+            while i < n {
+                let row_begin = *row_ptr.add(i as usize);
+                let row_end = *row_ptr.add((i + 1) as usize);
+                let row_cnt = row_end - row_begin;
+                let mut j = 0;
+                while j < row_cnt {
+                    if curcol2 < valid_edges && *col_ind.add(curcol2 as usize) < n {
+                        let c = *col_ind.add(curcol2 as usize) as usize;
+                        *p_new.add(c) += *val.add(curcol2 as usize) * *p.add(i as usize);
+                    }
+                    curcol2 += 1;
+                    j += 1;
+                }
+                i += 1;
+            }
+
+            i = 0;
+            while i < n {
+                *p_new.add(i as usize) =
+                    d * *p_new.add(i as usize) + (1.0f32 - d) / (n as f32);
+                i += 1;
+            }
+
+            let mut error: f32 = 0.0f32;
+            i = 0;
+            while i < n {
+                error += (*p_new.add(i as usize) - *p.add(i as usize)).abs();
+                i += 1;
+            }
+
+            if error < 0.000001f32 {
+                looping = 0;
+            }
+
+            i = 0;
+            while i < n {
+                *p.add(i as usize) = *p_new.add(i as usize);
+                i += 1;
+            }
+            k_iter += 1;
+        }
+
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut end_time);
+        let time_elapsed: f64 = diff_timespec(&mut end_time as *mut libc::timespec, &mut start_time as *mut libc::timespec);
+
+        libc::printf(
+            b"Time taken for PageRank on graph %s (%d nodes, %d edges): %f seconds\n\0".as_ptr() as *const libc::c_char,
+            filename,
+            n,
+            valid_edges,
+            time_elapsed,
+        );
+        libc::printf(b"\nNumber of iteration to converge: %d \n\n\0".as_ptr() as *const libc::c_char, k_iter);
+        libc::printf(b"]\n\n\0".as_ptr() as *const libc::c_char);
+
+        libc::free(val as *mut libc::c_void);
+        libc::free(col_ind as *mut libc::c_void);
+        libc::free(row_ptr as *mut libc::c_void);
+        libc::free(out_link as *mut libc::c_void);
+        libc::free(p as *mut libc::c_void);
+        libc::free(p_new as *mut libc::c_void);
+        libc::fclose(fp);
+    }
+}
+```
+----END FUNCTION----
+2026-11-16 13:30:31 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:30:31 | DEBUG    | sactor.utils:258 | pub fn main() -> () {
+    unsafe {
+        let args: Vec<String> = std::env::args().collect();
+        if args.len() != 2 {
+            let a0 = std::ffi::CString::new(args.get(0).cloned().unwrap_or_default()).unwrap();
+            libc::fprintf(stderr, b"Usage: %s <graph_file>\n\0".as_ptr() as *const libc::c_char, a0.as_ptr());
+            libc::fprintf(stderr, b"  graph_file: Path to the graph edge list file\n\0".as_ptr() as *const libc::c_char);
+            std::process::exit(1);
+        }
+
+        let filename_c = std::ffi::CString::new(args[1].clone()).unwrap();
+        let filename: *const libc::c_char = filename_c.as_ptr();
+
+        let fp = libc::fopen(filename, b"r\0".as_ptr() as *const libc::c_char);
+        if fp.is_null() {
+            libc::fprintf(stderr, b"[Error] Cannot open the file: %s\n\0".as_ptr() as *const libc::c_char, filename);
+            std::process::exit(1);
+        }
+
+        let mut n: libc::c_int = 0;
+        let mut e: libc::c_int = 0;
+        let mut str_buf: [libc::c_char; 256] = [0; 256];
+        let mut ch: i32 = libc::getc(fp) as i8 as i32;
+        while ch == '#' as i32 {
+            if libc::fgets(str_buf.as_mut_ptr(), (256 - 1) as libc::c_int, fp).is_null() {
+                break;
+            }
+            libc::sscanf(
+                str_buf.as_ptr(),
+                b"%*s %d %*s %d\0".as_ptr() as *const libc::c_char,
+                &mut n as *mut libc::c_int,
+                &mut e as *mut libc::c_int,
+            );
+            ch = libc::getc(fp) as i8 as i32;
+        }
+        if ch != -1 {
+            libc::ungetc(ch, fp);
+        }
+
+        libc::printf(
+            b"\nGraph data:\n\n  Nodes: %d, Edges: %d \n\n\0".as_ptr() as *const libc::c_char,
+            n,
+            e,
+        );
+
+        let val = libc::calloc(e as libc::size_t, std::mem::size_of::<f32>()) as *mut f32;
+        let col_ind = libc::calloc(e as libc::size_t, std::mem::size_of::<i32>()) as *mut i32;
+        let row_ptr = libc::calloc((n + 1) as libc::size_t, std::mem::size_of::<i32>()) as *mut i32;
+
+        if val.is_null() || col_ind.is_null() || row_ptr.is_null() {
+            libc::fprintf(stderr, b"Allocation failed\n\0".as_ptr() as *const libc::c_char);
+            libc::fclose(fp);
+            std::process::exit(1);
+        }
+
+        let is_one_indexed = detect_indexing(filename);
+
+        *row_ptr = 0;
+
+        let mut fromnode: libc::c_int = 0;
+        let mut tonode: libc::c_int = 0;
+        let mut cur_row: i32 = 0;
+        let mut i: i32 = 0;
+        let mut elrow: i32 = 0;
+        let mut curel: i32 = 0;
+        let mut valid_edges: i32 = 0;
+
+        while libc::feof(fp) == 0 {
+            if libc::fscanf(
+                fp,
+                b"%d%d\0".as_ptr() as *const libc::c_char,
+                &mut fromnode as *mut libc::c_int,
+                &mut tonode as *mut libc::c_int,
+            ) != 2
+            {
+                break;
+            }
+
+            if is_one_indexed != 0 {
+                fromnode -= 1;
+                tonode -= 1;
+            }
+
+            if fromnode >= n || tonode >= n || fromnode < 0 || tonode < 0 {
+                continue;
+            }
+
+            valid_edges += 1;
+
+            if fromnode > cur_row {
+                curel += elrow;
+                let mut k = cur_row + 1;
+                while k <= fromnode {
+                    *row_ptr.add(k as usize) = curel;
+                    k += 1;
+                }
+                elrow = 0;
+                cur_row = fromnode;
+            }
+            if i < e {
+                *val.add(i as usize) = 1.0f32;
+                *col_ind.add(i as usize) = tonode;
+                elrow += 1;
+                i += 1;
+            } else {
+                break;
+            }
+        }
+        *row_ptr.add((cur_row + 1) as usize) = curel + elrow;
+
+        libc::printf(b"Valid edges processed: %d\n\0".as_ptr() as *const libc::c_char, valid_edges);
+
+        let out_link = libc::calloc(n as libc::size_t, std::mem::size_of::<i32>()) as *mut i32;
+        if out_link.is_null() {
+            libc::fprintf(stderr, b"Allocation failed\n\0".as_ptr() as *const libc::c_char);
+            libc::free(val as *mut libc::c_void);
+            libc::free(col_ind as *mut libc::c_void);
+            libc::free(row_ptr as *mut libc::c_void);
+            libc::fclose(fp);
+            std::process::exit(1);
+        }
+
+        let mut rowel: i32;
+        i = 0;
+        while i < n {
+            if *row_ptr.add((i + 1) as usize) != 0 {
+                rowel = *row_ptr.add((i + 1) as usize) - *row_ptr.add(i as usize);
+                *out_link.add(i as usize) = rowel;
+            }
+            i += 1;
+        }
+
+        let mut curcol: i32 = 0;
+        i = 0;
+        while i < n {
+            rowel = *row_ptr.add((i + 1) as usize) - *row_ptr.add(i as usize);
+            let mut j = 0;
+            while j < rowel {
+                if *out_link.add(i as usize) > 0 {
+                    *val.add(curcol as usize) =
+                        *val.add(curcol as usize) / (*out_link.add(i as usize) as f32);
+                }
+                curcol += 1;
+                j += 1;
+            }
+            i += 1;
+        }
+
+        let d: f32 = 0.85f32;
+        let p = libc::calloc(n as libc::size_t, std::mem::size_of::<f32>()) as *mut f32;
+        let p_new = libc::calloc(n as libc::size_t, std::mem::size_of::<f32>()) as *mut f32;
+        if p.is_null() || p_new.is_null() {
+            libc::fprintf(stderr, b"Allocation failed\n\0".as_ptr() as *const libc::c_char);
+            libc::free(val as *mut libc::c_void);
+            libc::free(col_ind as *mut libc::c_void);
+            libc::free(row_ptr as *mut libc::c_void);
+            libc::free(out_link as *mut libc::c_void);
+            libc::fclose(fp);
+            std::process::exit(1);
+        }
+        i = 0;
+        while i < n {
+            *p.add(i as usize) = 1.0f32 / (n as f32);
+            i += 1;
+        }
+
+        let mut looping = 1;
+        let mut k_iter: i32 = 0;
+
+        let mut start_time: libc::timespec = std::mem::zeroed();
+        let mut end_time: libc::timespec = std::mem::zeroed();
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut start_time);
+
+        while looping != 0 {
+            i = 0;
+            while i < n {
+                *p_new.add(i as usize) = 0.0f32;
+                i += 1;
+            }
+
+            let mut curcol2: i32 = 0;
+            i = 0;
+            while i < n {
+                let row_begin = *row_ptr.add(i as usize);
+                let row_end = *row_ptr.add((i + 1) as usize);
+                let row_cnt = row_end - row_begin;
+                let mut j = 0;
+                while j < row_cnt {
+                    if curcol2 < valid_edges && *col_ind.add(curcol2 as usize) < n {
+                        let c = *col_ind.add(curcol2 as usize) as usize;
+                        *p_new.add(c) += *val.add(curcol2 as usize) * *p.add(i as usize);
+                    }
+                    curcol2 += 1;
+                    j += 1;
+                }
+                i += 1;
+            }
+
+            i = 0;
+            while i < n {
+                *p_new.add(i as usize) =
+                    d * *p_new.add(i as usize) + (1.0f32 - d) / (n as f32);
+                i += 1;
+            }
+
+            let mut error: f32 = 0.0f32;
+            i = 0;
+            while i < n {
+                error += (*p_new.add(i as usize) - *p.add(i as usize)).abs();
+                i += 1;
+            }
+
+            if error < 0.000001f32 {
+                looping = 0;
+            }
+
+            i = 0;
+            while i < n {
+                *p.add(i as usize) = *p_new.add(i as usize);
+                i += 1;
+            }
+            k_iter += 1;
+        }
+
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut end_time);
+        let time_elapsed: f64 = diff_timespec(&mut end_time as *mut libc::timespec, &mut start_time as *mut libc::timespec);
+
+        libc::printf(
+            b"Time taken for PageRank on graph %s (%d nodes, %d edges): %f seconds\n\0".as_ptr() as *const libc::c_char,
+            filename,
+            n,
+            valid_edges,
+            time_elapsed,
+        );
+        libc::printf(b"\nNumber of iteration to converge: %d \n\n\0".as_ptr() as *const libc::c_char, k_iter);
+        libc::printf(b"]\n\n\0".as_ptr() as *const libc::c_char);
+
+        libc::free(val as *mut libc::c_void);
+        libc::free(col_ind as *mut libc::c_void);
+        libc::free(row_ptr as *mut libc::c_void);
+        libc::free(out_link as *mut libc::c_void);
+        libc::free(p as *mut libc::c_void);
+        libc::free(p_new as *mut libc::c_void);
+        libc::fclose(fp);
+    }
+}
+
+2026-11-16 13:30:32 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function main:
+2026-11-16 13:30:32 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub fn main() -> () {
+    unsafe {
+        let args: Vec<String> = std::env::args().collect();
+        if args.len() != 2 {
+            let a0 = std::ffi::CString::new(args.get(0).cloned().unwrap_or_default())
+                .unwrap();
+            libc::fprintf(
+                stderr,
+                b"Usage: %s <graph_file>\n\0".as_ptr() as *const libc::c_char,
+                a0.as_ptr(),
+            );
+            libc::fprintf(
+                stderr,
+                b"  graph_file: Path to the graph edge list file\n\0".as_ptr()
+                    as *const libc::c_char,
+            );
+            std::process::exit(1);
+        }
+        let filename_c = std::ffi::CString::new(args[1].clone()).unwrap();
+        let filename: *const libc::c_char = filename_c.as_ptr();
+        let fp = libc::fopen(filename, b"r\0".as_ptr() as *const libc::c_char);
+        if fp.is_null() {
+            libc::fprintf(
+                stderr,
+                b"[Error] Cannot open the file: %s\n\0".as_ptr() as *const libc::c_char,
+                filename,
+            );
+            std::process::exit(1);
+        }
+        let mut n: libc::c_int = 0;
+        let mut e: libc::c_int = 0;
+        let mut str_buf: [libc::c_char; 256] = [0; 256];
+        let mut ch: i32 = libc::getc(fp) as i8 as i32;
+        while ch == '#' as i32 {
+            if libc::fgets(str_buf.as_mut_ptr(), (256 - 1) as libc::c_int, fp).is_null()
+            {
+                break;
+            }
+            libc::sscanf(
+                str_buf.as_ptr(),
+                b"%*s %d %*s %d\0".as_ptr() as *const libc::c_char,
+                &mut n as *mut libc::c_int,
+                &mut e as *mut libc::c_int,
+            );
+            ch = libc::getc(fp) as i8 as i32;
+        }
+        if ch != -1 {
+            libc::ungetc(ch, fp);
+        }
+        libc::printf(
+            b"\nGraph data:\n\n  Nodes: %d, Edges: %d \n\n\0".as_ptr()
+                as *const libc::c_char,
+            n,
+            e,
+        );
+        let val = libc::calloc(e as libc::size_t, std::mem::size_of::<f32>())
+            as *mut f32;
+        let col_ind = libc::calloc(e as libc::size_t, std::mem::size_of::<i32>())
+            as *mut i32;
+        let row_ptr = libc::calloc((n + 1) as libc::size_t, std::mem::size_of::<i32>())
+            as *mut i32;
+        if val.is_null() || col_ind.is_null() || row_ptr.is_null() {
+            libc::fprintf(
+                stderr,
+                b"Allocation failed\n\0".as_ptr() as *const libc::c_char,
+            );
+            libc::fclose(fp);
+            std::process::exit(1);
+        }
+        let is_one_indexed = detect_indexing(filename);
+        *row_ptr = 0;
+        let mut fromnode: libc::c_int = 0;
+        let mut tonode: libc::c_int = 0;
+        let mut cur_row: i32 = 0;
+        let mut i: i32 = 0;
+        let mut elrow: i32 = 0;
+        let mut curel: i32 = 0;
+        let mut valid_edges: i32 = 0;
+        while libc::feof(fp) == 0 {
+            if libc::fscanf(
+                fp,
+                b"%d%d\0".as_ptr() as *const libc::c_char,
+                &mut fromnode as *mut libc::c_int,
+                &mut tonode as *mut libc::c_int,
+            ) != 2
+            {
+                break;
+            }
+            if is_one_indexed != 0 {
+                fromnode -= 1;
+                tonode -= 1;
+            }
+            if fromnode >= n || tonode >= n || fromnode < 0 || tonode < 0 {
+                continue;
+            }
+            valid_edges += 1;
+            if fromnode > cur_row {
+                curel += elrow;
+                let mut k = cur_row + 1;
+                while k <= fromnode {
+                    *row_ptr.add(k as usize) = curel;
+                    k += 1;
+                }
+                elrow = 0;
+                cur_row = fromnode;
+            }
+            if i < e {
+                *val.add(i as usize) = 1.0f32;
+                *col_ind.add(i as usize) = tonode;
+                elrow += 1;
+                i += 1;
+            } else {
+                break;
+            }
+        }
+        *row_ptr.add((cur_row + 1) as usize) = curel + elrow;
+        libc::printf(
+            b"Valid edges processed: %d\n\0".as_ptr() as *const libc::c_char,
+            valid_edges,
+        );
+        let out_link = libc::calloc(n as libc::size_t, std::mem::size_of::<i32>())
+            as *mut i32;
+        if out_link.is_null() {
+            libc::fprintf(
+                stderr,
+                b"Allocation failed\n\0".as_ptr() as *const libc::c_char,
+            );
+            libc::free(val as *mut libc::c_void);
+            libc::free(col_ind as *mut libc::c_void);
+            libc::free(row_ptr as *mut libc::c_void);
+            libc::fclose(fp);
+            std::process::exit(1);
+        }
+        let mut rowel: i32;
+        i = 0;
+        while i < n {
+            if *row_ptr.add((i + 1) as usize) != 0 {
+                rowel = *row_ptr.add((i + 1) as usize) - *row_ptr.add(i as usize);
+                *out_link.add(i as usize) = rowel;
+            }
+            i += 1;
+        }
+        let mut curcol: i32 = 0;
+        i = 0;
+        while i < n {
+            rowel = *row_ptr.add((i + 1) as usize) - *row_ptr.add(i as usize);
+            let mut j = 0;
+            while j < rowel {
+                if *out_link.add(i as usize) > 0 {
+                    *val.add(curcol as usize) = *val.add(curcol as usize)
+                        / (*out_link.add(i as usize) as f32);
+                }
+                curcol += 1;
+                j += 1;
+            }
+            i += 1;
+        }
+        let d: f32 = 0.85f32;
+        let p = libc::calloc(n as libc::size_t, std::mem::size_of::<f32>()) as *mut f32;
+        let p_new = libc::calloc(n as libc::size_t, std::mem::size_of::<f32>())
+            as *mut f32;
+        if p.is_null() || p_new.is_null() {
+            libc::fprintf(
+                stderr,
+                b"Allocation failed\n\0".as_ptr() as *const libc::c_char,
+            );
+            libc::free(val as *mut libc::c_void);
+            libc::free(col_ind as *mut libc::c_void);
+            libc::free(row_ptr as *mut libc::c_void);
+            libc::free(out_link as *mut libc::c_void);
+            libc::fclose(fp);
+            std::process::exit(1);
+        }
+        i = 0;
+        while i < n {
+            *p.add(i as usize) = 1.0f32 / (n as f32);
+            i += 1;
+        }
+        let mut looping = 1;
+        let mut k_iter: i32 = 0;
+        let mut start_time: libc::timespec = std::mem::zeroed();
+        let mut end_time: libc::timespec = std::mem::zeroed();
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut start_time);
+        while looping != 0 {
+            i = 0;
+            while i < n {
+                *p_new.add(i as usize) = 0.0f32;
+                i += 1;
+            }
+            let mut curcol2: i32 = 0;
+            i = 0;
+            while i < n {
+                let row_begin = *row_ptr.add(i as usize);
+                let row_end = *row_ptr.add((i + 1) as usize);
+                let row_cnt = row_end - row_begin;
+                let mut j = 0;
+                while j < row_cnt {
+                    if curcol2 < valid_edges && *col_ind.add(curcol2 as usize) < n {
+                        let c = *col_ind.add(curcol2 as usize) as usize;
+                        *p_new.add(c) += *val.add(curcol2 as usize) * *p.add(i as usize);
+                    }
+                    curcol2 += 1;
+                    j += 1;
+                }
+                i += 1;
+            }
+            i = 0;
+            while i < n {
+                *p_new.add(i as usize) = d * *p_new.add(i as usize)
+                    + (1.0f32 - d) / (n as f32);
+                i += 1;
+            }
+            let mut error: f32 = 0.0f32;
+            i = 0;
+            while i < n {
+                error += (*p_new.add(i as usize) - *p.add(i as usize)).abs();
+                i += 1;
+            }
+            if error < 0.000001f32 {
+                looping = 0;
+            }
+            i = 0;
+            while i < n {
+                *p.add(i as usize) = *p_new.add(i as usize);
+                i += 1;
+            }
+            k_iter += 1;
+        }
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut end_time);
+        let time_elapsed: f64 = diff_timespec(
+            &mut end_time as *mut libc::timespec,
+            &mut start_time as *mut libc::timespec,
+        );
+        libc::printf(
+            b"Time taken for PageRank on graph %s (%d nodes, %d edges): %f seconds\n\0"
+                .as_ptr() as *const libc::c_char,
+            filename,
+            n,
+            valid_edges,
+            time_elapsed,
+        );
+        libc::printf(
+            b"\nNumber of iteration to converge: %d \n\n\0".as_ptr()
+                as *const libc::c_char,
+            k_iter,
+        );
+        libc::printf(b"]\n\n\0".as_ptr() as *const libc::c_char);
+        libc::free(val as *mut libc::c_void);
+        libc::free(col_ind as *mut libc::c_void);
+        libc::free(row_ptr as *mut libc::c_void);
+        libc::free(out_link as *mut libc::c_void);
+        libc::free(p as *mut libc::c_void);
+        libc::free(p_new as *mut libc::c_void);
+        libc::fclose(fp);
+    }
+}
+
+2026-11-16 13:30:32 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_pagerank/sactor/tmpi2y64buw/build/build_attempt/Cargo.toml
+2026-11-16 13:30:34 | ERROR    | sactor.verifier.verifier:282 | Rust code failed to compile
+2026-11-16 13:30:34 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: main (attempts: 1)
+2026-11-16 13:30:34 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+int main(int argc, char *argv[])
+{
+    /*************************** TIME, VARIABLES ***************************/
+
+    // Check CLI arguments
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <graph_file>\n", argv[0]);
+        fprintf(stderr, "  graph_file: Path to the graph edge list file\n");
+        exit(1);
+    }
+
+    char *filename = argv[1];
+
+    /******************* OPEN FILE + NUM OF NODES/EDGES ********************/
+
+    // Open the data set
+    FILE *fp;
+    if ((fp = fopen(filename, "r")) == NULL) {
+        fprintf(stderr, "[Error] Cannot open the file: %s\n", filename);
+        exit(1);
+    }
+
+    // Read the data set and get the number of nodes (n) and edges (e)
+    int n = 0, e = 0;
+    char ch;
+    char str[256];
+    ch = getc(fp);
+    while (ch == '#') {
+        if (fgets(str, sizeof(str) - 1, fp) == NULL) break;
+        // Expected header like: "# Nodes: <n> Edges: <e>"
+        sscanf(str, "%*s %d %*s %d", &n, &e);
+        ch = getc(fp);
+    }
+    if (ch != EOF) ungetc(ch, fp);
+
+    // DEBUG: Print the number of nodes and edges
+    printf("\nGraph data:\n\n  Nodes: %d, Edges: %d \n\n", n, e);
+
+    /************************* CSR STRUCTURES *****************************/
+    float *val     = (float*)calloc(e, sizeof(float));
+    int   *col_ind = (int*)  calloc(e, sizeof(int));
+    int   *row_ptr = (int*)  calloc(n + 1, sizeof(int));
+
+    if (!val || !col_ind || !row_ptr) {
+        fprintf(stderr, "Allocation failed\n");
+        fclose(fp);
+        exit(1);
+    }
+
+    // Detect if the graph uses 0-indexed or 1-indexed nodes
+    int is_one_indexed = detect_indexing(filename);
+
+    // The first row always starts at position 0
+    row_ptr[0] = 0;
+
+    int fromnode, tonode;
+    int cur_row = 0;
+    int i = 0;
+    int elrow = 0;   // elements for current row
+    int curel = 0;   // cumulative elements
+    int valid_edges = 0;
+
+    while (!feof(fp)) {
+        if (fscanf(fp, "%d%d", &fromnode, &tonode) != 2) break;
+
+        // Convert to 0-indexed only if the graph is 1-indexed
+        if (is_one_indexed) {
+            fromnode--;
+            tonode--;
+        }
+
+        // Bounds check for consistency with Rust impl
+        if (fromnode >= n || tonode >= n || fromnode < 0 || tonode < 0) {
+            continue;
+        }
+
+        valid_edges++;
+
+        if (fromnode > cur_row) {
+            curel += elrow;
+            for (int k = cur_row + 1; k <= fromnode; k++) {
+                row_ptr[k] = curel;
+            }
+            elrow = 0;
+            cur_row = fromnode;
+        }
+        if (i < e) {
+            val[i] = 1.0f;
+            col_ind[i] = tonode;
+            elrow++;
+            i++;
+        } else {
+            // Defensive: avoid writing past allocated E
+            break;
+        }
+    }
+    row_ptr[cur_row + 1] = curel + elrow;
+
+    printf("Valid edges processed: %d\n", valid_edges);
+
+    // Fix the stochastization
+    int *out_link = (int*)calloc(n, sizeof(int));
+    if (!out_link) {
+        fprintf(stderr, "Allocation failed\n");
+        free(val); free(col_ind); free(row_ptr);
+        fclose(fp);
+        exit(1);
+    }
+
+    int rowel = 0;
+    for (i = 0; i < n; i++) {
+        if (row_ptr[i + 1] != 0) {
+            rowel = row_ptr[i + 1] - row_ptr[i];
+            out_link[i] = rowel;
+        }
+    }
+
+    int curcol = 0;
+    for (i = 0; i < n; i++) {
+        rowel = row_ptr[i + 1] - row_ptr[i];
+        for (int j = 0; j < rowel; j++) {
+            if (out_link[i] > 0) {
+                val[curcol] = val[curcol] / out_link[i];
+            }
+            curcol++;
+        }
+    }
+
+    /******************* INITIALIZATION OF P, DAMPING FACTOR ************************/
+    float d = 0.85f;
+    float *p = (float*)calloc(n, sizeof(float));
+    float *p_new = (float*)calloc(n, sizeof(float));
+    if (!p || !p_new) {
+        fprintf(stderr, "Allocation failed\n");
+        free(val); free(col_ind); free(row_ptr); free(out_link);
+        fclose(fp);
+        exit(1);
+    }
+    for (i = 0; i < n; i++) p[i] = 1.0f / (float)n;
+
+    /*************************** PageRank LOOP  **************************/
+    int looping = 1;
+    int k_iter = 0;
+
+    struct timespec start_time, end_time;
+    double time_elapsed = 0;
+    clock_gettime(CLOCK_MONOTONIC, &start_time);
+
+    // MAIN COMPUTATION BEGIN
+    while (looping) {
+        // reset p_new
+        for (i = 0; i < n; i++) p_new[i] = 0.0f;
+
+        int curcol2 = 0;
+        for (i = 0; i < n; i++) {
+            int row_begin = row_ptr[i];
+            int row_end   = row_ptr[i + 1];
+            int row_cnt   = row_end - row_begin;
+            for (int j = 0; j < row_cnt; j++) {
+                if (curcol2 < valid_edges && col_ind[curcol2] < n) {
+                    p_new[col_ind[curcol2]] += val[curcol2] * p[i];
+                }
+                curcol2++;
+            }
+        }
+
+        // damping
+        for (i = 0; i < n; i++) {
+            p_new[i] = d * p_new[i] + (1.0f - d) / (float)n;
+        }
+
+        // convergence check
+        float error = 0.0f;
+        for (i = 0; i < n; i++) error += fabsf(p_new[i] - p[i]);
+
+        if (error < 0.000001f) {
+            looping = 0;
+        }
+
+        // update
+        for (i = 0; i < n; i++) p[i] = p_new[i];
+        k_iter++;
+    }
+    // MAIN COMPUTATION END
+
+    clock_gettime(CLOCK_MONOTONIC, &end_time);
+    time_elapsed = diff_timespec(&end_time, &start_time);
+
+    /*************************** CONCLUSIONS *******************************/
+    printf("Time taken for PageRank on graph %s (%d nodes, %d edges): %f seconds\n", filename, n, valid_edges, time_elapsed);
+    printf("\nNumber of iteration to converge: %d \n\n", k_iter);
+    // printf("Final Pagerank values:\n\n[");
+    // for (i = 0; i < n; i++) {
+    //     printf("%.8f", p[i]);
+    //     if (i != (n - 1)) printf(", ");
+    // }
+    printf("]\n\n");
+
+    // Clean up
+    free(val);
+    free(col_ind);
+    free(row_ptr);
+    free(out_link);
+    free(p);
+    free(p_new);
+    fclose(fp);
+
+    return 0;
+}
+```
+
+The function is the `main` function, which is the entry point of the program. The function signature should be: `pub fn main() -> ()`.
+For `return 0;`, you can directly `return;` in Rust or ignore it if it's the last statement.
+For other return values, you can use `std::process::exit()` to return the value.
+For `argc` and `argv`, you can use `std::env::args()` to get the arguments.
+
+The function body above may reference the following macros. Use these definitions to understand the semantics; do **NOT** redefine them in Rust—expand or replicate their behavior as needed in the translation.
+```c
+#define stderr stderr
+#define CLOCK_MONOTONIC		1
+#define NULL ((void*)0)
+#define EOF (-1)
+```
+
+The function uses some of the following stdio file descriptors: stderr. Which will be included as
+```rust
+extern "C" {
+    static mut stderr: *mut libc::FILE;
+}
+
+```
+You should **NOT** declare or define them in your translation, as the system will automatically define them. But you can use them in your translation.
+
+The function calls the following functions, which are already translated and defined in Rust.
+Do **NOT** include the definition or declaration of the following functions in your translation.
+If you include them, the output will be considered **invalid**.
+But you can call the following functions in your translation.
+Only output the translation of the function I request.
+The called functions' signatures in Rust are the following:
+```rust
+fn detect_indexing (filename : * const libc :: c_char) -> libc :: c_int;
+fn diff_timespec (time1 : * mut libc :: timespec , time0 : * mut libc :: timespec) -> f64;
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+The last time, the function is translated as:
+```rust
+pub fn main() -> () {
+    unsafe {
+        let args: Vec<String> = std::env::args().collect();
+        if args.len() != 2 {
+            let a0 = std::ffi::CString::new(args.get(0).cloned().unwrap_or_default())
+                .unwrap();
+            libc::fprintf(
+                stderr,
+                b"Usage: %s <graph_file>\n\0".as_ptr() as *const libc::c_char,
+                a0.as_ptr(),
+            );
+            libc::fprintf(
+                stderr,
+                b"  graph_file: Path to the graph edge list file\n\0".as_ptr()
+                    as *const libc::c_char,
+            );
+            std::process::exit(1);
+        }
+        let filename_c = std::ffi::CString::new(args[1].clone()).unwrap();
+        let filename: *const libc::c_char = filename_c.as_ptr();
+        let fp = libc::fopen(filename, b"r\0".as_ptr() as *const libc::c_char);
+        if fp.is_null() {
+            libc::fprintf(
+                stderr,
+                b"[Error] Cannot open the file: %s\n\0".as_ptr() as *const libc::c_char,
+                filename,
+            );
+            std::process::exit(1);
+        }
+        let mut n: libc::c_int = 0;
+        let mut e: libc::c_int = 0;
+        let mut str_buf: [libc::c_char; 256] = [0; 256];
+        let mut ch: i32 = libc::getc(fp) as i8 as i32;
+        while ch == '#' as i32 {
+            if libc::fgets(str_buf.as_mut_ptr(), (256 - 1) as libc::c_int, fp).is_null()
+            {
+                break;
+            }
+            libc::sscanf(
+                str_buf.as_ptr(),
+                b"%*s %d %*s %d\0".as_ptr() as *const libc::c_char,
+                &mut n as *mut libc::c_int,
+                &mut e as *mut libc::c_int,
+            );
+            ch = libc::getc(fp) as i8 as i32;
+        }
+        if ch != -1 {
+            libc::ungetc(ch, fp);
+        }
+        libc::printf(
+            b"\nGraph data:\n\n  Nodes: %d, Edges: %d \n\n\0".as_ptr()
+                as *const libc::c_char,
+            n,
+            e,
+        );
+        let val = libc::calloc(e as libc::size_t, std::mem::size_of::<f32>())
+            as *mut f32;
+        let col_ind = libc::calloc(e as libc::size_t, std::mem::size_of::<i32>())
+            as *mut i32;
+        let row_ptr = libc::calloc((n + 1) as libc::size_t, std::mem::size_of::<i32>())
+            as *mut i32;
+        if val.is_null() || col_ind.is_null() || row_ptr.is_null() {
+            libc::fprintf(
+                stderr,
+                b"Allocation failed\n\0".as_ptr() as *const libc::c_char,
+            );
+            libc::fclose(fp);
+            std::process::exit(1);
+        }
+        let is_one_indexed = detect_indexing(filename);
+        *row_ptr = 0;
+        let mut fromnode: libc::c_int = 0;
+        let mut tonode: libc::c_int = 0;
+        let mut cur_row: i32 = 0;
+        let mut i: i32 = 0;
+        let mut elrow: i32 = 0;
+        let mut curel: i32 = 0;
+        let mut valid_edges: i32 = 0;
+        while libc::feof(fp) == 0 {
+            if libc::fscanf(
+                fp,
+                b"%d%d\0".as_ptr() as *const libc::c_char,
+                &mut fromnode as *mut libc::c_int,
+                &mut tonode as *mut libc::c_int,
+            ) != 2
+            {
+                break;
+            }
+            if is_one_indexed != 0 {
+                fromnode -= 1;
+                tonode -= 1;
+            }
+            if fromnode >= n || tonode >= n || fromnode < 0 || tonode < 0 {
+                continue;
+            }
+            valid_edges += 1;
+            if fromnode > cur_row {
+                curel += elrow;
+                let mut k = cur_row + 1;
+                while k <= fromnode {
+                    *row_ptr.add(k as usize) = curel;
+                    k += 1;
+                }
+                elrow = 0;
+                cur_row = fromnode;
+            }
+            if i < e {
+                *val.add(i as usize) = 1.0f32;
+                *col_ind.add(i as usize) = tonode;
+                elrow += 1;
+                i += 1;
+            } else {
+                break;
+            }
+        }
+        *row_ptr.add((cur_row + 1) as usize) = curel + elrow;
+        libc::printf(
+            b"Valid edges processed: %d\n\0".as_ptr() as *const libc::c_char,
+            valid_edges,
+        );
+        let out_link = libc::calloc(n as libc::size_t, std::mem::size_of::<i32>())
+            as *mut i32;
+        if out_link.is_null() {
+            libc::fprintf(
+                stderr,
+                b"Allocation failed\n\0".as_ptr() as *const libc::c_char,
+            );
+            libc::free(val as *mut libc::c_void);
+            libc::free(col_ind as *mut libc::c_void);
+            libc::free(row_ptr as *mut libc::c_void);
+            libc::fclose(fp);
+            std::process::exit(1);
+        }
+        let mut rowel: i32;
+        i = 0;
+        while i < n {
+            if *row_ptr.add((i + 1) as usize) != 0 {
+                rowel = *row_ptr.add((i + 1) as usize) - *row_ptr.add(i as usize);
+                *out_link.add(i as usize) = rowel;
+            }
+            i += 1;
+        }
+        let mut curcol: i32 = 0;
+        i = 0;
+        while i < n {
+            rowel = *row_ptr.add((i + 1) as usize) - *row_ptr.add(i as usize);
+            let mut j = 0;
+            while j < rowel {
+                if *out_link.add(i as usize) > 0 {
+                    *val.add(curcol as usize) = *val.add(curcol as usize)
+                        / (*out_link.add(i as usize) as f32);
+                }
+                curcol += 1;
+                j += 1;
+            }
+            i += 1;
+        }
+        let d: f32 = 0.85f32;
+        let p = libc::calloc(n as libc::size_t, std::mem::size_of::<f32>()) as *mut f32;
+        let p_new = libc::calloc(n as libc::size_t, std::mem::size_of::<f32>())
+            as *mut f32;
+        if p.is_null() || p_new.is_null() {
+            libc::fprintf(
+                stderr,
+                b"Allocation failed\n\0".as_ptr() as *const libc::c_char,
+            );
+            libc::free(val as *mut libc::c_void);
+            libc::free(col_ind as *mut libc::c_void);
+            libc::free(row_ptr as *mut libc::c_void);
+            libc::free(out_link as *mut libc::c_void);
+            libc::fclose(fp);
+            std::process::exit(1);
+        }
+        i = 0;
+        while i < n {
+            *p.add(i as usize) = 1.0f32 / (n as f32);
+            i += 1;
+        }
+        let mut looping = 1;
+        let mut k_iter: i32 = 0;
+        let mut start_time: libc::timespec = std::mem::zeroed();
+        let mut end_time: libc::timespec = std::mem::zeroed();
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut start_time);
+        while looping != 0 {
+            i = 0;
+            while i < n {
+                *p_new.add(i as usize) = 0.0f32;
+                i += 1;
+            }
+            let mut curcol2: i32 = 0;
+            i = 0;
+            while i < n {
+                let row_begin = *row_ptr.add(i as usize);
+                let row_end = *row_ptr.add((i + 1) as usize);
+                let row_cnt = row_end - row_begin;
+                let mut j = 0;
+                while j < row_cnt {
+                    if curcol2 < valid_edges && *col_ind.add(curcol2 as usize) < n {
+                        let c = *col_ind.add(curcol2 as usize) as usize;
+                        *p_new.add(c) += *val.add(curcol2 as usize) * *p.add(i as usize);
+                    }
+                    curcol2 += 1;
+                    j += 1;
+                }
+                i += 1;
+            }
+            i = 0;
+            while i < n {
+                *p_new.add(i as usize) = d * *p_new.add(i as usize)
+                    + (1.0f32 - d) / (n as f32);
+                i += 1;
+            }
+            let mut error: f32 = 0.0f32;
+            i = 0;
+            while i < n {
+                error += (*p_new.add(i as usize) - *p.add(i as usize)).abs();
+                i += 1;
+            }
+            if error < 0.000001f32 {
+                looping = 0;
+            }
+            i = 0;
+            while i < n {
+                *p.add(i as usize) = *p_new.add(i as usize);
+                i += 1;
+            }
+            k_iter += 1;
+        }
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut end_time);
+        let time_elapsed: f64 = diff_timespec(
+            &mut end_time as *mut libc::timespec,
+            &mut start_time as *mut libc::timespec,
+        );
+        libc::printf(
+            b"Time taken for PageRank on graph %s (%d nodes, %d edges): %f seconds\n\0"
+                .as_ptr() as *const libc::c_char,
+            filename,
+            n,
+            valid_edges,
+            time_elapsed,
+        );
+        libc::printf(
+            b"\nNumber of iteration to converge: %d \n\n\0".as_ptr()
+                as *const libc::c_char,
+            k_iter,
+        );
+        libc::printf(b"]\n\n\0".as_ptr() as *const libc::c_char);
+        libc::free(val as *mut libc::c_void);
+        libc::free(col_ind as *mut libc::c_void);
+        libc::free(row_ptr as *mut libc::c_void);
+        libc::free(out_link as *mut libc::c_void);
+        libc::free(p as *mut libc::c_void);
+        libc::free(p_new as *mut libc::c_void);
+        libc::fclose(fp);
+    }
+}
+
+```
+It failed to compile with the following error message:
+```
+    Blocking waiting for file lock on package cache
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling build_attempt v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_pagerank/sactor/tmpi2y64buw/build/build_attempt)
+error[E0425]: cannot find function `getc` in crate `libc`
+   --> src/lib.rs:43:33
+    |
+43  |         let mut ch: i32 = libc::getc(fp) as i8 as i32;
+    |                                 ^^^^ help: a function with a similar name exists: `fgetc`
+    |
+   ::: /home/gabe/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libc-0.2.191/src/unix/mod.rs:733:5
+    |
+733 |     pub fn fgetc(stream: *mut FILE) -> c_int;
+    |     ----------------------------------------- similarly named function `fgetc` defined here
+
+error[E0425]: cannot find function `getc` in crate `libc`
+   --> src/lib.rs:54:24
+    |
+54  |             ch = libc::getc(fp) as i8 as i32;
+    |                        ^^^^ help: a function with a similar name exists: `fgetc`
+    |
+   ::: /home/gabe/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libc-0.2.191/src/unix/mod.rs:733:5
+    |
+733 |     pub fn fgetc(stream: *mut FILE) -> c_int;
+    |     ----------------------------------------- similarly named function `fgetc` defined here
+
+For more information about this error, try `rustc --explain E0425`.
+error: could not compile `build_attempt` (lib) due to 2 previous errors
+
+```
+Analyzing the error messages, think about the possible reasons, and try to avoid this error.
+
+2026-11-16 13:30:52 | RESPONSE | sactor.llm:160 | The only compile error was that `libc::getc` does not exist in the `libc` crate. I replaced it with `libc::fgetc`, which behaves the same here.
+
+In C, `char ch = getc(fp)` truncates the value to `char`. On x86 `char` is signed, so EOF stays -1. I kept the original `as i8 as i32` cast to preserve that behavior. The rest of the translation is unchanged.
+
+----FUNCTION----
+```rust
+pub fn main() -> () {
+    unsafe {
+        let args: Vec<String> = std::env::args().collect();
+        if args.len() != 2 {
+            let a0 = std::ffi::CString::new(args.get(0).cloned().unwrap_or_default())
+                .unwrap();
+            libc::fprintf(
+                stderr,
+                b"Usage: %s <graph_file>\n\0".as_ptr() as *const libc::c_char,
+                a0.as_ptr(),
+            );
+            libc::fprintf(
+                stderr,
+                b"  graph_file: Path to the graph edge list file\n\0".as_ptr()
+                    as *const libc::c_char,
+            );
+            std::process::exit(1);
+        }
+        let filename_c = std::ffi::CString::new(args[1].clone()).unwrap();
+        let filename: *const libc::c_char = filename_c.as_ptr();
+        let fp = libc::fopen(filename, b"r\0".as_ptr() as *const libc::c_char);
+        if fp.is_null() {
+            libc::fprintf(
+                stderr,
+                b"[Error] Cannot open the file: %s\n\0".as_ptr() as *const libc::c_char,
+                filename,
+            );
+            std::process::exit(1);
+        }
+        let mut n: libc::c_int = 0;
+        let mut e: libc::c_int = 0;
+        let mut str_buf: [libc::c_char; 256] = [0; 256];
+        let mut ch: i32 = libc::fgetc(fp) as i8 as i32;
+        while ch == '#' as i32 {
+            if libc::fgets(str_buf.as_mut_ptr(), (256 - 1) as libc::c_int, fp).is_null()
+            {
+                break;
+            }
+            libc::sscanf(
+                str_buf.as_ptr(),
+                b"%*s %d %*s %d\0".as_ptr() as *const libc::c_char,
+                &mut n as *mut libc::c_int,
+                &mut e as *mut libc::c_int,
+            );
+            ch = libc::fgetc(fp) as i8 as i32;
+        }
+        if ch != -1 {
+            libc::ungetc(ch, fp);
+        }
+        libc::printf(
+            b"\nGraph data:\n\n  Nodes: %d, Edges: %d \n\n\0".as_ptr()
+                as *const libc::c_char,
+            n,
+            e,
+        );
+        let val = libc::calloc(e as libc::size_t, std::mem::size_of::<f32>())
+            as *mut f32;
+        let col_ind = libc::calloc(e as libc::size_t, std::mem::size_of::<i32>())
+            as *mut i32;
+        let row_ptr = libc::calloc((n + 1) as libc::size_t, std::mem::size_of::<i32>())
+            as *mut i32;
+        if val.is_null() || col_ind.is_null() || row_ptr.is_null() {
+            libc::fprintf(
+                stderr,
+                b"Allocation failed\n\0".as_ptr() as *const libc::c_char,
+            );
+            libc::fclose(fp);
+            std::process::exit(1);
+        }
+        let is_one_indexed = detect_indexing(filename);
+        *row_ptr = 0;
+        let mut fromnode: libc::c_int = 0;
+        let mut tonode: libc::c_int = 0;
+        let mut cur_row: i32 = 0;
+        let mut i: i32 = 0;
+        let mut elrow: i32 = 0;
+        let mut curel: i32 = 0;
+        let mut valid_edges: i32 = 0;
+        while libc::feof(fp) == 0 {
+            if libc::fscanf(
+                fp,
+                b"%d%d\0".as_ptr() as *const libc::c_char,
+                &mut fromnode as *mut libc::c_int,
+                &mut tonode as *mut libc::c_int,
+            ) != 2
+            {
+                break;
+            }
+            if is_one_indexed != 0 {
+                fromnode -= 1;
+                tonode -= 1;
+            }
+            if fromnode >= n || tonode >= n || fromnode < 0 || tonode < 0 {
+                continue;
+            }
+            valid_edges += 1;
+            if fromnode > cur_row {
+                curel += elrow;
+                let mut k = cur_row + 1;
+                while k <= fromnode {
+                    *row_ptr.add(k as usize) = curel;
+                    k += 1;
+                }
+                elrow = 0;
+                cur_row = fromnode;
+            }
+            if i < e {
+                *val.add(i as usize) = 1.0f32;
+                *col_ind.add(i as usize) = tonode;
+                elrow += 1;
+                i += 1;
+            } else {
+                break;
+            }
+        }
+        *row_ptr.add((cur_row + 1) as usize) = curel + elrow;
+        libc::printf(
+            b"Valid edges processed: %d\n\0".as_ptr() as *const libc::c_char,
+            valid_edges,
+        );
+        let out_link = libc::calloc(n as libc::size_t, std::mem::size_of::<i32>())
+            as *mut i32;
+        if out_link.is_null() {
+            libc::fprintf(
+                stderr,
+                b"Allocation failed\n\0".as_ptr() as *const libc::c_char,
+            );
+            libc::free(val as *mut libc::c_void);
+            libc::free(col_ind as *mut libc::c_void);
+            libc::free(row_ptr as *mut libc::c_void);
+            libc::fclose(fp);
+            std::process::exit(1);
+        }
+        let mut rowel: i32;
+        i = 0;
+        while i < n {
+            if *row_ptr.add((i + 1) as usize) != 0 {
+                rowel = *row_ptr.add((i + 1) as usize) - *row_ptr.add(i as usize);
+                *out_link.add(i as usize) = rowel;
+            }
+            i += 1;
+        }
+        let mut curcol: i32 = 0;
+        i = 0;
+        while i < n {
+            rowel = *row_ptr.add((i + 1) as usize) - *row_ptr.add(i as usize);
+            let mut j = 0;
+            while j < rowel {
+                if *out_link.add(i as usize) > 0 {
+                    *val.add(curcol as usize) = *val.add(curcol as usize)
+                        / (*out_link.add(i as usize) as f32);
+                }
+                curcol += 1;
+                j += 1;
+            }
+            i += 1;
+        }
+        let d: f32 = 0.85f32;
+        let p = libc::calloc(n as libc::size_t, std::mem::size_of::<f32>()) as *mut f32;
+        let p_new = libc::calloc(n as libc::size_t, std::mem::size_of::<f32>())
+            as *mut f32;
+        if p.is_null() || p_new.is_null() {
+            libc::fprintf(
+                stderr,
+                b"Allocation failed\n\0".as_ptr() as *const libc::c_char,
+            );
+            libc::free(val as *mut libc::c_void);
+            libc::free(col_ind as *mut libc::c_void);
+            libc::free(row_ptr as *mut libc::c_void);
+            libc::free(out_link as *mut libc::c_void);
+            libc::fclose(fp);
+            std::process::exit(1);
+        }
+        i = 0;
+        while i < n {
+            *p.add(i as usize) = 1.0f32 / (n as f32);
+            i += 1;
+        }
+        let mut looping = 1;
+        let mut k_iter: i32 = 0;
+        let mut start_time: libc::timespec = std::mem::zeroed();
+        let mut end_time: libc::timespec = std::mem::zeroed();
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut start_time);
+        while looping != 0 {
+            i = 0;
+            while i < n {
+                *p_new.add(i as usize) = 0.0f32;
+                i += 1;
+            }
+            let mut curcol2: i32 = 0;
+            i = 0;
+            while i < n {
+                let row_begin = *row_ptr.add(i as usize);
+                let row_end = *row_ptr.add((i + 1) as usize);
+                let row_cnt = row_end - row_begin;
+                let mut j = 0;
+                while j < row_cnt {
+                    if curcol2 < valid_edges && *col_ind.add(curcol2 as usize) < n {
+                        let c = *col_ind.add(curcol2 as usize) as usize;
+                        *p_new.add(c) += *val.add(curcol2 as usize) * *p.add(i as usize);
+                    }
+                    curcol2 += 1;
+                    j += 1;
+                }
+                i += 1;
+            }
+            i = 0;
+            while i < n {
+                *p_new.add(i as usize) = d * *p_new.add(i as usize)
+                    + (1.0f32 - d) / (n as f32);
+                i += 1;
+            }
+            let mut error: f32 = 0.0f32;
+            i = 0;
+            while i < n {
+                error += (*p_new.add(i as usize) - *p.add(i as usize)).abs();
+                i += 1;
+            }
+            if error < 0.000001f32 {
+                looping = 0;
+            }
+            i = 0;
+            while i < n {
+                *p.add(i as usize) = *p_new.add(i as usize);
+                i += 1;
+            }
+            k_iter += 1;
+        }
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut end_time);
+        let time_elapsed: f64 = diff_timespec(
+            &mut end_time as *mut libc::timespec,
+            &mut start_time as *mut libc::timespec,
+        );
+        libc::printf(
+            b"Time taken for PageRank on graph %s (%d nodes, %d edges): %f seconds\n\0"
+                .as_ptr() as *const libc::c_char,
+            filename,
+            n,
+            valid_edges,
+            time_elapsed,
+        );
+        libc::printf(
+            b"\nNumber of iteration to converge: %d \n\n\0".as_ptr()
+                as *const libc::c_char,
+            k_iter,
+        );
+        libc::printf(b"]\n\n\0".as_ptr() as *const libc::c_char);
+        libc::free(val as *mut libc::c_void);
+        libc::free(col_ind as *mut libc::c_void);
+        libc::free(row_ptr as *mut libc::c_void);
+        libc::free(out_link as *mut libc::c_void);
+        libc::free(p as *mut libc::c_void);
+        libc::free(p_new as *mut libc::c_void);
+        libc::fclose(fp);
+    }
+}
+```
+----END FUNCTION----
+2026-11-16 13:30:52 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:30:52 | DEBUG    | sactor.utils:258 | pub fn main() -> () {
+    unsafe {
+        let args: Vec<String> = std::env::args().collect();
+        if args.len() != 2 {
+            let a0 = std::ffi::CString::new(args.get(0).cloned().unwrap_or_default())
+                .unwrap();
+            libc::fprintf(
+                stderr,
+                b"Usage: %s <graph_file>\n\0".as_ptr() as *const libc::c_char,
+                a0.as_ptr(),
+            );
+            libc::fprintf(
+                stderr,
+                b"  graph_file: Path to the graph edge list file\n\0".as_ptr()
+                    as *const libc::c_char,
+            );
+            std::process::exit(1);
+        }
+        let filename_c = std::ffi::CString::new(args[1].clone()).unwrap();
+        let filename: *const libc::c_char = filename_c.as_ptr();
+        let fp = libc::fopen(filename, b"r\0".as_ptr() as *const libc::c_char);
+        if fp.is_null() {
+            libc::fprintf(
+                stderr,
+                b"[Error] Cannot open the file: %s\n\0".as_ptr() as *const libc::c_char,
+                filename,
+            );
+            std::process::exit(1);
+        }
+        let mut n: libc::c_int = 0;
+        let mut e: libc::c_int = 0;
+        let mut str_buf: [libc::c_char; 256] = [0; 256];
+        let mut ch: i32 = libc::fgetc(fp) as i8 as i32;
+        while ch == '#' as i32 {
+            if libc::fgets(str_buf.as_mut_ptr(), (256 - 1) as libc::c_int, fp).is_null()
+            {
+                break;
+            }
+            libc::sscanf(
+                str_buf.as_ptr(),
+                b"%*s %d %*s %d\0".as_ptr() as *const libc::c_char,
+                &mut n as *mut libc::c_int,
+                &mut e as *mut libc::c_int,
+            );
+            ch = libc::fgetc(fp) as i8 as i32;
+        }
+        if ch != -1 {
+            libc::ungetc(ch, fp);
+        }
+        libc::printf(
+            b"\nGraph data:\n\n  Nodes: %d, Edges: %d \n\n\0".as_ptr()
+                as *const libc::c_char,
+            n,
+            e,
+        );
+        let val = libc::calloc(e as libc::size_t, std::mem::size_of::<f32>())
+            as *mut f32;
+        let col_ind = libc::calloc(e as libc::size_t, std::mem::size_of::<i32>())
+            as *mut i32;
+        let row_ptr = libc::calloc((n + 1) as libc::size_t, std::mem::size_of::<i32>())
+            as *mut i32;
+        if val.is_null() || col_ind.is_null() || row_ptr.is_null() {
+            libc::fprintf(
+                stderr,
+                b"Allocation failed\n\0".as_ptr() as *const libc::c_char,
+            );
+            libc::fclose(fp);
+            std::process::exit(1);
+        }
+        let is_one_indexed = detect_indexing(filename);
+        *row_ptr = 0;
+        let mut fromnode: libc::c_int = 0;
+        let mut tonode: libc::c_int = 0;
+        let mut cur_row: i32 = 0;
+        let mut i: i32 = 0;
+        let mut elrow: i32 = 0;
+        let mut curel: i32 = 0;
+        let mut valid_edges: i32 = 0;
+        while libc::feof(fp) == 0 {
+            if libc::fscanf(
+                fp,
+                b"%d%d\0".as_ptr() as *const libc::c_char,
+                &mut fromnode as *mut libc::c_int,
+                &mut tonode as *mut libc::c_int,
+            ) != 2
+            {
+                break;
+            }
+            if is_one_indexed != 0 {
+                fromnode -= 1;
+                tonode -= 1;
+            }
+            if fromnode >= n || tonode >= n || fromnode < 0 || tonode < 0 {
+                continue;
+            }
+            valid_edges += 1;
+            if fromnode > cur_row {
+                curel += elrow;
+                let mut k = cur_row + 1;
+                while k <= fromnode {
+                    *row_ptr.add(k as usize) = curel;
+                    k += 1;
+                }
+                elrow = 0;
+                cur_row = fromnode;
+            }
+            if i < e {
+                *val.add(i as usize) = 1.0f32;
+                *col_ind.add(i as usize) = tonode;
+                elrow += 1;
+                i += 1;
+            } else {
+                break;
+            }
+        }
+        *row_ptr.add((cur_row + 1) as usize) = curel + elrow;
+        libc::printf(
+            b"Valid edges processed: %d\n\0".as_ptr() as *const libc::c_char,
+            valid_edges,
+        );
+        let out_link = libc::calloc(n as libc::size_t, std::mem::size_of::<i32>())
+            as *mut i32;
+        if out_link.is_null() {
+            libc::fprintf(
+                stderr,
+                b"Allocation failed\n\0".as_ptr() as *const libc::c_char,
+            );
+            libc::free(val as *mut libc::c_void);
+            libc::free(col_ind as *mut libc::c_void);
+            libc::free(row_ptr as *mut libc::c_void);
+            libc::fclose(fp);
+            std::process::exit(1);
+        }
+        let mut rowel: i32;
+        i = 0;
+        while i < n {
+            if *row_ptr.add((i + 1) as usize) != 0 {
+                rowel = *row_ptr.add((i + 1) as usize) - *row_ptr.add(i as usize);
+                *out_link.add(i as usize) = rowel;
+            }
+            i += 1;
+        }
+        let mut curcol: i32 = 0;
+        i = 0;
+        while i < n {
+            rowel = *row_ptr.add((i + 1) as usize) - *row_ptr.add(i as usize);
+            let mut j = 0;
+            while j < rowel {
+                if *out_link.add(i as usize) > 0 {
+                    *val.add(curcol as usize) = *val.add(curcol as usize)
+                        / (*out_link.add(i as usize) as f32);
+                }
+                curcol += 1;
+                j += 1;
+            }
+            i += 1;
+        }
+        let d: f32 = 0.85f32;
+        let p = libc::calloc(n as libc::size_t, std::mem::size_of::<f32>()) as *mut f32;
+        let p_new = libc::calloc(n as libc::size_t, std::mem::size_of::<f32>())
+            as *mut f32;
+        if p.is_null() || p_new.is_null() {
+            libc::fprintf(
+                stderr,
+                b"Allocation failed\n\0".as_ptr() as *const libc::c_char,
+            );
+            libc::free(val as *mut libc::c_void);
+            libc::free(col_ind as *mut libc::c_void);
+            libc::free(row_ptr as *mut libc::c_void);
+            libc::free(out_link as *mut libc::c_void);
+            libc::fclose(fp);
+            std::process::exit(1);
+        }
+        i = 0;
+        while i < n {
+            *p.add(i as usize) = 1.0f32 / (n as f32);
+            i += 1;
+        }
+        let mut looping = 1;
+        let mut k_iter: i32 = 0;
+        let mut start_time: libc::timespec = std::mem::zeroed();
+        let mut end_time: libc::timespec = std::mem::zeroed();
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut start_time);
+        while looping != 0 {
+            i = 0;
+            while i < n {
+                *p_new.add(i as usize) = 0.0f32;
+                i += 1;
+            }
+            let mut curcol2: i32 = 0;
+            i = 0;
+            while i < n {
+                let row_begin = *row_ptr.add(i as usize);
+                let row_end = *row_ptr.add((i + 1) as usize);
+                let row_cnt = row_end - row_begin;
+                let mut j = 0;
+                while j < row_cnt {
+                    if curcol2 < valid_edges && *col_ind.add(curcol2 as usize) < n {
+                        let c = *col_ind.add(curcol2 as usize) as usize;
+                        *p_new.add(c) += *val.add(curcol2 as usize) * *p.add(i as usize);
+                    }
+                    curcol2 += 1;
+                    j += 1;
+                }
+                i += 1;
+            }
+            i = 0;
+            while i < n {
+                *p_new.add(i as usize) = d * *p_new.add(i as usize)
+                    + (1.0f32 - d) / (n as f32);
+                i += 1;
+            }
+            let mut error: f32 = 0.0f32;
+            i = 0;
+            while i < n {
+                error += (*p_new.add(i as usize) - *p.add(i as usize)).abs();
+                i += 1;
+            }
+            if error < 0.000001f32 {
+                looping = 0;
+            }
+            i = 0;
+            while i < n {
+                *p.add(i as usize) = *p_new.add(i as usize);
+                i += 1;
+            }
+            k_iter += 1;
+        }
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut end_time);
+        let time_elapsed: f64 = diff_timespec(
+            &mut end_time as *mut libc::timespec,
+            &mut start_time as *mut libc::timespec,
+        );
+        libc::printf(
+            b"Time taken for PageRank on graph %s (%d nodes, %d edges): %f seconds\n\0"
+                .as_ptr() as *const libc::c_char,
+            filename,
+            n,
+            valid_edges,
+            time_elapsed,
+        );
+        libc::printf(
+            b"\nNumber of iteration to converge: %d \n\n\0".as_ptr()
+                as *const libc::c_char,
+            k_iter,
+        );
+        libc::printf(b"]\n\n\0".as_ptr() as *const libc::c_char);
+        libc::free(val as *mut libc::c_void);
+        libc::free(col_ind as *mut libc::c_void);
+        libc::free(row_ptr as *mut libc::c_void);
+        libc::free(out_link as *mut libc::c_void);
+        libc::free(p as *mut libc::c_void);
+        libc::free(p_new as *mut libc::c_void);
+        libc::fclose(fp);
+    }
+}
+
+2026-11-16 13:30:52 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function main:
+2026-11-16 13:30:52 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub fn main() -> () {
+    unsafe {
+        let args: Vec<String> = std::env::args().collect();
+        if args.len() != 2 {
+            let a0 = std::ffi::CString::new(args.get(0).cloned().unwrap_or_default())
+                .unwrap();
+            libc::fprintf(
+                stderr,
+                b"Usage: %s <graph_file>\n\0".as_ptr() as *const libc::c_char,
+                a0.as_ptr(),
+            );
+            libc::fprintf(
+                stderr,
+                b"  graph_file: Path to the graph edge list file\n\0".as_ptr()
+                    as *const libc::c_char,
+            );
+            std::process::exit(1);
+        }
+        let filename_c = std::ffi::CString::new(args[1].clone()).unwrap();
+        let filename: *const libc::c_char = filename_c.as_ptr();
+        let fp = libc::fopen(filename, b"r\0".as_ptr() as *const libc::c_char);
+        if fp.is_null() {
+            libc::fprintf(
+                stderr,
+                b"[Error] Cannot open the file: %s\n\0".as_ptr() as *const libc::c_char,
+                filename,
+            );
+            std::process::exit(1);
+        }
+        let mut n: libc::c_int = 0;
+        let mut e: libc::c_int = 0;
+        let mut str_buf: [libc::c_char; 256] = [0; 256];
+        let mut ch: i32 = libc::fgetc(fp) as i8 as i32;
+        while ch == '#' as i32 {
+            if libc::fgets(str_buf.as_mut_ptr(), (256 - 1) as libc::c_int, fp).is_null()
+            {
+                break;
+            }
+            libc::sscanf(
+                str_buf.as_ptr(),
+                b"%*s %d %*s %d\0".as_ptr() as *const libc::c_char,
+                &mut n as *mut libc::c_int,
+                &mut e as *mut libc::c_int,
+            );
+            ch = libc::fgetc(fp) as i8 as i32;
+        }
+        if ch != -1 {
+            libc::ungetc(ch, fp);
+        }
+        libc::printf(
+            b"\nGraph data:\n\n  Nodes: %d, Edges: %d \n\n\0".as_ptr()
+                as *const libc::c_char,
+            n,
+            e,
+        );
+        let val = libc::calloc(e as libc::size_t, std::mem::size_of::<f32>())
+            as *mut f32;
+        let col_ind = libc::calloc(e as libc::size_t, std::mem::size_of::<i32>())
+            as *mut i32;
+        let row_ptr = libc::calloc((n + 1) as libc::size_t, std::mem::size_of::<i32>())
+            as *mut i32;
+        if val.is_null() || col_ind.is_null() || row_ptr.is_null() {
+            libc::fprintf(
+                stderr,
+                b"Allocation failed\n\0".as_ptr() as *const libc::c_char,
+            );
+            libc::fclose(fp);
+            std::process::exit(1);
+        }
+        let is_one_indexed = detect_indexing(filename);
+        *row_ptr = 0;
+        let mut fromnode: libc::c_int = 0;
+        let mut tonode: libc::c_int = 0;
+        let mut cur_row: i32 = 0;
+        let mut i: i32 = 0;
+        let mut elrow: i32 = 0;
+        let mut curel: i32 = 0;
+        let mut valid_edges: i32 = 0;
+        while libc::feof(fp) == 0 {
+            if libc::fscanf(
+                fp,
+                b"%d%d\0".as_ptr() as *const libc::c_char,
+                &mut fromnode as *mut libc::c_int,
+                &mut tonode as *mut libc::c_int,
+            ) != 2
+            {
+                break;
+            }
+            if is_one_indexed != 0 {
+                fromnode -= 1;
+                tonode -= 1;
+            }
+            if fromnode >= n || tonode >= n || fromnode < 0 || tonode < 0 {
+                continue;
+            }
+            valid_edges += 1;
+            if fromnode > cur_row {
+                curel += elrow;
+                let mut k = cur_row + 1;
+                while k <= fromnode {
+                    *row_ptr.add(k as usize) = curel;
+                    k += 1;
+                }
+                elrow = 0;
+                cur_row = fromnode;
+            }
+            if i < e {
+                *val.add(i as usize) = 1.0f32;
+                *col_ind.add(i as usize) = tonode;
+                elrow += 1;
+                i += 1;
+            } else {
+                break;
+            }
+        }
+        *row_ptr.add((cur_row + 1) as usize) = curel + elrow;
+        libc::printf(
+            b"Valid edges processed: %d\n\0".as_ptr() as *const libc::c_char,
+            valid_edges,
+        );
+        let out_link = libc::calloc(n as libc::size_t, std::mem::size_of::<i32>())
+            as *mut i32;
+        if out_link.is_null() {
+            libc::fprintf(
+                stderr,
+                b"Allocation failed\n\0".as_ptr() as *const libc::c_char,
+            );
+            libc::free(val as *mut libc::c_void);
+            libc::free(col_ind as *mut libc::c_void);
+            libc::free(row_ptr as *mut libc::c_void);
+            libc::fclose(fp);
+            std::process::exit(1);
+        }
+        let mut rowel: i32;
+        i = 0;
+        while i < n {
+            if *row_ptr.add((i + 1) as usize) != 0 {
+                rowel = *row_ptr.add((i + 1) as usize) - *row_ptr.add(i as usize);
+                *out_link.add(i as usize) = rowel;
+            }
+            i += 1;
+        }
+        let mut curcol: i32 = 0;
+        i = 0;
+        while i < n {
+            rowel = *row_ptr.add((i + 1) as usize) - *row_ptr.add(i as usize);
+            let mut j = 0;
+            while j < rowel {
+                if *out_link.add(i as usize) > 0 {
+                    *val.add(curcol as usize) = *val.add(curcol as usize)
+                        / (*out_link.add(i as usize) as f32);
+                }
+                curcol += 1;
+                j += 1;
+            }
+            i += 1;
+        }
+        let d: f32 = 0.85f32;
+        let p = libc::calloc(n as libc::size_t, std::mem::size_of::<f32>()) as *mut f32;
+        let p_new = libc::calloc(n as libc::size_t, std::mem::size_of::<f32>())
+            as *mut f32;
+        if p.is_null() || p_new.is_null() {
+            libc::fprintf(
+                stderr,
+                b"Allocation failed\n\0".as_ptr() as *const libc::c_char,
+            );
+            libc::free(val as *mut libc::c_void);
+            libc::free(col_ind as *mut libc::c_void);
+            libc::free(row_ptr as *mut libc::c_void);
+            libc::free(out_link as *mut libc::c_void);
+            libc::fclose(fp);
+            std::process::exit(1);
+        }
+        i = 0;
+        while i < n {
+            *p.add(i as usize) = 1.0f32 / (n as f32);
+            i += 1;
+        }
+        let mut looping = 1;
+        let mut k_iter: i32 = 0;
+        let mut start_time: libc::timespec = std::mem::zeroed();
+        let mut end_time: libc::timespec = std::mem::zeroed();
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut start_time);
+        while looping != 0 {
+            i = 0;
+            while i < n {
+                *p_new.add(i as usize) = 0.0f32;
+                i += 1;
+            }
+            let mut curcol2: i32 = 0;
+            i = 0;
+            while i < n {
+                let row_begin = *row_ptr.add(i as usize);
+                let row_end = *row_ptr.add((i + 1) as usize);
+                let row_cnt = row_end - row_begin;
+                let mut j = 0;
+                while j < row_cnt {
+                    if curcol2 < valid_edges && *col_ind.add(curcol2 as usize) < n {
+                        let c = *col_ind.add(curcol2 as usize) as usize;
+                        *p_new.add(c) += *val.add(curcol2 as usize) * *p.add(i as usize);
+                    }
+                    curcol2 += 1;
+                    j += 1;
+                }
+                i += 1;
+            }
+            i = 0;
+            while i < n {
+                *p_new.add(i as usize) = d * *p_new.add(i as usize)
+                    + (1.0f32 - d) / (n as f32);
+                i += 1;
+            }
+            let mut error: f32 = 0.0f32;
+            i = 0;
+            while i < n {
+                error += (*p_new.add(i as usize) - *p.add(i as usize)).abs();
+                i += 1;
+            }
+            if error < 0.000001f32 {
+                looping = 0;
+            }
+            i = 0;
+            while i < n {
+                *p.add(i as usize) = *p_new.add(i as usize);
+                i += 1;
+            }
+            k_iter += 1;
+        }
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut end_time);
+        let time_elapsed: f64 = diff_timespec(
+            &mut end_time as *mut libc::timespec,
+            &mut start_time as *mut libc::timespec,
+        );
+        libc::printf(
+            b"Time taken for PageRank on graph %s (%d nodes, %d edges): %f seconds\n\0"
+                .as_ptr() as *const libc::c_char,
+            filename,
+            n,
+            valid_edges,
+            time_elapsed,
+        );
+        libc::printf(
+            b"\nNumber of iteration to converge: %d \n\n\0".as_ptr()
+                as *const libc::c_char,
+            k_iter,
+        );
+        libc::printf(b"]\n\n\0".as_ptr() as *const libc::c_char);
+        libc::free(val as *mut libc::c_void);
+        libc::free(col_ind as *mut libc::c_void);
+        libc::free(row_ptr as *mut libc::c_void);
+        libc::free(out_link as *mut libc::c_void);
+        libc::free(p as *mut libc::c_void);
+        libc::free(p_new as *mut libc::c_void);
+        libc::fclose(fp);
+    }
+}
+
+2026-11-16 13:30:52 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_pagerank/sactor/tmpi2y64buw/build/build_attempt/Cargo.toml
+2026-11-16 13:30:54 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:30:54 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_pagerank/sactor/tmpi2y64buw/build/embed_test_rust/Cargo.toml
+2026-11-16 13:31:01 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/oxivolve_pagerank/sactor/tmpi2y64buw/build/embed_test_c/main', '/home/gabe/sactor_forklift/tmp/oxivolve_pagerank/sactor/tmpi2y64buw/build/embed_test_c/main.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/oxivolve_pagerank/sactor/tmpi2y64buw/build/embed_test_rust/target/debug', '-lm', '-lmain']
+2026-11-16 13:31:02 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_pagerank/sactor/tmpi2y64buw/build/build_attempt/Cargo.toml
+2026-11-16 13:31:04 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:31:04 | DEBUG    | sactor.combiner.program_combiner:234 | Running clippy fix command: cargo clippy --fix --allow-no-vcs --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_pagerank/sactor/tmpi2y64buw/build/program/Cargo.toml -- -A clippy::cmp_null
+2026-11-16 13:31:06 | INFO     | sactor.combiner.program_combiner:259 | Found 19 warnings in the combined code
+2026-11-16 13:31:06 | INFO     | sactor.combiner.program_combiner:260 | Found 0 errors in the combined code
+2026-11-16 13:31:07 | DEBUG    | sactor.thirdparty.crown:81 | Executing crown command: rustup run nightly-2023-01-26-x86_64-unknown-linux-gnu crown /home/gabe/sactor_forklift/tmp/oxivolve_pagerank/sactor/tmpi2y64buw/build/crown_analysis/src/lib.rs preprocess in-place
+2026-11-16 13:31:07 | WARNING  | sactor.thirdparty.crown:90 | crown preprocess messed up code; restoring original translation
+2026-11-16 13:31:07 | WARNING  | sactor.thirdparty.crown:103 | crown explicit-addr messed up code; restoring original translation
+2026-11-16 13:31:08 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: detect_indexing (attempts: 0)
+2026-11-16 13:31:08 | PROMPT   | sactor.llm:155 | 
+Translate the following unidiomatic Rust function into idiomatic Rust. Try to remove all the `unsafe` blocks and only use the safe Rust code or use the `unsafe` blocks only when necessary.
+Before translating, analyze the unsafe blocks one by one and how to convert them into safe Rust code.
+**libc may not be provided in the idiomatic code, so try to avoid using libc functions and types, and avoid using `std::ffi` module.**
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+```rust
+pub unsafe fn detect_indexing(filename: *const libc::c_char) -> libc::c_int {
+    let fp = libc::fopen(filename, b"r\0".as_ptr() as *const libc::c_char);
+    if fp.is_null() {
+        return 1;
+    }
+    let mut min_node: libc::c_int = libc::c_int::MAX;
+    let mut samples: libc::c_int = 0;
+    let mut line: [libc::c_char; 256] = [0; 256];
+    while !libc::fgets(line.as_mut_ptr(), line.len() as libc::c_int, fp).is_null() && samples < 100
+    {
+        if line[0] == b'#' as libc::c_char {
+            continue;
+        }
+        let mut fromnode: libc::c_int = 0;
+        let mut tonode: libc::c_int = 0;
+        let n = libc::sscanf(
+            line.as_ptr(),
+            b"%d %d\0".as_ptr() as *const libc::c_char,
+            &mut fromnode as *mut libc::c_int,
+            &mut tonode as *mut libc::c_int,
+        );
+        if n == 2 {
+            if fromnode < min_node {
+                min_node = fromnode;
+            }
+            if tonode < min_node {
+                min_node = tonode;
+            }
+            samples += 1;
+        }
+    }
+    libc::fclose(fp);
+    let is_one_indexed: libc::c_int = if min_node != 0 { 1 } else { 0 };
+    let s: &[u8] = if is_one_indexed != 0 {
+        b"1-indexed\0"
+    } else {
+        b"0-indexed\0"
+    };
+    libc::printf(
+        b"Detected indexing: %s (min node ID: %d)\n\0".as_ptr() as *const libc::c_char,
+        s.as_ptr() as *const libc::c_char,
+        min_node,
+    );
+    is_one_indexed
+}
+
+```
+
+"Crown" is a pointer analysis tool that can help to identify the ownership, mutability and fatness of pointers. Following are the possible annotations for pointers:
+```
+fatness:
+    - `Ptr`: Single pointer
+    - `Arr`: Pointer is an array
+mutability:
+    - `Mut`: Mutable pointer
+    - `Imm`: Immutable pointer
+ownership:
+    - `Owning`: Owns the pointer
+    - `Transient`: Not owns the pointer
+````
+
+The following is the output of Crown for this function:
+```
+{'fp': {'fatness': ['Ptr'], 'mutability': ['Mut'], 'ownership': ['Transient']}, 'filename': {'fatness': ['Ptr'], 'mutability': ['Imm'], 'ownership': ['Transient']}}
+```
+Analyze the Crown output firstly, then translate the pointers in function arguments and return values with the help of the Crown output.
+Try to avoid using pointers in the function arguments and return values if possible.
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+
+Also output a minimal JSON spec that maps the unidiomatic Rust layout to the idiomatic Rust for the function arguments and return value.
+Full JSON Schema for the SPEC (do not output the schema; output only an instance that conforms to it):
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sactor://spec.schema.json",
+  "title": "Sactor Idiomatic Translation Spec",
+  "description": "Schema describing mappings between unidiomatic (repr(C)) Rust and idiomatic Rust for structs and function arguments.",
+  "$defs": {
+    "PtrShape": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ptr": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["slice", "cstring", "ref"] },
+            "len_from": { "type": "string", "description": "Name of the unidiomatic length field." },
+            "len_const": { "type": "integer", "minimum": 0, "description": "Constant element count for the pointer." },
+            "null": { "enum": ["nullable", "forbidden"], "description": "Whether the pointer can be NULL." }
+          },
+          "required": ["kind"]
+        }
+      },
+      "required": ["ptr"]
+    },
+    "UField": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "shape": {
+          "oneOf": [
+            { "const": "scalar", "description": "Scalar value (integer, float, bool, char, or any non-pointer data structures)" },
+            { "$ref": "#/$defs/PtrShape", "description": "Pointer type (raw pointer, slice, or C string)" }
+          ]
+        }
+      },
+      "required": ["name", "shape"]
+    },
+    "IField": {
+      "type": "object",
+      "description": "Idiomatic-side field path. Special convention: if name == 'ret', this Field describes the function return mapping.",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic field path or 'ret' for function return." },
+        "type": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "EnumDiscriminant": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tag": { "type": "string", "description": "u_field.name of the discriminant/tag" },
+        "equals": { "type": ["integer", "string"], "description": "Value of tag that selects this variant" }
+      },
+      "required": ["tag", "equals"]
+    },
+    "EnumVariant": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic enum variant name" },
+        "when": { "$ref": "#/$defs/EnumDiscriminant" },
+        "payload": { "type": "array", "items": { "$ref": "#/$defs/Field" } }
+      },
+      "required": ["name", "when"]
+    },
+    "Field": {
+      "type": "object",
+      "description": "Field mapping between unidiomatic C-style field and idiomatic Rust path.",
+      "properties": {
+        "u_field": { "$ref": "#/$defs/UField" },
+        "i_field": { "$ref": "#/$defs/IField" },
+        "ownership": { "type": "string", "enum": ["owning", "transient"], "description": "Optional ownership hint." },
+        "compare": {
+          "type": "string",
+          "enum": ["by_value", "by_slice", "skip"],
+          "description": "Comparison strategy for roundtrip tests. Use 'skip' generously for values that may legitimately diverge (raw pointers, aliasing views, externally-owned buffers, handles, allocator state, etc.) so the automated selftest stays permissive."
+        },
+        "llm_note": { "type": "string", "description": "Free-form note for LLM when automatic codegen is insufficient (e.g., aliasing/offset semantics)." }
+      },
+      "required": ["u_field", "i_field"]
+    },
+    "StructSpec": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "struct_name": { "type": "string", "description": "Name of the translated idiomatic struct." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 },
+        "i_kind": { "type": "string", "enum": ["struct", "enum"], "default": "struct" },
+        "i_type": { "type": "string", "description": "Idiomatic type name (useful when i_kind=enum)" },
+        "variants": { "type": "array", "items": { "$ref": "#/$defs/EnumVariant" } }
+      },
+      "required": ["fields", "i_kind", "i_type"]
+    },
+    "FunctionSpec": {
+      "type": "object",
+      "description": "Function argument/return mapping. Return values are expressed via a Field whose i_field.name == 'ret'.",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "function_name": { "type": "string", "description": "Name of the translated idiomatic function." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 }
+      },
+      "required": ["fields"]
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/StructSpec" },
+    { "$ref": "#/$defs/FunctionSpec" }
+  ]
+}
+
+```
+----SPEC----
+```json
+{
+  "function_name": "detect_indexing",
+  "fields": [
+    {
+      "u_field": {
+        "name": "...",
+        "type": "...",
+        "shape": "scalar" | {"ptr": {"kind": "slice|cstring|ref", "len_from": "?", "len_const": 1}}
+      },
+      "i_field": {
+        "name": "...",
+        "type": "..."
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+
+Few-shot examples (each with unidiomatic Rust signature, idiomatic Rust signature, and the SPEC):
+
+Example F1 (slice argument):
+Raw slice pointer plus length translated to &[T] parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn sum(xs: *const i32, n: usize) -> i32;
+```
+Idiomatic Rust:
+```rust
+pub fn sum(xs: &[i32]) -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "sum",
+  "fields": [
+    { "u_field": {"name": "xs", "type": "*const i32", "shape": { "ptr": { "kind": "slice", "len_from": "n" } }},
+      "i_field": {"name": "xs", "type": "&[i32]"} },
+    { "u_field": {"name": "n", "type": "usize", "shape": "scalar"},
+      "i_field": {"name": "xs.len", "type": "usize"} },
+    { "u_field": {"name": "ret", "type": "i32", "shape": "scalar"},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F2 (out pointer to return value):
+Mutable pointer output replaced by direct return.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn get_value(out_value: *mut i32);
+```
+Idiomatic Rust:
+```rust
+pub fn get_value() -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "get_value",
+  "fields": [
+    { "u_field": {"name": "out_value", "type": "*mut i32", "shape": { "ptr": { "kind": "ref" } }},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F3 (nullable cstring to Option<&str>):
+Nullable C string pointer converted to Option<&str> parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn set_name(name: *const libc::c_char);
+```
+Idiomatic Rust:
+```rust
+pub fn set_name(name: Option<&str>);
+```
+----SPEC----
+```json
+{
+  "function_name": "set_name",
+  "fields": [
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring", "null": "nullable" } }},
+      "i_field": {"name": "name", "type": "Option<&str>"} }
+  ]
+}
+```
+----END SPEC----
+
+2026-11-16 13:31:22 | RESPONSE | sactor.llm:160 | **Analysis of the unsafe parts**
+
+1. `libc::fopen` / `fclose`: replaced by `std::fs::File::open`. The file is closed automatically when it goes out of scope. If opening fails, the function returns 1, as before.
+2. `libc::fgets` into a `[c_char; 256]`: replaced by `BufReader::read_until(b'\n', ..)` into a `Vec<u8>`. I read bytes rather than `read_line` so that invalid UTF-8 doesn't cause an error. Lines longer than 255 bytes are no longer split into pieces, which is a small deliberate difference.
+3. `line[0] == '#'`: becomes `line.first() == Some(&b'#')`.
+4. `libc::sscanf("%d %d")`: replaced by a small nested helper that skips whitespace, reads an optional sign and at least one digit, and returns the value and the next position. Calling it twice mimics `%d %d`. Overflowing values are treated as a parse failure.
+5. `libc::printf`: replaced by `println!`, and the C-string choice of `"1-indexed"` / `"0-indexed"` becomes a plain `&str`.
+6. Crown output: `filename` is an immutable, transient single pointer to a C string, so it becomes `&str`. `fp` is a transient mutable pointer, which `File` and `BufReader` replace. No pointers are needed in the signature, and the `int` return stays `i32`.
+
+----FUNCTION----
+```rust
+pub fn detect_indexing(filename: &str) -> i32 {
+    use std::io::{BufRead, BufReader};
+
+    // Helper: emulate sscanf's "%d": skip whitespace, optional sign, digits.
+    fn parse_int(buf: &[u8], mut pos: usize) -> Option<(i32, usize)> {
+        while pos < buf.len() && buf[pos].is_ascii_whitespace() {
+            pos += 1;
+        }
+        let start = pos;
+        if pos < buf.len() && (buf[pos] == b'+' || buf[pos] == b'-') {
+            pos += 1;
+        }
+        let digits_start = pos;
+        while pos < buf.len() && buf[pos].is_ascii_digit() {
+            pos += 1;
+        }
+        if pos == digits_start {
+            return None;
+        }
+        let s = std::str::from_utf8(&buf[start..pos]).ok()?;
+        let v: i32 = s.parse().ok()?;
+        Some((v, pos))
+    }
+
+    let file = match std::fs::File::open(filename) {
+        Ok(f) => f,
+        Err(_) => return 1,
+    };
+    let mut reader = BufReader::new(file);
+
+    let mut min_node: i32 = i32::MAX;
+    let mut samples: i32 = 0;
+    let mut line: Vec<u8> = Vec::new();
+
+    while samples < 100 {
+        line.clear();
+        match reader.read_until(b'\n', &mut line) {
+            Ok(0) | Err(_) => break,
+            Ok(_) => {}
+        }
+        if line.first() == Some(&b'#') {
+            continue;
+        }
+        if let Some((fromnode, pos)) = parse_int(&line, 0) {
+            if let Some((tonode, _)) = parse_int(&line, pos) {
+                if fromnode < min_node {
+                    min_node = fromnode;
+                }
+                if tonode < min_node {
+                    min_node = tonode;
+                }
+                samples += 1;
+            }
+        }
+    }
+
+    let is_one_indexed = min_node != 0;
+    let s = if is_one_indexed { "1-indexed" } else { "0-indexed" };
+    println!("Detected indexing: {} (min node ID: {})", s, min_node);
+    if is_one_indexed {
+        1
+    } else {
+        0
+    }
+}
+```
+----END FUNCTION----
+
+----SPEC----
+```json
+{
+  "function_name": "detect_indexing",
+  "fields": [
+    {
+      "u_field": {
+        "name": "filename",
+        "type": "*const libc::c_char",
+        "shape": { "ptr": { "kind": "cstring", "null": "forbidden" } }
+      },
+      "i_field": {
+        "name": "filename",
+        "type": "&str"
+      }
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "i32"
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+2026-11-16 13:31:22 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:31:22 | DEBUG    | sactor.utils:258 | pub fn detect_indexing(filename: &str) -> i32 {
+    use std::io::{BufRead, BufReader};
+
+    // Helper: emulate sscanf's "%d": skip whitespace, optional sign, digits.
+    fn parse_int(buf: &[u8], mut pos: usize) -> Option<(i32, usize)> {
+        while pos < buf.len() && buf[pos].is_ascii_whitespace() {
+            pos += 1;
+        }
+        let start = pos;
+        if pos < buf.len() && (buf[pos] == b'+' || buf[pos] == b'-') {
+            pos += 1;
+        }
+        let digits_start = pos;
+        while pos < buf.len() && buf[pos].is_ascii_digit() {
+            pos += 1;
+        }
+        if pos == digits_start {
+            return None;
+        }
+        let s = std::str::from_utf8(&buf[start..pos]).ok()?;
+        let v: i32 = s.parse().ok()?;
+        Some((v, pos))
+    }
+
+    let file = match std::fs::File::open(filename) {
+        Ok(f) => f,
+        Err(_) => return 1,
+    };
+    let mut reader = BufReader::new(file);
+
+    let mut min_node: i32 = i32::MAX;
+    let mut samples: i32 = 0;
+    let mut line: Vec<u8> = Vec::new();
+
+    while samples < 100 {
+        line.clear();
+        match reader.read_until(b'\n', &mut line) {
+            Ok(0) | Err(_) => break,
+            Ok(_) => {}
+        }
+        if line.first() == Some(&b'#') {
+            continue;
+        }
+        if let Some((fromnode, pos)) = parse_int(&line, 0) {
+            if let Some((tonode, _)) = parse_int(&line, pos) {
+                if fromnode < min_node {
+                    min_node = fromnode;
+                }
+                if tonode < min_node {
+                    min_node = tonode;
+                }
+                samples += 1;
+            }
+        }
+    }
+
+    let is_one_indexed = min_node != 0;
+    let s = if is_one_indexed { "1-indexed" } else { "0-indexed" };
+    println!("Detected indexing: {} (min node ID: {})", s, min_node);
+    if is_one_indexed {
+        1
+    } else {
+        0
+    }
+}
+
+2026-11-16 13:31:22 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_pagerank/sactor/tmpi2y64buw/build/build_attempt/Cargo.toml
+2026-11-16 13:31:24 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:31:24 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function detect_indexing after the compile check (FFI harness skipped)
+2026-11-16 13:31:24 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: diff_timespec (attempts: 0)
+2026-11-16 13:31:24 | PROMPT   | sactor.llm:155 | 
+Translate the following unidiomatic Rust function into idiomatic Rust. Try to remove all the `unsafe` blocks and only use the safe Rust code or use the `unsafe` blocks only when necessary.
+Before translating, analyze the unsafe blocks one by one and how to convert them into safe Rust code.
+**libc may not be provided in the idiomatic code, so try to avoid using libc functions and types, and avoid using `std::ffi` module.**
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+```rust
+pub unsafe fn diff_timespec(time1: *mut libc::timespec, time0: *mut libc::timespec) -> f64 {
+    let sec = (*time1).tv_sec.wrapping_sub((*time0).tv_sec);
+    let nsec = (*time1).tv_nsec.wrapping_sub((*time0).tv_nsec);
+    (sec as f64) + (nsec as f64) / 1000000000.0
+}
+
+```
+
+"Crown" is a pointer analysis tool that can help to identify the ownership, mutability and fatness of pointers. Following are the possible annotations for pointers:
+```
+fatness:
+    - `Ptr`: Single pointer
+    - `Arr`: Pointer is an array
+mutability:
+    - `Mut`: Mutable pointer
+    - `Imm`: Immutable pointer
+ownership:
+    - `Owning`: Owns the pointer
+    - `Transient`: Not owns the pointer
+````
+
+The following is the output of Crown for this function:
+```
+{'time1': {'fatness': ['Ptr'], 'mutability': ['Imm'], 'ownership': ['Transient']}, 'time0': {'fatness': ['Ptr'], 'mutability': ['Imm'], 'ownership': ['Transient']}}
+```
+Analyze the Crown output firstly, then translate the pointers in function arguments and return values with the help of the Crown output.
+Try to avoid using pointers in the function arguments and return values if possible.
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+
+Also output a minimal JSON spec that maps the unidiomatic Rust layout to the idiomatic Rust for the function arguments and return value.
+Full JSON Schema for the SPEC (do not output the schema; output only an instance that conforms to it):
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sactor://spec.schema.json",
+  "title": "Sactor Idiomatic Translation Spec",
+  "description": "Schema describing mappings between unidiomatic (repr(C)) Rust and idiomatic Rust for structs and function arguments.",
+  "$defs": {
+    "PtrShape": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ptr": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["slice", "cstring", "ref"] },
+            "len_from": { "type": "string", "description": "Name of the unidiomatic length field." },
+            "len_const": { "type": "integer", "minimum": 0, "description": "Constant element count for the pointer." },
+            "null": { "enum": ["nullable", "forbidden"], "description": "Whether the pointer can be NULL." }
+          },
+          "required": ["kind"]
+        }
+      },
+      "required": ["ptr"]
+    },
+    "UField": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "shape": {
+          "oneOf": [
+            { "const": "scalar", "description": "Scalar value (integer, float, bool, char, or any non-pointer data structures)" },
+            { "$ref": "#/$defs/PtrShape", "description": "Pointer type (raw pointer, slice, or C string)" }
+          ]
+        }
+      },
+      "required": ["name", "shape"]
+    },
+    "IField": {
+      "type": "object",
+      "description": "Idiomatic-side field path. Special convention: if name == 'ret', this Field describes the function return mapping.",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic field path or 'ret' for function return." },
+        "type": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "EnumDiscriminant": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tag": { "type": "string", "description": "u_field.name of the discriminant/tag" },
+        "equals": { "type": ["integer", "string"], "description": "Value of tag that selects this variant" }
+      },
+      "required": ["tag", "equals"]
+    },
+    "EnumVariant": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic enum variant name" },
+        "when": { "$ref": "#/$defs/EnumDiscriminant" },
+        "payload": { "type": "array", "items": { "$ref": "#/$defs/Field" } }
+      },
+      "required": ["name", "when"]
+    },
+    "Field": {
+      "type": "object",
+      "description": "Field mapping between unidiomatic C-style field and idiomatic Rust path.",
+      "properties": {
+        "u_field": { "$ref": "#/$defs/UField" },
+        "i_field": { "$ref": "#/$defs/IField" },
+        "ownership": { "type": "string", "enum": ["owning", "transient"], "description": "Optional ownership hint." },
+        "compare": {
+          "type": "string",
+          "enum": ["by_value", "by_slice", "skip"],
+          "description": "Comparison strategy for roundtrip tests. Use 'skip' generously for values that may legitimately diverge (raw pointers, aliasing views, externally-owned buffers, handles, allocator state, etc.) so the automated selftest stays permissive."
+        },
+        "llm_note": { "type": "string", "description": "Free-form note for LLM when automatic codegen is insufficient (e.g., aliasing/offset semantics)." }
+      },
+      "required": ["u_field", "i_field"]
+    },
+    "StructSpec": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "struct_name": { "type": "string", "description": "Name of the translated idiomatic struct." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 },
+        "i_kind": { "type": "string", "enum": ["struct", "enum"], "default": "struct" },
+        "i_type": { "type": "string", "description": "Idiomatic type name (useful when i_kind=enum)" },
+        "variants": { "type": "array", "items": { "$ref": "#/$defs/EnumVariant" } }
+      },
+      "required": ["fields", "i_kind", "i_type"]
+    },
+    "FunctionSpec": {
+      "type": "object",
+      "description": "Function argument/return mapping. Return values are expressed via a Field whose i_field.name == 'ret'.",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "function_name": { "type": "string", "description": "Name of the translated idiomatic function." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 }
+      },
+      "required": ["fields"]
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/StructSpec" },
+    { "$ref": "#/$defs/FunctionSpec" }
+  ]
+}
+
+```
+----SPEC----
+```json
+{
+  "function_name": "diff_timespec",
+  "fields": [
+    {
+      "u_field": {
+        "name": "...",
+        "type": "...",
+        "shape": "scalar" | {"ptr": {"kind": "slice|cstring|ref", "len_from": "?", "len_const": 1}}
+      },
+      "i_field": {
+        "name": "...",
+        "type": "..."
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+
+Few-shot examples (each with unidiomatic Rust signature, idiomatic Rust signature, and the SPEC):
+
+Example F1 (slice argument):
+Raw slice pointer plus length translated to &[T] parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn sum(xs: *const i32, n: usize) -> i32;
+```
+Idiomatic Rust:
+```rust
+pub fn sum(xs: &[i32]) -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "sum",
+  "fields": [
+    { "u_field": {"name": "xs", "type": "*const i32", "shape": { "ptr": { "kind": "slice", "len_from": "n" } }},
+      "i_field": {"name": "xs", "type": "&[i32]"} },
+    { "u_field": {"name": "n", "type": "usize", "shape": "scalar"},
+      "i_field": {"name": "xs.len", "type": "usize"} },
+    { "u_field": {"name": "ret", "type": "i32", "shape": "scalar"},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F2 (out pointer to return value):
+Mutable pointer output replaced by direct return.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn get_value(out_value: *mut i32);
+```
+Idiomatic Rust:
+```rust
+pub fn get_value() -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "get_value",
+  "fields": [
+    { "u_field": {"name": "out_value", "type": "*mut i32", "shape": { "ptr": { "kind": "ref" } }},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F3 (nullable cstring to Option<&str>):
+Nullable C string pointer converted to Option<&str> parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn set_name(name: *const libc::c_char);
+```
+Idiomatic Rust:
+```rust
+pub fn set_name(name: Option<&str>);
+```
+----SPEC----
+```json
+{
+  "function_name": "set_name",
+  "fields": [
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring", "null": "nullable" } }},
+      "i_field": {"name": "name", "type": "Option<&str>"} }
+  ]
+}
+```
+----END SPEC----
+
+2026-11-16 13:31:31 | RESPONSE | sactor.llm:160 | **Analysis of unsafe blocks**
+
+The function has no explicit `unsafe` blocks. The whole function is `unsafe fn`, and its only unsafe operations are the raw-pointer dereferences `(*time1).tv_sec`, `(*time1).tv_nsec`, `(*time0).tv_sec` and `(*time0).tv_nsec`.
+
+**Crown output**
+
+Both `time1` and `time0` are single (`Ptr`), immutable (`Imm`) and transient (`Transient`) pointers. The function only reads through them and never takes ownership, so they can become shared references, `&T`.
+
+**Avoiding libc**
+
+`libc::timespec` can't be used, so the idiomatic version takes the fields as plain values. I use a tuple `(i64, i64)` for `(tv_sec, tv_nsec)`. Passing the two fields separately would work too, but tuples keep each timespec as one argument. On 64-bit Linux, `tv_sec` and `tv_nsec` are both `i64`.
+
+**Arithmetic**
+
+`wrapping_sub` is kept to preserve the original behaviour on overflow. The result is `sec + nsec / 1e9` as `f64`.
+
+The pointers are never null, because the original dereferences them unconditionally. That makes the null case `forbidden`.
+
+----FUNCTION----
+```rust
+pub fn diff_timespec(time1: (i64, i64), time0: (i64, i64)) -> f64 {
+    let sec = time1.0.wrapping_sub(time0.0);
+    let nsec = time1.1.wrapping_sub(time0.1);
+    (sec as f64) + (nsec as f64) / 1000000000.0
+}
+```
+----END FUNCTION----
+
+----SPEC----
+```json
+{
+  "function_name": "diff_timespec",
+  "fields": [
+    {
+      "u_field": {
+        "name": "time1",
+        "type": "*mut libc::timespec",
+        "shape": { "ptr": { "kind": "ref", "null": "forbidden" } }
+      },
+      "i_field": {
+        "name": "time1",
+        "type": "(i64, i64)"
+      },
+      "ownership": "transient",
+      "compare": "by_value",
+      "llm_note": "Tuple is (tv_sec, tv_nsec) read from the timespec."
+    },
+    {
+      "u_field": {
+        "name": "time0",
+        "type": "*mut libc::timespec",
+        "shape": { "ptr": { "kind": "ref", "null": "forbidden" } }
+      },
+      "i_field": {
+        "name": "time0",
+        "type": "(i64, i64)"
+      },
+      "ownership": "transient",
+      "compare": "by_value",
+      "llm_note": "Tuple is (tv_sec, tv_nsec) read from the timespec."
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "f64",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "f64"
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+2026-11-16 13:31:31 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:31:31 | DEBUG    | sactor.utils:258 | pub fn diff_timespec(time1: (i64, i64), time0: (i64, i64)) -> f64 {
+    let sec = time1.0.wrapping_sub(time0.0);
+    let nsec = time1.1.wrapping_sub(time0.1);
+    (sec as f64) + (nsec as f64) / 1000000000.0
+}
+
+2026-11-16 13:31:31 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_pagerank/sactor/tmpi2y64buw/build/build_attempt/Cargo.toml
+2026-11-16 13:31:33 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:31:33 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function diff_timespec after the compile check (FFI harness skipped)
+2026-11-16 13:31:33 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: main (attempts: 0)
+2026-11-16 13:31:33 | PROMPT   | sactor.llm:155 | 
+Translate the following unidiomatic Rust function into idiomatic Rust. Try to remove all the `unsafe` blocks and only use the safe Rust code or use the `unsafe` blocks only when necessary.
+Before translating, analyze the unsafe blocks one by one and how to convert them into safe Rust code.
+**libc may not be provided in the idiomatic code, so try to avoid using libc functions and types, and avoid using `std::ffi` module.**
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+```rust
+pub fn main() -> () {
+    unsafe {
+        let args: Vec<String> = std::env::args().collect();
+        if args.len() != 2 {
+            let a0 = std::ffi::CString::new(args.get(0).cloned().unwrap_or_default()).unwrap();
+            libc::fprintf(
+                stderr,
+                b"Usage: %s <graph_file>\n\0".as_ptr() as *const libc::c_char,
+                a0.as_ptr(),
+            );
+            libc::fprintf(
+                stderr,
+                b"  graph_file: Path to the graph edge list file\n\0".as_ptr()
+                    as *const libc::c_char,
+            );
+            std::process::exit(1);
+        }
+        let filename_c = std::ffi::CString::new(args[1].clone()).unwrap();
+        let filename: *const libc::c_char = filename_c.as_ptr();
+        let fp = libc::fopen(filename, b"r\0".as_ptr() as *const libc::c_char);
+        if fp.is_null() {
+            libc::fprintf(
+                stderr,
+                b"[Error] Cannot open the file: %s\n\0".as_ptr() as *const libc::c_char,
+                filename,
+            );
+            std::process::exit(1);
+        }
+        let mut n: libc::c_int = 0;
+        let mut e: libc::c_int = 0;
+        let mut str_buf: [libc::c_char; 256] = [0; 256];
+        let mut ch: i32 = libc::fgetc(fp) as i8 as i32;
+        while ch == '#' as i32 {
+            if libc::fgets(str_buf.as_mut_ptr(), (256 - 1) as libc::c_int, fp).is_null() {
+                break;
+            }
+            libc::sscanf(
+                str_buf.as_ptr(),
+                b"%*s %d %*s %d\0".as_ptr() as *const libc::c_char,
+                &mut n as *mut libc::c_int,
+                &mut e as *mut libc::c_int,
+            );
+            ch = libc::fgetc(fp) as i8 as i32;
+        }
+        if ch != -1 {
+            libc::ungetc(ch, fp);
+        }
+        libc::printf(
+            b"\nGraph data:\n\n  Nodes: %d, Edges: %d \n\n\0".as_ptr() as *const libc::c_char,
+            n,
+            e,
+        );
+        let val = libc::calloc(e as libc::size_t, std::mem::size_of::<f32>()) as *mut f32;
+        let col_ind = libc::calloc(e as libc::size_t, std::mem::size_of::<i32>()) as *mut i32;
+        let row_ptr = libc::calloc((n + 1) as libc::size_t, std::mem::size_of::<i32>()) as *mut i32;
+        if val.is_null() || col_ind.is_null() || row_ptr.is_null() {
+            libc::fprintf(
+                stderr,
+                b"Allocation failed\n\0".as_ptr() as *const libc::c_char,
+            );
+            libc::fclose(fp);
+            std::process::exit(1);
+        }
+        let is_one_indexed = detect_indexing(filename);
+        *row_ptr = 0;
+        let mut fromnode: libc::c_int = 0;
+        let mut tonode: libc::c_int = 0;
+        let mut cur_row: i32 = 0;
+        let mut i: i32 = 0;
+        let mut elrow: i32 = 0;
+        let mut curel: i32 = 0;
+        let mut valid_edges: i32 = 0;
+        while libc::feof(fp) == 0 {
+            if libc::fscanf(
+                fp,
+                b"%d%d\0".as_ptr() as *const libc::c_char,
+                &mut fromnode as *mut libc::c_int,
+                &mut tonode as *mut libc::c_int,
+            ) != 2
+            {
+                break;
+            }
+            if is_one_indexed != 0 {
+                fromnode -= 1;
+                tonode -= 1;
+            }
+            if fromnode >= n || tonode >= n || fromnode < 0 || tonode < 0 {
+                continue;
+            }
+            valid_edges += 1;
+            if fromnode > cur_row {
+                curel += elrow;
+                let mut k = cur_row + 1;
+                while k <= fromnode {
+                    *row_ptr.add(k as usize) = curel;
+                    k += 1;
+                }
+                elrow = 0;
+                cur_row = fromnode;
+            }
+            if i < e {
+                *val.add(i as usize) = 1.0f32;
+                *col_ind.add(i as usize) = tonode;
+                elrow += 1;
+                i += 1;
+            } else {
+                break;
+            }
+        }
+        *row_ptr.add((cur_row + 1) as usize) = curel + elrow;
+        libc::printf(
+            b"Valid edges processed: %d\n\0".as_ptr() as *const libc::c_char,
+            valid_edges,
+        );
+        let out_link = libc::calloc(n as libc::size_t, std::mem::size_of::<i32>()) as *mut i32;
+        if out_link.is_null() {
+            libc::fprintf(
+                stderr,
+                b"Allocation failed\n\0".as_ptr() as *const libc::c_char,
+            );
+            libc::free(val as *mut libc::c_void);
+            libc::free(col_ind as *mut libc::c_void);
+            libc::free(row_ptr as *mut libc::c_void);
+            libc::fclose(fp);
+            std::process::exit(1);
+        }
+        let mut rowel: i32;
+        i = 0;
+        while i < n {
+            if *row_ptr.add((i + 1) as usize) != 0 {
+                rowel = *row_ptr.add((i + 1) as usize) - *row_ptr.add(i as usize);
+                *out_link.add(i as usize) = rowel;
+            }
+            i += 1;
+        }
+        let mut curcol: i32 = 0;
+        i = 0;
+        while i < n {
+            rowel = *row_ptr.add((i + 1) as usize) - *row_ptr.add(i as usize);
+            let mut j = 0;
+            while j < rowel {
+                if *out_link.add(i as usize) > 0 {
+                    *val.add(curcol as usize) =
+                        *val.add(curcol as usize) / (*out_link.add(i as usize) as f32);
+                }
+                curcol += 1;
+                j += 1;
+            }
+            i += 1;
+        }
+        let d: f32 = 0.85f32;
+        let p = libc::calloc(n as libc::size_t, std::mem::size_of::<f32>()) as *mut f32;
+        let p_new = libc::calloc(n as libc::size_t, std::mem::size_of::<f32>()) as *mut f32;
+        if p.is_null() || p_new.is_null() {
+            libc::fprintf(
+                stderr,
+                b"Allocation failed\n\0".as_ptr() as *const libc::c_char,
+            );
+            libc::free(val as *mut libc::c_void);
+            libc::free(col_ind as *mut libc::c_void);
+            libc::free(row_ptr as *mut libc::c_void);
+            libc::free(out_link as *mut libc::c_void);
+            libc::fclose(fp);
+            std::process::exit(1);
+        }
+        i = 0;
+        while i < n {
+            *p.add(i as usize) = 1.0f32 / (n as f32);
+            i += 1;
+        }
+        let mut looping = 1;
+        let mut k_iter: i32 = 0;
+        let mut start_time: libc::timespec = std::mem::zeroed();
+        let mut end_time: libc::timespec = std::mem::zeroed();
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut start_time);
+        while looping != 0 {
+            i = 0;
+            while i < n {
+                *p_new.add(i as usize) = 0.0f32;
+                i += 1;
+            }
+            let mut curcol2: i32 = 0;
+            i = 0;
+            while i < n {
+                let row_begin = *row_ptr.add(i as usize);
+                let row_end = *row_ptr.add((i + 1) as usize);
+                let row_cnt = row_end - row_begin;
+                let mut j = 0;
+                while j < row_cnt {
+                    if curcol2 < valid_edges && *col_ind.add(curcol2 as usize) < n {
+                        let c = *col_ind.add(curcol2 as usize) as usize;
+                        *p_new.add(c) += *val.add(curcol2 as usize) * *p.add(i as usize);
+                    }
+                    curcol2 += 1;
+                    j += 1;
+                }
+                i += 1;
+            }
+            i = 0;
+            while i < n {
+                *p_new.add(i as usize) = d * *p_new.add(i as usize) + (1.0f32 - d) / (n as f32);
+                i += 1;
+            }
+            let mut error: f32 = 0.0f32;
+            i = 0;
+            while i < n {
+                error += (*p_new.add(i as usize) - *p.add(i as usize)).abs();
+                i += 1;
+            }
+            if error < 0.000001f32 {
+                looping = 0;
+            }
+            i = 0;
+            while i < n {
+                *p.add(i as usize) = *p_new.add(i as usize);
+                i += 1;
+            }
+            k_iter += 1;
+        }
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut end_time);
+        let time_elapsed: f64 = diff_timespec(
+            &mut end_time as *mut libc::timespec,
+            &mut start_time as *mut libc::timespec,
+        );
+        libc::printf(
+            b"Time taken for PageRank on graph %s (%d nodes, %d edges): %f seconds\n\0".as_ptr()
+                as *const libc::c_char,
+            filename,
+            n,
+            valid_edges,
+            time_elapsed,
+        );
+        libc::printf(
+            b"\nNumber of iteration to converge: %d \n\n\0".as_ptr() as *const libc::c_char,
+            k_iter,
+        );
+        libc::printf(b"]\n\n\0".as_ptr() as *const libc::c_char);
+        libc::free(val as *mut libc::c_void);
+        libc::free(col_ind as *mut libc::c_void);
+        libc::free(row_ptr as *mut libc::c_void);
+        libc::free(out_link as *mut libc::c_void);
+        libc::free(p as *mut libc::c_void);
+        libc::free(p_new as *mut libc::c_void);
+        libc::fclose(fp);
+    }
+}
+
+```
+
+This function uses the following functions, which are already translated as (you don't need to include them in your translation, and **you can not modify them**):
+```rust
+fn detect_indexing (filename : & str) -> i32;
+fn detect_indexing (filename : & str) -> i32;
+fn diff_timespec (time1 : (i64 , i64) , time0 : (i64 , i64)) -> f64;
+fn diff_timespec (time1 : (i64 , i64) , time0 : (i64 , i64)) -> f64;
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+Few-shot examples (each with unidiomatic Rust signature, idiomatic Rust signature, and the SPEC):
+
+Example F1 (slice argument):
+Raw slice pointer plus length translated to &[T] parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn sum(xs: *const i32, n: usize) -> i32;
+```
+Idiomatic Rust:
+```rust
+pub fn sum(xs: &[i32]) -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "sum",
+  "fields": [
+    { "u_field": {"name": "xs", "type": "*const i32", "shape": { "ptr": { "kind": "slice", "len_from": "n" } }},
+      "i_field": {"name": "xs", "type": "&[i32]"} },
+    { "u_field": {"name": "n", "type": "usize", "shape": "scalar"},
+      "i_field": {"name": "xs.len", "type": "usize"} },
+    { "u_field": {"name": "ret", "type": "i32", "shape": "scalar"},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F2 (out pointer to return value):
+Mutable pointer output replaced by direct return.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn get_value(out_value: *mut i32);
+```
+Idiomatic Rust:
+```rust
+pub fn get_value() -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "get_value",
+  "fields": [
+    { "u_field": {"name": "out_value", "type": "*mut i32", "shape": { "ptr": { "kind": "ref" } }},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F3 (nullable cstring to Option<&str>):
+Nullable C string pointer converted to Option<&str> parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn set_name(name: *const libc::c_char);
+```
+Idiomatic Rust:
+```rust
+pub fn set_name(name: Option<&str>);
+```
+----SPEC----
+```json
+{
+  "function_name": "set_name",
+  "fields": [
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring", "null": "nullable" } }},
+      "i_field": {"name": "name", "type": "Option<&str>"} }
+  ]
+}
+```
+----END SPEC----
+
+2026-11-16 13:32:02 | RESPONSE | sactor.llm:160 | **Analysis of the unsafe blocks**
+
+1. **Usage and error messages** (`fprintf(stderr, ...)`, `CString`): replaced with `eprintln!`. No C strings are needed.
+2. **`fopen`, `fgetc`, `fgets`, `sscanf`, `ungetc`, `feof`, `fscanf`**: replaced by reading the whole file with `std::fs::read`. The leading `#` lines are parsed with `split_whitespace`. The remaining text is parsed as pairs of `i32` tokens, which matches `fscanf("%d%d")` and stops at the first parse failure.
+3. **`calloc` and `free`**: replaced by `vec![0; n]`, which is zero-initialised and freed automatically. The null checks are no longer needed.
+4. **Raw pointer indexing** (`*ptr.add(i)`): replaced by safe slice indexing. Where the original could read out of bounds, I use `.get()` or a bounds guard.
+5. **`clock_gettime` and `timespec`**: replaced by `std::time::Instant`. The elapsed time is converted to a `(secs, nanos)` tuple for the existing `diff_timespec`.
+6. **`printf`**: replaced by `println!`.
+
+No `unsafe` is left. `detect_indexing` and `diff_timespec` are called as given.
+
+----FUNCTION----
+```rust
+pub fn main() -> () {
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() != 2 {
+        let a0 = args.get(0).cloned().unwrap_or_default();
+        eprintln!("Usage: {} <graph_file>", a0);
+        eprintln!("  graph_file: Path to the graph edge list file");
+        std::process::exit(1);
+    }
+    let filename: &str = &args[1];
+    let bytes = match std::fs::read(filename) {
+        Ok(b) => b,
+        Err(_) => {
+            eprintln!("[Error] Cannot open the file: {}", filename);
+            std::process::exit(1);
+        }
+    };
+    let text = String::from_utf8_lossy(&bytes).to_string();
+
+    let mut n: i32 = 0;
+    let mut e: i32 = 0;
+    let mut rest: &str = &text;
+    while rest.starts_with('#') {
+        let (line, remainder) = match rest.find('\n') {
+            Some(p) => (&rest[1..p], &rest[p + 1..]),
+            None => (&rest[1..], ""),
+        };
+        let toks: Vec<&str> = line.split_whitespace().collect();
+        if let Some(v) = toks.get(1).and_then(|t| t.parse::<i32>().ok()) {
+            n = v;
+            if let Some(v2) = toks.get(3).and_then(|t| t.parse::<i32>().ok()) {
+                e = v2;
+            }
+        }
+        rest = remainder;
+    }
+
+    println!("\nGraph data:\n\n  Nodes: {}, Edges: {} \n", n, e);
+
+    let n_us = n.max(0) as usize;
+    let e_us = e.max(0) as usize;
+    let mut val: Vec<f32> = vec![0.0; e_us];
+    let mut col_ind: Vec<i32> = vec![0; e_us];
+    let mut row_ptr: Vec<i32> = vec![0; n_us + 1];
+
+    let is_one_indexed = detect_indexing(filename);
+    row_ptr[0] = 0;
+    let mut cur_row: i32 = 0;
+    let mut i: i32 = 0;
+    let mut elrow: i32 = 0;
+    let mut curel: i32 = 0;
+    let mut valid_edges: i32 = 0;
+
+    let mut it = rest.split_whitespace();
+    loop {
+        let mut fromnode = match it.next().and_then(|t| t.parse::<i32>().ok()) {
+            Some(v) => v,
+            None => break,
+        };
+        let mut tonode = match it.next().and_then(|t| t.parse::<i32>().ok()) {
+            Some(v) => v,
+            None => break,
+        };
+        if is_one_indexed != 0 {
+            fromnode -= 1;
+            tonode -= 1;
+        }
+        if fromnode >= n || tonode >= n || fromnode < 0 || tonode < 0 {
+            continue;
+        }
+        valid_edges += 1;
+        if fromnode > cur_row {
+            curel += elrow;
+            for k in (cur_row + 1)..=fromnode {
+                row_ptr[k as usize] = curel;
+            }
+            elrow = 0;
+            cur_row = fromnode;
+        }
+        if i < e {
+            val[i as usize] = 1.0;
+            col_ind[i as usize] = tonode;
+            elrow += 1;
+            i += 1;
+        } else {
+            break;
+        }
+    }
+    if let Some(slot) = row_ptr.get_mut((cur_row + 1) as usize) {
+        *slot = curel + elrow;
+    }
+
+    println!("Valid edges processed: {}", valid_edges);
+
+    let mut out_link: Vec<i32> = vec![0; n_us];
+    for i in 0..n_us {
+        if row_ptr[i + 1] != 0 {
+            out_link[i] = row_ptr[i + 1] - row_ptr[i];
+        }
+    }
+
+    let mut curcol: usize = 0;
+    for i in 0..n_us {
+        let rowel = row_ptr[i + 1] - row_ptr[i];
+        for _ in 0..rowel.max(0) {
+            if out_link[i] > 0 {
+                if let Some(v) = val.get_mut(curcol) {
+                    *v = *v / (out_link[i] as f32);
+                }
+            }
+            curcol += 1;
+        }
+    }
+
+    let d: f32 = 0.85;
+    let mut p: Vec<f32> = vec![0.0; n_us];
+    let mut p_new: Vec<f32> = vec![0.0; n_us];
+    for x in p.iter_mut() {
+        *x = 1.0 / (n as f32);
+    }
+
+    let mut looping = true;
+    let mut k_iter: i32 = 0;
+    let start = std::time::Instant::now();
+    while looping {
+        for x in p_new.iter_mut() {
+            *x = 0.0;
+        }
+        let mut curcol2: i32 = 0;
+        for i in 0..n_us {
+            let row_cnt = row_ptr[i + 1] - row_ptr[i];
+            for _ in 0..row_cnt.max(0) {
+                if curcol2 < valid_edges {
+                    if let (Some(&c), Some(&v)) =
+                        (col_ind.get(curcol2 as usize), val.get(curcol2 as usize))
+                    {
+                        if c < n && c >= 0 {
+                            p_new[c as usize] += v * p[i];
+                        }
+                    }
+                }
+                curcol2 += 1;
+            }
+        }
+        for x in p_new.iter_mut() {
+            *x = d * *x + (1.0 - d) / (n as f32);
+        }
+        let mut error: f32 = 0.0;
+        for i in 0..n_us {
+            error += (p_new[i] - p[i]).abs();
+        }
+        if error < 0.000001 {
+            looping = false;
+        }
+        p.copy_from_slice(&p_new);
+        k_iter += 1;
+    }
+    let elapsed = start.elapsed();
+    let time_elapsed: f64 = diff_timespec(
+        (elapsed.as_secs() as i64, elapsed.subsec_nanos() as i64),
+        (0, 0),
+    );
+
+    println!(
+        "Time taken for PageRank on graph {} ({} nodes, {} edges): {:.6} seconds",
+        filename, n, valid_edges, time_elapsed
+    );
+    println!("\nNumber of iteration to converge: {} \n", k_iter);
+    println!("]\n");
+}
+```
+----END FUNCTION----
+2026-11-16 13:32:02 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:32:02 | DEBUG    | sactor.utils:258 | pub fn main() -> () {
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() != 2 {
+        let a0 = args.get(0).cloned().unwrap_or_default();
+        eprintln!("Usage: {} <graph_file>", a0);
+        eprintln!("  graph_file: Path to the graph edge list file");
+        std::process::exit(1);
+    }
+    let filename: &str = &args[1];
+    let bytes = match std::fs::read(filename) {
+        Ok(b) => b,
+        Err(_) => {
+            eprintln!("[Error] Cannot open the file: {}", filename);
+            std::process::exit(1);
+        }
+    };
+    let text = String::from_utf8_lossy(&bytes).to_string();
+
+    let mut n: i32 = 0;
+    let mut e: i32 = 0;
+    let mut rest: &str = &text;
+    while rest.starts_with('#') {
+        let (line, remainder) = match rest.find('\n') {
+            Some(p) => (&rest[1..p], &rest[p + 1..]),
+            None => (&rest[1..], ""),
+        };
+        let toks: Vec<&str> = line.split_whitespace().collect();
+        if let Some(v) = toks.get(1).and_then(|t| t.parse::<i32>().ok()) {
+            n = v;
+            if let Some(v2) = toks.get(3).and_then(|t| t.parse::<i32>().ok()) {
+                e = v2;
+            }
+        }
+        rest = remainder;
+    }
+
+    println!("\nGraph data:\n\n  Nodes: {}, Edges: {} \n", n, e);
+
+    let n_us = n.max(0) as usize;
+    let e_us = e.max(0) as usize;
+    let mut val: Vec<f32> = vec![0.0; e_us];
+    let mut col_ind: Vec<i32> = vec![0; e_us];
+    let mut row_ptr: Vec<i32> = vec![0; n_us + 1];
+
+    let is_one_indexed = detect_indexing(filename);
+    row_ptr[0] = 0;
+    let mut cur_row: i32 = 0;
+    let mut i: i32 = 0;
+    let mut elrow: i32 = 0;
+    let mut curel: i32 = 0;
+    let mut valid_edges: i32 = 0;
+
+    let mut it = rest.split_whitespace();
+    loop {
+        let mut fromnode = match it.next().and_then(|t| t.parse::<i32>().ok()) {
+            Some(v) => v,
+            None => break,
+        };
+        let mut tonode = match it.next().and_then(|t| t.parse::<i32>().ok()) {
+            Some(v) => v,
+            None => break,
+        };
+        if is_one_indexed != 0 {
+            fromnode -= 1;
+            tonode -= 1;
+        }
+        if fromnode >= n || tonode >= n || fromnode < 0 || tonode < 0 {
+            continue;
+        }
+        valid_edges += 1;
+        if fromnode > cur_row {
+            curel += elrow;
+            for k in (cur_row + 1)..=fromnode {
+                row_ptr[k as usize] = curel;
+            }
+            elrow = 0;
+            cur_row = fromnode;
+        }
+        if i < e {
+            val[i as usize] = 1.0;
+            col_ind[i as usize] = tonode;
+            elrow += 1;
+            i += 1;
+        } else {
+            break;
+        }
+    }
+    if let Some(slot) = row_ptr.get_mut((cur_row + 1) as usize) {
+        *slot = curel + elrow;
+    }
+
+    println!("Valid edges processed: {}", valid_edges);
+
+    let mut out_link: Vec<i32> = vec![0; n_us];
+    for i in 0..n_us {
+        if row_ptr[i + 1] != 0 {
+            out_link[i] = row_ptr[i + 1] - row_ptr[i];
+        }
+    }
+
+    let mut curcol: usize = 0;
+    for i in 0..n_us {
+        let rowel = row_ptr[i + 1] - row_ptr[i];
+        for _ in 0..rowel.max(0) {
+            if out_link[i] > 0 {
+                if let Some(v) = val.get_mut(curcol) {
+                    *v = *v / (out_link[i] as f32);
+                }
+            }
+            curcol += 1;
+        }
+    }
+
+    let d: f32 = 0.85;
+    let mut p: Vec<f32> = vec![0.0; n_us];
+    let mut p_new: Vec<f32> = vec![0.0; n_us];
+    for x in p.iter_mut() {
+        *x = 1.0 / (n as f32);
+    }
+
+    let mut looping = true;
+    let mut k_iter: i32 = 0;
+    let start = std::time::Instant::now();
+    while looping {
+        for x in p_new.iter_mut() {
+            *x = 0.0;
+        }
+        let mut curcol2: i32 = 0;
+        for i in 0..n_us {
+            let row_cnt = row_ptr[i + 1] - row_ptr[i];
+            for _ in 0..row_cnt.max(0) {
+                if curcol2 < valid_edges {
+                    if let (Some(&c), Some(&v)) =
+                        (col_ind.get(curcol2 as usize), val.get(curcol2 as usize))
+                    {
+                        if c < n && c >= 0 {
+                            p_new[c as usize] += v * p[i];
+                        }
+                    }
+                }
+                curcol2 += 1;
+            }
+        }
+        for x in p_new.iter_mut() {
+            *x = d * *x + (1.0 - d) / (n as f32);
+        }
+        let mut error: f32 = 0.0;
+        for i in 0..n_us {
+            error += (p_new[i] - p[i]).abs();
+        }
+        if error < 0.000001 {
+            looping = false;
+        }
+        p.copy_from_slice(&p_new);
+        k_iter += 1;
+    }
+    let elapsed = start.elapsed();
+    let time_elapsed: f64 = diff_timespec(
+        (elapsed.as_secs() as i64, elapsed.subsec_nanos() as i64),
+        (0, 0),
+    );
+
+    println!(
+        "Time taken for PageRank on graph {} ({} nodes, {} edges): {:.6} seconds",
+        filename, n, valid_edges, time_elapsed
+    );
+    println!("\nNumber of iteration to converge: {} \n", k_iter);
+    println!("]\n");
+}
+
+2026-11-16 13:32:02 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_pagerank/sactor/tmpi2y64buw/build/build_attempt/Cargo.toml
+2026-11-16 13:32:04 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:32:04 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function main after the compile check (FFI harness skipped)
+2026-11-16 13:32:05 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_pagerank/sactor/tmpi2y64buw/build/build_attempt/Cargo.toml
+2026-11-16 13:32:07 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:32:07 | DEBUG    | sactor.combiner.program_combiner:234 | Running clippy fix command: cargo clippy --fix --allow-no-vcs --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_pagerank/sactor/tmpi2y64buw/build/program/Cargo.toml -- -A clippy::cmp_null
+2026-11-16 13:32:10 | INFO     | sactor.combiner.program_combiner:259 | Found 1 warnings in the combined code
+2026-11-16 13:32:10 | INFO     | sactor.combiner.program_combiner:260 | Found 0 errors in the combined code

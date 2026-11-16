@@ -1,0 +1,50 @@
+{
+  "function_name": "parse_number",
+  "fields": [
+    {
+      "u_field": {
+        "name": "item",
+        "type": "*mut cJSON",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "item",
+        "type": "&mut cJSON"
+      },
+      "ownership": "transient"
+    },
+    {
+      "u_field": {
+        "name": "input_buffer",
+        "type": "*mut parse_buffer",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "input_buffer",
+        "type": "&mut parse_buffer"
+      }
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "i32"
+      }
+    }
+  ],
+  "idiomatic_name": "parse_number"
+}

@@ -1,0 +1,50 @@
+{
+  "function_name": "md5_update",
+  "fields": [
+    {
+      "u_field": {
+        "name": "ctx",
+        "type": "&mut md5_ctx",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "ctx",
+        "type": "&mut md5_ctx"
+      }
+    },
+    {
+      "u_field": {
+        "name": "data",
+        "type": "*const libc::c_uchar",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_from": "len",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "data",
+        "type": "&[u8]"
+      }
+    },
+    {
+      "u_field": {
+        "name": "len",
+        "type": "usize",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "data.len",
+        "type": "usize"
+      }
+    }
+  ],
+  "idiomatic_name": "md5_update"
+}

@@ -1,0 +1,34 @@
+{
+  "function_name": "print_file_md5",
+  "fields": [
+    {
+      "u_field": {
+        "name": "filename",
+        "type": "*const libc::c_char",
+        "shape": {
+          "ptr": {
+            "kind": "cstring",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "filename",
+        "type": "&str"
+      },
+      "ownership": "transient"
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "i32"
+      }
+    }
+  ],
+  "idiomatic_name": "print_file_md5"
+}

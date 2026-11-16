@@ -1,0 +1,45 @@
+{
+  "function_name": "fft_transform_bluestein",
+  "fields": [
+    {
+      "u_field": {
+        "name": "vec",
+        "type": "*mut [f64; 2]",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_from": "n",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "vec",
+        "type": "&mut [[f64; 2]]"
+      }
+    },
+    {
+      "u_field": {
+        "name": "n",
+        "type": "usize",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "vec.len",
+        "type": "usize"
+      }
+    },
+    {
+      "u_field": {
+        "name": "inverse",
+        "type": "bool",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "inverse",
+        "type": "bool"
+      }
+    }
+  ],
+  "idiomatic_name": "fft_transform_bluestein"
+}

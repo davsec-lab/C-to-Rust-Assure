@@ -1,0 +1,513 @@
+=== start 2026-11-16T13:25:00-08:00 libcsv
+usage: sactor translate [-h] [--log-dir LOG_DIR]
+                        [--test-command-path TEST_COMMAND_OVERRIDE] --type
+                        {bin,lib} [--entry-tu-file ENTRY_TU_FILE]
+                        [--config CONFIG_FILE] [--build-dir BUILD_DIR]
+                        [--result-dir RESULT_DIR] [--llm-stat LLM_STAT]
+                        [--no-verify] [--unidiomatic-only] [--idiomatic-only]
+                        [--continue-run-when-incomplete]
+                        [--extra-compile-command EXTRA_COMPILE_COMMAND]
+                        [--executable-object EXECUTABLE_OBJECT]
+                        [--link-args LINK_ARGS]
+                        [--compile-commands-file COMPILE_COMMANDS_FILE]
+                        [input_file] [test_command_path]
+sactor translate: error: argument --link-args: expected one argument
+=== end 2026-11-16T13:25:03-08:00 libcsv rc=2
+=== start 2026-11-16T13:25:29-08:00 libcsv
+2026-11-16 13:25:35 | INFO     | sactor.sactor:210 | -------------SACTOR Configuration-------------
+2026-11-16 13:25:35 | INFO     | sactor.sactor:211 | Input file: libcsv.c
+2026-11-16 13:25:35 | INFO     | sactor.sactor:212 | Test command: test_cmd.json
+2026-11-16 13:25:35 | INFO     | sactor.sactor:213 | Is executable: True
+2026-11-16 13:25:35 | INFO     | sactor.sactor:216 | Build directory: /home/gabe/sactor_forklift/tmp/sactor/tmpu2t7kawd/build
+2026-11-16 13:25:35 | INFO     | sactor.sactor:217 | Result directory: /home/gabe/sactor_forklift/sactor-bench-oxivolve/libcsv/result_sonnet55
+2026-11-16 13:25:35 | INFO     | sactor.sactor:218 | Config file: /home/gabe/sactor_forklift/sactor/sactor.sonnet55.toml
+2026-11-16 13:25:35 | INFO     | sactor.sactor:219 | No verify: False
+2026-11-16 13:25:35 | INFO     | sactor.sactor:220 | Unidiomatic only: False
+2026-11-16 13:25:35 | INFO     | sactor.sactor:221 | LLM statistics base path: /home/gabe/sactor_forklift/sactor-bench-oxivolve/libcsv/result_sonnet55/llm_stat.json
+2026-11-16 13:25:35 | INFO     | sactor.sactor:222 | Extra compile command: None
+2026-11-16 13:25:35 | INFO     | sactor.sactor:223 | Compile commands file: 
+2026-11-16 13:25:35 | INFO     | sactor.sactor:224 | Link args: ['-lm']
+2026-11-16 13:25:35 | INFO     | sactor.sactor:225 | Idiomatic only: False
+2026-11-16 13:25:35 | INFO     | sactor.sactor:226 | Continue run when incomplete: False
+2026-11-16 13:25:35 | INFO     | sactor.sactor:227 | -------------End of Configuration-------------
+2026-11-16 13:25:40 | ERROR    | sactor.thirdparty.c2rust:56 | c2rust failed: thread 'main' panicked at /home/gabe/.cargo/registry/src/index.crates.io-6f17d22bba15001f/c2rust-0.20.0/src/bin/c2rust-transpile.rs:264:14:
+Failed to remove temporary compile_commands.json: Os { code: 2, kind: NotFound, message: "No such file or directory" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+Traceback (most recent call last):
+  File "/home/gabe/sactor_forklift/sactor/.venv/bin/sactor", line 10, in <module>
+    sys.exit(__main__.main())
+             ^^^^^^^^^^^^^^^
+  File "/home/gabe/sactor_forklift/sactor/sactor/__main__.py", line 484, in main
+    translate(parser, args)
+  File "/home/gabe/sactor_forklift/sactor/sactor/__main__.py", line 307, in translate
+    result = Sactor.translate(
+             ^^^^^^^^^^^^^^^^^
+  File "/home/gabe/sactor_forklift/sactor/sactor/sactor.py", line 96, in translate
+    runner.run()
+  File "/home/gabe/sactor_forklift/sactor/sactor/sactor.py", line 315, in run
+    result, unidiomatic_translator = self._run_unidomatic_translation()
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gabe/sactor_forklift/sactor/sactor/sactor.py", line 400, in _run_unidomatic_translation
+    translator = self._new_unidiomatic_translator()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gabe/sactor_forklift/sactor/sactor/sactor.py", line 374, in _new_unidiomatic_translator
+    self.c2rust_translation = self.c2rust.get_c2rust_translation(compile_flags=self.compile_only_flags)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gabe/sactor_forklift/sactor/sactor/thirdparty/c2rust.py", line 59, in get_c2rust_translation
+    raise RuntimeError("c2rust transpile command failed")
+RuntimeError: c2rust transpile command failed
+=== end 2026-11-16T13:25:41-08:00 libcsv rc=1
+=== start 2026-11-16T13:29:36-08:00 libcsv
+2026-11-16 13:29:40 | INFO     | sactor.sactor:210 | -------------SACTOR Configuration-------------
+2026-11-16 13:29:40 | INFO     | sactor.sactor:211 | Input file: libcsv.c
+2026-11-16 13:29:40 | INFO     | sactor.sactor:212 | Test command: test_cmd.json
+2026-11-16 13:29:40 | INFO     | sactor.sactor:213 | Is executable: True
+2026-11-16 13:29:40 | INFO     | sactor.sactor:216 | Build directory: /home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build
+2026-11-16 13:29:40 | INFO     | sactor.sactor:217 | Result directory: /home/gabe/sactor_forklift/sactor-bench-oxivolve/libcsv/result_sonnet55
+2026-11-16 13:29:40 | INFO     | sactor.sactor:218 | Config file: /home/gabe/sactor_forklift/sactor/sactor.sonnet55.toml
+2026-11-16 13:29:40 | INFO     | sactor.sactor:219 | No verify: False
+2026-11-16 13:29:40 | INFO     | sactor.sactor:220 | Unidiomatic only: False
+2026-11-16 13:29:40 | INFO     | sactor.sactor:221 | LLM statistics base path: /home/gabe/sactor_forklift/sactor-bench-oxivolve/libcsv/result_sonnet55/llm_stat.json
+2026-11-16 13:29:40 | INFO     | sactor.sactor:222 | Extra compile command: None
+2026-11-16 13:29:40 | INFO     | sactor.sactor:223 | Compile commands file: 
+2026-11-16 13:29:40 | INFO     | sactor.sactor:224 | Link args: ['-lm']
+2026-11-16 13:29:40 | INFO     | sactor.sactor:225 | Idiomatic only: False
+2026-11-16 13:29:40 | INFO     | sactor.sactor:226 | Continue run when incomplete: False
+2026-11-16 13:29:40 | INFO     | sactor.sactor:227 | -------------End of Configuration-------------
+2026-11-16 13:29:41 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: csv_error (attempts: 0)
+2026-11-16 13:29:45 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling csv_error v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.80s
+2026-11-16 13:29:50 | INFO     | sactor.translator.unidiomatic_translator:497 | Translating global variable: csv_errors (attempts: 0)
+2026-11-16 13:29:56 | ERROR    | sactor.verifier.verifier:282 | Rust code failed to compile
+2026-11-16 13:29:56 | INFO     | sactor.translator.unidiomatic_translator:497 | Translating global variable: csv_errors (attempts: 1)
+2026-11-16 13:30:01 | ERROR    | sactor.verifier.verifier:282 | Rust code failed to compile
+2026-11-16 13:30:01 | INFO     | sactor.translator.unidiomatic_translator:497 | Translating global variable: csv_errors (attempts: 2)
+2026-11-16 13:30:08 | ERROR    | sactor.verifier.verifier:282 | Rust code failed to compile
+2026-11-16 13:30:08 | INFO     | sactor.translator.unidiomatic_translator:497 | Translating global variable: csv_errors (attempts: 3)
+2026-11-16 13:30:16 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:30:16 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: csv_strerror (attempts: 0)
+2026-11-16 13:30:25 | ERROR    | sactor.verifier.verifier:282 | Rust code failed to compile
+2026-11-16 13:30:25 | INFO     | sactor.translator.unidiomatic_translator:398 | Global variable csv_errors already translated
+2026-11-16 13:30:25 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: csv_strerror (attempts: 1)
+2026-11-16 13:30:33 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling csv_strerror v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.90s
+2026-11-16 13:30:36 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: csv_get_opts (attempts: 0)
+2026-11-16 13:30:40 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling csv_get_opts v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.81s
+2026-11-16 13:30:43 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: csv_set_opts (attempts: 0)
+2026-11-16 13:30:47 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling csv_set_opts v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.89s
+2026-11-16 13:30:51 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: csv_init (attempts: 0)
+2026-11-16 13:30:57 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling csv_init v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.91s
+2026-11-16 13:31:00 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: csv_free (attempts: 0)
+2026-11-16 13:31:05 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling csv_free v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.00s
+2026-11-16 13:31:09 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: csv_fini (attempts: 0)
+2026-11-16 13:31:19 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling csv_fini v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.90s
+2026-11-16 13:31:23 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: csv_set_delim (attempts: 0)
+2026-11-16 13:31:27 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling csv_set_delim v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.82s
+2026-11-16 13:31:30 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: csv_set_quote (attempts: 0)
+2026-11-16 13:31:34 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling csv_set_quote v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.87s
+2026-11-16 13:31:37 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: csv_get_delim (attempts: 0)
+2026-11-16 13:31:43 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling csv_get_delim v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.99s
+2026-11-16 13:31:46 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: csv_get_quote (attempts: 0)
+2026-11-16 13:31:51 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling csv_get_quote v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.87s
+2026-11-16 13:31:55 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: csv_set_space_func (attempts: 0)
+2026-11-16 13:31:59 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling csv_set_space_func v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.02s
+2026-11-16 13:32:02 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: csv_set_term_func (attempts: 0)
+2026-11-16 13:32:06 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling csv_set_term_func v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.01s
+2026-11-16 13:32:10 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: csv_set_realloc_func (attempts: 0)
+2026-11-16 13:32:15 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling csv_set_realloc_func v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.96s
+2026-11-16 13:32:18 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: csv_set_free_func (attempts: 0)
+2026-11-16 13:32:23 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling csv_set_free_func v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.97s
+2026-11-16 13:32:27 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: csv_set_blk_size (attempts: 0)
+2026-11-16 13:32:31 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling csv_set_blk_size v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.00s
+2026-11-16 13:32:35 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: csv_get_buffer_size (attempts: 0)
+2026-11-16 13:32:40 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling csv_get_buffer_size v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.06s
+2026-11-16 13:32:43 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: csv_increase_buffer (attempts: 0)
+2026-11-16 13:32:49 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+    Blocking waiting for file lock on package cache
+     Locking 1 package to latest compatible version
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+   Compiling libc v0.2.191
+   Compiling csv_increase_buffer v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 5.10s
+2026-11-16 13:32:55 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: csv_write2 (attempts: 0)
+2026-11-16 13:33:01 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling csv_write2 v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.95s
+2026-11-16 13:33:05 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: csv_fwrite2 (attempts: 0)
+2026-11-16 13:33:10 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling csv_fwrite2 v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.96s
+2026-11-16 13:33:14 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: diff_timespec (attempts: 0)
+2026-11-16 13:33:19 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling diff_timespec v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.87s
+2026-11-16 13:33:23 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: csv_parse (attempts: 0)
+2026-11-16 13:33:41 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling csv_parse v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/embed_test_rust)
+warning: value assigned to `pstate` is never read
+   --> src/lib.rs:81:49
+    |
+81  |             libc::c_void, entry_pos, data); } } pstate = 1; quoted = 0; spaces = 0;
+    |                                                 ^^^^^^
+...
+117 |                         submit_field!();
+    |                         --------------- in this macro invocation
+    |
+    = help: maybe it is overwritten before being read?
+    = note: `#[warn(unused_assignments)]` on by default
+    = note: this warning originates in the macro `submit_field` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: value assigned to `quoted` is never read
+   --> src/lib.rs:81:61
+    |
+81  |             libc::c_void, entry_pos, data); } } pstate = 1; quoted = 0; spaces = 0;
+    |                                                             ^^^^^^
+...
+117 |                         submit_field!();
+    |                         --------------- in this macro invocation
+    |
+    = help: maybe it is overwritten before being read?
+    = note: this warning originates in the macro `submit_field` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: value assigned to `spaces` is never read
+   --> src/lib.rs:81:73
+    |
+81  |             libc::c_void, entry_pos, data); } } pstate = 1; quoted = 0; spaces = 0;
+    |                                                                         ^^^^^^
+...
+117 |                         submit_field!();
+    |                         --------------- in this macro invocation
+    |
+    = help: maybe it is overwritten before being read?
+    = note: this warning originates in the macro `submit_field` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: value assigned to `entry_pos` is never read
+   --> src/lib.rs:82:13
+    |
+82  |             entry_pos = 0;
+    |             ^^^^^^^^^
+...
+117 |                         submit_field!();
+    |                         --------------- in this macro invocation
+    |
+    = help: maybe it is overwritten before being read?
+    = note: this warning originates in the macro `submit_field` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: value assigned to `pstate` is never read
+   --> src/lib.rs:81:49
+    |
+81  |             libc::c_void, entry_pos, data); } } pstate = 1; quoted = 0; spaces = 0;
+    |                                                 ^^^^^^
+...
+158 |                         submit_field!();
+    |                         --------------- in this macro invocation
+    |
+    = help: maybe it is overwritten before being read?
+    = note: this warning originates in the macro `submit_field` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: value assigned to `quoted` is never read
+   --> src/lib.rs:81:61
+    |
+81  |             libc::c_void, entry_pos, data); } } pstate = 1; quoted = 0; spaces = 0;
+    |                                                             ^^^^^^
+...
+158 |                         submit_field!();
+    |                         --------------- in this macro invocation
+    |
+    = help: maybe it is overwritten before being read?
+    = note: this warning originates in the macro `submit_field` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: value assigned to `spaces` is never read
+   --> src/lib.rs:81:73
+    |
+81  |             libc::c_void, entry_pos, data); } } pstate = 1; quoted = 0; spaces = 0;
+    |                                                                         ^^^^^^
+...
+158 |                         submit_field!();
+    |                         --------------- in this macro invocation
+    |
+    = help: maybe it is overwritten before being read?
+    = note: this warning originates in the macro `submit_field` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: value assigned to `entry_pos` is never read
+   --> src/lib.rs:82:13
+    |
+82  |             entry_pos = 0;
+    |             ^^^^^^^^^
+...
+158 |                         submit_field!();
+    |                         --------------- in this macro invocation
+    |
+    = help: maybe it is overwritten before being read?
+    = note: this warning originates in the macro `submit_field` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: value assigned to `pstate` is never read
+   --> src/lib.rs:81:49
+    |
+81  |             libc::c_void, entry_pos, data); } } pstate = 1; quoted = 0; spaces = 0;
+    |                                                 ^^^^^^
+...
+177 |                     submit_field!();
+    |                     --------------- in this macro invocation
+    |
+    = help: maybe it is overwritten before being read?
+    = note: this warning originates in the macro `submit_field` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: value assigned to `quoted` is never read
+   --> src/lib.rs:81:61
+    |
+81  |             libc::c_void, entry_pos, data); } } pstate = 1; quoted = 0; spaces = 0;
+    |                                                             ^^^^^^
+...
+177 |                     submit_field!();
+    |                     --------------- in this macro invocation
+    |
+    = help: maybe it is overwritten before being read?
+    = note: this warning originates in the macro `submit_field` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: value assigned to `spaces` is never read
+   --> src/lib.rs:81:73
+    |
+81  |             libc::c_void, entry_pos, data); } } pstate = 1; quoted = 0; spaces = 0;
+    |                                                                         ^^^^^^
+...
+177 |                     submit_field!();
+    |                     --------------- in this macro invocation
+    |
+    = help: maybe it is overwritten before being read?
+    = note: this warning originates in the macro `submit_field` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: value assigned to `entry_pos` is never read
+   --> src/lib.rs:82:13
+    |
+82  |             entry_pos = 0;
+    |             ^^^^^^^^^
+...
+177 |                     submit_field!();
+    |                     --------------- in this macro invocation
+    |
+    = help: maybe it is overwritten before being read?
+    = note: this warning originates in the macro `submit_field` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: `csv_parse` (lib) generated 12 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.91s
+2026-11-16 13:33:47 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: csv_write (attempts: 0)
+2026-11-16 13:33:51 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling csv_write v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.47s
+2026-11-16 13:33:57 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: csv_fwrite (attempts: 0)
+2026-11-16 13:34:01 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling csv_fwrite v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.54s
+2026-11-16 13:34:06 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: main (attempts: 0)
+2026-11-16 13:34:20 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling main v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_libcsv/sactor/tmpiy2i3ikf/build/embed_test_rust)
+warning: variable does not need to be mutable
+  --> src/lib.rs:96:17
+   |
+96 |             let mut time_elapsed: f64;
+   |                 ----^^^^^^^^^^^^
+   |                 |
+   |                 help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: `main` (lib) generated 1 warning (run `cargo fix --lib -p main` to apply 1 suggestion)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.91s
+2026-11-16 13:34:40 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:34:42 | INFO     | sactor.combiner.program_combiner:259 | Found 50 warnings in the combined code
+2026-11-16 13:34:42 | INFO     | sactor.combiner.program_combiner:260 | Found 0 errors in the combined code
+2026-11-16 13:34:45 | WARNING  | sactor.thirdparty.crown:90 | crown preprocess messed up code; restoring original translation
+2026-11-16 13:34:45 | WARNING  | sactor.thirdparty.crown:103 | crown explicit-addr messed up code; restoring original translation
+2026-11-16 13:34:45 | INFO     | sactor.translator.idiomatic_translator:634 | Translating struct: csv_parser (attempts: 0)
+2026-11-16 13:34:57 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:34:57 | INFO     | sactor.verifier.idiomatic_verifier:1268 | No test commands configured; accepting idiomatic struct csv_parser after the compile check (converter harness skipped)
+2026-11-16 13:34:57 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: csv_error (attempts: 0)
+2026-11-16 13:35:03 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:35:03 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function csv_error after the compile check (FFI harness skipped)
+2026-11-16 13:35:03 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: csv_strerror (attempts: 0)
+2026-11-16 13:35:03 | INFO     | sactor.translator.idiomatic_translator:421 | Translating global variable: csv_errors (attempts: 0)
+2026-11-16 13:35:07 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:35:07 | WARNING  | sactor.translator.idiomatic_translator:1766 | Failed to parse global variable csv_errors with Rust parser: Item 'csv_errors' not found. Using fallback method.
+2026-11-16 13:35:14 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:35:14 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function csv_strerror after the compile check (FFI harness skipped)
+2026-11-16 13:35:14 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: csv_get_opts (attempts: 0)
+2026-11-16 13:35:20 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:35:20 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function csv_get_opts after the compile check (FFI harness skipped)
+2026-11-16 13:35:20 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: csv_set_opts (attempts: 0)
+2026-11-16 13:35:26 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:35:26 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function csv_set_opts after the compile check (FFI harness skipped)
+2026-11-16 13:35:26 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: csv_init (attempts: 0)
+2026-11-16 13:35:35 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:35:35 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function csv_init after the compile check (FFI harness skipped)
+2026-11-16 13:35:35 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: csv_free (attempts: 0)
+2026-11-16 13:35:42 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:35:42 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function csv_free after the compile check (FFI harness skipped)
+2026-11-16 13:35:43 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: csv_fini (attempts: 0)
+2026-11-16 13:36:00 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:36:00 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function csv_fini after the compile check (FFI harness skipped)
+2026-11-16 13:36:00 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: csv_set_delim (attempts: 0)
+2026-11-16 13:36:07 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:36:07 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function csv_set_delim after the compile check (FFI harness skipped)
+2026-11-16 13:36:07 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: csv_set_quote (attempts: 0)
+2026-11-16 13:36:14 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:36:14 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function csv_set_quote after the compile check (FFI harness skipped)
+2026-11-16 13:36:14 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: csv_get_delim (attempts: 0)
+2026-11-16 13:36:20 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:36:20 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function csv_get_delim after the compile check (FFI harness skipped)
+2026-11-16 13:36:20 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: csv_get_quote (attempts: 0)
+2026-11-16 13:36:26 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:36:26 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function csv_get_quote after the compile check (FFI harness skipped)
+2026-11-16 13:36:26 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: csv_set_space_func (attempts: 0)
+2026-11-16 13:36:32 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:36:32 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function csv_set_space_func after the compile check (FFI harness skipped)
+2026-11-16 13:36:32 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: csv_set_term_func (attempts: 0)
+2026-11-16 13:36:39 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:36:39 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function csv_set_term_func after the compile check (FFI harness skipped)
+2026-11-16 13:36:39 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: csv_set_realloc_func (attempts: 0)
+2026-11-16 13:36:51 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:36:51 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function csv_set_realloc_func after the compile check (FFI harness skipped)
+2026-11-16 13:36:51 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: csv_set_free_func (attempts: 0)
+2026-11-16 13:37:02 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:37:02 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function csv_set_free_func after the compile check (FFI harness skipped)
+2026-11-16 13:37:02 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: csv_set_blk_size (attempts: 0)
+2026-11-16 13:37:09 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:37:09 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function csv_set_blk_size after the compile check (FFI harness skipped)
+2026-11-16 13:37:09 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: csv_get_buffer_size (attempts: 0)
+2026-11-16 13:37:16 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:37:16 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function csv_get_buffer_size after the compile check (FFI harness skipped)
+2026-11-16 13:37:16 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: csv_increase_buffer (attempts: 0)
+2026-11-16 13:37:28 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:37:28 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function csv_increase_buffer after the compile check (FFI harness skipped)
+2026-11-16 13:37:28 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: csv_write2 (attempts: 0)
+2026-11-16 13:37:45 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:37:45 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function csv_write2 after the compile check (FFI harness skipped)
+2026-11-16 13:37:45 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: csv_fwrite2 (attempts: 0)
+2026-11-16 13:37:56 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:37:56 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function csv_fwrite2 after the compile check (FFI harness skipped)
+2026-11-16 13:37:57 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: diff_timespec (attempts: 0)
+2026-11-16 13:38:06 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:38:06 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function diff_timespec after the compile check (FFI harness skipped)
+2026-11-16 13:38:06 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: csv_parse (attempts: 0)
+2026-11-16 13:38:34 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:38:34 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function csv_parse after the compile check (FFI harness skipped)
+2026-11-16 13:38:34 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: csv_write (attempts: 0)
+2026-11-16 13:38:42 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:38:42 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function csv_write after the compile check (FFI harness skipped)
+2026-11-16 13:38:42 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: csv_fwrite (attempts: 0)
+2026-11-16 13:38:49 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:38:49 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function csv_fwrite after the compile check (FFI harness skipped)
+2026-11-16 13:38:49 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: main (attempts: 0)
+2026-11-16 13:39:04 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:39:04 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function main after the compile check (FFI harness skipped)
+2026-11-16 13:39:07 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:39:09 | INFO     | sactor.combiner.program_combiner:259 | Found 15 warnings in the combined code
+2026-11-16 13:39:09 | INFO     | sactor.combiner.program_combiner:260 | Found 0 errors in the combined code
+=== end 2026-11-16T13:39:11-08:00 libcsv rc=0

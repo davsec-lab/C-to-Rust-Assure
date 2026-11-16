@@ -1,0 +1,42 @@
+{
+  "function_name": "buffer_skip_whitespace",
+  "fields": [
+    {
+      "u_field": {
+        "name": "buffer",
+        "type": "*mut parse_buffer",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "buffer",
+        "type": "Option<&mut parse_buffer>"
+      },
+      "ownership": "transient"
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "*mut parse_buffer",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "Option<&mut parse_buffer>"
+      },
+      "ownership": "transient",
+      "compare": "skip",
+      "llm_note": "Returned value aliases the input buffer (or is null/None when input is null)."
+    }
+  ],
+  "idiomatic_name": "buffer_skip_whitespace"
+}

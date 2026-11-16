@@ -1,0 +1,56 @@
+{
+  "function_name": "bmp_header_write",
+  "fields": [
+    {
+      "u_field": {
+        "name": "header",
+        "type": "*const _bmp_header",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "header",
+        "type": "&_bmp_header"
+      },
+      "ownership": "transient",
+      "compare": "by_value"
+    },
+    {
+      "u_field": {
+        "name": "img_file",
+        "type": "*mut libc::FILE",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "img_file",
+        "type": "&mut W (W: std::io::Write)"
+      },
+      "ownership": "transient",
+      "compare": "skip",
+      "llm_note": "FILE* replaced by a generic writer; the header is serialized little-endian after the 'BM' magic."
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "bmp_error",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "BmpResult<()>"
+      },
+      "compare": "skip",
+      "llm_note": "BMP_OK maps to Ok(()); null pointer errors are unrepresentable; write failures map to BmpError::Error."
+    }
+  ],
+  "idiomatic_name": "bmp_header_write"
+}

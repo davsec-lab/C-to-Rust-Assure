@@ -1,0 +1,12 @@
+{
+    "total_warnings": 12,
+    "total_errors": 0,
+    "warnings": {
+        "clippy::missing_safety_doc": 7,
+        "non_snake_case": 5
+    },
+    "errors": {},
+    "total_tokens": 1377,
+    "unsafe_tokens": 1159,
+    "unsafe_fraction": 0.8416848220769789
+}

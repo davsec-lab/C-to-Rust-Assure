@@ -1,0 +1,39 @@
+{
+  "struct_name": "error",
+  "i_kind": "struct",
+  "i_type": "error",
+  "fields": [
+    {
+      "u_field": {
+        "name": "json",
+        "type": "*const libc::c_uchar",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_from": "position",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "json",
+        "type": "Vec<u8>"
+      },
+      "ownership": "transient",
+      "compare": "skip",
+      "llm_note": "The C pointer is a borrowed, immutable buffer whose length is not stored in the struct; `position` is an offset into it, not a length. The converter should copy the buffer into a Vec<u8> using the best available length (e.g. NUL-terminated or externally known), and produce an empty Vec for a null pointer."
+    },
+    {
+      "u_field": {
+        "name": "position",
+        "type": "size_t",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "position",
+        "type": "usize"
+      },
+      "compare": "by_value"
+    }
+  ]
+}

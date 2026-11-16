@@ -1,0 +1,101 @@
+{
+  "function_name": "csv_parse",
+  "fields": [
+    {
+      "u_field": {
+        "name": "p",
+        "type": "*mut csv_parser",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "p",
+        "type": "&mut csv_parser"
+      }
+    },
+    {
+      "u_field": {
+        "name": "s",
+        "type": "*const libc::c_void",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_from": "len",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "s",
+        "type": "&[u8]"
+      }
+    },
+    {
+      "u_field": {
+        "name": "len",
+        "type": "libc::size_t",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "s.len",
+        "type": "usize"
+      }
+    },
+    {
+      "u_field": {
+        "name": "cb1",
+        "type": "Option<unsafe extern \"C\" fn(*mut libc::c_void, libc::size_t, *mut libc::c_void)>",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "cb1",
+        "type": "Option<&mut dyn FnMut(Option<&[u8]>)>"
+      }
+    },
+    {
+      "u_field": {
+        "name": "cb2",
+        "type": "Option<unsafe extern \"C\" fn(libc::c_int, *mut libc::c_void)>",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "cb2",
+        "type": "Option<&mut dyn FnMut(i32)>"
+      }
+    },
+    {
+      "u_field": {
+        "name": "data",
+        "type": "*mut libc::c_void",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "cb1",
+        "type": "closure capture (data removed)"
+      },
+      "compare": "skip",
+      "llm_note": "The opaque user data pointer is absorbed into closure captures of cb1/cb2."
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "libc::size_t",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "usize"
+      }
+    }
+  ],
+  "idiomatic_name": "csv_parse"
+}

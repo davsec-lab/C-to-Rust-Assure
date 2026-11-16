@@ -1,0 +1,25 @@
+{
+  "function_name": "bmp_img_alloc",
+  "fields": [
+    {
+      "u_field": {
+        "name": "img",
+        "type": "*mut _bmp_img",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "img",
+        "type": "&mut _bmp_img"
+      },
+      "ownership": "transient",
+      "compare": "skip",
+      "llm_note": "img_pixels (**_bmp_pixel) is replaced by Vec<Vec<_bmp_pixel>> allocated inside the function based on img_header.biHeight (abs) and biWidth."
+    }
+  ],
+  "idiomatic_name": "bmp_img_alloc"
+}

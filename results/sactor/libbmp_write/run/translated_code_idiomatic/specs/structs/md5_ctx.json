@@ -1,0 +1,51 @@
+{
+  "struct_name": "md5_ctx",
+  "i_kind": "struct",
+  "i_type": "md5_ctx",
+  "fields": [
+    {
+      "u_field": {
+        "name": "state",
+        "type": "[uint32_t; 4]",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "state",
+        "type": "[u32; 4]"
+      }
+    },
+    {
+      "u_field": {
+        "name": "bit_len",
+        "type": "uint64_t",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "bit_len",
+        "type": "u64"
+      }
+    },
+    {
+      "u_field": {
+        "name": "buffer",
+        "type": "[c_uchar; 64]",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "buffer",
+        "type": "[u8; 64]"
+      }
+    },
+    {
+      "u_field": {
+        "name": "buffer_len",
+        "type": "size_t",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "buffer_len",
+        "type": "usize"
+      }
+    }
+  ]
+}

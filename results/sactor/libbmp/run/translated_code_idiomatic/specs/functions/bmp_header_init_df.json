@@ -1,0 +1,46 @@
+{
+  "function_name": "bmp_header_init_df",
+  "fields": [
+    {
+      "u_field": {
+        "name": "header",
+        "type": "*mut _bmp_header",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "_bmp_header"
+      },
+      "ownership": "owning",
+      "llm_note": "Out-parameter: the header is fully initialized by the function and is now returned by value."
+    },
+    {
+      "u_field": {
+        "name": "width",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "width",
+        "type": "i32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "height",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "height",
+        "type": "i32"
+      }
+    }
+  ],
+  "idiomatic_name": "bmp_header_init_df"
+}

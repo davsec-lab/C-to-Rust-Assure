@@ -1,0 +1,13 @@
+{
+    "total_warnings": 13,
+    "total_errors": 0,
+    "warnings": {
+        "non_camel_case_types": 4,
+        "non_upper_case_globals": 2,
+        "non_snake_case": 7
+    },
+    "errors": {},
+    "total_tokens": 3189,
+    "unsafe_tokens": 0,
+    "unsafe_fraction": 0.0
+}

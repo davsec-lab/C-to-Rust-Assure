@@ -1,0 +1,44 @@
+{
+  "function_name": "sssp",
+  "fields": [
+    {
+      "u_field": {
+        "name": "graph",
+        "type": "*mut Graph",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "graph",
+        "type": "&Graph"
+      }
+    },
+    {
+      "u_field": {
+        "name": "start",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "start",
+        "type": "i32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "i32"
+      }
+    }
+  ],
+  "idiomatic_name": "sssp"
+}

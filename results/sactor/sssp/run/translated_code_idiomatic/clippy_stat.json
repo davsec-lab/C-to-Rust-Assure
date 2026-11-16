@@ -1,0 +1,11 @@
+{
+    "total_warnings": 5,
+    "total_errors": 0,
+    "warnings": {
+        "non_snake_case": 5
+    },
+    "errors": {},
+    "total_tokens": 866,
+    "unsafe_tokens": 0,
+    "unsafe_fraction": 0.0
+}

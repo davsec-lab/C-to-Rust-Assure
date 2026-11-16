@@ -1,0 +1,25 @@
+{
+  "function_name": "bmp_img_alloc",
+  "fields": [
+    {
+      "u_field": {
+        "name": "img",
+        "type": "*mut _bmp_img",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "img",
+        "type": "&mut _bmp_img"
+      },
+      "ownership": "transient",
+      "compare": "skip",
+      "llm_note": "img_pixels is allocated as a Vec<Vec<_bmp_pixel>> with |biHeight| rows and biWidth columns, zero-initialized."
+    }
+  ],
+  "idiomatic_name": "bmp_img_alloc"
+}

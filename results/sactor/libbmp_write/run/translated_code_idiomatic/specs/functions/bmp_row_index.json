@@ -1,0 +1,45 @@
+{
+  "function_name": "bmp_row_index",
+  "fields": [
+    {
+      "u_field": {
+        "name": "header",
+        "type": "*const _bmp_header",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "header",
+        "type": "&_bmp_header"
+      },
+      "ownership": "transient"
+    },
+    {
+      "u_field": {
+        "name": "y",
+        "type": "usize",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "y",
+        "type": "usize"
+      }
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "usize",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "usize"
+      }
+    }
+  ],
+  "idiomatic_name": "bmp_row_index"
+}

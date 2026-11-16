@@ -1,0 +1,54 @@
+{
+  "function_name": "print_matrix",
+  "fields": [
+    {
+      "u_field": {
+        "name": "matrix",
+        "type": "*mut *mut i32",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_from": "size",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "matrix",
+        "type": "&[Vec<i32>]"
+      },
+      "ownership": "transient",
+      "compare": "skip",
+      "llm_note": "Array of row pointers, each row has `size` elements. Idiomatic version uses a slice of rows; each row has at least `size` elements."
+    },
+    {
+      "u_field": {
+        "name": "size",
+        "type": "i32",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "matrix.len",
+        "type": "usize"
+      }
+    },
+    {
+      "u_field": {
+        "name": "name",
+        "type": "*const c_char",
+        "shape": {
+          "ptr": {
+            "kind": "cstring",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "name",
+        "type": "&str"
+      },
+      "ownership": "transient"
+    }
+  ],
+  "idiomatic_name": "print_matrix"
+}

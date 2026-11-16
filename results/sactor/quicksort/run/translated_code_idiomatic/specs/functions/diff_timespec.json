@@ -1,0 +1,55 @@
+{
+  "function_name": "diff_timespec",
+  "fields": [
+    {
+      "u_field": {
+        "name": "time1",
+        "type": "*const libc::timespec",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "len_const": 1,
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "time1",
+        "type": "(i64, i64)"
+      },
+      "ownership": "transient",
+      "llm_note": "Tuple is (tv_sec, tv_nsec) read from the timespec."
+    },
+    {
+      "u_field": {
+        "name": "time0",
+        "type": "*const libc::timespec",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "len_const": 1,
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "time0",
+        "type": "(i64, i64)"
+      },
+      "ownership": "transient",
+      "llm_note": "Tuple is (tv_sec, tv_nsec) read from the timespec."
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "f64",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "f64"
+      }
+    }
+  ],
+  "idiomatic_name": "diff_timespec"
+}

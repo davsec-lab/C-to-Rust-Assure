@@ -1,0 +1,50 @@
+[package]
+name = "sactor-sonnet55-oxivolve"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+libc = "0.2.159"
+
+[profile.release]
+opt-level = 3
+
+[[bin]]
+name = "libcsv_time"
+path = "libcsv/run/translated_code_idiomatic/combined.rs"
+
+[[bin]]
+name = "pagerank_time"
+path = "pagerank/run/translated_code_idiomatic/combined.rs"
+
+[[bin]]
+name = "cjson_parse_time"
+path = "cjson_parse/run/translated_code_idiomatic/combined.rs"
+
+[[bin]]
+name = "libbmp_time"
+path = "libbmp/run/translated_code_idiomatic/combined.rs"
+
+[[bin]]
+name = "libbmp_write_time"
+path = "libbmp_write/run/translated_code_idiomatic/combined.rs"
+
+[[bin]]
+name = "rfft_time"
+path = "rfft/run/translated_code_idiomatic/combined.rs"
+
+[[bin]]
+name = "kmeans_time"
+path = "kmeans/run/translated_code_idiomatic/combined.rs"
+
+[[bin]]
+name = "quicksort_time"
+path = "quicksort/run/translated_code_idiomatic/combined.rs"
+
+[[bin]]
+name = "matrix_mult_time"
+path = "matrix_mult/run/translated_code_idiomatic/combined.rs"
+
+[[bin]]
+name = "sssp_time"
+path = "sssp/run/translated_code_idiomatic/combined.rs"

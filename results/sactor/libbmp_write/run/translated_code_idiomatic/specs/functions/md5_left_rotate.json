@@ -1,0 +1,39 @@
+{
+  "function_name": "md5_left_rotate",
+  "fields": [
+    {
+      "u_field": {
+        "name": "value",
+        "type": "u32",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "value",
+        "type": "u32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "shift",
+        "type": "u32",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "shift",
+        "type": "u32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "u32",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "u32"
+      }
+    }
+  ],
+  "idiomatic_name": "md5_left_rotate"
+}

@@ -1,0 +1,45 @@
+{
+  "function_name": "csv_init",
+  "fields": [
+    {
+      "u_field": {
+        "name": "p",
+        "type": "*mut csv_parser",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "p",
+        "type": "&mut csv_parser"
+      },
+      "ownership": "transient"
+    },
+    {
+      "u_field": {
+        "name": "options",
+        "type": "libc::c_uchar",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "options",
+        "type": "u8"
+      }
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "i32"
+      }
+    }
+  ],
+  "idiomatic_name": "csv_init"
+}

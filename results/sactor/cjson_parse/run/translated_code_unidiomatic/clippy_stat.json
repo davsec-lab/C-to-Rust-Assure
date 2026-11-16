@@ -1,0 +1,21 @@
+{
+    "total_warnings": 42,
+    "total_errors": 5,
+    "warnings": {
+        "unexpected_cfgs": 2,
+        "deprecated": 4,
+        "unused_assignments": 3,
+        "dead_code": 1,
+        "clippy::missing_safety_doc": 17,
+        "clippy::manual_c_str_literals": 5,
+        "non_upper_case_globals": 2,
+        "non_snake_case": 7,
+        "static_mut_refs": 1
+    },
+    "errors": {
+        "clippy::not_unsafe_ptr_arg_deref": 5
+    },
+    "total_tokens": 4420,
+    "unsafe_tokens": 4405,
+    "unsafe_fraction": 0.996606334841629
+}

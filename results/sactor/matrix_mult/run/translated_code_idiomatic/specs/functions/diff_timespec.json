@@ -1,0 +1,92 @@
+{
+  "function_name": "diff_timespec",
+  "fields": [
+    {
+      "u_field": {
+        "name": "time1",
+        "type": "*mut libc::timespec",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "time1_sec",
+        "type": "i64"
+      },
+      "ownership": "transient",
+      "compare": "skip",
+      "llm_note": "time1.tv_sec is passed as time1_sec; time1.tv_nsec is passed as time1_nsec (i64)."
+    },
+    {
+      "u_field": {
+        "name": "time1",
+        "type": "*mut libc::timespec",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "time1_nsec",
+        "type": "i64"
+      },
+      "ownership": "transient",
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "time0",
+        "type": "*mut libc::timespec",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "time0_sec",
+        "type": "i64"
+      },
+      "ownership": "transient",
+      "compare": "skip",
+      "llm_note": "time0.tv_sec is passed as time0_sec; time0.tv_nsec is passed as time0_nsec (i64)."
+    },
+    {
+      "u_field": {
+        "name": "time0",
+        "type": "*mut libc::timespec",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "time0_nsec",
+        "type": "i64"
+      },
+      "ownership": "transient",
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "f64",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "f64"
+      },
+      "compare": "by_value"
+    }
+  ],
+  "idiomatic_name": "diff_timespec"
+}

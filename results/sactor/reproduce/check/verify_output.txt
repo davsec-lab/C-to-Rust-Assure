@@ -1,0 +1,10 @@
+libcsv: exit C=0 Rust=0  output(non-timing, 1 lines)=same
+pagerank: exit C=0 Rust=0  output(non-timing, 12 lines)=same
+cjson_parse: exit C=0 Rust=0  output(non-timing, 1 lines)=same
+libbmp: exit C=0 Rust=0  output(non-timing, 2 lines)=same
+libbmp_write: exit C=0 Rust=0  output(non-timing, 1 lines)=same bmp=identical
+rfft: exit C=0 Rust=0  output(non-timing, 19 lines)=same
+kmeans: exit C=0 Rust=0  output(non-timing, 1 lines)=same
+quicksort: exit C=0 Rust=0  output(non-timing, 1 lines)=DIFF (4 lines)
+matrix_mult: exit C=0 Rust=0  output(non-timing, 1 lines)=DIFF (4 lines)
+sssp: exit C=0 Rust=0  output(non-timing, 2 lines)=same

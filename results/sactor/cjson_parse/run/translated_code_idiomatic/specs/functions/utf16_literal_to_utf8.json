@@ -1,0 +1,70 @@
+{
+  "function_name": "utf16_literal_to_utf8",
+  "fields": [
+    {
+      "u_field": {
+        "name": "input_pointer",
+        "type": "*const u8",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_from": "input_end",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "input",
+        "type": "&[u8]"
+      },
+      "ownership": "transient",
+      "llm_note": "input_pointer..input_end is the readable range; it maps to the slice input (input.len() = input_end - input_pointer)."
+    },
+    {
+      "u_field": {
+        "name": "input_end",
+        "type": "*const u8",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "input.len",
+        "type": "usize"
+      },
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "output_pointer",
+        "type": "*mut *mut u8",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "output",
+        "type": "&mut &mut [u8]"
+      },
+      "llm_note": "The pointed-to cursor is advanced by the number of UTF-8 bytes written; the idiomatic version re-slices the output slice instead."
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "u8",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "u8"
+      }
+    }
+  ],
+  "idiomatic_name": "utf16_literal_to_utf8"
+}

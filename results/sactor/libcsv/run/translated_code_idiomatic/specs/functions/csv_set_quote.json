@@ -1,0 +1,34 @@
+{
+  "function_name": "csv_set_quote",
+  "fields": [
+    {
+      "u_field": {
+        "name": "p",
+        "type": "*mut csv_parser",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "p",
+        "type": "Option<&mut csv_parser>"
+      },
+      "ownership": "transient"
+    },
+    {
+      "u_field": {
+        "name": "c",
+        "type": "libc::c_uchar",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "c",
+        "type": "u8"
+      }
+    }
+  ],
+  "idiomatic_name": "csv_set_quote"
+}

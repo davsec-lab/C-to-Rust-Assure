@@ -1,0 +1,147 @@
+=== start 2026-11-16T13:34:52-08:00 sssp
+2026-11-16 13:34:55 | INFO     | sactor.sactor:210 | -------------SACTOR Configuration-------------
+2026-11-16 13:34:55 | INFO     | sactor.sactor:211 | Input file: sssp.c
+2026-11-16 13:34:55 | INFO     | sactor.sactor:212 | Test command: test_cmd.json
+2026-11-16 13:34:55 | INFO     | sactor.sactor:213 | Is executable: True
+2026-11-16 13:34:55 | INFO     | sactor.sactor:216 | Build directory: /home/gabe/sactor_forklift/tmp/oxivolve_sssp/sactor/tmpgxnylius/build
+2026-11-16 13:34:55 | INFO     | sactor.sactor:217 | Result directory: /home/gabe/sactor_forklift/sactor-bench-oxivolve/sssp/result_sonnet55
+2026-11-16 13:34:55 | INFO     | sactor.sactor:218 | Config file: /home/gabe/sactor_forklift/sactor/sactor.sonnet55.toml
+2026-11-16 13:34:55 | INFO     | sactor.sactor:219 | No verify: False
+2026-11-16 13:34:55 | INFO     | sactor.sactor:220 | Unidiomatic only: False
+2026-11-16 13:34:55 | INFO     | sactor.sactor:221 | LLM statistics base path: /home/gabe/sactor_forklift/sactor-bench-oxivolve/sssp/result_sonnet55/llm_stat.json
+2026-11-16 13:34:55 | INFO     | sactor.sactor:222 | Extra compile command: None
+2026-11-16 13:34:55 | INFO     | sactor.sactor:223 | Compile commands file: 
+2026-11-16 13:34:55 | INFO     | sactor.sactor:224 | Link args: ['-lm']
+2026-11-16 13:34:55 | INFO     | sactor.sactor:225 | Idiomatic only: False
+2026-11-16 13:34:55 | INFO     | sactor.sactor:226 | Continue run when incomplete: False
+2026-11-16 13:34:55 | INFO     | sactor.sactor:227 | -------------End of Configuration-------------
+2026-11-16 13:34:57 | INFO     | sactor.translator.unidiomatic_translator:633 | Struct/Union Node already translated
+2026-11-16 13:34:57 | INFO     | sactor.translator.unidiomatic_translator:633 | Struct/Union Edge already translated
+2026-11-16 13:34:57 | INFO     | sactor.translator.unidiomatic_translator:1092 | Translating function: createGraph (attempts: 0)
+2026-11-16 13:35:03 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling createGraph v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_sssp/sactor/tmpgxnylius/build/embed_test_rust)
+warning: crate `createGraph` should have a snake case name
+  |
+  = help: convert the identifier to snake case: `create_graph`
+  = note: `#[warn(non_snake_case)]` on by default
+
+warning: `createGraph` (lib) generated 1 warning
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.87s
+2026-11-16 13:35:06 | INFO     | sactor.translator.unidiomatic_translator:1092 | Translating function: addEdge (attempts: 0)
+2026-11-16 13:35:12 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling addEdge v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_sssp/sactor/tmpgxnylius/build/embed_test_rust)
+warning: crate `addEdge` should have a snake case name
+  |
+  = help: convert the identifier to snake case: `add_edge`
+  = note: `#[warn(non_snake_case)]` on by default
+
+warning: `addEdge` (lib) generated 1 warning
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.17s
+2026-11-16 13:35:15 | INFO     | sactor.translator.unidiomatic_translator:1092 | Translating function: parallelBellmanFord (attempts: 0)
+2026-11-16 13:35:19 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling parallelBellmanFord v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_sssp/sactor/tmpgxnylius/build/embed_test_rust)
+warning: crate `parallelBellmanFord` should have a snake case name
+  |
+  = help: convert the identifier to snake case: `parallel_bellman_ford`
+  = note: `#[warn(non_snake_case)]` on by default
+
+warning: `parallelBellmanFord` (lib) generated 1 warning
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.83s
+2026-11-16 13:35:23 | INFO     | sactor.translator.unidiomatic_translator:1092 | Translating function: sssp (attempts: 0)
+2026-11-16 13:35:31 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling sssp v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_sssp/sactor/tmpgxnylius/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.90s
+2026-11-16 13:35:34 | INFO     | sactor.translator.unidiomatic_translator:1092 | Translating function: freeGraph (attempts: 0)
+2026-11-16 13:35:38 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling freeGraph v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_sssp/sactor/tmpgxnylius/build/embed_test_rust)
+warning: crate `freeGraph` should have a snake case name
+  |
+  = help: convert the identifier to snake case: `free_graph`
+  = note: `#[warn(non_snake_case)]` on by default
+
+warning: `freeGraph` (lib) generated 1 warning
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.59s
+2026-11-16 13:35:41 | INFO     | sactor.translator.unidiomatic_translator:1092 | Translating function: diff_timespec (attempts: 0)
+2026-11-16 13:35:47 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling diff_timespec v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_sssp/sactor/tmpgxnylius/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.50s
+2026-11-16 13:35:50 | INFO     | sactor.translator.unidiomatic_translator:1092 | Translating function: generateRandomGraph (attempts: 0)
+2026-11-16 13:35:54 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling generateRandomGraph v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_sssp/sactor/tmpgxnylius/build/embed_test_rust)
+warning: crate `generateRandomGraph` should have a snake case name
+  |
+  = help: convert the identifier to snake case: `generate_random_graph`
+  = note: `#[warn(non_snake_case)]` on by default
+
+warning: `generateRandomGraph` (lib) generated 1 warning
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.93s
+2026-11-16 13:36:00 | INFO     | sactor.translator.unidiomatic_translator:1092 | Translating function: main (attempts: 0)
+2026-11-16 13:36:06 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+   Compiling libc v0.2.191
+   Compiling main v0.1.0 (/home/gabe/sactor_forklift/tmp/oxivolve_sssp/sactor/tmpgxnylius/build/embed_test_rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.89s
+2026-11-16 13:36:18 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:36:20 | INFO     | sactor.combiner.program_combiner:259 | Found 12 warnings in the combined code
+2026-11-16 13:36:20 | INFO     | sactor.combiner.program_combiner:260 | Found 0 errors in the combined code
+2026-11-16 13:36:22 | WARNING  | sactor.thirdparty.crown:90 | crown preprocess messed up code; restoring original translation
+2026-11-16 13:36:22 | WARNING  | sactor.thirdparty.crown:103 | crown explicit-addr messed up code; restoring original translation
+2026-11-16 13:36:22 | INFO     | sactor.translator.idiomatic_translator:634 | Translating struct: Node (attempts: 0)
+2026-11-16 13:36:31 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:36:31 | INFO     | sactor.verifier.idiomatic_verifier:1268 | No test commands configured; accepting idiomatic struct Node after the compile check (converter harness skipped)
+2026-11-16 13:36:31 | INFO     | sactor.translator.idiomatic_translator:634 | Translating struct: Edge (attempts: 0)
+2026-11-16 13:36:36 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:36:36 | INFO     | sactor.verifier.idiomatic_verifier:1268 | No test commands configured; accepting idiomatic struct Edge after the compile check (converter harness skipped)
+2026-11-16 13:36:37 | INFO     | sactor.translator.idiomatic_translator:634 | Translating struct: Graph (attempts: 0)
+2026-11-16 13:36:44 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:36:44 | INFO     | sactor.verifier.idiomatic_verifier:1268 | No test commands configured; accepting idiomatic struct Graph after the compile check (converter harness skipped)
+2026-11-16 13:36:44 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: createGraph (attempts: 0)
+2026-11-16 13:36:52 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:36:52 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function createGraph after the compile check (FFI harness skipped)
+2026-11-16 13:36:52 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: addEdge (attempts: 0)
+2026-11-16 13:37:04 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:37:04 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function addEdge after the compile check (FFI harness skipped)
+2026-11-16 13:37:04 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: parallelBellmanFord (attempts: 0)
+2026-11-16 13:37:11 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:37:11 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function parallelBellmanFord after the compile check (FFI harness skipped)
+2026-11-16 13:37:11 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: sssp (attempts: 0)
+2026-11-16 13:37:22 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:37:22 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function sssp after the compile check (FFI harness skipped)
+2026-11-16 13:37:23 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: freeGraph (attempts: 0)
+2026-11-16 13:37:29 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:37:29 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function freeGraph after the compile check (FFI harness skipped)
+2026-11-16 13:37:29 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: diff_timespec (attempts: 0)
+2026-11-16 13:37:38 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:37:38 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function diff_timespec after the compile check (FFI harness skipped)
+2026-11-16 13:37:38 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: generateRandomGraph (attempts: 0)
+2026-11-16 13:37:49 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:37:49 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function generateRandomGraph after the compile check (FFI harness skipped)
+2026-11-16 13:37:49 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: main (attempts: 0)
+2026-11-16 13:38:00 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:38:00 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function main after the compile check (FFI harness skipped)
+2026-11-16 13:38:03 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:38:05 | INFO     | sactor.combiner.program_combiner:259 | Found 5 warnings in the combined code
+2026-11-16 13:38:05 | INFO     | sactor.combiner.program_combiner:260 | Found 0 errors in the combined code
+=== end 2026-11-16T13:38:06-08:00 sssp rc=0

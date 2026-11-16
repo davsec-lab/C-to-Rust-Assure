@@ -1,0 +1,514 @@
+{
+  "libcsv": {
+    "unidiomatic": {
+      "items": 27,
+      "success": 27,
+      "failed": [],
+      "attempts_when_retried": {
+        "csv_strerror": 2,
+        "csv_errors": 4
+      },
+      "llm_queries": 30,
+      "input_tokens": 18190,
+      "output_tokens": 8387,
+      "cost_usd": 0.12,
+      "combined_rs_lines": 651,
+      "clippy": {
+        "total_warnings": 50,
+        "total_errors": 0,
+        "warnings": {
+          "unused_assignments": 12,
+          "clippy::manual_c_str_literals": 13,
+          "clippy::missing_safety_doc": 23,
+          "clippy::unnecessary_unwrap": 1,
+          "clippy::needless_range_loop": 1
+        },
+        "errors": {},
+        "total_tokens": 2725,
+        "unsafe_tokens": 2716,
+        "unsafe_fraction": 0.996697247706422
+      }
+    },
+    "idiomatic": {
+      "items": 27,
+      "success": 27,
+      "failed": [],
+      "attempts_when_retried": {},
+      "llm_queries": 27,
+      "input_tokens": 70538,
+      "output_tokens": 17049,
+      "cost_usd": 0.312,
+      "combined_rs_lines": 505,
+      "clippy": {
+        "total_warnings": 15,
+        "total_errors": 0,
+        "warnings": {
+          "non_camel_case_types": 1,
+          "unused_assignments": 12,
+          "clippy::type_complexity": 2
+        },
+        "errors": {},
+        "total_tokens": 2039,
+        "unsafe_tokens": 0,
+        "unsafe_fraction": 0.0
+      }
+    }
+  },
+  "pagerank": {
+    "unidiomatic": {
+      "items": 3,
+      "success": 3,
+      "failed": [],
+      "attempts_when_retried": {
+        "main": 2
+      },
+      "llm_queries": 4,
+      "input_tokens": 8064,
+      "output_tokens": 6417,
+      "cost_usd": 0.08,
+      "combined_rs_lines": 299,
+      "clippy": {
+        "total_warnings": 19,
+        "total_errors": 0,
+        "warnings": {
+          "clippy::missing_safety_doc": 2,
+          "clippy::manual_c_str_literals": 17
+        },
+        "errors": {},
+        "total_tokens": 2064,
+        "unsafe_tokens": 2063,
+        "unsafe_fraction": 0.999515503875969
+      }
+    },
+    "idiomatic": {
+      "items": 3,
+      "success": 3,
+      "failed": [],
+      "attempts_when_retried": {},
+      "llm_queries": 3,
+      "input_tokens": 8720,
+      "output_tokens": 3544,
+      "cost_usd": 0.053,
+      "combined_rs_lines": 226,
+      "clippy": {
+        "total_warnings": 1,
+        "total_errors": 0,
+        "warnings": {
+          "clippy::while_let_loop": 1
+        },
+        "errors": {},
+        "total_tokens": 1484,
+        "unsafe_tokens": 0,
+        "unsafe_fraction": 0.0
+      }
+    }
+  },
+  "cjson_parse": {
+    "unidiomatic": {
+      "items": 26,
+      "success": 26,
+      "failed": [],
+      "attempts_when_retried": {},
+      "llm_queries": 22,
+      "input_tokens": 15896,
+      "output_tokens": 10722,
+      "cost_usd": 0.139,
+      "combined_rs_lines": 826,
+      "clippy": {
+        "total_warnings": 42,
+        "total_errors": 5,
+        "warnings": {
+          "unexpected_cfgs": 2,
+          "deprecated": 4,
+          "unused_assignments": 3,
+          "dead_code": 1,
+          "clippy::missing_safety_doc": 17,
+          "clippy::manual_c_str_literals": 5,
+          "non_upper_case_globals": 2,
+          "non_snake_case": 7,
+          "static_mut_refs": 1
+        },
+        "errors": {
+          "clippy::not_unsafe_ptr_arg_deref": 5
+        },
+        "total_tokens": 4420,
+        "unsafe_tokens": 4405,
+        "unsafe_fraction": 0.996606334841629
+      }
+    },
+    "idiomatic": {
+      "items": 26,
+      "success": 26,
+      "failed": [],
+      "attempts_when_retried": {},
+      "llm_queries": 24,
+      "input_tokens": 65962,
+      "output_tokens": 17522,
+      "cost_usd": 0.307,
+      "combined_rs_lines": 637,
+      "clippy": {
+        "total_warnings": 13,
+        "total_errors": 0,
+        "warnings": {
+          "non_camel_case_types": 4,
+          "non_upper_case_globals": 2,
+          "non_snake_case": 7
+        },
+        "errors": {},
+        "total_tokens": 3189,
+        "unsafe_tokens": 0,
+        "unsafe_fraction": 0.0
+      }
+    }
+  },
+  "libbmp": {
+    "unidiomatic": {
+      "items": 14,
+      "success": 14,
+      "failed": [],
+      "attempts_when_retried": {},
+      "llm_queries": 11,
+      "input_tokens": 7654,
+      "output_tokens": 4696,
+      "cost_usd": 0.062,
+      "combined_rs_lines": 310,
+      "clippy": {
+        "total_warnings": 30,
+        "total_errors": 0,
+        "warnings": {
+          "non_camel_case_types": 5,
+          "clippy::missing_safety_doc": 9,
+          "clippy::manual_c_str_literals": 2,
+          "non_snake_case": 14
+        },
+        "errors": {},
+        "total_tokens": 1721,
+        "unsafe_tokens": 1612,
+        "unsafe_fraction": 0.936664729808251
+      }
+    },
+    "idiomatic": {
+      "items": 14,
+      "success": 14,
+      "failed": [],
+      "attempts_when_retried": {},
+      "llm_queries": 14,
+      "input_tokens": 38326,
+      "output_tokens": 9687,
+      "cost_usd": 0.174,
+      "combined_rs_lines": 297,
+      "clippy": {
+        "total_warnings": 17,
+        "total_errors": 0,
+        "warnings": {
+          "non_camel_case_types": 3,
+          "non_snake_case": 14
+        },
+        "errors": {},
+        "total_tokens": 1609,
+        "unsafe_tokens": 0,
+        "unsafe_fraction": 0.0
+      }
+    }
+  },
+  "libbmp_write": {
+    "unidiomatic": {
+      "items": 27,
+      "success": 27,
+      "failed": [],
+      "attempts_when_retried": {
+        "md5_update": 2
+      },
+      "llm_queries": 24,
+      "input_tokens": 15324,
+      "output_tokens": 8508,
+      "cost_usd": 0.116,
+      "combined_rs_lines": 460,
+      "clippy": {
+        "total_warnings": 57,
+        "total_errors": 1,
+        "warnings": {
+          "non_camel_case_types": 7,
+          "deprecated": 6,
+          "unused_unsafe": 1,
+          "dead_code": 1,
+          "clippy::missing_safety_doc": 14,
+          "clippy::needless_range_loop": 3,
+          "clippy::manual_c_str_literals": 8,
+          "non_snake_case": 14,
+          "non_upper_case_globals": 3
+        },
+        "errors": {
+          "clippy::not_unsafe_ptr_arg_deref": 1
+        },
+        "total_tokens": 2599,
+        "unsafe_tokens": 2205,
+        "unsafe_fraction": 0.8484032320123124
+      }
+    },
+    "idiomatic": {
+      "items": 27,
+      "success": 27,
+      "failed": [],
+      "attempts_when_retried": {
+        "md5_ctx": 2
+      },
+      "llm_queries": 28,
+      "input_tokens": 68268,
+      "output_tokens": 17070,
+      "cost_usd": 0.307,
+      "combined_rs_lines": 476,
+      "clippy": {
+        "total_warnings": 18,
+        "total_errors": 0,
+        "warnings": {
+          "non_camel_case_types": 3,
+          "clippy::needless_range_loop": 1,
+          "non_snake_case": 14
+        },
+        "errors": {},
+        "total_tokens": 2543,
+        "unsafe_tokens": 0,
+        "unsafe_fraction": 0.0
+      }
+    }
+  },
+  "rfft": {
+    "unidiomatic": {
+      "items": 4,
+      "success": 4,
+      "failed": [],
+      "attempts_when_retried": {},
+      "llm_queries": 4,
+      "input_tokens": 2740,
+      "output_tokens": 2499,
+      "cost_usd": 0.03,
+      "combined_rs_lines": 164,
+      "clippy": {
+        "total_warnings": 3,
+        "total_errors": 2,
+        "warnings": {
+          "clippy::missing_safety_doc": 3
+        },
+        "errors": {
+          "clippy::approx_constant": 2
+        },
+        "total_tokens": 1237,
+        "unsafe_tokens": 1236,
+        "unsafe_fraction": 0.9991915925626516
+      }
+    },
+    "idiomatic": {
+      "items": 4,
+      "success": 4,
+      "failed": [],
+      "attempts_when_retried": {},
+      "llm_queries": 4,
+      "input_tokens": 9694,
+      "output_tokens": 3255,
+      "cost_usd": 0.052,
+      "combined_rs_lines": 152,
+      "clippy": {
+        "total_warnings": 4,
+        "total_errors": 1,
+        "warnings": {
+          "clippy::needless_range_loop": 4
+        },
+        "errors": {
+          "clippy::approx_constant": 1
+        },
+        "total_tokens": 994,
+        "unsafe_tokens": 0,
+        "unsafe_fraction": 0.0
+      }
+    }
+  },
+  "kmeans": {
+    "unidiomatic": {
+      "items": 8,
+      "success": 8,
+      "failed": [],
+      "attempts_when_retried": {},
+      "llm_queries": 6,
+      "input_tokens": 2984,
+      "output_tokens": 1861,
+      "cost_usd": 0.025,
+      "combined_rs_lines": 146,
+      "clippy": {
+        "total_warnings": 4,
+        "total_errors": 0,
+        "warnings": {
+          "clippy::missing_safety_doc": 4
+        },
+        "errors": {},
+        "total_tokens": 1028,
+        "unsafe_tokens": 949,
+        "unsafe_fraction": 0.9231517509727627
+      }
+    },
+    "idiomatic": {
+      "items": 8,
+      "success": 8,
+      "failed": [],
+      "attempts_when_retried": {},
+      "llm_queries": 8,
+      "input_tokens": 20682,
+      "output_tokens": 5193,
+      "cost_usd": 0.093,
+      "combined_rs_lines": 159,
+      "clippy": {
+        "total_warnings": 0,
+        "total_errors": 0,
+        "warnings": {},
+        "errors": {},
+        "total_tokens": 1303,
+        "unsafe_tokens": 0,
+        "unsafe_fraction": 0.0
+      }
+    }
+  },
+  "quicksort": {
+    "unidiomatic": {
+      "items": 5,
+      "success": 5,
+      "failed": [],
+      "attempts_when_retried": {
+        "quicksort": 2
+      },
+      "llm_queries": 6,
+      "input_tokens": 2214,
+      "output_tokens": 1279,
+      "cost_usd": 0.017,
+      "combined_rs_lines": 70,
+      "clippy": {
+        "total_warnings": 2,
+        "total_errors": 5,
+        "warnings": {
+          "clippy::missing_safety_doc": 2
+        },
+        "errors": {
+          "clippy::not_unsafe_ptr_arg_deref": 5
+        },
+        "total_tokens": 447,
+        "unsafe_tokens": 350,
+        "unsafe_fraction": 0.7829977628635347
+      }
+    },
+    "idiomatic": {
+      "items": 5,
+      "success": 5,
+      "failed": [],
+      "attempts_when_retried": {},
+      "llm_queries": 5,
+      "input_tokens": 11403,
+      "output_tokens": 2987,
+      "cost_usd": 0.053,
+      "combined_rs_lines": 86,
+      "clippy": {
+        "total_warnings": 0,
+        "total_errors": 0,
+        "warnings": {},
+        "errors": {},
+        "total_tokens": 632,
+        "unsafe_tokens": 0,
+        "unsafe_fraction": 0.0
+      }
+    }
+  },
+  "matrix_mult": {
+    "unidiomatic": {
+      "items": 7,
+      "success": 7,
+      "failed": [],
+      "attempts_when_retried": {},
+      "llm_queries": 7,
+      "input_tokens": 2002,
+      "output_tokens": 2023,
+      "cost_usd": 0.024,
+      "combined_rs_lines": 126,
+      "clippy": {
+        "total_warnings": 11,
+        "total_errors": 4,
+        "warnings": {
+          "clippy::missing_safety_doc": 5,
+          "clippy::manual_c_str_literals": 6
+        },
+        "errors": {
+          "clippy::not_unsafe_ptr_arg_deref": 4
+        },
+        "total_tokens": 819,
+        "unsafe_tokens": 698,
+        "unsafe_fraction": 0.8522588522588522
+      }
+    },
+    "idiomatic": {
+      "items": 7,
+      "success": 7,
+      "failed": [],
+      "attempts_when_retried": {},
+      "llm_queries": 7,
+      "input_tokens": 17013,
+      "output_tokens": 4864,
+      "cost_usd": 0.083,
+      "combined_rs_lines": 121,
+      "clippy": {
+        "total_warnings": 1,
+        "total_errors": 0,
+        "warnings": {
+          "clippy::needless_range_loop": 1
+        },
+        "errors": {},
+        "total_tokens": 812,
+        "unsafe_tokens": 0,
+        "unsafe_fraction": 0.0
+      }
+    }
+  },
+  "sssp": {
+    "unidiomatic": {
+      "items": 11,
+      "success": 11,
+      "failed": [],
+      "attempts_when_retried": {},
+      "llm_queries": 8,
+      "input_tokens": 4186,
+      "output_tokens": 2435,
+      "cost_usd": 0.033,
+      "combined_rs_lines": 212,
+      "clippy": {
+        "total_warnings": 12,
+        "total_errors": 0,
+        "warnings": {
+          "clippy::missing_safety_doc": 7,
+          "non_snake_case": 5
+        },
+        "errors": {},
+        "total_tokens": 1377,
+        "unsafe_tokens": 1159,
+        "unsafe_fraction": 0.8416848220769789
+      }
+    },
+    "idiomatic": {
+      "items": 11,
+      "success": 11,
+      "failed": [],
+      "attempts_when_retried": {},
+      "llm_queries": 11,
+      "input_tokens": 29657,
+      "output_tokens": 6269,
+      "cost_usd": 0.122,
+      "combined_rs_lines": 164,
+      "clippy": {
+        "total_warnings": 5,
+        "total_errors": 0,
+        "warnings": {
+          "non_snake_case": 5
+        },
+        "errors": {},
+        "total_tokens": 866,
+        "unsafe_tokens": 0,
+        "unsafe_fraction": 0.0
+      }
+    }
+  }
+}

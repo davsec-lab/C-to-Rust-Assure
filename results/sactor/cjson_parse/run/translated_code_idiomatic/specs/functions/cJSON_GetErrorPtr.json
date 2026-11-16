@@ -1,0 +1,25 @@
+{
+  "function_name": "cJSON_GetErrorPtr",
+  "fields": [
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "*const libc::c_char",
+        "shape": {
+          "ptr": {
+            "kind": "cstring",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "Vec<u8>"
+      },
+      "ownership": "owning",
+      "compare": "skip",
+      "llm_note": "The raw pointer into global_error.json at global_error.position is replaced by an owned copy of the remaining bytes json[position..]. The global is read through the Mutex."
+    }
+  ],
+  "idiomatic_name": "cJSON_GetErrorPtr"
+}

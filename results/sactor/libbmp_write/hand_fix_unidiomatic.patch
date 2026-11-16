@@ -1,0 +1,34 @@
+--- a/bmp_header_init_df.rs
++++ b/bmp_header_init_df.rs
+@@ -4,11 +4,11 @@
+     height: libc::c_int,
+ ) {
+     let w = width as isize as usize;
+-    let pad = (width % 4) as isize as usize;
++    let row_pad = (width % 4) as isize as usize;
+     let h = height.wrapping_abs() as isize as usize;
+     let size = (core::mem::size_of::<_bmp_pixel>())
+         .wrapping_mul(w)
+-        .wrapping_add(pad)
++        .wrapping_add(row_pad)
+         .wrapping_mul(h);
+     (*header).bfSize = size as libc::c_uint;
+     (*header).bfReserved = 0;
+--- a/md5_final.rs
++++ b/md5_final.rs
+@@ -9,10 +9,10 @@
+     }
+     md5_update(ctx, length_bytes.as_ptr(), length_bytes.len());
+     for i in 0..4usize {
+-        let s = ctx.state[i];
+-        *digest.add(i * 4) = (s & 0xff) as libc::c_uchar;
+-        *digest.add(i * 4 + 1) = ((s >> 8) & 0xff) as libc::c_uchar;
+-        *digest.add(i * 4 + 2) = ((s >> 16) & 0xff) as libc::c_uchar;
+-        *digest.add(i * 4 + 3) = ((s >> 24) & 0xff) as libc::c_uchar;
++        let st = ctx.state[i];
++        *digest.add(i * 4) = (st & 0xff) as libc::c_uchar;
++        *digest.add(i * 4 + 1) = ((st >> 8) & 0xff) as libc::c_uchar;
++        *digest.add(i * 4 + 2) = ((st >> 16) & 0xff) as libc::c_uchar;
++        *digest.add(i * 4 + 3) = ((st >> 24) & 0xff) as libc::c_uchar;
+     }
+ }

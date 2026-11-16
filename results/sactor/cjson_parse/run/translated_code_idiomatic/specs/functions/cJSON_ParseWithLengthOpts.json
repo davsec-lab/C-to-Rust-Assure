@@ -1,0 +1,80 @@
+{
+  "function_name": "cJSON_ParseWithLengthOpts",
+  "fields": [
+    {
+      "u_field": {
+        "name": "value",
+        "type": "*const libc::c_char",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_from": "buffer_length",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "value",
+        "type": "Option<&[u8]>"
+      }
+    },
+    {
+      "u_field": {
+        "name": "buffer_length",
+        "type": "libc::size_t",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "value.len",
+        "type": "usize"
+      }
+    },
+    {
+      "u_field": {
+        "name": "return_parse_end",
+        "type": "*mut *const libc::c_char",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "return_parse_end",
+        "type": "Option<&mut usize>"
+      },
+      "llm_note": "Pointer to the parse end is expressed as an offset (index) into value.",
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "require_null_terminated",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "require_null_terminated",
+        "type": "bool"
+      }
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "*mut cJSON",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "Option<Box<cJSON>>"
+      },
+      "ownership": "owning"
+    }
+  ],
+  "idiomatic_name": "cJSON_ParseWithLengthOpts"
+}

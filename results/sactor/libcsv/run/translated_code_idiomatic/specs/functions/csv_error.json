@@ -1,0 +1,34 @@
+{
+  "function_name": "csv_error",
+  "fields": [
+    {
+      "u_field": {
+        "name": "p",
+        "type": "*const csv_parser",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "p",
+        "type": "&csv_parser"
+      },
+      "ownership": "transient"
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "i32"
+      }
+    }
+  ],
+  "idiomatic_name": "csv_error"
+}

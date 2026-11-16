@@ -17,6 +17,7 @@ src/python/inputs-complex/libbmp_write/file/
 src/python/inputs-complex/pageRank/com-lj.ungraph.txt
 results/*
 !results/rustassure/
+!results/sactor/
 # ── added after the consolidation (assure) ──────────────────────
 # LLVM pass build artifacts
 src/Symbolizer/build/

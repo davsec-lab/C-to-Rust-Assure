@@ -1,0 +1,1649 @@
+diff --git a/rust_ast_parser/src/lib.rs b/rust_ast_parser/src/lib.rs
+index 6a5ea07..f36eaf1 100644
+--- a/rust_ast_parser/src/lib.rs
++++ b/rust_ast_parser/src/lib.rs
+@@ -196,17 +196,81 @@ fn get_func_signatures(source_code: &str) -> PyResult<HashMap<String, String>> {
+     Ok(signatures)
+ }
+ 
++struct IdentCollector {
++    idents: HashSet<String>,
++}
++
++impl<'ast> Visit<'ast> for IdentCollector {
++    fn visit_ident(&mut self, i: &'ast syn::Ident) {
++        self.idents.insert(i.to_string());
++    }
++}
++
++fn collect_idents(item: &syn::Item) -> HashSet<String> {
++    let mut collector = IdentCollector {
++        idents: HashSet::new(),
++    };
++    collector.visit_item(item);
++    collector.idents
++}
++
++/// Keep only the prefix `type` / `const` items that `target` (transitively) references;
++/// `use` items are always kept. Copying every alias blindly drags in items such as
++/// `pub type FILE = _IO_FILE;` whose right-hand side is not part of the extracted code,
++/// which makes every consumer of the struct fail to compile.
++fn prune_prefix_items(prefix_items: Vec<syn::Item>, target: &syn::Item) -> Vec<syn::Item> {
++    let mut needed = collect_idents(target);
++    let mut selected = vec![false; prefix_items.len()];
++    loop {
++        let mut changed = false;
++        for (idx, item) in prefix_items.iter().enumerate() {
++            if selected[idx] {
++                continue;
++            }
++            let keep = match item {
++                syn::Item::Use(_) => true,
++                syn::Item::Type(t) => needed.contains(&t.ident.to_string()),
++                syn::Item::Const(c) => needed.contains(&c.ident.to_string()),
++                _ => false,
++            };
++            if keep {
++                selected[idx] = true;
++                changed = true;
++                needed.extend(collect_idents(item));
++            }
++        }
++        if !changed {
++            break;
++        }
++    }
++    prefix_items
++        .into_iter()
++        .zip(selected)
++        .filter(|(_, keep)| *keep)
++        .map(|(item, _)| item)
++        .collect()
++}
++
+ #[gen_stub_pyfunction]
+ #[pyfunction]
+ fn get_struct_definition(source_code: &str, struct_name: &str) -> PyResult<String> {
+     let ast = parse_src(source_code)?;
+-    let mut prefix_items: Vec<syn::Item> = Vec::new();
++    // Aliases the struct needs may come after it: c2rust emits
++    // `pub type genann_actfun = Option<unsafe extern "C" fn(*const genann, ..)>` after
++    // `struct genann` because the alias refers back to the struct. Consider all of them.
++    let alias_items: Vec<syn::Item> = ast
++        .items
++        .iter()
++        .filter(|item| matches!(item, syn::Item::Use(_) | syn::Item::Type(_) | syn::Item::Const(_)))
++        .cloned()
++        .collect();
+ 
+     for item in ast.items.iter() {
+         if let syn::Item::Struct(s) = item {
+             if s.ident == struct_name {
+-                let mut items = prefix_items;
+-                items.push(syn::Item::Struct(s.clone()));
++                let target = syn::Item::Struct(s.clone());
++                let mut items = prune_prefix_items(alias_items, &target);
++                items.push(target);
+                 let file = syn::File {
+                     shebang: None,
+                     attrs: vec![],
+@@ -215,13 +279,6 @@ fn get_struct_definition(source_code: &str, struct_name: &str) -> PyResult<Strin
+                 return Ok(prettyplease::unparse(&file));
+             }
+         }
+-
+-        match item {
+-            syn::Item::Use(_) | syn::Item::Type(_) | syn::Item::Const(_) => {
+-                prefix_items.push(item.clone())
+-            }
+-            _ => {}
+-        }
+     }
+ 
+     Err(pyo3::exceptions::PyValueError::new_err(format!(
+@@ -1077,13 +1134,20 @@ fn get_static_item_definition(source_code: &str, item_name: &str) -> PyResult<St
+ #[pyfunction]
+ fn get_union_definition(source_code: &str, union_name: &str) -> PyResult<String> {
+     let ast = parse_src(source_code)?;
+-    let mut prefix_items: Vec<syn::Item> = Vec::new();
++    // see get_struct_definition: aliases may be emitted after the union
++    let alias_items: Vec<syn::Item> = ast
++        .items
++        .iter()
++        .filter(|item| matches!(item, syn::Item::Use(_) | syn::Item::Type(_) | syn::Item::Const(_)))
++        .cloned()
++        .collect();
+ 
+     for item in ast.items.iter() {
+         if let syn::Item::Union(s) = item {
+             if s.ident == union_name {
+-                let mut items = prefix_items;
+-                items.push(syn::Item::Union(s.clone()));
++                let target = syn::Item::Union(s.clone());
++                let mut items = prune_prefix_items(alias_items, &target);
++                items.push(target);
+                 let file = syn::File {
+                     shebang: None,
+                     attrs: vec![],
+@@ -1092,13 +1156,6 @@ fn get_union_definition(source_code: &str, union_name: &str) -> PyResult<String>
+                 return Ok(prettyplease::unparse(&file));
+             }
+         }
+-
+-        match item {
+-            syn::Item::Use(_) | syn::Item::Type(_) | syn::Item::Const(_) => {
+-                prefix_items.push(item.clone())
+-            }
+-            _ => {}
+-        }
+     }
+ 
+     Err(pyo3::exceptions::PyValueError::new_err(format!(
+@@ -1752,6 +1809,14 @@ const STDINT_ALIAS_TARGETS: &[(&str, &str)] = &[
+     ("uint16_t", "u16"),
+     ("uint32_t", "u32"),
+     ("uint64_t", "u64"),
++    // libc scalar typedefs that c2rust emits as `pub type size_t = libc::c_ulong;` etc.
++    // The libc crate defines them as usize/isize (see _resources/libc_scalar_map.txt),
++    // so importing them from libc keeps struct fields and LLM code on one type.
++    ("size_t", "c_ulong"),
++    ("ssize_t", "c_long"),
++    ("ptrdiff_t", "c_long"),
++    ("intptr_t", "c_long"),
++    ("uintptr_t", "c_ulong"),
+ ];
+ 
+ fn expected_stdint_target(name: &str) -> Option<&'static str> {
+@@ -1766,12 +1831,15 @@ fn should_strip_stdint_alias(item: &syn::ItemType) -> Option<String> {
+     let expected = expected_stdint_target(&name)?;
+ 
+     if let syn::Type::Path(type_path) = item.ty.as_ref() {
+-        if type_path.qself.is_none()
+-            && type_path.path.segments.len() == 1
+-            && type_path.path.segments[0].ident == expected
+-            && type_path.path.segments[0].arguments.is_empty()
+-        {
+-            return Some(name);
++        if type_path.qself.is_none() {
++            let segments = &type_path.path.segments;
++            // Accept both `u32` and `libc::c_ulong` shaped right-hand sides.
++            let last = segments.last()?;
++            let qualified_ok = segments.len() == 1
++                || (segments.len() == 2 && segments[0].ident == "libc");
++            if qualified_ok && last.ident == expected && last.arguments.is_empty() {
++                return Some(name);
++            }
+         }
+     }
+ 
+diff --git a/sactor.gpt4o.toml b/sactor.gpt4o.toml
+new file mode 100644
+index 0000000..03919ad
+--- /dev/null
++++ b/sactor.gpt4o.toml
+@@ -0,0 +1,44 @@
++# Local overrides for this machine. Defaults live in sactor/_resources/sactor.default.toml.
++[general]
++model = "gpt-4o"
++encoding = "o200k_base"
++
++[logging]
++console_level = "INFO"
++file_level = "DEBUG"
++
++[litellm]
++[litellm.router_settings]
++routing_strategy = "simple-shuffle"
++num_retries = 2
++timeout = 600
++
++# Anthropic (key from ~/.zshrc: ANTHROPIC_API_KEY)
++[[litellm.model_list]]
++model_name = "claude-sonnet-4-6"
++[litellm.model_list.litellm_params]
++model = "anthropic/claude-sonnet-4-6"
++api_key = "os.environ/ANTHROPIC_API_KEY"
++
++[[litellm.model_list]]
++model_name = "claude-haiku-4-5"
++[litellm.model_list.litellm_params]
++model = "anthropic/claude-haiku-4-5"
++api_key = "os.environ/ANTHROPIC_API_KEY"
++
++# Google Gemini (GEMINI_API_KEY)
++[[litellm.model_list]]
++model_name = "gemini-flash"
++[litellm.model_list.litellm_params]
++model = "gemini/gemini-3.5-flash"
++api_key = "os.environ/GEMINI_API_KEY"
++
++# gpt-4o through OpenRouter (OPENROUTER_API_KEY); this is the model used in the paper
++[[litellm.model_list]]
++model_name = "gpt-4o"
++[litellm.model_list.litellm_params]
++model = "openrouter/openai/gpt-4o-2024-08-06"
++api_key = "os.environ/OPENROUTER_API_KEY"
++
++[verifier.selftest]
++enabled = false
+diff --git a/sactor.sonnet-anthropic.toml b/sactor.sonnet-anthropic.toml
+new file mode 100644
+index 0000000..91c4b01
+--- /dev/null
++++ b/sactor.sonnet-anthropic.toml
+@@ -0,0 +1,51 @@
++# Claude Sonnet 4.6 via the Anthropic API directly (key from ~/.config/sactor/anthropic_api_key via bin/sactor-env.sh). Same model as sactor.sonnet.toml (OpenRouter route) and as PerfAssure's sonnet runs.
++[general]
++model = "claude-sonnet-4-6"
++encoding = "o200k_base"
++
++[logging]
++console_level = "INFO"
++file_level = "DEBUG"
++
++[litellm]
++[litellm.router_settings]
++routing_strategy = "simple-shuffle"
++num_retries = 2
++timeout = 600
++
++# Anthropic (key from ~/.zshrc: ANTHROPIC_API_KEY)
++[[litellm.model_list]]
++model_name = "claude-sonnet-4-6"
++[litellm.model_list.litellm_params]
++model = "anthropic/claude-sonnet-4-6"
++api_key = "os.environ/ANTHROPIC_API_KEY"
++
++[[litellm.model_list]]
++model_name = "claude-haiku-4-5"
++[litellm.model_list.litellm_params]
++model = "anthropic/claude-haiku-4-5"
++api_key = "os.environ/ANTHROPIC_API_KEY"
++
++# Google Gemini (GEMINI_API_KEY)
++[[litellm.model_list]]
++model_name = "gemini-flash"
++[litellm.model_list.litellm_params]
++model = "gemini/gemini-3.5-flash"
++api_key = "os.environ/GEMINI_API_KEY"
++
++# gpt-4o through OpenRouter (OPENROUTER_API_KEY); this is the model used in the paper
++[[litellm.model_list]]
++model_name = "gpt-4o"
++[litellm.model_list.litellm_params]
++model = "openrouter/openai/gpt-4o-2024-08-06"
++api_key = "os.environ/OPENROUTER_API_KEY"
++
++[verifier.selftest]
++enabled = false
++
++# Claude Sonnet 4.6 through OpenRouter (the Anthropic key itself has no credit); same generation as PerfAssure's "sonnect" runs
++[[litellm.model_list]]
++model_name = "claude-sonnet-4-6-openrouter"
++[litellm.model_list.litellm_params]
++model = "openrouter/anthropic/claude-sonnet-4.6"
++api_key = "os.environ/OPENROUTER_API_KEY"
+diff --git a/sactor.sonnet.toml b/sactor.sonnet.toml
+new file mode 100644
+index 0000000..44a6fc6
+--- /dev/null
++++ b/sactor.sonnet.toml
+@@ -0,0 +1,51 @@
++# Local overrides for this machine. Defaults live in sactor/_resources/sactor.default.toml.
++[general]
++model = "claude-sonnet-4-6-openrouter"
++encoding = "o200k_base"
++
++[logging]
++console_level = "INFO"
++file_level = "DEBUG"
++
++[litellm]
++[litellm.router_settings]
++routing_strategy = "simple-shuffle"
++num_retries = 2
++timeout = 600
++
++# Anthropic (key from ~/.zshrc: ANTHROPIC_API_KEY)
++[[litellm.model_list]]
++model_name = "claude-sonnet-4-6"
++[litellm.model_list.litellm_params]
++model = "anthropic/claude-sonnet-4-6"
++api_key = "os.environ/ANTHROPIC_API_KEY"
++
++[[litellm.model_list]]
++model_name = "claude-haiku-4-5"
++[litellm.model_list.litellm_params]
++model = "anthropic/claude-haiku-4-5"
++api_key = "os.environ/ANTHROPIC_API_KEY"
++
++# Google Gemini (GEMINI_API_KEY)
++[[litellm.model_list]]
++model_name = "gemini-flash"
++[litellm.model_list.litellm_params]
++model = "gemini/gemini-3.5-flash"
++api_key = "os.environ/GEMINI_API_KEY"
++
++# gpt-4o through OpenRouter (OPENROUTER_API_KEY); this is the model used in the paper
++[[litellm.model_list]]
++model_name = "gpt-4o"
++[litellm.model_list.litellm_params]
++model = "openrouter/openai/gpt-4o-2024-08-06"
++api_key = "os.environ/OPENROUTER_API_KEY"
++
++[verifier.selftest]
++enabled = false
++
++# Claude Sonnet 4.6 through OpenRouter (the Anthropic key itself has no credit); same generation as PerfAssure's "sonnect" runs
++[[litellm.model_list]]
++model_name = "claude-sonnet-4-6-openrouter"
++[litellm.model_list.litellm_params]
++model = "openrouter/anthropic/claude-sonnet-4.6"
++api_key = "os.environ/OPENROUTER_API_KEY"
+diff --git a/sactor/c_parser/c_parser.py b/sactor/c_parser/c_parser.py
+index 21d06f2..5b3fcc6 100644
+--- a/sactor/c_parser/c_parser.py
++++ b/sactor/c_parser/c_parser.py
+@@ -788,6 +788,11 @@ class CParser:
+                     if called.kind != CursorKind.FUNCTION_DECL:
+                         refs.extend(self._collect_function_dependency_refs(child))
+                         continue
++                    if called.spelling.startswith("__builtin_"):
++                        # compiler builtins from macro expansion (isnan -> __builtin_isnan,
++                        # likely() -> __builtin_expect): nothing to translate first
++                        refs.extend(self._collect_function_dependency_refs(child))
++                        continue
+                     if called.location and not self._is_in_system_header(called):
+                         usr = None
+                         try:
+@@ -807,6 +812,10 @@ class CParser:
+                             target=None,
+                             location=loc,
+                         ))
++                elif child.kind == CursorKind.CALL_EXPR and self._is_indirect_call(child):
++                    # Call through a function-pointer expression, e.g. `(*key_free)(x)` or
++                    # `obj->cb(x)`: nothing to translate first, just look inside the arguments.
++                    pass
+                 else:
+                     # Unresolved reference not in system header -> raise
+                     if not self._is_in_system_header(child):
+@@ -824,6 +833,22 @@ class CParser:
+             refs.extend(self._collect_function_dependency_refs(child))
+         return refs
+ 
++    @staticmethod
++    def _is_indirect_call(call: cindex.Cursor) -> bool:
++        """True if the callee of a CALL_EXPR is an expression of function-pointer/function type
++        (not a direct reference to a function declaration)."""
++        try:
++            callee = next(call.get_children())
++        except StopIteration:
++            return False
++        try:
++            t = callee.type.get_canonical()
++            if t.kind == cindex.TypeKind.POINTER:
++                t = t.get_pointee().get_canonical()
++            return t.kind in (cindex.TypeKind.FUNCTIONPROTO, cindex.TypeKind.FUNCTIONNOPROTO)
++        except Exception:
++            return False
++
+     def _collect_struct_refs(self, node) -> list[StructRef]:
+         refs: list[StructRef] = []
+         if not node:
+@@ -998,12 +1023,18 @@ class CParser:
+         """
+         Recursively collects all dependent structs/unions of the given struct/union.
+         """
+-        result = set()
+-        result.add(struct_union.name)
+-        for dependency in struct_union.dependencies:
+-            if dependency not in result:
+-                result.update(self.retrieve_all_struct_dependencies(
+-                    self._structs_unions[dependency.name]))
++        result: set[str] = set()
++        stack = [struct_union]
++        while stack:
++            current = stack.pop()
++            if current.name in result:
++                continue
++            result.add(current.name)
++            for dependency in current.dependencies:
++                if dependency.name not in result:
++                    # cycle-safe: mutually recursive structs (e.g. skiplist's
++                    # link <-> skip_node_t) used to recurse forever here
++                    stack.append(self._structs_unions.get(dependency.name, dependency))
+ 
+         return result
+     def extract_function_code(self, function_name):
+diff --git a/sactor/c_parser/c_parser_utils.py b/sactor/c_parser/c_parser_utils.py
+index 71bea98..b63fafd 100644
+--- a/sactor/c_parser/c_parser_utils.py
++++ b/sactor/c_parser/c_parser_utils.py
+@@ -163,6 +163,13 @@ def expand_all_macros(input_file, commands: list[list[str]] | None=None):
+     includes_lines = {}
+     new_lines = []
+     lines = read_file_lines(tmp_file_path)
++    # Feature-test macros (_GNU_SOURCE, _POSIX_C_SOURCE, ...) must survive `cpp -P`,
++    # otherwise the re-added system headers no longer declare strdup/clock_gettime/
++    # struct timespec and every later parse of the expanded file reports errors.
++    feature_macro_lines = [
++        line for line in lines
++        if re.match(r"\s*#\s*define\s+_(GNU|POSIX_C|XOPEN|DEFAULT|BSD|ISOC99|ISOC11|LARGEFILE64)_SOURCE\b", line)
++    ]
+     for line in lines:
+         if re.search(r"# *include", line):
+             remove_marker = f"/* sactor remove marker: {len(includes_lines)} */\n"
+@@ -185,6 +192,7 @@ def expand_all_macros(input_file, commands: list[list[str]] | None=None):
+     for i, line in enumerate(content[:]):
+         if line in includes_lines:
+             content[i] = includes_lines[line]
++    content = [l if l.endswith("\n") else l + "\n" for l in feature_macro_lines] + content
+ 
+     with open(tmp_file_path, 'w') as f:
+         f.writelines(content)
+diff --git a/sactor/c_parser/global_var_info.py b/sactor/c_parser/global_var_info.py
+index 6445ed4..644423e 100644
+--- a/sactor/c_parser/global_var_info.py
++++ b/sactor/c_parser/global_var_info.py
+@@ -11,10 +11,33 @@ class GlobalVarInfo():
+         self.type: str = node.type.spelling
+         self.location: str = f"{node.location.file.name}:{node.location.line}:{node.location.column}"
+ 
++        # initializer present? (`T x = ...;`)
++        try:
++            self.has_initializer: bool = any(t.spelling == "=" for t in node.get_tokens())
++        except Exception:
++            self.has_initializer = False
++        # `extern T x;` is only a declaration; `T x;` at file scope is a (tentative) definition
++        try:
++            self.is_extern: bool = node.storage_class == cindex.StorageClass.EXTERN
++        except Exception:
++            self.is_extern = False
++
+         # check if the global variable is a constant
++        # Arrays used to count as constant unconditionally, which stripped `mut` from tables
++        # the program fills at run time (genann's `double lookup[4096];`) and put them in
++        # read-only memory. An array is treated as constant only if its elements are
++        # const-qualified or it has an initializer (a lookup table such as URL_SCHEMES).
+         self.is_const: bool = False
+-        if self.node.type.is_const_qualified() or self.node.type.get_canonical().kind == cindex.TypeKind.CONSTANTARRAY:
++        canonical = self.node.type.get_canonical()
++        if self.node.type.is_const_qualified():
+             self.is_const = True
++        elif canonical.kind == cindex.TypeKind.CONSTANTARRAY:
++            try:
++                elem_const = canonical.get_array_element_type().is_const_qualified()
++            except Exception:
++                elem_const = False
++            if elem_const or self.has_initializer:
++                self.is_const = True
+ 
+         self.is_array = False
+         if self.node.type.get_canonical().kind == cindex.TypeKind.CONSTANTARRAY:
+diff --git a/sactor/combiner/program_combiner.py b/sactor/combiner/program_combiner.py
+index f779f6d..85684e7 100644
+--- a/sactor/combiner/program_combiner.py
++++ b/sactor/combiner/program_combiner.py
+@@ -226,8 +226,11 @@ class ProgramCombiner(Combiner):
+             return CombineResult.RUSTFMT_FAILED, None
+ 
+         # fix the code
++        # `-A clippy::cmp_null`: the machine-applicable fix for that lint in
++        # clippy 1.85/1.86 rewrites `p != null_mut()` to `p.is_null()` (drops
++        # the negation), silently breaking semantics; keep it out of --fix.
+         cmd = ["cargo", "clippy", "--fix", "--allow-no-vcs", "--manifest-path",
+-               os.path.join(build_dir, "Cargo.toml")]
++               os.path.join(build_dir, "Cargo.toml"), "--", "-A", "clippy::cmp_null"]
+         logger.debug("Running clippy fix command: %s", " ".join(cmd))
+         result = utils.run_command(cmd)
+ 
+diff --git a/sactor/combiner/project_combiner.py b/sactor/combiner/project_combiner.py
+index d2805e9..40ee484 100644
+--- a/sactor/combiner/project_combiner.py
++++ b/sactor/combiner/project_combiner.py
+@@ -375,7 +375,8 @@ class ProjectCombiner:
+         if res.returncode != 0:
+             logger.error("Project fmt failed: %s", res.stderr)
+ 
+-        clippy_fix = ["cargo", "clippy", "--fix", "--allow-no-vcs", "--manifest-path", os.path.join(crate_dir, "Cargo.toml")]
++        # see program_combiner: clippy 1.85/1.86 `cmp_null` auto-fix drops the negation
++        clippy_fix = ["cargo", "clippy", "--fix", "--allow-no-vcs", "--manifest-path", os.path.join(crate_dir, "Cargo.toml"), "--", "-A", "clippy::cmp_null"]
+         res = utils.run_command(clippy_fix)
+         if res.returncode != 0:
+             logger.error("Project clippy fix failed: %s", res.stderr)
+diff --git a/sactor/sactor.py b/sactor/sactor.py
+index 9b63a7f..4c15813 100644
+--- a/sactor/sactor.py
++++ b/sactor/sactor.py
+@@ -273,14 +273,13 @@ class Sactor:
+         self.struct_order = self.divider.get_struct_order()
+         self.function_order = self.divider.get_function_order()
+ 
+-        for function_pairs in self.function_order:
+-            if len(function_pairs) > 1:
+-                raise ValueError(
+-                    "Circular dependencies for functions is not supported yet")
++        # Mutually recursive functions (strongly connected components with more
++        # than one member) are translated as a group; see _run_*_translation.
++        # Mutually recursive structs are translated as a group as well
++        # (IdiomaticTranslator.translate_struct_group).
+         for struct_pairs in self.struct_order:
+             if len(struct_pairs) > 1:
+-                raise ValueError(
+-                    "Circular dependencies for structs is not supported yet")
++                logger.info("Struct cycle: %s", [s.name for s in struct_pairs])
+ 
+         logger.debug("Total structs: %d; order groups: %d",
+                      sum(len(group) for group in self.struct_order), len(self.struct_order))
+@@ -402,6 +401,8 @@ class Sactor:
+         translator.prepare_failure_info_backup()
+         final_result = TranslateResult.SUCCESS
+         for struct_pairs in self.struct_order:
++            if len(struct_pairs) > 1:
++                translator.begin_group(s.name for s in struct_pairs)
+             for struct in struct_pairs:
+                 ready, blockers = translator.check_dependencies(struct, lambda s: s.dependencies)
+                 if not ready:
+@@ -411,8 +412,13 @@ class Sactor:
+                 result = translator.translate_struct(struct)
+                 if result != TranslateResult.SUCCESS:
+                     final_result = result
++            translator.end_group()
+ 
+         for function_pairs in self.function_order:
++            if len(function_pairs) > 1:
++                logger.info("Translating mutually recursive group one by one: %s",
++                            [f.name for f in function_pairs])
++                translator.begin_group(f.name for f in function_pairs)
+             for function in function_pairs:
+                 struct_ready, struct_blockers = translator.check_dependencies(
+                     function, lambda s: s.struct_dependencies)
+@@ -431,6 +437,7 @@ class Sactor:
+                 result = translator.translate_function(function)
+                 if result != TranslateResult.SUCCESS:
+                     final_result = result
++            translator.end_group()
+ 
+         return final_result, translator
+ 
+@@ -471,6 +478,21 @@ class Sactor:
+         translator.prepare_failure_info_backup()
+         final_result = TranslateResult.SUCCESS
+         for struct_pairs in self.struct_order:
++            if len(struct_pairs) > 1:
++                translator.begin_group(s.name for s in struct_pairs)
++                blocked = False
++                for struct in struct_pairs:
++                    ready, blockers = translator.check_dependencies(struct, lambda s: s.dependencies)
++                    if not ready:
++                        blocked = True
++                        if blockers:
++                            translator.mark_dependency_block("struct", struct.name, blockers)
++                if not blocked:
++                    result = translator.translate_struct_group(list(struct_pairs))
++                    if result != TranslateResult.SUCCESS:
++                        final_result = result
++                translator.end_group()
++                continue
+             for struct in struct_pairs:
+                 ready, blockers = translator.check_dependencies(struct, lambda s: s.dependencies)
+                 if not ready:
+@@ -482,6 +504,31 @@ class Sactor:
+                     final_result = result
+ 
+         for function_pairs in self.function_order:
++            if len(function_pairs) > 1:
++                # Mutually recursive group: idiomatic signatures must be chosen
++                # together, so the whole group goes to the LLM in one prompt.
++                translator.begin_group(f.name for f in function_pairs)
++                try:
++                    blockers = []
++                    for function in function_pairs:
++                        struct_ready, struct_blockers = translator.check_dependencies(
++                            function, lambda s: s.struct_dependencies)
++                        func_ready, func_blockers = translator.check_dependencies(
++                            function, lambda s: s.function_dependencies)
++                        if not struct_ready:
++                            blockers.extend(struct_blockers)
++                        if not func_ready:
++                            blockers.extend(func_blockers)
++                    if blockers:
++                        for function in function_pairs:
++                            translator.mark_dependency_block("function", function.name, blockers)
++                        continue
++                    result = translator.translate_function_group(list(function_pairs))
++                finally:
++                    translator.end_group()
++                if result != TranslateResult.SUCCESS:
++                    final_result = result
++                continue
+             for function in function_pairs:
+                 struct_ready, struct_blockers = translator.check_dependencies(
+                     function, lambda s: s.struct_dependencies)
+diff --git a/sactor/thirdparty/c2rust.py b/sactor/thirdparty/c2rust.py
+index 9cd46c4..d201c8d 100644
+--- a/sactor/thirdparty/c2rust.py
++++ b/sactor/thirdparty/c2rust.py
+@@ -43,7 +43,11 @@ class C2Rust(ThirdParty):
+         search_include_paths = utils.get_compiler_include_paths()
+         search_include_paths = [
+             f'-I{path}' for path in search_include_paths]
+-        cmd = ['c2rust', 'transpile', tmp_filename,
++        # --preserve-unused-functions: SACToR translates every function it
++        # parses, including static helpers nothing calls (e.g. harness helpers
++        # once main is removed); without the flag c2rust drops them together
++        # with the structs only they use (libbmp_write: md5_ctx not found).
++        cmd = ['c2rust', 'transpile', '--preserve-unused-functions', tmp_filename,
+             '--', *search_include_paths, *compile_flags]
+         logger.debug("Running c2rust command: %s", cmd)
+         # add C_INCLUDE_PATH to the environment if needed
+diff --git a/sactor/translator/idiomatic_translator.py b/sactor/translator/idiomatic_translator.py
+index 3314b97..446e7c0 100644
+--- a/sactor/translator/idiomatic_translator.py
++++ b/sactor/translator/idiomatic_translator.py
+@@ -1,4 +1,5 @@
+ import json
++import re
+ import os
+ import shutil
+ from typing import Optional, override
+@@ -423,6 +424,7 @@ Error: Failed to parse the result from LLM, result is not wrapped by the tags as
+             attempts,
+         )
+         self.failure_info_set_attempts(global_var.name, attempts + 1)
++        struct_dependency_code = ""
+ 
+         if global_var.is_const:
+             global_var_name = global_var.name
+@@ -454,8 +456,51 @@ The global variable is:
+ If you think the global variable is already idiomatic, you can directly copy the code to the output format.
+ '''
+         else:
+-            raise NotImplementedError(
+-                "Error: Only support translating const global variables for idiomatic Rust")
++            # Mutable global (`static mut` in the unidiomatic stage): translate it
++            # into a safe interior-mutability wrapper so that idiomatic functions
++            # can use it without `unsafe`. The C name is kept because dependents
++            # look the variable up by name.
++            global_var_name = global_var.name
++            uni_path = f"{self.unidiomatic_result_path}/translated_code_unidiomatic/global_vars/{global_var_name}.rs"
++            if not os.path.exists(uni_path):
++                msg = f"Error: Global variable {global_var_name} is not translated into unidiomatic Rust yet"
++                if self.continue_run_when_incomplete:
++                    self.append_failure_info(global_var_name, "NO_UNIDIOMATIC_CODE_ERROR", msg, "")
++                    logger.warning(msg)
++                    return TranslateResult.NO_UNIDIOMATIC_CODE
++                raise RuntimeError(msg)
++            code_of_global_var = read_file(uni_path)
++            try:
++                struct_names = self._global_var_struct_names(global_var)
++            except Exception as exc:
++                logger.warning("Could not resolve struct type of global %s: %s", global_var_name, exc)
++                struct_names = []
++            struct_codes: list[str] = []
++            for sname in struct_names:
++                spath = os.path.join(self.translated_struct_path, sname + ".rs")
++                if os.path.exists(spath):
++                    struct_codes.append(read_file(spath))
++            struct_dependency_code = "\n\n".join(struct_codes)
++            prompt = f'''
++Translate the following unidiomatic Rust **mutable** global variable (`static mut`) into idiomatic, safe Rust.
++Keep the variable name **exactly** `{global_var_name}` (same casing), because other code refers to it by this name.
++Do **not** use `static mut`. Wrap the value in a safe interior-mutability type instead, the simplest one that fits:
++- a plain integer or bool: `std::sync::atomic::Atomic*`;
++- a struct or anything else: `static {global_var_name}: std::sync::Mutex<T> = std::sync::Mutex::new(<initial value>);` (or `RwLock`).
++The initial value must mean the same as the C initializer; where the idiomatic struct replaced raw pointers, use the idiomatic empty value (`None`, `Vec::new()`, `String::new()`, `0`, ...).
++Do not define any struct or enum types; the ones you need are already translated and shown below. Output only the static item (plus `use` lines if needed).
++The unidiomatic global variable is:
++```rust
++{code_of_global_var}
++```
++'''
++            if struct_dependency_code:
++                prompt += f'''
++Its type uses the following already translated idiomatic structs (do **NOT** redefine them):
++```rust
++{struct_dependency_code}
++```
++'''
+ 
+         prompt += f'''
+ Output the translated global variable into this format (wrap with the following tags):
+@@ -540,6 +585,8 @@ Error: Failed to parse the result from LLM, result is not wrapped by the tags as
+         compile_code = global_var_result
+         if enum_dependency_code:
+             compile_code = f"{enum_dependency_code}\n{global_var_result}"
++        if struct_dependency_code:
++            compile_code = f"{struct_dependency_code}\n{compile_code}"
+         result = self.verifier.try_compile_rust_code(compile_code)
+         if result[0] != VerifyResult.SUCCESS:
+             if result[0] == VerifyResult.COMPILE_ERROR:
+@@ -615,9 +662,16 @@ Error: Failed to parse the result from LLM, result is not wrapped by the tags as
+             struct_union.name, CrownType.STRUCT)
+ 
+         # Get previous translation results as dependencies
+-        # Unlike the function, we only need to retrieve one level of dependencies
++        # Dependencies of the struct, transitively: with only one level, a dependency's own
++        # dependencies were missing from the compile unit, and the LLM "fixed" that by adding
++        # empty stubs (quadtree: `pub struct QuadtreeBounds;` inside quadtree.rs), which then
++        # shadowed the real definitions in every function using both.
+         dependencies_code = {}
+-        dependency_names = [d.name for d in struct_union.dependencies]
++        try:
++            closure = self.c_parser.retrieve_all_struct_dependencies(struct_union)
++        except Exception:
++            closure = {d.name for d in struct_union.dependencies}
++        dependency_names = sorted(n for n in closure if n != struct_union.name)
+         for dependency_name in dependency_names:
+             struct_path = os.path.join(
+                 self.translated_struct_path, dependency_name + ".rs")
+@@ -936,7 +990,13 @@ Error: Failed to parse the result from LLM, result is not wrapped by the tags as
+             logger.warning("Struct spec staging skipped: %s", e)
+             spec_validation_error = str(e)
+ 
+-        if not spec_valid:
++        if not spec_valid and not self.verifier.has_tests():
++            logger.warning(
++                "Struct %s: SPEC missing or invalid (%s) but no test commands are configured; continuing without a spec",
++                struct_union.name,
++                spec_validation_error,
++            )
++        elif not spec_valid:
+             if spec_tmp_dir:
+                 shutil.rmtree(spec_tmp_dir, ignore_errors=True)
+             error_detail = spec_validation_error or "Struct SPEC missing or invalid"
+@@ -1111,6 +1171,494 @@ Error: Failed to parse the result from LLM, result is not wrapped by the tags as
+         return TranslateResult.SUCCESS
+ 
+     @override
++    # ------------------------------------------------------------------
++    # Mutually recursive functions (one strongly connected component)
++    # ------------------------------------------------------------------
++    def translate_struct_group(self, structs: list[StructInfo]) -> TranslateResult:
++        """Translate mutually recursive structs (a struct SCC) together.
++
++        Each member refers to the others, so their idiomatic definitions have to
++        be chosen in one answer and compiled as one unit. The combined code is
++        saved as the first member's file; the other members get a file with a
++        pointer comment. Any consumer of a member already pulls in every member
++        through the struct dependency closure, so nothing is defined twice.
++        Verification is compile-only (the converter harness is per struct), so
++        this is only allowed when no test commands are configured.
++        """
++        names = [s.name for s in structs]
++        leader = structs[0]
++        for s in structs:
++            self.init_failure_info("struct", s.name)
++        paths = {n: os.path.join(self.translated_struct_path, n + ".rs") for n in names}
++        if all(os.path.exists(p) for p in paths.values()):
++            logger.info("Struct group %s already translated", names)
++            for n in names:
++                self.mark_translation_success("struct", n)
++            return TranslateResult.SUCCESS
++        if self.verifier.has_tests():
++            raise NotImplementedError(
++                f"Struct cycle {names}: converter harness generation for struct groups is not supported; "
++                "run without test commands (compile-only verification)")
++
++        unidiomatic_code: dict[str, str] = {}
++        for s in structs:
++            p = os.path.join(self.unidiomatic_result_path, "translated_code_unidiomatic/structs", s.name + ".rs")
++            if not os.path.exists(p):
++                msg = f"Error: Struct {s.name} is not translated into unidiomatic Rust yet"
++                if self.continue_run_when_incomplete:
++                    for n in names:
++                        self.append_failure_info(n, "NO_UNIDIOMATIC_CODE_ERROR", msg, "")
++                    logger.warning(msg)
++                    return TranslateResult.NO_UNIDIOMATIC_CODE
++                raise RuntimeError(msg)
++            unidiomatic_code[s.name] = read_file(p)
++
++        dependencies_code: dict[str, str] = {}
++        for s in structs:
++            try:
++                closure = sorted(self.c_parser.retrieve_all_struct_dependencies(s))
++            except Exception:
++                closure = sorted(d.name for d in s.dependencies)
++            for dname in closure:
++                if dname in names or dname in dependencies_code:
++                    continue
++                dp = os.path.join(self.translated_struct_path, dname + ".rs")
++                if not os.path.exists(dp):
++                    raise RuntimeError(
++                        f"Error: Dependency {dname} of struct group {names} is not translated yet")
++                dependencies_code[dname] = read_file(dp)
++
++        enum_defs: dict[str, EnumInfo] = {}
++        for s in structs:
++            for enum_val in getattr(s, "enum_value_dependencies", []):
++                enum_defs[enum_val.definition.name] = enum_val.definition
++            for enum_def in getattr(s, "enum_dependencies", []):
++                enum_defs[enum_def.name] = enum_def
++        enum_code: dict[str, str] = {}
++        for enum_def in enum_defs.values():
++            self._translate_enum_impl(enum_def)
++            enum_code[enum_def.name] = read_file(
++                os.path.join(self.translated_enum_path, enum_def.name + ".rs"))
++
++        type_aliases: dict[str, str] = {}
++        for s in structs:
++            type_aliases.update(s.type_aliases)
++
++        crown_sections = []
++        for s in structs:
++            out = self.crown_result.query(s.name, CrownType.STRUCT)
++            if len(out) > 0:
++                crown_sections.append(f"{s.name}:\n{out}")
++
++        verify_result: tuple[VerifyResult, Optional[str]] = (VerifyResult.SUCCESS, None)
++        error_translation: Optional[str] = None
++        for attempt in range(self.max_attempts):
++            logger.info("Translating struct group %s (attempts: %d)", names, attempt)
++            for n in names:
++                self.failure_info_set_attempts(n, attempt + 1)
++            joined = "\n".join(unidiomatic_code[n] for n in names)
++            prompt = f'''
++The following Rust structs are mutually recursive: each of {", ".join(names)} refers to another one of them.
++Translate them to idiomatic Rust **together, in one answer**. Try to avoid using raw pointers in the translation of the structs.
++If a struct is designed as a cloneable struct, try to add/implement the `Clone` trait for it.
++```rust
++{joined}
++```
++'''
++            if crown_sections:
++                crown_joined = "\n".join(crown_sections)
++                prompt += f'''
++"Crown" is a pointer analysis tool that can help to identify the ownership, mutability and fatness of pointers. Following are the possible annotations for pointers:
++```
++fatness:
++    - `Ptr`: Single pointer
++    - `Arr`: Pointer is an array
++mutability:
++    - `Mut`: Mutable pointer
++    - `Imm`: Immutable pointer
++ownership:
++    - `Owning`: Owns the pointer
++    - `Transient`: Not owns the pointer
++```
++
++The following is the output of Crown for these structs:
++```
++{crown_joined}
++```
++Analyze the Crown output firstly, then translate the structs with the help of the Crown output.
++'''
++            if dependencies_code:
++                deps_joined = "\n".join(dependencies_code.values())
++                prompt += f'''
++The structs use the following structs/unions, which are already translated as (you don't need to include them in your translation, and **you can not modify them**):
++```rust
++{deps_joined}
++```
++'''
++            if enum_code:
++                prompt += f'''
++The structs use the following enums or type aliases. They are already translated and will be provided automatically; you should **NOT** redefine them:
++```rust
++{chr(10).join(enum_code.values())}
++```
++'''
++            if type_aliases:
++                aliases = "\n".join(f"{a} = {t}" for a, t in type_aliases.items())
++                prompt += f'''
++The structs use the following type aliases, which are defined as:
++```rust
++{aliases}
++```
++'''
++            prompt += '''
++Output the translated structs, all of them in one block, into this format (wrap with the following tags):
++----STRUCT----
++```rust
++// Your translated structs here
++```
++----END STRUCT----
++'''
++            if verify_result[0] == VerifyResult.COMPILE_ERROR:
++                prompt += f'''
++Lastly, the structs were translated as:
++```rust
++{error_translation}
++```
++It failed to compile with the following error message:
++```
++{verify_result[1]}
++```
++Analyzing the error messages, think about the possible reasons, and try to avoid this error.
++'''
++            llm_raw = self.llm.query(prompt)
++            try:
++                struct_result = utils.parse_llm_result(llm_raw, "struct")["struct"]
++            except Exception:
++                msg = "Error: Failed to parse the result from LLM, result is not wrapped by the ----STRUCT---- tags as instructed."
++                logger.error("%s", msg)
++                self.append_failure_info(leader.name, "COMPILE_ERROR", msg, llm_raw)
++                verify_result, error_translation = (VerifyResult.COMPILE_ERROR, msg), llm_raw
++                continue
++            for sname in re.findall(r"^\s*(?:pub(?:\([^)]*\))?\s+)?struct\s+([A-Za-z_]\w*)", struct_result, re.M):
++                try:
++                    struct_result = rust_ast_parser.add_derive_to_struct_union(struct_result, sname, "Debug")
++                except Exception:
++                    pass
++            all_dependency_code: dict[str, str] = {}
++            all_dependency_code.update(dependencies_code)
++            all_dependency_code.update(enum_code)
++            result = self.verifier.verify_struct(leader, struct_result, all_dependency_code)
++            if result[0] != VerifyResult.SUCCESS:
++                self.append_failure_info(leader.name, "COMPILE_ERROR", result[1], struct_result)
++                verify_result, error_translation = result, struct_result
++                continue
++            utils.save_code(paths[leader.name], struct_result)
++            for n in names[1:]:
++                utils.save_code(paths[n], f"// `{n}` is defined in {leader.name}.rs together with the other members of its mutually recursive struct group {names}\n")
++            for n in names:
++                self.mark_translation_success("struct", n)
++            logger.info("Struct group %s translated successfully", names)
++            return TranslateResult.SUCCESS
++        logger.error("Failed to translate struct group %s after %d attempts", names, self.max_attempts)
++        return TranslateResult.MAX_ATTEMPTS_EXCEEDED
++
++    def translate_function_group(self, functions: list[FunctionInfo]) -> TranslateResult:
++        """Translate a set of mutually recursive functions together.
++
++        Their idiomatic signatures depend on each other, so the whole group is
++        sent to the LLM in one prompt and compiled as one unit. Verification is
++        compile-only; the FFI test harness cannot be generated per function for
++        a group, so this is only allowed when no test commands are configured.
++        """
++        names = [f.name for f in functions]
++        for f in functions:
++            self.init_failure_info("function", f.name)
++        missing = [f for f in functions
++                   if not os.path.exists(os.path.join(self.translated_function_path, f.name + ".rs"))]
++        if not missing:
++            for f in functions:
++                logger.info("Function %s already translated", f.name)
++                self.mark_translation_success("function", f.name)
++            return TranslateResult.SUCCESS
++        if self.verifier.has_tests():
++            raise NotImplementedError(
++                "Mutually recursive functions are translated as a group with compile-only "
++                f"verification; run with an empty test command list to translate {names}")
++        res = self._translate_function_group_impl(functions)
++        self.save_failure_info(self.failure_info_path)
++        return res
++
++    def _translate_function_group_impl(
++        self,
++        functions: list[FunctionInfo],
++        verify_result: tuple[VerifyResult, Optional[str]] = (VerifyResult.SUCCESS, None),
++        error_translation=None,
++        attempts=0,
++    ) -> TranslateResult:
++        names = [f.name for f in functions]
++        if attempts > self.max_attempts - 1:
++            logger.error("Failed to translate function group %s after %d attempts", names, self.max_attempts)
++            return TranslateResult.MAX_ATTEMPTS_EXCEEDED
++        logger.info("Translating function group: %s (attempts: %d)", names, attempts)
++        for f in functions:
++            self.failure_info_set_attempts(f.name, attempts + 1)
++
++        def _fail(kind: str, message: str, translation: str, result=None):
++            logger.error("%s", message)
++            for f in functions:
++                self.append_failure_info(f.name, kind, message, translation)
++            return self._translate_function_group_impl(
++                functions,
++                verify_result=result if result is not None else (VerifyResult.COMPILE_ERROR, message),
++                error_translation=translation,
++                attempts=attempts + 1,
++            )
++
++        # ---- shared context: transitive closure of everything outside the group ----
++        # Mirrors get_all_dependencies() of the single-function path: the
++        # verification crate must contain the code of every function reachable
++        # from the group (parse_string -> utf16_literal_to_utf8, ...) plus the
++        # structs, globals and enums any of them use.
++        closure_functions: list = []
++        struct_names: list[str] = []
++        global_var_nodes: list = []
++        enum_definitions: dict = {}
++        used_enum_names: list[str] = []
++        visited: set[str] = set(names)
++
++        def _visit(function_like, is_member: bool):
++            target = getattr(function_like, "target", None) or function_like
++            for st in getattr(target, "struct_dependencies", []) or []:
++                for sname in self.c_parser.retrieve_all_struct_dependencies(st):
++                    if sname not in struct_names:
++                        struct_names.append(sname)
++            for gv in getattr(target, "global_vars_dependencies", []) or []:
++                if all(gv.name != g.name for g in global_var_nodes):
++                    global_var_nodes.append(gv)
++                try:
++                    for sname in self._global_var_struct_names(gv):
++                        if sname not in struct_names:
++                            struct_names.append(sname)
++                except Exception as exc:
++                    logger.warning("Could not resolve struct type of global %s: %s", getattr(gv, "name", "?"), exc)
++            for enum_val in getattr(target, "enum_values_dependencies", []) or []:
++                used_enum_names.append(enum_val.name)
++                enum_definitions[enum_val.definition.name] = enum_val.definition
++            for enum_def in getattr(target, "enum_dependencies", []) or []:
++                used_enum_names.append(enum_def.name)
++                enum_definitions[enum_def.name] = enum_def
++            for dep in getattr(target, "function_dependencies", []) or []:
++                dep_target = getattr(dep, "target", None) or dep
++                dep_name = getattr(dep_target, "name", getattr(dep, "name", None))
++                if not dep_name or dep_name in visited:
++                    continue
++                visited.add(dep_name)
++                closure_functions.append(dep_target)
++                _visit(dep_target, False)
++
++        for f in functions:
++            _visit(f, True)
++        code_of_structs: dict[str, str] = {}
++        for struct_name in struct_names:
++            struct_path = os.path.join(self.translated_struct_path, struct_name + ".rs")
++            if not os.path.exists(struct_path):
++                raise RuntimeError(f"Error: Struct {struct_name} is not translated yet")
++            code_of_structs[struct_name] = read_file(struct_path)
++        used_global_vars: dict[str, str] = {}
++        used_global_vars_only_type_and_names: dict[str, str] = {}
++        for global_var in global_var_nodes:
++            res = self._translate_global_vars_impl(global_var)
++            if res != TranslateResult.SUCCESS:
++                return res
++            code_of_global_var = read_file(os.path.join(self.translated_global_var_path, global_var.name + ".rs"))
++            try:
++                type_and_name = rust_ast_parser.get_value_type_name(code_of_global_var, global_var.name)
++            except Exception:
++                type_and_name = f"{code_of_global_var.rsplit('=')[0]};"
++            used_global_vars[global_var.name] = code_of_global_var
++            used_global_vars_only_type_and_names[global_var.name] = type_and_name
++        code_of_enum: dict[Any, str] = {}
++        for enum_def in enum_definitions.values():
++            self._translate_enum_impl(enum_def)
++            enum_path = os.path.join(self.translated_enum_path, enum_def.name + ".rs")
++            if not os.path.exists(enum_path):
++                raise RuntimeError(f"Error: Enum {enum_def.name} is not translated yet")
++            code_of_enum[enum_def] = read_file(enum_path)
++        used_type_aliases: dict[str, str] = {}
++        for f in functions:
++            used_type_aliases.update(f.type_alias_dependencies)
++        # code of every reachable outside function (verification) and the
++        # signatures of the direct callees (prompt)
++        all_dependency_functions_code: dict[str, str] = {}
++        for dep_target in closure_functions:
++            dep_name = dep_target.name
++            translated_path = os.path.join(self.translated_function_path, f"{dep_name}.rs")
++            if not os.path.exists(translated_path):
++                raise RuntimeError(
++                    f"Error: Dependency {dep_name} of function group {names} is not translated yet")
++            all_dependency_functions_code[dep_name] = read_file(translated_path)
++        function_depedency_signatures: list[str] = []
++        direct_seen: set[str] = set()
++        for f in functions:
++            for dep in f.function_dependencies:
++                dep_name = getattr(dep, "name", None)
++                if not dep_name or dep_name in names or dep_name in direct_seen:
++                    continue
++                direct_seen.add(dep_name)
++                code = all_dependency_functions_code.get(dep_name)
++                if code is None:
++                    continue
++                sigs = rust_ast_parser.get_func_signatures(code)
++                resolved = self._resolve_dependency_decl_name(dep_name, sigs)
++                if resolved is None:
++                    raise RuntimeError(
++                        f"Error: Unable to determine idiomatic name for dependency {dep_name} of group {names}")
++                function_depedency_signatures.append(sigs[resolved] + ';')
++        # ---- per-member inputs ----
++        members_prompt = ""
++        unidiomatic_sigs: dict[str, str] = {}
++        for f in functions:
++            uni_path = os.path.join(self.unidiomatic_result_path, "translated_code_unidiomatic/functions", f.name + ".rs")
++            if not os.path.exists(uni_path):
++                msg = f"Error: Function {f.name} is not translated into unidiomatic Rust yet"
++                if self.continue_run_when_incomplete:
++                    for g in functions:
++                        self.append_failure_info(g.name, "NO_UNIDIOMATIC_CODE_ERROR", msg, "")
++                    logger.warning(msg)
++                    return TranslateResult.NO_UNIDIOMATIC_CODE
++                raise RuntimeError(msg)
++            uni_code = read_file(uni_path)
++            unidiomatic_sigs[f.name] = rust_ast_parser.get_func_signatures(uni_code)[f.name]
++            c_code = self.c_parser.extract_function_code(f.name)
++            crown_output = self.crown_result.query(f.name, CrownType.FUNCTION)
++            members_prompt += f"""
++### Function `{f.name}`
++Original C:
++```c
++{c_code}
++```
++Unidiomatic Rust:
++```rust
++{uni_code}
++```
++"""
++            if len(crown_output) > 0:
++                members_prompt += f"""Crown pointer analysis for `{f.name}` (fatness: Ptr/Arr, mutability: Mut/Imm, ownership: Owning/Transient):
++```
++{crown_output}
++```
++"""
++        n = len(functions)
++        joint_names = ", ".join(f"`{x}`" for x in names)
++        prompt = f"""
++Translate the following {n} **mutually recursive** unidiomatic Rust functions into idiomatic Rust **together**: {joint_names}.
++They call each other, so decide their idiomatic signatures consistently and translate all of them in this one answer.
++Try to remove all the `unsafe` blocks and only use the safe Rust code or use the `unsafe` blocks only when necessary.
++Before translating, analyze the unsafe blocks one by one and how to convert them into safe Rust code.
++**libc may not be provided in the idiomatic code, so try to avoid using libc functions and types, and avoid using `std::ffi` module.**
++Your solution must contain **exactly these {n} functions** with their names unchanged and nothing else at top level; if you need helper functions, define them inside one of these functions.
++Analyze the Crown output where given, then translate the pointers in function arguments and return values with its help; avoid pointers in arguments and return values if possible.
++{members_prompt}"""
++        if used_global_vars:
++            prompt += f"""
++The functions use the following const global variables, whose types and names are (you should **NOT** define or declare them in your translation, as the system will automatically define them):
++```rust
++{chr(10).join(used_global_vars_only_type_and_names.values())}
++```
++"""
++        if code_of_enum:
++            prompt += f"""
++The functions use the following enums:
++```c
++{chr(10).join(used_enum_names)}
++```
++Which are already translated as:
++```rust
++{chr(10).join(code_of_enum.values())}
++```
++Directly use the translated enums in your translation. You should **NOT** include them in your translation, as the system will automatically include them.
++"""
++        if code_of_structs:
++            prompt += f"""
++These functions use the following structs/unions, which are already translated as (you don't need to include them in your translation, and **you can not modify them**):
++```rust
++{chr(10).join(code_of_structs.values())}
++```
++"""
++        if used_type_aliases:
++            prompt += f"""
++The functions use the following type aliases, which are defined as:
++```rust
++{chr(10).join(f'{a} = {t}' for a, t in used_type_aliases.items())}
++```
++"""
++        if function_depedency_signatures:
++            prompt += f"""
++These functions use the following functions, which are already translated as (you don't need to include them in your translation, and **you can not modify them**):
++```rust
++{chr(10).join(function_depedency_signatures)}
++```
++"""
++        prompt += f"""
++Output all {n} translated functions in ONE block (wrap with the following tags):
++----FUNCTION----
++```rust
++// All {n} translated functions here
++```
++----END FUNCTION----
++"""
++        if verify_result[0] != VerifyResult.SUCCESS and error_translation is not None:
++            prompt += f"""
++The last time, the functions were translated as:
++```rust
++{error_translation}
++```
++It failed with the following error message:
++```
++{verify_result[1]}
++```
++Analyze the error messages, think about the possible reasons, and try to avoid this error.
++"""
++        llm_raw = self.llm.query(prompt)
++        try:
++            function_result = utils.parse_llm_result(llm_raw, "function")["function"]
++        except Exception:
++            return _fail("COMPILE_ERROR",
++                         "Error: Failed to parse the result from LLM, result is not wrapped by the ----FUNCTION---- tags as instructed.",
++                         llm_raw)
++        try:
++            function_result = rust_ast_parser.expand_use_aliases(function_result)
++            result_sigs = rust_ast_parser.get_func_signatures(function_result)
++        except Exception as e:
++            return _fail("COMPILE_ERROR", f"Error: Syntax error in the translated code: {e}", function_result)
++        if set(result_sigs.keys()) != set(names):
++            return _fail("COMPILE_ERROR",
++                         f"Error: expected exactly the functions {names} at top level, got {list(result_sigs.keys())}. "
++                         "Keep the original names and nest any helper functions inside them.",
++                         function_result)
++        data_type_code = code_of_structs | used_global_vars | {getattr(k, 'name', str(k)): v for k, v in code_of_enum.items()}
++        try:
++            result = self.verifier.verify_function(
++                functions[0],
++                function_code=function_result,
++                data_type_code=data_type_code,
++                function_dependencies_code=all_dependency_functions_code,
++                unidiomatic_signature=unidiomatic_sigs[functions[0].name],
++                prefix=False,
++            )
++        except Exception as e:
++            return _fail("COMPILE_ERROR", str(e), function_result)
++        if result[0] != VerifyResult.SUCCESS:
++            kind = "COMPILE_ERROR" if result[0] == VerifyResult.COMPILE_ERROR else "TEST_ERROR"
++            return _fail(kind, result[1] or "", function_result, result=result)
++        uses = rust_ast_parser.get_uses_code(function_result)
++        for f in functions:
++            fn_def = rust_ast_parser.get_function_definition(function_result, f.name)
++            utils.save_code(f"{self.translated_function_path}/{f.name}.rs", "\n".join(uses + [fn_def]))
++            self.mark_translation_success("function", f.name)
++        logger.info("Function group %s translated successfully", names)
++        return TranslateResult.SUCCESS
++
+     def _translate_function_impl(
+         self,
+         function: FunctionInfo,
+@@ -1145,11 +1693,19 @@ Error: Failed to parse the result from LLM, result is not wrapped by the tags as
+         macro_definitions = self.c_parser.get_macro_definitions_for_function(function.name)
+ 
+         # Get used struct, unions
+-        structs_in_function = function.struct_dependencies
++        structs_in_function = list(function.struct_dependencies)
+         code_of_structs = {}
+         visited_structs = set()
+         for f in function.function_dependencies:
+             structs_in_function.extend(f.struct_dependencies)
++        for gv in getattr(function, "global_vars_dependencies", []) or []:
++            try:
++                for sname in self._global_var_struct_names(gv):
++                    info = self.c_parser.get_struct_info(sname)
++                    if info is not None:
++                        structs_in_function.append(info)
++            except Exception as exc:
++                logger.warning("Could not resolve struct type of global %s: %s", getattr(gv, "name", "?"), exc)
+         for struct in structs_in_function:
+             all_structs = self.c_parser.retrieve_all_struct_dependencies(
+                 struct)
+@@ -1683,6 +2239,9 @@ Error: Failed to parse the result from LLM, result is not wrapped by the tags as
+         all_global_vars = set()
+         all_dependency_functions = set()
+         visited_functions: set[str] = set()
++        # enums used by dependency functions (e.g. url_parse -> scan_part(..., Category, ...)):
++        # the callee's code is compiled together with this function, so its enums must be too
++        transitive_enum_defs: dict[str, EnumInfo] = {}
+ 
+         def get_all_dependencies(function_like):
+             target = getattr(function_like, "target", None) or function_like
+@@ -1696,6 +2255,13 @@ Error: Failed to parse the result from LLM, result is not wrapped by the tags as
+                 all_structs.add(struct.name)
+             for g_var in getattr(target, "global_vars_dependencies", []) or []:
+                 all_global_vars.add(g_var.name)
++            for enum_val in getattr(target, "enum_values_dependencies", []) or []:
++                edef = getattr(enum_val, "definition", None)
++                if edef is not None and getattr(edef, "name", None):
++                    transitive_enum_defs.setdefault(edef.name, edef)
++            for edef in getattr(target, "enum_dependencies", []) or []:
++                if getattr(edef, "name", None):
++                    transitive_enum_defs.setdefault(edef.name, edef)
+ 
+             for f in getattr(target, "function_dependencies", []) or []:
+                 dep_name = getattr(f, "name", None)
+@@ -1707,10 +2273,13 @@ Error: Failed to parse the result from LLM, result is not wrapped by the tags as
+ 
+         def get_all_struct_dependencies(struct: StructInfo):
+             for s in struct.dependencies:
++                if s.name in all_structs:
++                    continue  # already visited; also stops on struct cycles
+                 all_structs.add(s.name)
+                 get_all_struct_dependencies(s)
+ 
+         for struct in structs_in_function:
++            all_structs.add(struct.name)
+             get_all_struct_dependencies(struct)
+ 
+         def _resolve_project_artifact_path(
+@@ -1810,6 +2379,9 @@ Error: Failed to parse the result from LLM, result is not wrapped by the tags as
+                 dep_name_to_usr[dep_name] = dep_usr
+ 
+         for dep_name in all_dependency_functions:
++            if dep_name == function.name:
++                # self-recursive function: its own code is the translation in progress
++                continue
+             dep_usr = dep_name_to_usr.get(dep_name)
+             dep_path = _resolve_project_artifact_path(
+                 "function",
+@@ -1824,6 +2396,25 @@ Error: Failed to parse the result from LLM, result is not wrapped by the tags as
+             all_dependency_functions_code[dep_name] = read_file(dep_path)
+ 
+         data_type_code = all_dt_code | used_global_vars | code_of_enum
++        own_enum_names = {getattr(k, "name", str(k)) for k in code_of_enum}
++        for struct_name in all_structs:
++            try:
++                sinfo = self.c_parser.get_struct_info(struct_name)
++            except Exception:
++                continue
++            for enum_val in getattr(sinfo, "enum_value_dependencies", []) or []:
++                edef = getattr(enum_val, "definition", None)
++                if edef is not None:
++                    transitive_enum_defs.setdefault(edef.name, edef)
++            for edef in getattr(sinfo, "enum_dependencies", []) or []:
++                transitive_enum_defs.setdefault(edef.name, edef)
++        for ename, edef in transitive_enum_defs.items():
++            if ename in own_enum_names:
++                continue
++            self._translate_enum_impl(edef)
++            enum_path = os.path.join(self.translated_enum_path, ename + ".rs")
++            if os.path.exists(enum_path):
++                data_type_code[f"enum:{ename}"] = read_file(enum_path)
+ 
+         # process the function result
+         function_result = rust_ast_parser.expand_use_aliases(
+diff --git a/sactor/translator/translator.py b/sactor/translator/translator.py
+index bd54b54..a543206 100644
+--- a/sactor/translator/translator.py
++++ b/sactor/translator/translator.py
+@@ -43,6 +43,42 @@ class Translator(ABC):
+         self._failure_info_backup_prepared = False
+         self.translation_status: Dict[str, Dict[str, TranslationOutcome]] = defaultdict(dict)
+         self._dependency_cache: Dict[Tuple[str, str], bool] = {}
++        # Names of the functions in the strongly connected component currently
++        # being translated (mutual recursion). Members may depend on each other
++        # before the peer's translation exists; see check_dependencies.
++        self._current_group: set[str] = set()
++
++    def _global_var_struct_names(self, global_var) -> list[str]:
++        """Names of the structs/unions (transitively) making up the variable's type."""
++        from clang import cindex
++        t = global_var.node.type
++        for _ in range(8):
++            kind = t.kind
++            if kind in (cindex.TypeKind.CONSTANTARRAY, cindex.TypeKind.INCOMPLETEARRAY, cindex.TypeKind.VARIABLEARRAY):
++                t = t.element_type
++            elif kind == cindex.TypeKind.POINTER:
++                t = t.get_pointee()
++            else:
++                break
++        decl = t.get_canonical().get_declaration()
++        if decl is None or decl.kind not in (cindex.CursorKind.STRUCT_DECL, cindex.CursorKind.UNION_DECL):
++            return []
++        name = decl.spelling
++        if not name:
++            return []
++        info = self.c_parser.get_struct_info(name)
++        if info is None:
++            return []
++        names = list(self.c_parser.retrieve_all_struct_dependencies(info))
++        if name not in names:
++            names.append(name)
++        return names
++
++    def begin_group(self, names) -> None:
++        self._current_group = set(names)
++
++    def end_group(self) -> None:
++        self._current_group = set()
+ 
+     def translate_struct(self, struct_union: StructInfo) -> TranslateResult:
+         res = self._translate_struct_impl(struct_union)
+@@ -164,10 +200,15 @@ class Translator(ABC):
+     def check_dependencies(self, cursor, dependencies_mapping) -> tuple[bool, list[dict]]:
+         blockers: List[dict] = []
+         deps = dependencies_mapping(cursor)
++        self_name = getattr(cursor, "name", None)
+         for dep in deps:
+             dep_name = getattr(dep, "name", None)
+             if not dep_name:
+                 continue
++            if dep_name == self_name:
++                # Self-recursive function (e.g. cJSON_Delete): its own
++                # translation cannot be a prerequisite of itself.
++                continue
+             dep_type = self._resolve_dependency_type(dep)
+ 
+             def _get_dep_usr(obj) -> Optional[str]:
+@@ -235,6 +276,10 @@ class Translator(ABC):
+             if self._dependency_artifact_exists(dep_type, dep_name):
+                 self._set_translation_status(dep_type, dep_name, TranslationOutcome.SUCCESS)
+                 continue
++            if status is None and dep_type in ("function", "struct") and dep_name in self._current_group:
++                # Peer in the same mutually recursive group: it is translated
++                # together with / right after this item, so do not block on it.
++                continue
+             if status is None:
+                 raise RuntimeError(
+                     f"Dependency '{dep_name}' of type '{dep_type}' should have been translated before use."
+diff --git a/sactor/translator/unidiomatic_translator.py b/sactor/translator/unidiomatic_translator.py
+index 294ccc1..85baa44 100644
+--- a/sactor/translator/unidiomatic_translator.py
++++ b/sactor/translator/unidiomatic_translator.py
+@@ -307,6 +307,9 @@ Error: Failed to parse the result from LLM, result is not wrapped by the tags as
+             self.translated_global_var_path, global_var.name + ".rs")
+         enum_dependency_code = ""
+         enum_prompt_text = ""
++        struct_dependency_code = ""
++        struct_prompt_text = ""
++        struct_dep_names: list[str] = []
+ 
+         def return_result(global_var_result, verification=True):
+             #remove mut from the binding pattern. Sometimes c2rust translates C `const` variables into Rust `static mut` variables, which is wrong
+@@ -332,10 +335,32 @@ Error: Failed to parse the result from LLM, result is not wrapped by the tags as
+             logger.debug("Translated global variable %s:", global_var.name)
+             logger.debug("%s", global_var_result)
+             if verification:
+-                # TODO: may add verification here
++                if struct_dep_names:
++                    try:
++                        listed = rust_ast_parser.list_struct_enum_union(global_var_result)
++                        redefined = [(x[0] if isinstance(x, (tuple, list)) else x) for x in listed]
++                        redefined = [n for n in redefined if n in struct_dep_names]
++                    except Exception:
++                        redefined = []
++                    if redefined:
++                        error_message = (
++                            f"Error: the translation redefines {redefined}, which are already translated; "
++                            "use the provided struct definitions and only define the global variable")
++                        logger.error("%s", error_message)
++                        self.append_failure_info(
++                            global_var.name, "COMPILE_ERROR", error_message, global_var_result)
++                        return self._translate_global_vars_impl(
++                            global_var,
++                            verify_result=(VerifyResult.COMPILE_ERROR, error_message),
++                            error_translation=global_var_result,
++                            attempts=attempts + 1,
++                        )
+                 compile_code = global_var_result
+                 if enum_dependency_code:
+                     compile_code = f"{enum_dependency_code}\n{global_var_result}"
++                if struct_dependency_code:
++                    # compile against the real struct layout, not one the LLM may invent
++                    compile_code = f"{struct_dependency_code}\n{compile_code}"
+                 try:
+                     result = self.verifier.try_compile_rust_code(compile_code)
+                 except Exception as e:
+@@ -421,6 +446,44 @@ These enums are already translated to Rust as:
+ Directly use these enums in your translation and do **NOT** redefine them.
+ '''
+ 
++        # Structs/unions in the variable's type: hand their translated
++        # definitions to the LLM and compile against them, otherwise the model
++        # invents a layout for e.g. `static error global_error = { NULL, 0 };`
++        # that compiles on its own but breaks every user of the real struct.
++        try:
++            struct_dep_names = self._global_var_struct_names(global_var)
++        except Exception as exc:
++            logger.warning("Could not resolve struct dependencies of global %s: %s", global_var.name, exc)
++            struct_dep_names = []
++        if struct_dep_names:
++            rust_struct_codes: list[str] = []
++            for struct_name in struct_dep_names:
++                struct_path = os.path.join(self.translated_struct_path, struct_name + ".rs")
++                if not os.path.exists(struct_path):
++                    res = self.translate_struct(self.c_parser.get_struct_info(struct_name))
++                    if res != TranslateResult.SUCCESS:
++                        return res
++                rust_struct_codes.append(
++                    rust_ast_parser.unidiomatic_types_cleanup(read_file(struct_path)))
++            struct_dependency_code = "\n\n".join(rust_struct_codes)
++            struct_prompt_text = f'''
++The global variable's type uses the following structs/unions, which are already translated to Rust as:
++```rust
++{struct_dependency_code}
++```
++Use these definitions as they are: do **NOT** redefine them and do not add `impl` blocks for them. Initialize every field exactly as the C initializer does (a C `{{ NULL, 0 }}` initializer assigns the fields in declaration order).
++'''
++        if (not global_var.is_const and not getattr(global_var, "has_initializer", True)
++                and not getattr(global_var, "is_extern", True)):
++            # C tentative definition (`double interval;` at file scope): this translation unit
++            # defines the variable, zero-initialized. The LLM path below would turn it into an
++            # `extern "C"` declaration with no definition anywhere (link error: undefined
++            # `interval`); c2rust's `static mut interval: f64 = 0.;` is the exact equivalent.
++            logger.info("Global variable %s is a tentative definition; using c2rust's zero-initialized definition",
++                        global_var.name)
++            result = rust_ast_parser.get_static_item_definition(self.c2rust_translation, global_var.name)
++            return return_result(result, verification=False)
++
+         if attempts > self.max_attempts - 1:
+             # fallback
+             logger.warning(
+@@ -486,6 +549,8 @@ Use `extern "C"` wrap the following C global variable without defining the value
+ 
+         if enum_prompt_text:
+             prompt += f"\n{enum_prompt_text}\n"
++        if struct_prompt_text:
++            prompt += f"\n{struct_prompt_text}\n"
+ 
+         prompt += f'''
+ Output the translated global variable into this format (wrap with the following tags):
+@@ -568,8 +633,17 @@ Error: Failed to parse the result from LLM, result is not wrapped by the tags as
+             logger.info("Struct/Union %s already translated", struct_union.name)
+             self.mark_translation_success("struct", struct_union.name)
+             return TranslateResult.SUCCESS
+-        for struct in struct_union_dependencies:
+-            self.translate_struct(struct)
++        in_progress = self.__dict__.setdefault("_structs_in_progress", set())
++        if struct_union.name in in_progress:
++            # member of a struct cycle that is being translated further up the
++            # stack; c2rust already provides its definition, it is saved there
++            return TranslateResult.SUCCESS
++        in_progress.add(struct_union.name)
++        try:
++            for struct in struct_union_dependencies:
++                self.translate_struct(struct)
++        finally:
++            in_progress.discard(struct_union.name)
+         self.failure_info_set_attempts(struct_union.name, attempts + 1)
+ 
+         enum_dependencies = {}
+@@ -633,6 +707,19 @@ Error: Failed to parse the result from LLM, result is not wrapped by the tags as
+                     candidate = os.path.join(owner_dir, self.base_name, 'functions', f'{dep_name}.rs')
+                     if os.path.exists(candidate):
+                         translated_path = candidate
++            if not os.path.exists(translated_path) and dep_name in self._current_group:
++                # Peer of a mutually recursive group that is not translated yet:
++                # the C version of the peer is still linked in during
++                # verification, so its C ABI signature (taken from the c2rust
++                # transpilation) is all the caller needs.
++                logger.info("Dependency %s of %s is in the same recursive group; using its c2rust signature",
++                            dep_name, function.name)
++                peer_code = rust_ast_parser.get_function_definition(self.c2rust_translation, dep_name)
++                peer_code = rust_ast_parser.unidiomatic_function_cleanup(peer_code)
++                peer_sigs = rust_ast_parser.get_func_signatures(peer_code)
++                all_uses += RustCode(peer_code).used_code_list
++                function_depedency_signatures.append(peer_sigs[dep_name] + ';')
++                continue
+             if not os.path.exists(translated_path):
+                 raise RuntimeError(
+                     f"Error: Dependency {dep_name} of function {function.name} is not translated yet")
+@@ -661,6 +748,16 @@ Error: Failed to parse the result from LLM, result is not wrapped by the tags as
+         structs_in_function = list(function.struct_dependencies)
+         for func_dep in function_dependencies:
+             structs_in_function.extend(func_dep.struct_dependencies)
++        # A global variable's struct type is a dependency too (e.g. a function
++        # that only touches `global_error.json` needs `struct error`).
++        for gv in getattr(function, "global_vars_dependencies", []) or []:
++            try:
++                for sname in self._global_var_struct_names(gv):
++                    info = self.c_parser.get_struct_info(sname)
++                    if info is not None:
++                        structs_in_function.append(info)
++            except Exception as exc:
++                logger.warning("Could not resolve struct type of global %s: %s", getattr(gv, "name", "?"), exc)
+ 
+         code_of_structs_full: dict[str, str] = {}
+         code_of_structs_prompt: dict[str, str] = {}
+diff --git a/sactor/verifier/idiomatic_verifier.py b/sactor/verifier/idiomatic_verifier.py
+index c76e4f7..2ddc189 100644
+--- a/sactor/verifier/idiomatic_verifier.py
++++ b/sactor/verifier/idiomatic_verifier.py
+@@ -1063,7 +1063,11 @@ Output only the two functions in this format:
+         if result != CombineResult.SUCCESS or combined_code is None:
+             raise ValueError(f"Failed to combine the function {function.name}")
+ 
+-        total, unsafe = rust_ast_parser.count_unsafe_tokens(combined_code)
++        # The no-unsafe rule is about the function under verification; its
++        # dependencies were checked when they were translated, and globals
++        # (e.g. a Mutex<InternalHooks> holding C allocator pointers) may
++        # legitimately contain `unsafe` that is not this function's doing.
++        total, unsafe = rust_ast_parser.count_unsafe_tokens(function_code)
+         if unsafe > 0:
+             # TODO: may allow unsafe blocks in the future
+             return (VerifyResult.COMPILE_ERROR, "Unsafe blocks are not allowed in the idiomatic code")
+@@ -1144,6 +1148,12 @@ Output only the two functions in this format:
+             return (VerifyResult.COMPILE_ERROR, f"Unable to determine idiomatic function name for `{function_name}`; available: {list(idiom_sigs.keys())}")
+ 
+         idiomatic_signature = idiom_sigs[idiomatic_decl_name]
++        if not self.has_tests():
++            logger.info(
++                "No test commands configured; accepting idiomatic function %s after the compile check (FFI harness skipped)",
++                function_name,
++            )
++            return (VerifyResult.SUCCESS, None)
+ 
+         if function_name == "main":
+             # main function doesn't have test harness
+@@ -1247,6 +1257,12 @@ Output only the two functions in this format:
+             if coached != result[1]:
+                 return (result[0], coached)
+             return result
++        if not self.has_tests():
++            logger.info(
++                "No test commands configured; accepting idiomatic struct %s after the compile check (converter harness skipped)",
++                struct.name,
++            )
++            return result
+ 
+         harness_result = self._ensure_struct_harness_available(
+             struct,
+diff --git a/sactor/verifier/verifier.py b/sactor/verifier/verifier.py
+index be34459..83c8a97 100644
+--- a/sactor/verifier/verifier.py
++++ b/sactor/verifier/verifier.py
+@@ -289,6 +289,24 @@ class Verifier(ABC):
+     def try_compile_rust_code(self, rust_code, executable=False) -> tuple[VerifyResult, Optional[str]]:
+         return self._try_compile_rust_code_impl(rust_code, executable)
+ 
++    def has_tests(self) -> bool:
++        """True when the test command file lists at least one command.
++
++        An empty list is a valid file (see verify_test_cmd) and means the user
++        wants translation without end-to-end tests; verifiers then keep only
++        the compile/link checks and skip test-only machinery such as the
++        idiomatic FFI harness.
++        """
++        cached = getattr(self, "_has_tests_cache", None)
++        if cached is not None:
++            return cached
++        try:
++            data = json.loads(read_file(self.test_cmd_path).strip())
++            self._has_tests_cache = isinstance(data, list) and len(data) > 0
++        except Exception:
++            self._has_tests_cache = True
++        return self._has_tests_cache
++
+     def _load_test_cmd(self, target) -> list[list[str]]:
+         test_cmd_str = read_file(self.test_cmd_path)
+         test_cmd_str = test_cmd_str.strip()

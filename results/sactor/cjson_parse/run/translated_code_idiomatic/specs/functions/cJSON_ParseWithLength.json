@@ -1,0 +1,53 @@
+{
+  "function_name": "cJSON_ParseWithLength",
+  "fields": [
+    {
+      "u_field": {
+        "name": "value",
+        "type": "*const libc::c_char",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_from": "buffer_length",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "value",
+        "type": "Option<&[u8]>"
+      },
+      "ownership": "transient"
+    },
+    {
+      "u_field": {
+        "name": "buffer_length",
+        "type": "libc::size_t",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "value.len",
+        "type": "usize"
+      }
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "*mut cJSON",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "Option<Box<cJSON>>"
+      },
+      "ownership": "owning",
+      "compare": "skip"
+    }
+  ],
+  "idiomatic_name": "cJSON_ParseWithLength"
+}

@@ -1,0 +1,45 @@
+{
+  "function_name": "bmp_img_init_df",
+  "fields": [
+    {
+      "u_field": {
+        "name": "img",
+        "type": "*mut _bmp_img",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "img",
+        "type": "&mut _bmp_img"
+      },
+      "ownership": "transient"
+    },
+    {
+      "u_field": {
+        "name": "width",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "width",
+        "type": "i32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "height",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "height",
+        "type": "i32"
+      }
+    }
+  ],
+  "idiomatic_name": "bmp_img_init_df"
+}

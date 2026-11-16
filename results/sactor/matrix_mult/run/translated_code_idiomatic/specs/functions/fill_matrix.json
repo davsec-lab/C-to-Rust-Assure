@@ -1,0 +1,37 @@
+{
+  "function_name": "fill_matrix",
+  "fields": [
+    {
+      "u_field": {
+        "name": "matrix",
+        "type": "*mut *mut libc::c_int",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_from": "size",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "matrix",
+        "type": "&mut [Vec<i32>]"
+      },
+      "ownership": "transient",
+      "compare": "skip",
+      "llm_note": "Outer pointer is an array of row pointers (each row is an array of `size` ints); mapped to a slice of Vec<i32> rows. Random contents are not comparable."
+    },
+    {
+      "u_field": {
+        "name": "size",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "matrix.len",
+        "type": "usize"
+      }
+    }
+  ],
+  "idiomatic_name": "fill_matrix"
+}

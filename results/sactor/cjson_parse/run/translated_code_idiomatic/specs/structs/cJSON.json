@@ -1,0 +1,134 @@
+{
+  "struct_name": "cJSON",
+  "i_kind": "struct",
+  "i_type": "cJSON",
+  "fields": [
+    {
+      "u_field": {
+        "name": "next",
+        "type": "*mut cJSON",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "next",
+        "type": "Option<Box<cJSON>>"
+      },
+      "ownership": "transient",
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "prev",
+        "type": "*mut cJSON",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "next",
+        "type": "Option<Box<cJSON>>"
+      },
+      "ownership": "transient",
+      "compare": "skip",
+      "llm_note": "prev is a back-pointer with no idiomatic counterpart; it is recomputed from sibling order during conversion."
+    },
+    {
+      "u_field": {
+        "name": "child",
+        "type": "*mut cJSON",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "child",
+        "type": "Option<Box<cJSON>>"
+      },
+      "ownership": "transient",
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "type_0",
+        "type": "c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "type_0",
+        "type": "i32"
+      },
+      "compare": "by_value"
+    },
+    {
+      "u_field": {
+        "name": "valuestring",
+        "type": "*mut c_char",
+        "shape": {
+          "ptr": {
+            "kind": "cstring",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "valuestring",
+        "type": "Option<String>"
+      },
+      "ownership": "transient",
+      "compare": "by_value"
+    },
+    {
+      "u_field": {
+        "name": "valueint",
+        "type": "c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "valueint",
+        "type": "i32"
+      },
+      "compare": "by_value"
+    },
+    {
+      "u_field": {
+        "name": "valuedouble",
+        "type": "c_double",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "valuedouble",
+        "type": "f64"
+      },
+      "compare": "by_value"
+    },
+    {
+      "u_field": {
+        "name": "string",
+        "type": "*mut c_char",
+        "shape": {
+          "ptr": {
+            "kind": "cstring",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "string",
+        "type": "Option<String>"
+      },
+      "ownership": "transient",
+      "compare": "by_value"
+    }
+  ]
+}

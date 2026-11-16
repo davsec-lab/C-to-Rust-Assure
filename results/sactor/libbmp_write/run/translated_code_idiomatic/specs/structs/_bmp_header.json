@@ -1,0 +1,161 @@
+{
+  "struct_name": "_bmp_header",
+  "i_kind": "struct",
+  "i_type": "_bmp_header",
+  "fields": [
+    {
+      "u_field": {
+        "name": "bfSize",
+        "type": "libc::c_uint",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "bfSize",
+        "type": "u32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "bfReserved",
+        "type": "libc::c_uint",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "bfReserved",
+        "type": "u32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "bfOffBits",
+        "type": "libc::c_uint",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "bfOffBits",
+        "type": "u32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "biSize",
+        "type": "libc::c_uint",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "biSize",
+        "type": "u32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "biWidth",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "biWidth",
+        "type": "i32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "biHeight",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "biHeight",
+        "type": "i32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "biPlanes",
+        "type": "libc::c_ushort",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "biPlanes",
+        "type": "u16"
+      }
+    },
+    {
+      "u_field": {
+        "name": "biBitCount",
+        "type": "libc::c_ushort",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "biBitCount",
+        "type": "u16"
+      }
+    },
+    {
+      "u_field": {
+        "name": "biCompression",
+        "type": "libc::c_uint",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "biCompression",
+        "type": "u32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "biSizeImage",
+        "type": "libc::c_uint",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "biSizeImage",
+        "type": "u32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "biXPelsPerMeter",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "biXPelsPerMeter",
+        "type": "i32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "biYPelsPerMeter",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "biYPelsPerMeter",
+        "type": "i32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "biClrUsed",
+        "type": "libc::c_uint",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "biClrUsed",
+        "type": "u32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "biClrImportant",
+        "type": "libc::c_uint",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "biClrImportant",
+        "type": "u32"
+      }
+    }
+  ]
+}

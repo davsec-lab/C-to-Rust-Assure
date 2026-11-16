@@ -1,0 +1,51 @@
+{
+  "function_name": "bmp_img_write",
+  "fields": [
+    {
+      "u_field": {
+        "name": "img",
+        "type": "*const _bmp_img",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "img",
+        "type": "&_bmp_img"
+      },
+      "ownership": "transient"
+    },
+    {
+      "u_field": {
+        "name": "filename",
+        "type": "*const libc::c_char",
+        "shape": {
+          "ptr": {
+            "kind": "cstring",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "filename",
+        "type": "&str"
+      },
+      "ownership": "transient"
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "bmp_error",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "BmpResult<()>"
+      }
+    }
+  ],
+  "idiomatic_name": "bmp_img_write"
+}

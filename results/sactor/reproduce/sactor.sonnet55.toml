@@ -1,0 +1,28 @@
+# Claude Sonnet 5.5 via the Anthropic API directly (ANTHROPIC_API_KEY from ~/.config/sactor/anthropic_api_key,
+# loaded by bin/sactor-env.sh). Same settings as the other per-model configs (selftest off).
+# Defaults live in sactor/_resources/sactor.default.toml.
+[general]
+model = "claude-sonnet-5-5"
+encoding = "o200k_base"
+
+[logging]
+console_level = "INFO"
+file_level = "DEBUG"
+
+[litellm]
+[litellm.router_settings]
+routing_strategy = "simple-shuffle"
+num_retries = 2
+timeout = 600
+
+[[litellm.model_list]]
+model_name = "claude-sonnet-5-5"
+[litellm.model_list.litellm_params]
+model = "anthropic/claude-sonnet-5-5"
+api_key = "os.environ/ANTHROPIC_API_KEY"
+# litellm 1.76.1 defaults Anthropic max_tokens to 4096. Sonnet 5.5 runs adaptive thinking when `thinking`
+# is omitted (as SACToR does) and thinking counts against max_tokens, so raise the cap to avoid truncation.
+max_tokens = 32000
+
+[verifier.selftest]
+enabled = false

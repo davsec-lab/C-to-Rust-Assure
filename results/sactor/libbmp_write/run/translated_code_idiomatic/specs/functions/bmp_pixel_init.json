@@ -1,0 +1,56 @@
+{
+  "function_name": "bmp_pixel_init",
+  "fields": [
+    {
+      "u_field": {
+        "name": "pxl",
+        "type": "*mut _bmp_pixel",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "pxl",
+        "type": "&mut _bmp_pixel"
+      },
+      "ownership": "transient"
+    },
+    {
+      "u_field": {
+        "name": "red",
+        "type": "libc::c_uchar",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "red",
+        "type": "u8"
+      }
+    },
+    {
+      "u_field": {
+        "name": "green",
+        "type": "libc::c_uchar",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "green",
+        "type": "u8"
+      }
+    },
+    {
+      "u_field": {
+        "name": "blue",
+        "type": "libc::c_uchar",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "blue",
+        "type": "u8"
+      }
+    }
+  ],
+  "idiomatic_name": "bmp_pixel_init"
+}

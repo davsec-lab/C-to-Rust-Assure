@@ -1,0 +1,48 @@
+{
+    "swap": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "diff_timespec": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "partition": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "quicksort": {
+        "type": "function",
+        "errors": [
+            {
+                "type": "COMPILE_ERROR",
+                "message": "    Updating crates.io index\n     Locking 1 package to latest compatible version\n   Compiling libc v0.2.191\n   Compiling build_attempt v0.1.0 (/home/gabe/sactor_forklift/tmp/sactor/tmpg2of5zt8/build/build_attempt)\nerror[E0133]: call to unsafe function `partition` is unsafe and requires unsafe function or block\n  --> src/lib.rs:10:18\n   |\n10 |         let pi = partition(arr, low, high);\n   |                  ^^^^^^^^^^^^^^^^^^^^^^^^^ call to unsafe function\n   |\n   = note: consult the function's documentation for information on how to avoid undefined behavior\n\nFor more information about this error, try `rustc --explain E0133`.\nerror: could not compile `build_attempt` (lib) due to 1 previous error\n",
+                "translation": "pub fn quicksort(arr: *mut i32, low: i32, high: i32) {\n    if low < high {\n        let pi = partition(arr, low, high);\n        quicksort(arr, low, pi.wrapping_sub(1));\n        quicksort(arr, pi.wrapping_add(1), high);\n    }\n}\n"
+            }
+        ],
+        "status": "success",
+        "attempts": [
+            2
+        ]
+    },
+    "main": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    }
+}

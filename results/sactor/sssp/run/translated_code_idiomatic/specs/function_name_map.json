@@ -1,0 +1,10 @@
+{
+  "createGraph": "createGraph",
+  "addEdge": "addEdge",
+  "parallelBellmanFord": "parallelBellmanFord",
+  "sssp": "sssp",
+  "freeGraph": "freeGraph",
+  "diff_timespec": "diff_timespec",
+  "generateRandomGraph": "generateRandomGraph",
+  "main": "main"
+}

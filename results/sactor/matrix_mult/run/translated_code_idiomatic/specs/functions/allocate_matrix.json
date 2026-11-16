@@ -1,0 +1,36 @@
+{
+  "function_name": "allocate_matrix",
+  "fields": [
+    {
+      "u_field": {
+        "name": "size",
+        "type": "i32",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "size",
+        "type": "i32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "*mut *mut i32",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_from": "size",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "Vec<Vec<i32>>"
+      },
+      "ownership": "owning",
+      "llm_note": "Returns a size x size matrix; each row is a Vec<i32> of length size, zero-initialized."
+    }
+  ],
+  "idiomatic_name": "allocate_matrix"
+}

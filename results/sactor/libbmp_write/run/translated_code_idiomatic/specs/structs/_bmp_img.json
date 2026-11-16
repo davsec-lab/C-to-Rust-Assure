@@ -1,0 +1,38 @@
+{
+  "struct_name": "_bmp_img",
+  "i_kind": "struct",
+  "i_type": "_bmp_img",
+  "fields": [
+    {
+      "u_field": {
+        "name": "img_header",
+        "type": "_bmp_header",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "img_header",
+        "type": "_bmp_header"
+      }
+    },
+    {
+      "u_field": {
+        "name": "img_pixels",
+        "type": "*mut *mut _bmp_pixel",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_from": "img_header.biHeight",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "img_pixels",
+        "type": "Vec<Vec<_bmp_pixel>>"
+      },
+      "ownership": "owning",
+      "compare": "skip",
+      "llm_note": "Pointer-to-pointer: outer array has biHeight rows, each row is an array of biWidth _bmp_pixel elements. A null outer pointer maps to an empty Vec."
+    }
+  ]
+}

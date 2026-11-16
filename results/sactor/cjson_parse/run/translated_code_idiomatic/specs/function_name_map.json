@@ -1,0 +1,19 @@
+{
+  "cJSON_GetErrorPtr": "cJSON_GetErrorPtr",
+  "cJSON_New_Item": "cJSON_New_Item",
+  "get_decimal_point": "get_decimal_point",
+  "parse_hex4": "parse_hex4",
+  "buffer_skip_whitespace": "buffer_skip_whitespace",
+  "skip_utf8_bom": "skip_utf8_bom",
+  "diff_timespec": "diff_timespec",
+  "parse_number": "parse_number",
+  "utf16_literal_to_utf8": "utf16_literal_to_utf8",
+  "parse_string": "parse_string",
+  "cJSON_Delete": "cJSON_Delete",
+  "cJSON_ParseWithLengthOpts": "cJSON_ParseWithLengthOpts",
+  "cJSON_ParseWithOpts": "cJSON_ParseWithOpts",
+  "cJSON_ParseWithLength": "cJSON_ParseWithLength",
+  "cJSON_Parse": "cJSON_Parse",
+  "tree_checksum": "tree_checksum",
+  "main": "main"
+}

@@ -1,0 +1,56 @@
+{
+  "function_name": "diff_timespec",
+  "fields": [
+    {
+      "u_field": {
+        "name": "time1",
+        "type": "*mut libc::timespec",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "time1_sec, time1_nsec",
+        "type": "i64, i64"
+      },
+      "ownership": "transient",
+      "compare": "skip",
+      "llm_note": "The pointed-to timespec is split into tv_sec and tv_nsec scalar parameters (time1_sec, time1_nsec)."
+    },
+    {
+      "u_field": {
+        "name": "time0",
+        "type": "*mut libc::timespec",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "time0_sec, time0_nsec",
+        "type": "i64, i64"
+      },
+      "ownership": "transient",
+      "compare": "skip",
+      "llm_note": "The pointed-to timespec is split into tv_sec and tv_nsec scalar parameters (time0_sec, time0_nsec)."
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "f64",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "f64"
+      },
+      "compare": "by_value"
+    }
+  ],
+  "idiomatic_name": "diff_timespec"
+}

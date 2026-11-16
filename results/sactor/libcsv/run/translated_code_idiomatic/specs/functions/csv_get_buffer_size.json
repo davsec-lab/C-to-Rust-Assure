@@ -1,0 +1,34 @@
+{
+  "function_name": "csv_get_buffer_size",
+  "fields": [
+    {
+      "u_field": {
+        "name": "p",
+        "type": "*const csv_parser",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "p",
+        "type": "Option<&csv_parser>"
+      },
+      "ownership": "transient"
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "size_t",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "usize"
+      }
+    }
+  ],
+  "idiomatic_name": "csv_get_buffer_size"
+}

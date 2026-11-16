@@ -1,0 +1,90 @@
+{
+    "Node": {
+        "type": "struct",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "Edge": {
+        "type": "struct",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "Graph": {
+        "type": "struct",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "createGraph": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "addEdge": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "parallelBellmanFord": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "sssp": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "freeGraph": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "diff_timespec": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "generateRandomGraph": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "main": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    }
+}

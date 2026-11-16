@@ -1,0 +1,43 @@
+{
+  "struct_name": "internal_hooks",
+  "i_kind": "struct",
+  "i_type": "internal_hooks",
+  "fields": [
+    {
+      "u_field": {
+        "name": "allocate",
+        "type": "Option<unsafe extern \"C\" fn(size_t) -> *mut libc::c_void>",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "allocate",
+        "type": "Option<unsafe extern \"C\" fn(size_t) -> *mut libc::c_void>"
+      },
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "deallocate",
+        "type": "Option<unsafe extern \"C\" fn(*mut libc::c_void) -> ()>",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "deallocate",
+        "type": "Option<unsafe extern \"C\" fn(*mut libc::c_void) -> ()>"
+      },
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "reallocate",
+        "type": "Option<unsafe extern \"C\" fn(*mut libc::c_void, size_t) -> *mut libc::c_void>",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "reallocate",
+        "type": "Option<unsafe extern \"C\" fn(*mut libc::c_void, size_t) -> *mut libc::c_void>"
+      },
+      "compare": "skip"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "function_name": "cJSON_New_Item",
+  "fields": [
+    {
+      "u_field": {
+        "name": "hooks",
+        "type": "*const internal_hooks",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "hooks",
+        "type": "()"
+      },
+      "ownership": "transient",
+      "compare": "skip",
+      "llm_note": "The allocator hooks are dropped; allocation is done by Rust's global allocator via Box::new."
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "*mut cJSON",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "Option<Box<cJSON>>"
+      },
+      "ownership": "owning",
+      "compare": "skip"
+    }
+  ],
+  "idiomatic_name": "cJSON_New_Item"
+}

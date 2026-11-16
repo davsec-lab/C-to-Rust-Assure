@@ -1,0 +1,9 @@
+{
+  "allocate_matrix": "allocate_matrix",
+  "free_matrix": "free_matrix",
+  "fill_matrix": "fill_matrix",
+  "multiply_matrices": "multiply_matrices",
+  "print_matrix": "print_matrix",
+  "diff_timespec": "diff_timespec",
+  "main": "main"
+}

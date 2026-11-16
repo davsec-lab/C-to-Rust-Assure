@@ -1,0 +1,56 @@
+{
+  "function_name": "addEdge",
+  "fields": [
+    {
+      "u_field": {
+        "name": "graph",
+        "type": "*mut Graph",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "graph",
+        "type": "&mut Graph"
+      },
+      "ownership": "transient"
+    },
+    {
+      "u_field": {
+        "name": "from",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "from",
+        "type": "i32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "to",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "to",
+        "type": "i32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "weight",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "weight",
+        "type": "i32"
+      }
+    }
+  ],
+  "idiomatic_name": "addEdge"
+}

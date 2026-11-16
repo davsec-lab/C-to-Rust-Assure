@@ -1,0 +1,14 @@
+{
+    "total_warnings": 30,
+    "total_errors": 0,
+    "warnings": {
+        "non_camel_case_types": 5,
+        "clippy::missing_safety_doc": 9,
+        "clippy::manual_c_str_literals": 2,
+        "non_snake_case": 14
+    },
+    "errors": {},
+    "total_tokens": 1721,
+    "unsafe_tokens": 1612,
+    "unsafe_fraction": 0.936664729808251
+}

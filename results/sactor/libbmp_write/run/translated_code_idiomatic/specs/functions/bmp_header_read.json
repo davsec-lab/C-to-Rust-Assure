@@ -1,0 +1,52 @@
+{
+  "function_name": "bmp_header_read",
+  "fields": [
+    {
+      "u_field": {
+        "name": "img_file",
+        "type": "*mut libc::FILE",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "img_file",
+        "type": "Option<&mut R>"
+      },
+      "ownership": "transient",
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "header",
+        "type": "*mut _bmp_header",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "BmpResult<_bmp_header>"
+      },
+      "ownership": "transient"
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "bmp_error",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "BmpResult<_bmp_header>"
+      }
+    }
+  ],
+  "idiomatic_name": "bmp_header_read"
+}

@@ -1,0 +1,24 @@
+2026-11-16 13:25:37 | INFO     | sactor.sactor:210 | -------------SACTOR Configuration-------------
+2026-11-16 13:25:37 | INFO     | sactor.sactor:211 | Input file: cjson_parse.c
+2026-11-16 13:25:37 | INFO     | sactor.sactor:212 | Test command: test_cmd.json
+2026-11-16 13:25:37 | INFO     | sactor.sactor:213 | Is executable: True
+2026-11-16 13:25:37 | INFO     | sactor.sactor:216 | Build directory: /home/gabe/sactor_forklift/tmp/sactor/tmpducrphvf/build
+2026-11-16 13:25:37 | INFO     | sactor.sactor:217 | Result directory: /home/gabe/sactor_forklift/sactor-bench-oxivolve/cjson_parse/result_sonnet55
+2026-11-16 13:25:37 | INFO     | sactor.sactor:218 | Config file: /home/gabe/sactor_forklift/sactor/sactor.sonnet55.toml
+2026-11-16 13:25:37 | INFO     | sactor.sactor:219 | No verify: False
+2026-11-16 13:25:37 | INFO     | sactor.sactor:220 | Unidiomatic only: False
+2026-11-16 13:25:37 | INFO     | sactor.sactor:221 | LLM statistics base path: /home/gabe/sactor_forklift/sactor-bench-oxivolve/cjson_parse/result_sonnet55/llm_stat.json
+2026-11-16 13:25:37 | INFO     | sactor.sactor:222 | Extra compile command: None
+2026-11-16 13:25:37 | INFO     | sactor.sactor:223 | Compile commands file: 
+2026-11-16 13:25:37 | INFO     | sactor.sactor:224 | Link args: ['-lm']
+2026-11-16 13:25:37 | INFO     | sactor.sactor:225 | Idiomatic only: False
+2026-11-16 13:25:37 | INFO     | sactor.sactor:226 | Continue run when incomplete: False
+2026-11-16 13:25:37 | INFO     | sactor.sactor:227 | -------------End of Configuration-------------
+2026-11-16 13:25:37 | DEBUG    | sactor.sactor:284 | Total structs: 4; order groups: 4
+2026-11-16 13:25:37 | DEBUG    | sactor.sactor:286 | Total functions: 20; order groups: 18
+2026-11-16 13:25:37 | DEBUG    | sactor.sactor:288 | Struct order: [[StructInfo(cJSON)], [StructInfo(internal_hooks)], [StructInfo(error)], [StructInfo(parse_buffer)]]
+2026-11-16 13:25:37 | DEBUG    | sactor.sactor:289 | Function order: [[FunctionInfo(const char * cJSON_GetErrorPtr ( void ))], [FunctionInfo(static struct cJSON * cJSON_New_Item ( const struct internal_hooks * const hooks ))], [FunctionInfo(static unsigned char get_decimal_point ( void ))], [FunctionInfo(static unsigned parse_hex4 ( const unsigned char * const input ))], [FunctionInfo(static struct parse_buffer * buffer_skip_whitespace ( struct parse_buffer * const buffer ))], [FunctionInfo(static struct parse_buffer * skip_utf8_bom ( struct parse_buffer * const buffer ))], [FunctionInfo(static double diff_timespec ( struct timespec * time1 , struct timespec * time0 ))], [FunctionInfo(static int parse_number ( struct cJSON * const item , struct parse_buffer * const input_buffer ))], [FunctionInfo(static unsigned char utf16_literal_to_utf8 ( const unsigned char * const input_pointer , const unsigned char * const input_end , unsigned char * * output_pointer ))], [FunctionInfo(static int parse_string ( struct cJSON * const item , struct parse_buffer * const input_buffer ))], [FunctionInfo(void cJSON_Delete ( struct cJSON * item ))], [FunctionInfo(static int parse_value ( struct cJSON * const item , struct parse_buffer * const input_buffer )), FunctionInfo(static int parse_array ( struct cJSON * const item , struct parse_buffer * const input_buffer )), FunctionInfo(static int parse_object ( struct cJSON * const item , struct parse_buffer * const input_buffer ))], [FunctionInfo(struct cJSON * cJSON_ParseWithLengthOpts ( const char * value , size_t buffer_length , const char * * return_parse_end , int require_null_terminated ))], [FunctionInfo(struct cJSON * cJSON_ParseWithOpts ( const char * value , const char * * return_parse_end , int require_null_terminated ))], [FunctionInfo(struct cJSON * cJSON_ParseWithLength ( const char * value , size_t buffer_length ))], [FunctionInfo(struct cJSON * cJSON_Parse ( const char * value ))], [FunctionInfo(static double tree_checksum ( const struct cJSON * item ))], [FunctionInfo(int main ( int argc , char * argv [ ] ))]]
+2026-11-16 13:25:38 | DEBUG    | sactor.llm.llm:38 | Default model: 'claude-sonnet-5-5'
+2026-11-16 13:25:38 | DEBUG    | sactor.llm.llm:40 | Found 1 models in config
+2026-11-16 13:25:38 | DEBUG    | sactor.llm.llm:46 | Model mapping 0: 'claude-sonnet-5-5' -> 'anthropic/claude-sonnet-5-5': {'model': 'anthropic/claude-sonnet-5-5', 'api_key': '***REDACTED***', 'max_tokens': '***REDACTED***'}
+2026-11-16 13:25:38 | DEBUG    | sactor.thirdparty.c2rust:52 | Running c2rust command: ['c2rust', 'transpile', '--preserve-unused-functions', '/home/gabe/sactor_forklift/tmp/sactor/tmpj2q2d2ml/c2rust/unfolded_typedefs.c', '--', '-I/usr/lib/llvm-19/lib/clang/19/include', '-I/usr/local/include', '-I/usr/include/x86_64-linux-gnu', '-I/usr/include']

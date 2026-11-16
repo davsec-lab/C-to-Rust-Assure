@@ -1,0 +1,43 @@
+{
+  "function_name": "parallelBellmanFord",
+  "fields": [
+    {
+      "u_field": {
+        "name": "arg",
+        "type": "*mut libc::c_void",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "arg",
+        "type": "()"
+      },
+      "ownership": "transient",
+      "compare": "skip",
+      "llm_note": "The argument is unused, so it is dropped in the idiomatic version."
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "*mut libc::c_void",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "()"
+      },
+      "compare": "skip",
+      "llm_note": "The original always returned a null pointer, so the idiomatic version returns unit."
+    }
+  ],
+  "idiomatic_name": "parallelBellmanFord"
+}

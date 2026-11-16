@@ -1,0 +1,2409 @@
+2026-11-16 13:32:15 | INFO     | sactor.sactor:210 | -------------SACTOR Configuration-------------
+2026-11-16 13:32:15 | INFO     | sactor.sactor:211 | Input file: rfft.c
+2026-11-16 13:32:15 | INFO     | sactor.sactor:212 | Test command: test_cmd.json
+2026-11-16 13:32:15 | INFO     | sactor.sactor:213 | Is executable: True
+2026-11-16 13:32:15 | INFO     | sactor.sactor:216 | Build directory: /home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build
+2026-11-16 13:32:15 | INFO     | sactor.sactor:217 | Result directory: /home/gabe/sactor_forklift/sactor-bench-oxivolve/rfft/result_sonnet55
+2026-11-16 13:32:15 | INFO     | sactor.sactor:218 | Config file: /home/gabe/sactor_forklift/sactor/sactor.sonnet55.toml
+2026-11-16 13:32:15 | INFO     | sactor.sactor:219 | No verify: False
+2026-11-16 13:32:15 | INFO     | sactor.sactor:220 | Unidiomatic only: False
+2026-11-16 13:32:15 | INFO     | sactor.sactor:221 | LLM statistics base path: /home/gabe/sactor_forklift/sactor-bench-oxivolve/rfft/result_sonnet55/llm_stat.json
+2026-11-16 13:32:15 | INFO     | sactor.sactor:222 | Extra compile command: None
+2026-11-16 13:32:15 | INFO     | sactor.sactor:223 | Compile commands file: 
+2026-11-16 13:32:15 | INFO     | sactor.sactor:224 | Link args: ['-lm']
+2026-11-16 13:32:15 | INFO     | sactor.sactor:225 | Idiomatic only: False
+2026-11-16 13:32:15 | INFO     | sactor.sactor:226 | Continue run when incomplete: False
+2026-11-16 13:32:15 | INFO     | sactor.sactor:227 | -------------End of Configuration-------------
+2026-11-16 13:32:15 | DEBUG    | sactor.sactor:284 | Total structs: 0; order groups: 0
+2026-11-16 13:32:15 | DEBUG    | sactor.sactor:286 | Total functions: 4; order groups: 4
+2026-11-16 13:32:15 | DEBUG    | sactor.sactor:288 | Struct order: []
+2026-11-16 13:32:15 | DEBUG    | sactor.sactor:289 | Function order: [[FunctionInfo(void fft_transform_radix2 ( double complex * vec , size_t n , bool inverse ))], [FunctionInfo(void fft_transform_bluestein ( double complex * vec , size_t n , bool inverse ))], [FunctionInfo(void fft_transform ( double complex * vec , size_t n , bool inverse ))], [FunctionInfo(int main ( ))]]
+2026-11-16 13:32:16 | DEBUG    | sactor.llm.llm:38 | Default model: 'claude-sonnet-5-5'
+2026-11-16 13:32:16 | DEBUG    | sactor.llm.llm:40 | Found 1 models in config
+2026-11-16 13:32:16 | DEBUG    | sactor.llm.llm:46 | Model mapping 0: 'claude-sonnet-5-5' -> 'anthropic/claude-sonnet-5-5': {'model': 'anthropic/claude-sonnet-5-5', 'api_key': '***REDACTED***', 'max_tokens': '***REDACTED***'}
+2026-11-16 13:32:16 | DEBUG    | sactor.thirdparty.c2rust:52 | Running c2rust command: ['c2rust', 'transpile', '--preserve-unused-functions', '/home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmpywze17eg/c2rust/unfolded_typedefs.c', '--', '-I/usr/lib/llvm-19/lib/clang/19/include', '-I/usr/local/include', '-I/usr/include/x86_64-linux-gnu', '-I/usr/include']
+2026-11-16 13:32:16 | DEBUG    | sactor.sactor:425 | Checking function fft_transform_radix2: struct_ready=True, struct_blockers=[]
+2026-11-16 13:32:17 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: fft_transform_radix2 (attempts: 0)
+2026-11-16 13:32:17 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+void fft_transform_radix2(double complex* vec, size_t n, bool inverse) {
+	int levels = 0;	 // Compute levels = floor(log2(n))
+	for (size_t k =	1; (k &	n) == 0; k <<= 1)
+		levels++;
+	
+	// Permute vec by reversing the bits of addresses
+	for (size_t i =	0; i < n; i++) {
+		// Reverse the bits of i
+		size_t j = 0, ii = i;
+		for (int k = 0;	k < levels; k++) {
+			j = (j << 1) | (ii & 1);
+			ii >>= 1;
+		}
+	
+		if (j >	i) {
+			double complex tmp = vec[i];
+			vec[i] = vec[j];
+			vec[j] = tmp;
+		}
+	}
+	
+	// Cooley-Tukey	in place
+	for (size_t half = 1; half < n;	half *=	2) {
+		size_t size = 2	* half;
+		size_t step = n	/ size;
+		for (size_t j =	0, k = 0; j < half; j++, k += step) {
+			double angle = (inverse	? 2 : -2) * M_PI * k / n;
+			double complex omega = cos(angle) + I *	sin(angle);
+        		for (size_t i =	0; i < n; i += size) {
+				double complex tmp = vec[i + j + half] * omega;
+				vec[i + j + half] = vec[i + j] - tmp;
+				vec[i + j] += tmp;
+			}
+		}
+	}
+}
+```
+
+The function body above may reference the following macros. Use these definitions to understand the semantics; do **NOT** redefine them in Rust—expand or replicate their behavior as needed in the translation.
+```c
+#define complex		_Complex
+#define I _Complex_I
+#define bool _Bool
+#define M_PI		3.14159265358979323846
+#define _Complex_I	(__extension__ 1.0iF)
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:32:26 | RESPONSE | sactor.llm:160 | The C `double complex` type is represented as `[f64; 2]` (real, imaginary), which has the same memory layout. The complex multiplication is written out by hand as `(ac - bd, ad + bc)`.
+
+----FUNCTION----
+```rust
+pub unsafe fn fft_transform_radix2(vec: *mut [f64; 2], n: usize, inverse: bool) {
+    let mut levels: i32 = 0;
+    let mut k: usize = 1;
+    while (k & n) == 0 {
+        levels += 1;
+        k <<= 1;
+    }
+
+    // Permute vec by reversing the bits of addresses
+    for i in 0..n {
+        let mut j: usize = 0;
+        let mut ii: usize = i;
+        for _ in 0..levels {
+            j = (j << 1) | (ii & 1);
+            ii >>= 1;
+        }
+        if j > i {
+            let tmp = *vec.add(i);
+            *vec.add(i) = *vec.add(j);
+            *vec.add(j) = tmp;
+        }
+    }
+
+    // Cooley-Tukey in place
+    let mut half: usize = 1;
+    while half < n {
+        let size = 2 * half;
+        let step = n / size;
+        let mut j: usize = 0;
+        let mut k: usize = 0;
+        while j < half {
+            let coef: f64 = if inverse { 2.0 } else { -2.0 };
+            let angle: f64 = coef * std::f64::consts::PI * (k as f64) / (n as f64);
+            let omega: [f64; 2] = [angle.cos(), angle.sin()];
+            let mut i: usize = 0;
+            while i < n {
+                let a = *vec.add(i + j + half);
+                let tmp: [f64; 2] = [
+                    a[0] * omega[0] - a[1] * omega[1],
+                    a[0] * omega[1] + a[1] * omega[0],
+                ];
+                let b = *vec.add(i + j);
+                *vec.add(i + j + half) = [b[0] - tmp[0], b[1] - tmp[1]];
+                *vec.add(i + j) = [b[0] + tmp[0], b[1] + tmp[1]];
+                i += size;
+            }
+            j += 1;
+            k += step;
+        }
+        half *= 2;
+    }
+}
+```
+----END FUNCTION----
+2026-11-16 13:32:26 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:32:26 | DEBUG    | sactor.utils:258 | pub unsafe fn fft_transform_radix2(vec: *mut [f64; 2], n: usize, inverse: bool) {
+    let mut levels: i32 = 0;
+    let mut k: usize = 1;
+    while (k & n) == 0 {
+        levels += 1;
+        k <<= 1;
+    }
+
+    // Permute vec by reversing the bits of addresses
+    for i in 0..n {
+        let mut j: usize = 0;
+        let mut ii: usize = i;
+        for _ in 0..levels {
+            j = (j << 1) | (ii & 1);
+            ii >>= 1;
+        }
+        if j > i {
+            let tmp = *vec.add(i);
+            *vec.add(i) = *vec.add(j);
+            *vec.add(j) = tmp;
+        }
+    }
+
+    // Cooley-Tukey in place
+    let mut half: usize = 1;
+    while half < n {
+        let size = 2 * half;
+        let step = n / size;
+        let mut j: usize = 0;
+        let mut k: usize = 0;
+        while j < half {
+            let coef: f64 = if inverse { 2.0 } else { -2.0 };
+            let angle: f64 = coef * std::f64::consts::PI * (k as f64) / (n as f64);
+            let omega: [f64; 2] = [angle.cos(), angle.sin()];
+            let mut i: usize = 0;
+            while i < n {
+                let a = *vec.add(i + j + half);
+                let tmp: [f64; 2] = [
+                    a[0] * omega[0] - a[1] * omega[1],
+                    a[0] * omega[1] + a[1] * omega[0],
+                ];
+                let b = *vec.add(i + j);
+                *vec.add(i + j + half) = [b[0] - tmp[0], b[1] - tmp[1]];
+                *vec.add(i + j) = [b[0] + tmp[0], b[1] + tmp[1]];
+                i += size;
+            }
+            j += 1;
+            k += step;
+        }
+        half *= 2;
+    }
+}
+
+2026-11-16 13:32:26 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function fft_transform_radix2:
+2026-11-16 13:32:26 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub unsafe fn fft_transform_radix2(vec: *mut [f64; 2], n: usize, inverse: bool) {
+    let mut levels: i32 = 0;
+    let mut k: usize = 1;
+    while (k & n) == 0 {
+        levels += 1;
+        k <<= 1;
+    }
+    for i in 0..n {
+        let mut j: usize = 0;
+        let mut ii: usize = i;
+        for _ in 0..levels {
+            j = (j << 1) | (ii & 1);
+            ii >>= 1;
+        }
+        if j > i {
+            let tmp = *vec.add(i);
+            *vec.add(i) = *vec.add(j);
+            *vec.add(j) = tmp;
+        }
+    }
+    let mut half: usize = 1;
+    while half < n {
+        let size = 2 * half;
+        let step = n / size;
+        let mut j: usize = 0;
+        let mut k: usize = 0;
+        while j < half {
+            let coef: f64 = if inverse { 2.0 } else { -2.0 };
+            let angle: f64 = coef * std::f64::consts::PI * (k as f64) / (n as f64);
+            let omega: [f64; 2] = [angle.cos(), angle.sin()];
+            let mut i: usize = 0;
+            while i < n {
+                let a = *vec.add(i + j + half);
+                let tmp: [f64; 2] = [
+                    a[0] * omega[0] - a[1] * omega[1],
+                    a[0] * omega[1] + a[1] * omega[0],
+                ];
+                let b = *vec.add(i + j);
+                *vec.add(i + j + half) = [b[0] - tmp[0], b[1] - tmp[1]];
+                *vec.add(i + j) = [b[0] + tmp[0], b[1] + tmp[1]];
+                i += size;
+            }
+            j += 1;
+            k += step;
+        }
+        half *= 2;
+    }
+}
+
+2026-11-16 13:32:26 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/build_attempt/Cargo.toml
+2026-11-16 13:32:29 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:32:29 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/embed_test_rust/Cargo.toml
+2026-11-16 13:32:33 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/embed_test_c/fft_transform_radix2', '/home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/embed_test_c/fft_transform_radix2.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/embed_test_rust/target/debug', '-lm', '-lfft_transform_radix2']
+2026-11-16 13:32:33 | DEBUG    | sactor.sactor:425 | Checking function fft_transform_bluestein: struct_ready=True, struct_blockers=[]
+2026-11-16 13:32:33 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: fft_transform_bluestein (attempts: 0)
+2026-11-16 13:32:33 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+void fft_transform_bluestein(double complex* vec, size_t n, bool inverse) {
+	// Find m = 2^k such that m >= 2 * n + 1
+	size_t m = 1;
+	while (m <= 2 * n) {
+		m *= 2;
+	}
+	
+	// Extended vectors of size m
+	double complex*	avec = calloc(m, sizeof(double complex));
+	double complex*	bvec = calloc(m, sizeof(double complex));
+	avec[0]	= vec[0];
+	bvec[0]	= 1.0;
+	for (size_t i =	1; i < n; i++) {
+		size_t k = (i * i) % (2 * n);
+		double angle = (inverse	? M_PI : -M_PI)	* k / n;
+		double complex omega = cos(angle) + I *	sin(angle);
+		avec[i]	= vec[i] * omega;
+		bvec[i]	= bvec[m - i] =	conj(omega);
+	}
+
+	// Convolution
+	fft_transform_radix2(avec, m, false);
+	fft_transform_radix2(bvec, m, false);
+	for (size_t i =	0; i < m; i++) {
+		avec[i]	*= bvec[i];
+	}
+	fft_transform_radix2(avec, m, true);
+
+	for (size_t i =	0; i < n; i++) {
+		size_t k = (i * i) % (2 * n);
+		double angle = (inverse	? M_PI : -M_PI)	* k / n;
+		double complex omega = cos(angle) + I *	sin(angle);
+		vec[i] = avec[i] * omega / m;
+	}
+
+	free(avec);
+	free(bvec);
+}
+```
+
+The function body above may reference the following macros. Use these definitions to understand the semantics; do **NOT** redefine them in Rust—expand or replicate their behavior as needed in the translation.
+```c
+#define complex		_Complex
+#define M_PI		3.14159265358979323846
+#define false 0
+#define bool _Bool
+#define I _Complex_I
+#define true 1
+#define _Complex_I	(__extension__ 1.0iF)
+```
+
+The function calls the following functions, which are already translated and defined in Rust.
+Do **NOT** include the definition or declaration of the following functions in your translation.
+If you include them, the output will be considered **invalid**.
+But you can call the following functions in your translation.
+Only output the translation of the function I request.
+The called functions' signatures in Rust are the following:
+```rust
+fn fft_transform_radix2 (vec : * mut [f64 ; 2] , n : usize , inverse : bool);
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:32:41 | RESPONSE | sactor.llm:160 | Complex numbers are represented as `[f64; 2]`, so I need to implement the complex arithmetic by hand.
+
+Details to keep equivalent:
+- `calloc` becomes `libc::calloc` with `m * size_of::<[f64; 2]>()`, and `libc::free` at the end.
+- `bvec[0] = 1.0` becomes `[1.0, 0.0]`.
+- `vec[i] * omega` is a complex multiplication. In C with `double complex` the result may go through NaN/inf recovery (`__muldc3`), but I'll use plain multiplication.
+- `avec[i] * bvec[i]` is also a complex multiplication.
+- `avec[i] * omega / m` divides a complex number by a real `m` converted to a complex. Dividing the components directly by `m` is the practical equivalent.
+- `bvec[i] = bvec[m - i] = conj(omega)`: both entries get the same value.
+- The angle is `(inverse ? M_PI : -M_PI) * k / n`, evaluated as `(±PI * k as f64) / n as f64`.
+
+The `avec[0] = vec[0]` assignment is kept as in the original, and `n >= 1` is assumed since it indexes `vec[0]`.
+
+----FUNCTION----
+```rust
+unsafe fn fft_transform_bluestein(vec: *mut [f64; 2], n: usize, inverse: bool) {
+    let mut m: usize = 1;
+    while m <= 2 * n {
+        m *= 2;
+    }
+
+    let avec = libc::calloc(m, std::mem::size_of::<[f64; 2]>()) as *mut [f64; 2];
+    let bvec = libc::calloc(m, std::mem::size_of::<[f64; 2]>()) as *mut [f64; 2];
+
+    *avec.add(0) = *vec.add(0);
+    *bvec.add(0) = [1.0, 0.0];
+
+    let pi: f64 = 3.14159265358979323846;
+    let sign = if inverse { pi } else { -pi };
+
+    for i in 1..n {
+        let k = (i * i) % (2 * n);
+        let angle = sign * (k as f64) / (n as f64);
+        let omega = [angle.cos(), angle.sin()];
+        let v = *vec.add(i);
+        *avec.add(i) = [
+            v[0] * omega[0] - v[1] * omega[1],
+            v[0] * omega[1] + v[1] * omega[0],
+        ];
+        let c = [omega[0], -omega[1]];
+        *bvec.add(i) = c;
+        *bvec.add(m - i) = c;
+    }
+
+    fft_transform_radix2(avec, m, false);
+    fft_transform_radix2(bvec, m, false);
+    for i in 0..m {
+        let a = *avec.add(i);
+        let b = *bvec.add(i);
+        *avec.add(i) = [
+            a[0] * b[0] - a[1] * b[1],
+            a[0] * b[1] + a[1] * b[0],
+        ];
+    }
+    fft_transform_radix2(avec, m, true);
+
+    for i in 0..n {
+        let k = (i * i) % (2 * n);
+        let angle = sign * (k as f64) / (n as f64);
+        let omega = [angle.cos(), angle.sin()];
+        let a = *avec.add(i);
+        let re = a[0] * omega[0] - a[1] * omega[1];
+        let im = a[0] * omega[1] + a[1] * omega[0];
+        *vec.add(i) = [re / (m as f64), im / (m as f64)];
+    }
+
+    libc::free(avec as *mut libc::c_void);
+    libc::free(bvec as *mut libc::c_void);
+}
+```
+----END FUNCTION----
+2026-11-16 13:32:41 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:32:41 | DEBUG    | sactor.utils:258 | unsafe fn fft_transform_bluestein(vec: *mut [f64; 2], n: usize, inverse: bool) {
+    let mut m: usize = 1;
+    while m <= 2 * n {
+        m *= 2;
+    }
+
+    let avec = libc::calloc(m, std::mem::size_of::<[f64; 2]>()) as *mut [f64; 2];
+    let bvec = libc::calloc(m, std::mem::size_of::<[f64; 2]>()) as *mut [f64; 2];
+
+    *avec.add(0) = *vec.add(0);
+    *bvec.add(0) = [1.0, 0.0];
+
+    let pi: f64 = 3.14159265358979323846;
+    let sign = if inverse { pi } else { -pi };
+
+    for i in 1..n {
+        let k = (i * i) % (2 * n);
+        let angle = sign * (k as f64) / (n as f64);
+        let omega = [angle.cos(), angle.sin()];
+        let v = *vec.add(i);
+        *avec.add(i) = [
+            v[0] * omega[0] - v[1] * omega[1],
+            v[0] * omega[1] + v[1] * omega[0],
+        ];
+        let c = [omega[0], -omega[1]];
+        *bvec.add(i) = c;
+        *bvec.add(m - i) = c;
+    }
+
+    fft_transform_radix2(avec, m, false);
+    fft_transform_radix2(bvec, m, false);
+    for i in 0..m {
+        let a = *avec.add(i);
+        let b = *bvec.add(i);
+        *avec.add(i) = [
+            a[0] * b[0] - a[1] * b[1],
+            a[0] * b[1] + a[1] * b[0],
+        ];
+    }
+    fft_transform_radix2(avec, m, true);
+
+    for i in 0..n {
+        let k = (i * i) % (2 * n);
+        let angle = sign * (k as f64) / (n as f64);
+        let omega = [angle.cos(), angle.sin()];
+        let a = *avec.add(i);
+        let re = a[0] * omega[0] - a[1] * omega[1];
+        let im = a[0] * omega[1] + a[1] * omega[0];
+        *vec.add(i) = [re / (m as f64), im / (m as f64)];
+    }
+
+    libc::free(avec as *mut libc::c_void);
+    libc::free(bvec as *mut libc::c_void);
+}
+
+2026-11-16 13:32:41 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function fft_transform_bluestein:
+2026-11-16 13:32:41 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | unsafe fn fft_transform_bluestein(vec: *mut [f64; 2], n: usize, inverse: bool) {
+    let mut m: usize = 1;
+    while m <= 2 * n {
+        m *= 2;
+    }
+    let avec = libc::calloc(m, std::mem::size_of::<[f64; 2]>()) as *mut [f64; 2];
+    let bvec = libc::calloc(m, std::mem::size_of::<[f64; 2]>()) as *mut [f64; 2];
+    *avec.add(0) = *vec.add(0);
+    *bvec.add(0) = [1.0, 0.0];
+    let pi: f64 = 3.14159265358979323846;
+    let sign = if inverse { pi } else { -pi };
+    for i in 1..n {
+        let k = (i * i) % (2 * n);
+        let angle = sign * (k as f64) / (n as f64);
+        let omega = [angle.cos(), angle.sin()];
+        let v = *vec.add(i);
+        *avec.add(i) = [
+            v[0] * omega[0] - v[1] * omega[1],
+            v[0] * omega[1] + v[1] * omega[0],
+        ];
+        let c = [omega[0], -omega[1]];
+        *bvec.add(i) = c;
+        *bvec.add(m - i) = c;
+    }
+    fft_transform_radix2(avec, m, false);
+    fft_transform_radix2(bvec, m, false);
+    for i in 0..m {
+        let a = *avec.add(i);
+        let b = *bvec.add(i);
+        *avec.add(i) = [a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]];
+    }
+    fft_transform_radix2(avec, m, true);
+    for i in 0..n {
+        let k = (i * i) % (2 * n);
+        let angle = sign * (k as f64) / (n as f64);
+        let omega = [angle.cos(), angle.sin()];
+        let a = *avec.add(i);
+        let re = a[0] * omega[0] - a[1] * omega[1];
+        let im = a[0] * omega[1] + a[1] * omega[0];
+        *vec.add(i) = [re / (m as f64), im / (m as f64)];
+    }
+    libc::free(avec as *mut libc::c_void);
+    libc::free(bvec as *mut libc::c_void);
+}
+
+2026-11-16 13:32:41 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/build_attempt/Cargo.toml
+2026-11-16 13:32:43 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:32:43 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/embed_test_rust/Cargo.toml
+2026-11-16 13:32:57 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/embed_test_c/fft_transform_bluestein', '/home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/embed_test_c/fft_transform_bluestein.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/embed_test_rust/target/debug', '-lm', '-lfft_transform_bluestein']
+2026-11-16 13:32:57 | DEBUG    | sactor.sactor:425 | Checking function fft_transform: struct_ready=True, struct_blockers=[]
+2026-11-16 13:32:57 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: fft_transform (attempts: 0)
+2026-11-16 13:32:57 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+void fft_transform(double complex* vec,	size_t n, bool inverse)	{
+	if (n <= 1)
+		return;
+	else if	((n & (n - 1)) == 0)  // Power of 2
+		fft_transform_radix2(vec, n, inverse);
+	else
+		fft_transform_bluestein(vec, n,	inverse);
+}
+```
+
+The function body above may reference the following macros. Use these definitions to understand the semantics; do **NOT** redefine them in Rust—expand or replicate their behavior as needed in the translation.
+```c
+#define complex		_Complex
+#define bool _Bool
+```
+
+The function calls the following functions, which are already translated and defined in Rust.
+Do **NOT** include the definition or declaration of the following functions in your translation.
+If you include them, the output will be considered **invalid**.
+But you can call the following functions in your translation.
+Only output the translation of the function I request.
+The called functions' signatures in Rust are the following:
+```rust
+fn fft_transform_radix2 (vec : * mut [f64 ; 2] , n : usize , inverse : bool);
+fn fft_transform_bluestein (vec : * mut [f64 ; 2] , n : usize , inverse : bool);
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:33:00 | RESPONSE | sactor.llm:160 | ----FUNCTION----
+```rust
+pub unsafe fn fft_transform(vec: *mut [f64; 2], n: usize, inverse: bool) {
+    if n <= 1 {
+        return;
+    } else if (n & (n - 1)) == 0 {
+        // Power of 2
+        fft_transform_radix2(vec, n, inverse);
+    } else {
+        fft_transform_bluestein(vec, n, inverse);
+    }
+}
+```
+----END FUNCTION----
+2026-11-16 13:33:00 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:33:00 | DEBUG    | sactor.utils:258 | pub unsafe fn fft_transform(vec: *mut [f64; 2], n: usize, inverse: bool) {
+    if n <= 1 {
+        return;
+    } else if (n & (n - 1)) == 0 {
+        // Power of 2
+        fft_transform_radix2(vec, n, inverse);
+    } else {
+        fft_transform_bluestein(vec, n, inverse);
+    }
+}
+
+2026-11-16 13:33:00 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function fft_transform:
+2026-11-16 13:33:00 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub unsafe fn fft_transform(vec: *mut [f64; 2], n: usize, inverse: bool) {
+    if n <= 1 {
+        return;
+    } else if (n & (n - 1)) == 0 {
+        fft_transform_radix2(vec, n, inverse);
+    } else {
+        fft_transform_bluestein(vec, n, inverse);
+    }
+}
+
+2026-11-16 13:33:00 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/build_attempt/Cargo.toml
+2026-11-16 13:33:02 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:33:02 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/embed_test_rust/Cargo.toml
+2026-11-16 13:33:11 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/embed_test_c/fft_transform', '/home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/embed_test_c/fft_transform.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/embed_test_rust/target/debug', '-lm', '-lfft_transform']
+2026-11-16 13:33:11 | DEBUG    | sactor.sactor:425 | Checking function main: struct_ready=True, struct_blockers=[]
+2026-11-16 13:33:12 | INFO     | sactor.translator.unidiomatic_translator:1085 | Translating function: main (attempts: 0)
+2026-11-16 13:33:12 | PROMPT   | sactor.llm:155 | 
+Translate the following C function to Rust. Try to keep the **equivalence** as much as possible.
+`libc` will be included as the **only** dependency you can use. To keep the equivalence, you can use `unsafe` if you want.
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+The function is:
+```c
+int main() {
+	size_t n = 8388608; // 2^23 = 8M elements for ~1-2 second runtime
+	double complex* vec = calloc(n, sizeof(double complex));
+
+	// Generate a synthetic dataset (e.g., a mix of two sine waves)
+	for (size_t i = 0; i < n; i++) {
+		double t = (double)i / n;
+		// 5 Hz wave + 20 Hz wave
+		double val = sin(2.0 * M_PI * 5.0 * t) + 0.5 * sin(2.0 * M_PI * 20.0 * t);
+		vec[i] = val + 0.0 * I;
+	}
+
+	printf("Dataset generated: %zu elements.\n", n);
+	printf("First 5 elements before FFT:\n");
+	for (size_t i = 0; i < 5; i++) {
+		printf("%.4f %s %.4fi\n", creal(vec[i]), cimag(vec[i]) >= 0 ? "+" : "-", fabs(cimag(vec[i])));
+	}
+
+	struct timespec start, end;
+	double time_taken;
+
+	// Forward FFT
+	clock_gettime(CLOCK_MONOTONIC, &start);
+	fft_transform(vec, n, false);
+	clock_gettime(CLOCK_MONOTONIC, &end);
+	time_taken = (double)(end.tv_sec - start.tv_sec) + (double)(end.tv_nsec - start.tv_nsec) / 1e9;
+	printf("rfft forward computation time: %.6f seconds\n", time_taken);
+
+	printf("First 5 elements after FFT:\n");
+	for (size_t i = 0; i < 5; i++) {
+		printf("%.4f %s %.4fi\n", creal(vec[i]), cimag(vec[i]) >= 0 ? "+" : "-", fabs(cimag(vec[i])));
+	}
+
+	// Inverse FFT
+	clock_gettime(CLOCK_MONOTONIC, &start);
+	fft_transform(vec, n, true);
+	clock_gettime(CLOCK_MONOTONIC, &end);
+	time_taken = (double)(end.tv_sec - start.tv_sec) + (double)(end.tv_nsec - start.tv_nsec) / 1e9;
+	printf("rfft inverse computation time: %.6f seconds\n", time_taken);
+	
+	printf("First 5 elements after Inverse FFT (normalized):\n");
+	for (size_t i = 0; i < 5; i++) {
+		double complex val = vec[i] / (double)n;
+		printf("Normalized: %.4f %s %.4fi\n", creal(val), cimag(val) >= 0 ? "+" : "-", fabs(cimag(val)));
+	}
+
+	free(vec);
+	return 0;
+}
+```
+
+The function is the `main` function, which is the entry point of the program. The function signature should be: `pub fn main() -> ()`.
+For `return 0;`, you can directly `return;` in Rust or ignore it if it's the last statement.
+For other return values, you can use `std::process::exit()` to return the value.
+For `argc` and `argv`, you can use `std::env::args()` to get the arguments.
+
+The function body above may reference the following macros. Use these definitions to understand the semantics; do **NOT** redefine them in Rust—expand or replicate their behavior as needed in the translation.
+```c
+#define complex		_Complex
+#define M_PI		3.14159265358979323846
+#define false 0
+#define I _Complex_I
+#define true 1
+#define CLOCK_MONOTONIC		1
+#define _Complex_I	(__extension__ 1.0iF)
+```
+
+The function calls the following functions, which are already translated and defined in Rust.
+Do **NOT** include the definition or declaration of the following functions in your translation.
+If you include them, the output will be considered **invalid**.
+But you can call the following functions in your translation.
+Only output the translation of the function I request.
+The called functions' signatures in Rust are the following:
+```rust
+fn fft_transform (vec : * mut [f64 ; 2] , n : usize , inverse : bool);
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+2026-11-16 13:33:20 | RESPONSE | sactor.llm:160 | The complex vector is represented as `*mut [f64; 2]`, so I allocate it with `libc::calloc` to match the C code. I call `libc::clock_gettime` with `CLOCK_MONOTONIC` for timing, and `println!` for the output.
+
+The `%.4f` format for the sign and absolute value maps directly to Rust's `{:.4}`. The C code picks `"+"` when `cimag >= 0`. For NaN or `-0.0`, `-0.0 >= 0` is true in both languages, so the comparison behaves the same.
+
+Complex division `vec[i] / (double)n` divides a complex number by a real. In C99 with a real divisor converted to complex, the result is mathematically the componentwise division. I use componentwise division in Rust.
+
+----FUNCTION----
+```rust
+pub fn main() -> () {
+    unsafe {
+        let n: usize = 8388608;
+        let vec = libc::calloc(n, std::mem::size_of::<[f64; 2]>()) as *mut [f64; 2];
+        if vec.is_null() {
+            return;
+        }
+        let pi: f64 = 3.14159265358979323846;
+
+        for i in 0..n {
+            let t = (i as f64) / (n as f64);
+            let val = (2.0 * pi * 5.0 * t).sin() + 0.5 * (2.0 * pi * 20.0 * t).sin();
+            *vec.add(i) = [val, 0.0 * 1.0];
+        }
+
+        println!("Dataset generated: {} elements.", n);
+        println!("First 5 elements before FFT:");
+        for i in 0..5 {
+            let v = *vec.add(i);
+            println!(
+                "{:.4} {} {:.4}i",
+                v[0],
+                if v[1] >= 0.0 { "+" } else { "-" },
+                v[1].abs()
+            );
+        }
+
+        let mut start: libc::timespec = std::mem::zeroed();
+        let mut end: libc::timespec = std::mem::zeroed();
+        let mut time_taken: f64;
+
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut start);
+        fft_transform(vec, n, false);
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut end);
+        time_taken = (end.tv_sec - start.tv_sec) as f64
+            + (end.tv_nsec - start.tv_nsec) as f64 / 1e9;
+        println!("rfft forward computation time: {:.6} seconds", time_taken);
+
+        println!("First 5 elements after FFT:");
+        for i in 0..5 {
+            let v = *vec.add(i);
+            println!(
+                "{:.4} {} {:.4}i",
+                v[0],
+                if v[1] >= 0.0 { "+" } else { "-" },
+                v[1].abs()
+            );
+        }
+
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut start);
+        fft_transform(vec, n, true);
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut end);
+        time_taken = (end.tv_sec - start.tv_sec) as f64
+            + (end.tv_nsec - start.tv_nsec) as f64 / 1e9;
+        println!("rfft inverse computation time: {:.6} seconds", time_taken);
+
+        println!("First 5 elements after Inverse FFT (normalized):");
+        for i in 0..5 {
+            let v = *vec.add(i);
+            let re = v[0] / (n as f64);
+            let im = v[1] / (n as f64);
+            println!(
+                "Normalized: {:.4} {} {:.4}i",
+                re,
+                if im >= 0.0 { "+" } else { "-" },
+                im.abs()
+            );
+        }
+
+        libc::free(vec as *mut libc::c_void);
+    }
+}
+```
+----END FUNCTION----
+2026-11-16 13:33:20 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:33:20 | DEBUG    | sactor.utils:258 | pub fn main() -> () {
+    unsafe {
+        let n: usize = 8388608;
+        let vec = libc::calloc(n, std::mem::size_of::<[f64; 2]>()) as *mut [f64; 2];
+        if vec.is_null() {
+            return;
+        }
+        let pi: f64 = 3.14159265358979323846;
+
+        for i in 0..n {
+            let t = (i as f64) / (n as f64);
+            let val = (2.0 * pi * 5.0 * t).sin() + 0.5 * (2.0 * pi * 20.0 * t).sin();
+            *vec.add(i) = [val, 0.0 * 1.0];
+        }
+
+        println!("Dataset generated: {} elements.", n);
+        println!("First 5 elements before FFT:");
+        for i in 0..5 {
+            let v = *vec.add(i);
+            println!(
+                "{:.4} {} {:.4}i",
+                v[0],
+                if v[1] >= 0.0 { "+" } else { "-" },
+                v[1].abs()
+            );
+        }
+
+        let mut start: libc::timespec = std::mem::zeroed();
+        let mut end: libc::timespec = std::mem::zeroed();
+        let mut time_taken: f64;
+
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut start);
+        fft_transform(vec, n, false);
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut end);
+        time_taken = (end.tv_sec - start.tv_sec) as f64
+            + (end.tv_nsec - start.tv_nsec) as f64 / 1e9;
+        println!("rfft forward computation time: {:.6} seconds", time_taken);
+
+        println!("First 5 elements after FFT:");
+        for i in 0..5 {
+            let v = *vec.add(i);
+            println!(
+                "{:.4} {} {:.4}i",
+                v[0],
+                if v[1] >= 0.0 { "+" } else { "-" },
+                v[1].abs()
+            );
+        }
+
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut start);
+        fft_transform(vec, n, true);
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut end);
+        time_taken = (end.tv_sec - start.tv_sec) as f64
+            + (end.tv_nsec - start.tv_nsec) as f64 / 1e9;
+        println!("rfft inverse computation time: {:.6} seconds", time_taken);
+
+        println!("First 5 elements after Inverse FFT (normalized):");
+        for i in 0..5 {
+            let v = *vec.add(i);
+            let re = v[0] / (n as f64);
+            let im = v[1] / (n as f64);
+            println!(
+                "Normalized: {:.4} {} {:.4}i",
+                re,
+                if im >= 0.0 { "+" } else { "-" },
+                im.abs()
+            );
+        }
+
+        libc::free(vec as *mut libc::c_void);
+    }
+}
+
+2026-11-16 13:33:20 | DEBUG    | sactor.translator.unidiomatic_translator:1395 | Translated function main:
+2026-11-16 13:33:20 | DEBUG    | sactor.translator.unidiomatic_translator:1396 | pub fn main() -> () {
+    unsafe {
+        let n: usize = 8388608;
+        let vec = libc::calloc(n, std::mem::size_of::<[f64; 2]>()) as *mut [f64; 2];
+        if vec.is_null() {
+            return;
+        }
+        let pi: f64 = 3.14159265358979323846;
+        for i in 0..n {
+            let t = (i as f64) / (n as f64);
+            let val = (2.0 * pi * 5.0 * t).sin() + 0.5 * (2.0 * pi * 20.0 * t).sin();
+            *vec.add(i) = [val, 0.0 * 1.0];
+        }
+        println!("Dataset generated: {} elements.", n);
+        println!("First 5 elements before FFT:");
+        for i in 0..5 {
+            let v = *vec.add(i);
+            println!(
+                "{:.4} {} {:.4}i", v[0], if v[1] >= 0.0 { "+" } else { "-" }, v[1].abs()
+            );
+        }
+        let mut start: libc::timespec = std::mem::zeroed();
+        let mut end: libc::timespec = std::mem::zeroed();
+        let mut time_taken: f64;
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut start);
+        fft_transform(vec, n, false);
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut end);
+        time_taken = (end.tv_sec - start.tv_sec) as f64
+            + (end.tv_nsec - start.tv_nsec) as f64 / 1e9;
+        println!("rfft forward computation time: {:.6} seconds", time_taken);
+        println!("First 5 elements after FFT:");
+        for i in 0..5 {
+            let v = *vec.add(i);
+            println!(
+                "{:.4} {} {:.4}i", v[0], if v[1] >= 0.0 { "+" } else { "-" }, v[1].abs()
+            );
+        }
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut start);
+        fft_transform(vec, n, true);
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut end);
+        time_taken = (end.tv_sec - start.tv_sec) as f64
+            + (end.tv_nsec - start.tv_nsec) as f64 / 1e9;
+        println!("rfft inverse computation time: {:.6} seconds", time_taken);
+        println!("First 5 elements after Inverse FFT (normalized):");
+        for i in 0..5 {
+            let v = *vec.add(i);
+            let re = v[0] / (n as f64);
+            let im = v[1] / (n as f64);
+            println!(
+                "Normalized: {:.4} {} {:.4}i", re, if im >= 0.0 { "+" } else { "-" }, im
+                .abs()
+            );
+        }
+        libc::free(vec as *mut libc::c_void);
+    }
+}
+
+2026-11-16 13:33:20 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/build_attempt/Cargo.toml
+2026-11-16 13:33:22 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:33:22 | DEBUG    | sactor.verifier.verifier:585 | Compiling embedded Rust crate: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/embed_test_rust/Cargo.toml
+2026-11-16 13:33:31 | DEBUG    | sactor.verifier.verifier:747 | Compiling C harness: ['clang', '-o', '/home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/embed_test_c/main', '/home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/embed_test_c/main.c', '-lm', '-L/home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/embed_test_rust/target/debug', '-lm', '-lmain']
+2026-11-16 13:33:31 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/build_attempt/Cargo.toml
+2026-11-16 13:33:33 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:33:33 | DEBUG    | sactor.combiner.program_combiner:234 | Running clippy fix command: cargo clippy --fix --allow-no-vcs --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/program/Cargo.toml -- -A clippy::cmp_null
+2026-11-16 13:33:36 | INFO     | sactor.combiner.program_combiner:259 | Found 3 warnings in the combined code
+2026-11-16 13:33:36 | INFO     | sactor.combiner.program_combiner:260 | Found 2 errors in the combined code
+2026-11-16 13:33:36 | DEBUG    | sactor.thirdparty.crown:81 | Executing crown command: rustup run nightly-2023-01-26-x86_64-unknown-linux-gnu crown /home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/crown_analysis/src/lib.rs preprocess in-place
+2026-11-16 13:33:37 | WARNING  | sactor.thirdparty.crown:90 | crown preprocess messed up code; restoring original translation
+2026-11-16 13:33:37 | WARNING  | sactor.thirdparty.crown:103 | crown explicit-addr messed up code; restoring original translation
+2026-11-16 13:33:38 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: fft_transform_radix2 (attempts: 0)
+2026-11-16 13:33:38 | PROMPT   | sactor.llm:155 | 
+Translate the following unidiomatic Rust function into idiomatic Rust. Try to remove all the `unsafe` blocks and only use the safe Rust code or use the `unsafe` blocks only when necessary.
+Before translating, analyze the unsafe blocks one by one and how to convert them into safe Rust code.
+**libc may not be provided in the idiomatic code, so try to avoid using libc functions and types, and avoid using `std::ffi` module.**
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+```rust
+pub unsafe fn fft_transform_radix2(vec: *mut [f64; 2], n: usize, inverse: bool) {
+    let mut levels: i32 = 0;
+    let mut k: usize = 1;
+    while (k & n) == 0 {
+        levels += 1;
+        k <<= 1;
+    }
+    for i in 0..n {
+        let mut j: usize = 0;
+        let mut ii: usize = i;
+        for _ in 0..levels {
+            j = (j << 1) | (ii & 1);
+            ii >>= 1;
+        }
+        if j > i {
+            let tmp = *vec.add(i);
+            *vec.add(i) = *vec.add(j);
+            *vec.add(j) = tmp;
+        }
+    }
+    let mut half: usize = 1;
+    while half < n {
+        let size = 2 * half;
+        let step = n / size;
+        let mut j: usize = 0;
+        let mut k: usize = 0;
+        while j < half {
+            let coef: f64 = if inverse { 2.0 } else { -2.0 };
+            let angle: f64 = coef * std::f64::consts::PI * (k as f64) / (n as f64);
+            let omega: [f64; 2] = [angle.cos(), angle.sin()];
+            let mut i: usize = 0;
+            while i < n {
+                let a = *vec.add(i + j + half);
+                let tmp: [f64; 2] = [
+                    a[0] * omega[0] - a[1] * omega[1],
+                    a[0] * omega[1] + a[1] * omega[0],
+                ];
+                let b = *vec.add(i + j);
+                *vec.add(i + j + half) = [b[0] - tmp[0], b[1] - tmp[1]];
+                *vec.add(i + j) = [b[0] + tmp[0], b[1] + tmp[1]];
+                i += size;
+            }
+            j += 1;
+            k += step;
+        }
+        half *= 2;
+    }
+}
+
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+
+Also output a minimal JSON spec that maps the unidiomatic Rust layout to the idiomatic Rust for the function arguments and return value.
+Full JSON Schema for the SPEC (do not output the schema; output only an instance that conforms to it):
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sactor://spec.schema.json",
+  "title": "Sactor Idiomatic Translation Spec",
+  "description": "Schema describing mappings between unidiomatic (repr(C)) Rust and idiomatic Rust for structs and function arguments.",
+  "$defs": {
+    "PtrShape": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ptr": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["slice", "cstring", "ref"] },
+            "len_from": { "type": "string", "description": "Name of the unidiomatic length field." },
+            "len_const": { "type": "integer", "minimum": 0, "description": "Constant element count for the pointer." },
+            "null": { "enum": ["nullable", "forbidden"], "description": "Whether the pointer can be NULL." }
+          },
+          "required": ["kind"]
+        }
+      },
+      "required": ["ptr"]
+    },
+    "UField": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "shape": {
+          "oneOf": [
+            { "const": "scalar", "description": "Scalar value (integer, float, bool, char, or any non-pointer data structures)" },
+            { "$ref": "#/$defs/PtrShape", "description": "Pointer type (raw pointer, slice, or C string)" }
+          ]
+        }
+      },
+      "required": ["name", "shape"]
+    },
+    "IField": {
+      "type": "object",
+      "description": "Idiomatic-side field path. Special convention: if name == 'ret', this Field describes the function return mapping.",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic field path or 'ret' for function return." },
+        "type": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "EnumDiscriminant": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tag": { "type": "string", "description": "u_field.name of the discriminant/tag" },
+        "equals": { "type": ["integer", "string"], "description": "Value of tag that selects this variant" }
+      },
+      "required": ["tag", "equals"]
+    },
+    "EnumVariant": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic enum variant name" },
+        "when": { "$ref": "#/$defs/EnumDiscriminant" },
+        "payload": { "type": "array", "items": { "$ref": "#/$defs/Field" } }
+      },
+      "required": ["name", "when"]
+    },
+    "Field": {
+      "type": "object",
+      "description": "Field mapping between unidiomatic C-style field and idiomatic Rust path.",
+      "properties": {
+        "u_field": { "$ref": "#/$defs/UField" },
+        "i_field": { "$ref": "#/$defs/IField" },
+        "ownership": { "type": "string", "enum": ["owning", "transient"], "description": "Optional ownership hint." },
+        "compare": {
+          "type": "string",
+          "enum": ["by_value", "by_slice", "skip"],
+          "description": "Comparison strategy for roundtrip tests. Use 'skip' generously for values that may legitimately diverge (raw pointers, aliasing views, externally-owned buffers, handles, allocator state, etc.) so the automated selftest stays permissive."
+        },
+        "llm_note": { "type": "string", "description": "Free-form note for LLM when automatic codegen is insufficient (e.g., aliasing/offset semantics)." }
+      },
+      "required": ["u_field", "i_field"]
+    },
+    "StructSpec": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "struct_name": { "type": "string", "description": "Name of the translated idiomatic struct." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 },
+        "i_kind": { "type": "string", "enum": ["struct", "enum"], "default": "struct" },
+        "i_type": { "type": "string", "description": "Idiomatic type name (useful when i_kind=enum)" },
+        "variants": { "type": "array", "items": { "$ref": "#/$defs/EnumVariant" } }
+      },
+      "required": ["fields", "i_kind", "i_type"]
+    },
+    "FunctionSpec": {
+      "type": "object",
+      "description": "Function argument/return mapping. Return values are expressed via a Field whose i_field.name == 'ret'.",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "function_name": { "type": "string", "description": "Name of the translated idiomatic function." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 }
+      },
+      "required": ["fields"]
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/StructSpec" },
+    { "$ref": "#/$defs/FunctionSpec" }
+  ]
+}
+
+```
+----SPEC----
+```json
+{
+  "function_name": "fft_transform_radix2",
+  "fields": [
+    {
+      "u_field": {
+        "name": "...",
+        "type": "...",
+        "shape": "scalar" | {"ptr": {"kind": "slice|cstring|ref", "len_from": "?", "len_const": 1}}
+      },
+      "i_field": {
+        "name": "...",
+        "type": "..."
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+
+Few-shot examples (each with unidiomatic Rust signature, idiomatic Rust signature, and the SPEC):
+
+Example F1 (slice argument):
+Raw slice pointer plus length translated to &[T] parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn sum(xs: *const i32, n: usize) -> i32;
+```
+Idiomatic Rust:
+```rust
+pub fn sum(xs: &[i32]) -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "sum",
+  "fields": [
+    { "u_field": {"name": "xs", "type": "*const i32", "shape": { "ptr": { "kind": "slice", "len_from": "n" } }},
+      "i_field": {"name": "xs", "type": "&[i32]"} },
+    { "u_field": {"name": "n", "type": "usize", "shape": "scalar"},
+      "i_field": {"name": "xs.len", "type": "usize"} },
+    { "u_field": {"name": "ret", "type": "i32", "shape": "scalar"},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F2 (out pointer to return value):
+Mutable pointer output replaced by direct return.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn get_value(out_value: *mut i32);
+```
+Idiomatic Rust:
+```rust
+pub fn get_value() -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "get_value",
+  "fields": [
+    { "u_field": {"name": "out_value", "type": "*mut i32", "shape": { "ptr": { "kind": "ref" } }},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F3 (nullable cstring to Option<&str>):
+Nullable C string pointer converted to Option<&str> parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn set_name(name: *const libc::c_char);
+```
+Idiomatic Rust:
+```rust
+pub fn set_name(name: Option<&str>);
+```
+----SPEC----
+```json
+{
+  "function_name": "set_name",
+  "fields": [
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring", "null": "nullable" } }},
+      "i_field": {"name": "name", "type": "Option<&str>"} }
+  ]
+}
+```
+----END SPEC----
+
+2026-11-16 13:33:45 | RESPONSE | sactor.llm:160 | Analysis of the unsafe blocks:
+
+1. `*vec.add(i)`, `*vec.add(j)` in the bit-reversal swap: both are in-bounds accesses to `vec[0..n]`. With a `&mut [[f64; 2]]` they become `vec.swap(i, j)`.
+2. `*vec.add(i + j + half)` and `*vec.add(i + j)` in the butterfly loop: these are also in-bounds reads and writes to the same buffer. Safe indexing on the slice replaces them.
+3. The raw pointer plus `n` becomes a single slice. `n` is `vec.len()`.
+
+The `levels` loop (`while (k & n) == 0`) is unchanged. It requires `n` to be a nonzero power of two. If `n == 0` the original loops forever, so the translation returns early in that case, which is a small safety fix. For a power of two, `levels` equals `n.trailing_zeros()`, which I use instead of the loop. For non-power-of-two `n` the original would compute the lowest set bit, and `trailing_zeros` gives the same value, so behavior matches.
+
+----FUNCTION----
+```rust
+pub fn fft_transform_radix2(vec: &mut [[f64; 2]], inverse: bool) {
+    let n = vec.len();
+    if n == 0 {
+        return;
+    }
+    let levels: u32 = n.trailing_zeros();
+    for i in 0..n {
+        let mut j: usize = 0;
+        let mut ii: usize = i;
+        for _ in 0..levels {
+            j = (j << 1) | (ii & 1);
+            ii >>= 1;
+        }
+        if j > i {
+            vec.swap(i, j);
+        }
+    }
+    let mut half: usize = 1;
+    while half < n {
+        let size = 2 * half;
+        let step = n / size;
+        let mut j: usize = 0;
+        let mut k: usize = 0;
+        while j < half {
+            let coef: f64 = if inverse { 2.0 } else { -2.0 };
+            let angle: f64 = coef * std::f64::consts::PI * (k as f64) / (n as f64);
+            let omega: [f64; 2] = [angle.cos(), angle.sin()];
+            let mut i: usize = 0;
+            while i < n {
+                let a = vec[i + j + half];
+                let tmp: [f64; 2] = [
+                    a[0] * omega[0] - a[1] * omega[1],
+                    a[0] * omega[1] + a[1] * omega[0],
+                ];
+                let b = vec[i + j];
+                vec[i + j + half] = [b[0] - tmp[0], b[1] - tmp[1]];
+                vec[i + j] = [b[0] + tmp[0], b[1] + tmp[1]];
+                i += size;
+            }
+            j += 1;
+            k += step;
+        }
+        half *= 2;
+    }
+}
+```
+----END FUNCTION----
+
+----SPEC----
+```json
+{
+  "function_name": "fft_transform_radix2",
+  "fields": [
+    {
+      "u_field": {
+        "name": "vec",
+        "type": "*mut [f64; 2]",
+        "shape": { "ptr": { "kind": "slice", "len_from": "n", "null": "forbidden" } }
+      },
+      "i_field": {
+        "name": "vec",
+        "type": "&mut [[f64; 2]]"
+      }
+    },
+    {
+      "u_field": {
+        "name": "n",
+        "type": "usize",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "vec.len",
+        "type": "usize"
+      }
+    },
+    {
+      "u_field": {
+        "name": "inverse",
+        "type": "bool",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "inverse",
+        "type": "bool"
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+2026-11-16 13:33:45 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:33:45 | DEBUG    | sactor.utils:258 | pub fn fft_transform_radix2(vec: &mut [[f64; 2]], inverse: bool) {
+    let n = vec.len();
+    if n == 0 {
+        return;
+    }
+    let levels: u32 = n.trailing_zeros();
+    for i in 0..n {
+        let mut j: usize = 0;
+        let mut ii: usize = i;
+        for _ in 0..levels {
+            j = (j << 1) | (ii & 1);
+            ii >>= 1;
+        }
+        if j > i {
+            vec.swap(i, j);
+        }
+    }
+    let mut half: usize = 1;
+    while half < n {
+        let size = 2 * half;
+        let step = n / size;
+        let mut j: usize = 0;
+        let mut k: usize = 0;
+        while j < half {
+            let coef: f64 = if inverse { 2.0 } else { -2.0 };
+            let angle: f64 = coef * std::f64::consts::PI * (k as f64) / (n as f64);
+            let omega: [f64; 2] = [angle.cos(), angle.sin()];
+            let mut i: usize = 0;
+            while i < n {
+                let a = vec[i + j + half];
+                let tmp: [f64; 2] = [
+                    a[0] * omega[0] - a[1] * omega[1],
+                    a[0] * omega[1] + a[1] * omega[0],
+                ];
+                let b = vec[i + j];
+                vec[i + j + half] = [b[0] - tmp[0], b[1] - tmp[1]];
+                vec[i + j] = [b[0] + tmp[0], b[1] + tmp[1]];
+                i += size;
+            }
+            j += 1;
+            k += step;
+        }
+        half *= 2;
+    }
+}
+
+2026-11-16 13:33:46 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/build_attempt/Cargo.toml
+2026-11-16 13:33:47 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:33:47 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function fft_transform_radix2 after the compile check (FFI harness skipped)
+2026-11-16 13:33:47 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: fft_transform_bluestein (attempts: 0)
+2026-11-16 13:33:48 | PROMPT   | sactor.llm:155 | 
+Translate the following unidiomatic Rust function into idiomatic Rust. Try to remove all the `unsafe` blocks and only use the safe Rust code or use the `unsafe` blocks only when necessary.
+Before translating, analyze the unsafe blocks one by one and how to convert them into safe Rust code.
+**libc may not be provided in the idiomatic code, so try to avoid using libc functions and types, and avoid using `std::ffi` module.**
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+```rust
+pub unsafe fn fft_transform_bluestein(vec: *mut [f64; 2], n: usize, inverse: bool) {
+    let mut m: usize = 1;
+    while m <= 2 * n {
+        m *= 2;
+    }
+    let avec = libc::calloc(m, std::mem::size_of::<[f64; 2]>()) as *mut [f64; 2];
+    let bvec = libc::calloc(m, std::mem::size_of::<[f64; 2]>()) as *mut [f64; 2];
+    *avec.add(0) = *vec.add(0);
+    *bvec.add(0) = [1.0, 0.0];
+    let pi: f64 = 3.14159265358979323846;
+    let sign = if inverse { pi } else { -pi };
+    for i in 1..n {
+        let k = (i * i) % (2 * n);
+        let angle = sign * (k as f64) / (n as f64);
+        let omega = [angle.cos(), angle.sin()];
+        let v = *vec.add(i);
+        *avec.add(i) = [
+            v[0] * omega[0] - v[1] * omega[1],
+            v[0] * omega[1] + v[1] * omega[0],
+        ];
+        let c = [omega[0], -omega[1]];
+        *bvec.add(i) = c;
+        *bvec.add(m - i) = c;
+    }
+    fft_transform_radix2(avec, m, false);
+    fft_transform_radix2(bvec, m, false);
+    for i in 0..m {
+        let a = *avec.add(i);
+        let b = *bvec.add(i);
+        *avec.add(i) = [a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]];
+    }
+    fft_transform_radix2(avec, m, true);
+    for i in 0..n {
+        let k = (i * i) % (2 * n);
+        let angle = sign * (k as f64) / (n as f64);
+        let omega = [angle.cos(), angle.sin()];
+        let a = *avec.add(i);
+        let re = a[0] * omega[0] - a[1] * omega[1];
+        let im = a[0] * omega[1] + a[1] * omega[0];
+        *vec.add(i) = [re / (m as f64), im / (m as f64)];
+    }
+    libc::free(avec as *mut libc::c_void);
+    libc::free(bvec as *mut libc::c_void);
+}
+
+```
+
+This function uses the following functions, which are already translated as (you don't need to include them in your translation, and **you can not modify them**):
+```rust
+fn fft_transform_radix2 (vec : & mut [[f64 ; 2]] , inverse : bool);
+fn fft_transform_radix2 (vec : & mut [[f64 ; 2]] , inverse : bool);
+fn fft_transform_radix2 (vec : & mut [[f64 ; 2]] , inverse : bool);
+fn fft_transform_radix2 (vec : & mut [[f64 ; 2]] , inverse : bool);
+fn fft_transform_radix2 (vec : & mut [[f64 ; 2]] , inverse : bool);
+fn fft_transform_radix2 (vec : & mut [[f64 ; 2]] , inverse : bool);
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+
+Also output a minimal JSON spec that maps the unidiomatic Rust layout to the idiomatic Rust for the function arguments and return value.
+Full JSON Schema for the SPEC (do not output the schema; output only an instance that conforms to it):
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sactor://spec.schema.json",
+  "title": "Sactor Idiomatic Translation Spec",
+  "description": "Schema describing mappings between unidiomatic (repr(C)) Rust and idiomatic Rust for structs and function arguments.",
+  "$defs": {
+    "PtrShape": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ptr": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["slice", "cstring", "ref"] },
+            "len_from": { "type": "string", "description": "Name of the unidiomatic length field." },
+            "len_const": { "type": "integer", "minimum": 0, "description": "Constant element count for the pointer." },
+            "null": { "enum": ["nullable", "forbidden"], "description": "Whether the pointer can be NULL." }
+          },
+          "required": ["kind"]
+        }
+      },
+      "required": ["ptr"]
+    },
+    "UField": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "shape": {
+          "oneOf": [
+            { "const": "scalar", "description": "Scalar value (integer, float, bool, char, or any non-pointer data structures)" },
+            { "$ref": "#/$defs/PtrShape", "description": "Pointer type (raw pointer, slice, or C string)" }
+          ]
+        }
+      },
+      "required": ["name", "shape"]
+    },
+    "IField": {
+      "type": "object",
+      "description": "Idiomatic-side field path. Special convention: if name == 'ret', this Field describes the function return mapping.",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic field path or 'ret' for function return." },
+        "type": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "EnumDiscriminant": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tag": { "type": "string", "description": "u_field.name of the discriminant/tag" },
+        "equals": { "type": ["integer", "string"], "description": "Value of tag that selects this variant" }
+      },
+      "required": ["tag", "equals"]
+    },
+    "EnumVariant": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic enum variant name" },
+        "when": { "$ref": "#/$defs/EnumDiscriminant" },
+        "payload": { "type": "array", "items": { "$ref": "#/$defs/Field" } }
+      },
+      "required": ["name", "when"]
+    },
+    "Field": {
+      "type": "object",
+      "description": "Field mapping between unidiomatic C-style field and idiomatic Rust path.",
+      "properties": {
+        "u_field": { "$ref": "#/$defs/UField" },
+        "i_field": { "$ref": "#/$defs/IField" },
+        "ownership": { "type": "string", "enum": ["owning", "transient"], "description": "Optional ownership hint." },
+        "compare": {
+          "type": "string",
+          "enum": ["by_value", "by_slice", "skip"],
+          "description": "Comparison strategy for roundtrip tests. Use 'skip' generously for values that may legitimately diverge (raw pointers, aliasing views, externally-owned buffers, handles, allocator state, etc.) so the automated selftest stays permissive."
+        },
+        "llm_note": { "type": "string", "description": "Free-form note for LLM when automatic codegen is insufficient (e.g., aliasing/offset semantics)." }
+      },
+      "required": ["u_field", "i_field"]
+    },
+    "StructSpec": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "struct_name": { "type": "string", "description": "Name of the translated idiomatic struct." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 },
+        "i_kind": { "type": "string", "enum": ["struct", "enum"], "default": "struct" },
+        "i_type": { "type": "string", "description": "Idiomatic type name (useful when i_kind=enum)" },
+        "variants": { "type": "array", "items": { "$ref": "#/$defs/EnumVariant" } }
+      },
+      "required": ["fields", "i_kind", "i_type"]
+    },
+    "FunctionSpec": {
+      "type": "object",
+      "description": "Function argument/return mapping. Return values are expressed via a Field whose i_field.name == 'ret'.",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "function_name": { "type": "string", "description": "Name of the translated idiomatic function." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 }
+      },
+      "required": ["fields"]
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/StructSpec" },
+    { "$ref": "#/$defs/FunctionSpec" }
+  ]
+}
+
+```
+----SPEC----
+```json
+{
+  "function_name": "fft_transform_bluestein",
+  "fields": [
+    {
+      "u_field": {
+        "name": "...",
+        "type": "...",
+        "shape": "scalar" | {"ptr": {"kind": "slice|cstring|ref", "len_from": "?", "len_const": 1}}
+      },
+      "i_field": {
+        "name": "...",
+        "type": "..."
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+
+Few-shot examples (each with unidiomatic Rust signature, idiomatic Rust signature, and the SPEC):
+
+Example F1 (slice argument):
+Raw slice pointer plus length translated to &[T] parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn sum(xs: *const i32, n: usize) -> i32;
+```
+Idiomatic Rust:
+```rust
+pub fn sum(xs: &[i32]) -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "sum",
+  "fields": [
+    { "u_field": {"name": "xs", "type": "*const i32", "shape": { "ptr": { "kind": "slice", "len_from": "n" } }},
+      "i_field": {"name": "xs", "type": "&[i32]"} },
+    { "u_field": {"name": "n", "type": "usize", "shape": "scalar"},
+      "i_field": {"name": "xs.len", "type": "usize"} },
+    { "u_field": {"name": "ret", "type": "i32", "shape": "scalar"},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F2 (out pointer to return value):
+Mutable pointer output replaced by direct return.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn get_value(out_value: *mut i32);
+```
+Idiomatic Rust:
+```rust
+pub fn get_value() -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "get_value",
+  "fields": [
+    { "u_field": {"name": "out_value", "type": "*mut i32", "shape": { "ptr": { "kind": "ref" } }},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F3 (nullable cstring to Option<&str>):
+Nullable C string pointer converted to Option<&str> parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn set_name(name: *const libc::c_char);
+```
+Idiomatic Rust:
+```rust
+pub fn set_name(name: Option<&str>);
+```
+----SPEC----
+```json
+{
+  "function_name": "set_name",
+  "fields": [
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring", "null": "nullable" } }},
+      "i_field": {"name": "name", "type": "Option<&str>"} }
+  ]
+}
+```
+----END SPEC----
+
+2026-11-16 13:33:56 | RESPONSE | sactor.llm:160 | Analysis of the unsafe blocks:
+
+1. `libc::calloc` for `avec` and `bvec`: replaced with `vec![[0.0; 2]; m]`, which zero-initializes and frees automatically.
+2. Raw pointer reads and writes on `vec` (`*vec.add(i)`): replaced with slice indexing. The pointer plus `n` becomes `&mut [[f64; 2]]`, and `n` is `vec.len()`.
+3. `libc::free`: no longer needed, because `Vec` drops itself.
+4. Calls to `fft_transform_radix2(ptr, m, flag)`: the translated version takes `&mut [[f64; 2]]` and the `inverse` flag, and the length comes from the slice.
+
+Edge case: the original writes `avec[0] = vec[0]` unconditionally. If `n == 0` that would read out of bounds in the original, so I return early for an empty slice. For `n >= 1`, `m` is greater than `2n`, so `m - i` stays in range for `i < n`.
+
+The `fft_transform_radix2` shown is the already-translated function, so I call it as given.
+
+----FUNCTION----
+```rust
+pub fn fft_transform_bluestein(vec: &mut [[f64; 2]], inverse: bool) {
+    let n = vec.len();
+    if n == 0 {
+        return;
+    }
+    let mut m: usize = 1;
+    while m <= 2 * n {
+        m *= 2;
+    }
+    let mut avec: Vec<[f64; 2]> = vec![[0.0, 0.0]; m];
+    let mut bvec: Vec<[f64; 2]> = vec![[0.0, 0.0]; m];
+    avec[0] = vec[0];
+    bvec[0] = [1.0, 0.0];
+    let pi: f64 = std::f64::consts::PI;
+    let sign = if inverse { pi } else { -pi };
+    for i in 1..n {
+        let k = (i * i) % (2 * n);
+        let angle = sign * (k as f64) / (n as f64);
+        let omega = [angle.cos(), angle.sin()];
+        let v = vec[i];
+        avec[i] = [
+            v[0] * omega[0] - v[1] * omega[1],
+            v[0] * omega[1] + v[1] * omega[0],
+        ];
+        let c = [omega[0], -omega[1]];
+        bvec[i] = c;
+        bvec[m - i] = c;
+    }
+    fft_transform_radix2(&mut avec, false);
+    fft_transform_radix2(&mut bvec, false);
+    for i in 0..m {
+        let a = avec[i];
+        let b = bvec[i];
+        avec[i] = [a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]];
+    }
+    fft_transform_radix2(&mut avec, true);
+    for i in 0..n {
+        let k = (i * i) % (2 * n);
+        let angle = sign * (k as f64) / (n as f64);
+        let omega = [angle.cos(), angle.sin()];
+        let a = avec[i];
+        let re = a[0] * omega[0] - a[1] * omega[1];
+        let im = a[0] * omega[1] + a[1] * omega[0];
+        vec[i] = [re / (m as f64), im / (m as f64)];
+    }
+}
+```
+----END FUNCTION----
+
+----SPEC----
+```json
+{
+  "function_name": "fft_transform_bluestein",
+  "fields": [
+    {
+      "u_field": {
+        "name": "vec",
+        "type": "*mut [f64; 2]",
+        "shape": { "ptr": { "kind": "slice", "len_from": "n", "null": "forbidden" } }
+      },
+      "i_field": {
+        "name": "vec",
+        "type": "&mut [[f64; 2]]"
+      }
+    },
+    {
+      "u_field": {
+        "name": "n",
+        "type": "usize",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "vec.len",
+        "type": "usize"
+      }
+    },
+    {
+      "u_field": {
+        "name": "inverse",
+        "type": "bool",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "inverse",
+        "type": "bool"
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+2026-11-16 13:33:56 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:33:56 | DEBUG    | sactor.utils:258 | pub fn fft_transform_bluestein(vec: &mut [[f64; 2]], inverse: bool) {
+    let n = vec.len();
+    if n == 0 {
+        return;
+    }
+    let mut m: usize = 1;
+    while m <= 2 * n {
+        m *= 2;
+    }
+    let mut avec: Vec<[f64; 2]> = vec![[0.0, 0.0]; m];
+    let mut bvec: Vec<[f64; 2]> = vec![[0.0, 0.0]; m];
+    avec[0] = vec[0];
+    bvec[0] = [1.0, 0.0];
+    let pi: f64 = std::f64::consts::PI;
+    let sign = if inverse { pi } else { -pi };
+    for i in 1..n {
+        let k = (i * i) % (2 * n);
+        let angle = sign * (k as f64) / (n as f64);
+        let omega = [angle.cos(), angle.sin()];
+        let v = vec[i];
+        avec[i] = [
+            v[0] * omega[0] - v[1] * omega[1],
+            v[0] * omega[1] + v[1] * omega[0],
+        ];
+        let c = [omega[0], -omega[1]];
+        bvec[i] = c;
+        bvec[m - i] = c;
+    }
+    fft_transform_radix2(&mut avec, false);
+    fft_transform_radix2(&mut bvec, false);
+    for i in 0..m {
+        let a = avec[i];
+        let b = bvec[i];
+        avec[i] = [a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]];
+    }
+    fft_transform_radix2(&mut avec, true);
+    for i in 0..n {
+        let k = (i * i) % (2 * n);
+        let angle = sign * (k as f64) / (n as f64);
+        let omega = [angle.cos(), angle.sin()];
+        let a = avec[i];
+        let re = a[0] * omega[0] - a[1] * omega[1];
+        let im = a[0] * omega[1] + a[1] * omega[0];
+        vec[i] = [re / (m as f64), im / (m as f64)];
+    }
+}
+
+2026-11-16 13:33:56 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/build_attempt/Cargo.toml
+2026-11-16 13:33:58 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:33:58 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function fft_transform_bluestein after the compile check (FFI harness skipped)
+2026-11-16 13:33:58 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: fft_transform (attempts: 0)
+2026-11-16 13:33:58 | PROMPT   | sactor.llm:155 | 
+Translate the following unidiomatic Rust function into idiomatic Rust. Try to remove all the `unsafe` blocks and only use the safe Rust code or use the `unsafe` blocks only when necessary.
+Before translating, analyze the unsafe blocks one by one and how to convert them into safe Rust code.
+**libc may not be provided in the idiomatic code, so try to avoid using libc functions and types, and avoid using `std::ffi` module.**
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+```rust
+pub unsafe fn fft_transform(vec: *mut [f64; 2], n: usize, inverse: bool) {
+    if n <= 1 {
+        return;
+    } else if (n & (n - 1)) == 0 {
+        fft_transform_radix2(vec, n, inverse);
+    } else {
+        fft_transform_bluestein(vec, n, inverse);
+    }
+}
+
+```
+
+This function uses the following functions, which are already translated as (you don't need to include them in your translation, and **you can not modify them**):
+```rust
+fn fft_transform_radix2 (vec : & mut [[f64 ; 2]] , inverse : bool);
+fn fft_transform_radix2 (vec : & mut [[f64 ; 2]] , inverse : bool);
+fn fft_transform_bluestein (vec : & mut [[f64 ; 2]] , inverse : bool);
+fn fft_transform_bluestein (vec : & mut [[f64 ; 2]] , inverse : bool);
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+
+Also output a minimal JSON spec that maps the unidiomatic Rust layout to the idiomatic Rust for the function arguments and return value.
+Full JSON Schema for the SPEC (do not output the schema; output only an instance that conforms to it):
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sactor://spec.schema.json",
+  "title": "Sactor Idiomatic Translation Spec",
+  "description": "Schema describing mappings between unidiomatic (repr(C)) Rust and idiomatic Rust for structs and function arguments.",
+  "$defs": {
+    "PtrShape": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ptr": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["slice", "cstring", "ref"] },
+            "len_from": { "type": "string", "description": "Name of the unidiomatic length field." },
+            "len_const": { "type": "integer", "minimum": 0, "description": "Constant element count for the pointer." },
+            "null": { "enum": ["nullable", "forbidden"], "description": "Whether the pointer can be NULL." }
+          },
+          "required": ["kind"]
+        }
+      },
+      "required": ["ptr"]
+    },
+    "UField": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "shape": {
+          "oneOf": [
+            { "const": "scalar", "description": "Scalar value (integer, float, bool, char, or any non-pointer data structures)" },
+            { "$ref": "#/$defs/PtrShape", "description": "Pointer type (raw pointer, slice, or C string)" }
+          ]
+        }
+      },
+      "required": ["name", "shape"]
+    },
+    "IField": {
+      "type": "object",
+      "description": "Idiomatic-side field path. Special convention: if name == 'ret', this Field describes the function return mapping.",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic field path or 'ret' for function return." },
+        "type": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "EnumDiscriminant": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tag": { "type": "string", "description": "u_field.name of the discriminant/tag" },
+        "equals": { "type": ["integer", "string"], "description": "Value of tag that selects this variant" }
+      },
+      "required": ["tag", "equals"]
+    },
+    "EnumVariant": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "description": "Idiomatic enum variant name" },
+        "when": { "$ref": "#/$defs/EnumDiscriminant" },
+        "payload": { "type": "array", "items": { "$ref": "#/$defs/Field" } }
+      },
+      "required": ["name", "when"]
+    },
+    "Field": {
+      "type": "object",
+      "description": "Field mapping between unidiomatic C-style field and idiomatic Rust path.",
+      "properties": {
+        "u_field": { "$ref": "#/$defs/UField" },
+        "i_field": { "$ref": "#/$defs/IField" },
+        "ownership": { "type": "string", "enum": ["owning", "transient"], "description": "Optional ownership hint." },
+        "compare": {
+          "type": "string",
+          "enum": ["by_value", "by_slice", "skip"],
+          "description": "Comparison strategy for roundtrip tests. Use 'skip' generously for values that may legitimately diverge (raw pointers, aliasing views, externally-owned buffers, handles, allocator state, etc.) so the automated selftest stays permissive."
+        },
+        "llm_note": { "type": "string", "description": "Free-form note for LLM when automatic codegen is insufficient (e.g., aliasing/offset semantics)." }
+      },
+      "required": ["u_field", "i_field"]
+    },
+    "StructSpec": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "struct_name": { "type": "string", "description": "Name of the translated idiomatic struct." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 },
+        "i_kind": { "type": "string", "enum": ["struct", "enum"], "default": "struct" },
+        "i_type": { "type": "string", "description": "Idiomatic type name (useful when i_kind=enum)" },
+        "variants": { "type": "array", "items": { "$ref": "#/$defs/EnumVariant" } }
+      },
+      "required": ["fields", "i_kind", "i_type"]
+    },
+    "FunctionSpec": {
+      "type": "object",
+      "description": "Function argument/return mapping. Return values are expressed via a Field whose i_field.name == 'ret'.",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "function_name": { "type": "string", "description": "Name of the translated idiomatic function." },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/Field" }, "minItems": 1 }
+      },
+      "required": ["fields"]
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/StructSpec" },
+    { "$ref": "#/$defs/FunctionSpec" }
+  ]
+}
+
+```
+----SPEC----
+```json
+{
+  "function_name": "fft_transform",
+  "fields": [
+    {
+      "u_field": {
+        "name": "...",
+        "type": "...",
+        "shape": "scalar" | {"ptr": {"kind": "slice|cstring|ref", "len_from": "?", "len_const": 1}}
+      },
+      "i_field": {
+        "name": "...",
+        "type": "..."
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+
+Few-shot examples (each with unidiomatic Rust signature, idiomatic Rust signature, and the SPEC):
+
+Example F1 (slice argument):
+Raw slice pointer plus length translated to &[T] parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn sum(xs: *const i32, n: usize) -> i32;
+```
+Idiomatic Rust:
+```rust
+pub fn sum(xs: &[i32]) -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "sum",
+  "fields": [
+    { "u_field": {"name": "xs", "type": "*const i32", "shape": { "ptr": { "kind": "slice", "len_from": "n" } }},
+      "i_field": {"name": "xs", "type": "&[i32]"} },
+    { "u_field": {"name": "n", "type": "usize", "shape": "scalar"},
+      "i_field": {"name": "xs.len", "type": "usize"} },
+    { "u_field": {"name": "ret", "type": "i32", "shape": "scalar"},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F2 (out pointer to return value):
+Mutable pointer output replaced by direct return.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn get_value(out_value: *mut i32);
+```
+Idiomatic Rust:
+```rust
+pub fn get_value() -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "get_value",
+  "fields": [
+    { "u_field": {"name": "out_value", "type": "*mut i32", "shape": { "ptr": { "kind": "ref" } }},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F3 (nullable cstring to Option<&str>):
+Nullable C string pointer converted to Option<&str> parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn set_name(name: *const libc::c_char);
+```
+Idiomatic Rust:
+```rust
+pub fn set_name(name: Option<&str>);
+```
+----SPEC----
+```json
+{
+  "function_name": "set_name",
+  "fields": [
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring", "null": "nullable" } }},
+      "i_field": {"name": "name", "type": "Option<&str>"} }
+  ]
+}
+```
+----END SPEC----
+
+2026-11-16 13:34:03 | RESPONSE | sactor.llm:160 | **Analysis of the unsafe blocks**
+
+The function is `unsafe` only because it takes a raw pointer `vec: *mut [f64; 2]` together with a length `n`. There are no explicit `unsafe` blocks. The callees already take `&mut [[f64; 2]]`, so the raw pointer was previously turned into a slice using `n`.
+
+The safe version takes `vec: &mut [[f64; 2]]`, and `n` becomes `vec.len()`. The checks stay the same:
+- If `n <= 1`, return.
+- If `n` is a power of two, call radix2.
+- Otherwise call Bluestein.
+
+No `unsafe` is needed.
+
+----FUNCTION----
+```rust
+pub fn fft_transform(vec: &mut [[f64; 2]], inverse: bool) {
+    let n = vec.len();
+    if n <= 1 {
+        return;
+    } else if (n & (n - 1)) == 0 {
+        fft_transform_radix2(vec, inverse);
+    } else {
+        fft_transform_bluestein(vec, inverse);
+    }
+}
+```
+----END FUNCTION----
+
+----SPEC----
+```json
+{
+  "function_name": "fft_transform",
+  "fields": [
+    {
+      "u_field": {
+        "name": "vec",
+        "type": "*mut [f64; 2]",
+        "shape": { "ptr": { "kind": "slice", "len_from": "n", "null": "forbidden" } }
+      },
+      "i_field": {
+        "name": "vec",
+        "type": "&mut [[f64; 2]]"
+      }
+    },
+    {
+      "u_field": {
+        "name": "n",
+        "type": "usize",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "vec.len",
+        "type": "usize"
+      }
+    },
+    {
+      "u_field": {
+        "name": "inverse",
+        "type": "bool",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "inverse",
+        "type": "bool"
+      }
+    }
+  ]
+}
+```
+----END SPEC----
+2026-11-16 13:34:03 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:34:03 | DEBUG    | sactor.utils:258 | pub fn fft_transform(vec: &mut [[f64; 2]], inverse: bool) {
+    let n = vec.len();
+    if n <= 1 {
+        return;
+    } else if (n & (n - 1)) == 0 {
+        fft_transform_radix2(vec, inverse);
+    } else {
+        fft_transform_bluestein(vec, inverse);
+    }
+}
+
+2026-11-16 13:34:03 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/build_attempt/Cargo.toml
+2026-11-16 13:34:05 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:34:05 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function fft_transform after the compile check (FFI harness skipped)
+2026-11-16 13:34:05 | INFO     | sactor.translator.idiomatic_translator:1689 | Translating function: main (attempts: 0)
+2026-11-16 13:34:05 | PROMPT   | sactor.llm:155 | 
+Translate the following unidiomatic Rust function into idiomatic Rust. Try to remove all the `unsafe` blocks and only use the safe Rust code or use the `unsafe` blocks only when necessary.
+Before translating, analyze the unsafe blocks one by one and how to convert them into safe Rust code.
+**libc may not be provided in the idiomatic code, so try to avoid using libc functions and types, and avoid using `std::ffi` module.**
+Your solution should only have **one** function, if you need to create help function, define the help function inside the function you translate.
+```rust
+pub fn main() -> () {
+    unsafe {
+        let n: usize = 8388608;
+        let vec = libc::calloc(n, std::mem::size_of::<[f64; 2]>()) as *mut [f64; 2];
+        if vec.is_null() {
+            return;
+        }
+        let pi: f64 = 3.14159265358979323846;
+        for i in 0..n {
+            let t = (i as f64) / (n as f64);
+            let val = (2.0 * pi * 5.0 * t).sin() + 0.5 * (2.0 * pi * 20.0 * t).sin();
+            *vec.add(i) = [val, 0.0 * 1.0];
+        }
+        println!("Dataset generated: {} elements.", n);
+        println!("First 5 elements before FFT:");
+        for i in 0..5 {
+            let v = *vec.add(i);
+            println!(
+                "{:.4} {} {:.4}i",
+                v[0],
+                if v[1] >= 0.0 { "+" } else { "-" },
+                v[1].abs()
+            );
+        }
+        let mut start: libc::timespec = std::mem::zeroed();
+        let mut end: libc::timespec = std::mem::zeroed();
+        let mut time_taken: f64;
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut start);
+        fft_transform(vec, n, false);
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut end);
+        time_taken =
+            (end.tv_sec - start.tv_sec) as f64 + (end.tv_nsec - start.tv_nsec) as f64 / 1e9;
+        println!("rfft forward computation time: {:.6} seconds", time_taken);
+        println!("First 5 elements after FFT:");
+        for i in 0..5 {
+            let v = *vec.add(i);
+            println!(
+                "{:.4} {} {:.4}i",
+                v[0],
+                if v[1] >= 0.0 { "+" } else { "-" },
+                v[1].abs()
+            );
+        }
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut start);
+        fft_transform(vec, n, true);
+        libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut end);
+        time_taken =
+            (end.tv_sec - start.tv_sec) as f64 + (end.tv_nsec - start.tv_nsec) as f64 / 1e9;
+        println!("rfft inverse computation time: {:.6} seconds", time_taken);
+        println!("First 5 elements after Inverse FFT (normalized):");
+        for i in 0..5 {
+            let v = *vec.add(i);
+            let re = v[0] / (n as f64);
+            let im = v[1] / (n as f64);
+            println!(
+                "Normalized: {:.4} {} {:.4}i",
+                re,
+                if im >= 0.0 { "+" } else { "-" },
+                im.abs()
+            );
+        }
+        libc::free(vec as *mut libc::c_void);
+    }
+}
+
+```
+
+This function uses the following functions, which are already translated as (you don't need to include them in your translation, and **you can not modify them**):
+```rust
+fn fft_transform (vec : & mut [[f64 ; 2]] , inverse : bool);
+fn fft_transform (vec : & mut [[f64 ; 2]] , inverse : bool);
+fn fft_transform (vec : & mut [[f64 ; 2]] , inverse : bool);
+fn fft_transform (vec : & mut [[f64 ; 2]] , inverse : bool);
+```
+
+Output the translated function into this format (wrap with the following tags):
+----FUNCTION----
+```rust
+// Your translated function here
+```
+----END FUNCTION----
+
+Few-shot examples (each with unidiomatic Rust signature, idiomatic Rust signature, and the SPEC):
+
+Example F1 (slice argument):
+Raw slice pointer plus length translated to &[T] parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn sum(xs: *const i32, n: usize) -> i32;
+```
+Idiomatic Rust:
+```rust
+pub fn sum(xs: &[i32]) -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "sum",
+  "fields": [
+    { "u_field": {"name": "xs", "type": "*const i32", "shape": { "ptr": { "kind": "slice", "len_from": "n" } }},
+      "i_field": {"name": "xs", "type": "&[i32]"} },
+    { "u_field": {"name": "n", "type": "usize", "shape": "scalar"},
+      "i_field": {"name": "xs.len", "type": "usize"} },
+    { "u_field": {"name": "ret", "type": "i32", "shape": "scalar"},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F2 (out pointer to return value):
+Mutable pointer output replaced by direct return.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn get_value(out_value: *mut i32);
+```
+Idiomatic Rust:
+```rust
+pub fn get_value() -> i32;
+```
+----SPEC----
+```json
+{
+  "function_name": "get_value",
+  "fields": [
+    { "u_field": {"name": "out_value", "type": "*mut i32", "shape": { "ptr": { "kind": "ref" } }},
+      "i_field": {"name": "ret", "type": "i32"} }
+  ]
+}
+```
+----END SPEC----
+
+
+Example F3 (nullable cstring to Option<&str>):
+Nullable C string pointer converted to Option<&str> parameter.
+Unidiomatic Rust:
+```rust
+pub unsafe extern "C" fn set_name(name: *const libc::c_char);
+```
+Idiomatic Rust:
+```rust
+pub fn set_name(name: Option<&str>);
+```
+----SPEC----
+```json
+{
+  "function_name": "set_name",
+  "fields": [
+    { "u_field": {"name": "name", "type": "*const c_char", "shape": { "ptr": { "kind": "cstring", "null": "nullable" } }},
+      "i_field": {"name": "name", "type": "Option<&str>"} }
+  ]
+}
+```
+----END SPEC----
+
+2026-11-16 13:34:11 | RESPONSE | sactor.llm:160 | Analysis of the unsafe blocks:
+
+1. `libc::calloc` for `n` elements of `[f64; 2]` becomes a `vec![[0.0; 2]; n]`. This is safe and zero-initialized. The null check is no longer needed, because Rust aborts on allocation failure.
+2. `*vec.add(i) = ...` writes become safe indexing into the `Vec`.
+3. `*vec.add(i)` reads become safe indexing.
+4. `libc::clock_gettime(CLOCK_MONOTONIC)` with `timespec` becomes `std::time::Instant::now()` and `elapsed().as_secs_f64()`.
+5. `fft_transform(vec, n, inverse)` becomes `fft_transform(&mut vec, inverse)`, matching the provided slice signature.
+6. `libc::free` is unnecessary, since `Vec` is dropped automatically.
+
+No `unsafe` remains.
+
+The `fft_transform` signature is given as `&mut [[f64; 2]]`, so I call it with `&mut vec`.
+
+----FUNCTION----
+```rust
+pub fn main() -> () {
+    use std::time::Instant;
+
+    let n: usize = 8388608;
+    let mut vec: Vec<[f64; 2]> = vec![[0.0; 2]; n];
+    let pi: f64 = 3.14159265358979323846;
+    for i in 0..n {
+        let t = (i as f64) / (n as f64);
+        let val = (2.0 * pi * 5.0 * t).sin() + 0.5 * (2.0 * pi * 20.0 * t).sin();
+        vec[i] = [val, 0.0 * 1.0];
+    }
+    println!("Dataset generated: {} elements.", n);
+    println!("First 5 elements before FFT:");
+    for i in 0..5 {
+        let v = vec[i];
+        println!(
+            "{:.4} {} {:.4}i",
+            v[0],
+            if v[1] >= 0.0 { "+" } else { "-" },
+            v[1].abs()
+        );
+    }
+
+    let start = Instant::now();
+    fft_transform(&mut vec, false);
+    let time_taken = start.elapsed().as_secs_f64();
+    println!("rfft forward computation time: {:.6} seconds", time_taken);
+    println!("First 5 elements after FFT:");
+    for i in 0..5 {
+        let v = vec[i];
+        println!(
+            "{:.4} {} {:.4}i",
+            v[0],
+            if v[1] >= 0.0 { "+" } else { "-" },
+            v[1].abs()
+        );
+    }
+
+    let start = Instant::now();
+    fft_transform(&mut vec, true);
+    let time_taken = start.elapsed().as_secs_f64();
+    println!("rfft inverse computation time: {:.6} seconds", time_taken);
+    println!("First 5 elements after Inverse FFT (normalized):");
+    for i in 0..5 {
+        let v = vec[i];
+        let re = v[0] / (n as f64);
+        let im = v[1] / (n as f64);
+        println!(
+            "Normalized: {:.4} {} {:.4}i",
+            re,
+            if im >= 0.0 { "+" } else { "-" },
+            im.abs()
+        );
+    }
+}
+```
+----END FUNCTION----
+2026-11-16 13:34:11 | DEBUG    | sactor.utils:257 | Generated function:
+2026-11-16 13:34:11 | DEBUG    | sactor.utils:258 | pub fn main() -> () {
+    use std::time::Instant;
+
+    let n: usize = 8388608;
+    let mut vec: Vec<[f64; 2]> = vec![[0.0; 2]; n];
+    let pi: f64 = 3.14159265358979323846;
+    for i in 0..n {
+        let t = (i as f64) / (n as f64);
+        let val = (2.0 * pi * 5.0 * t).sin() + 0.5 * (2.0 * pi * 20.0 * t).sin();
+        vec[i] = [val, 0.0 * 1.0];
+    }
+    println!("Dataset generated: {} elements.", n);
+    println!("First 5 elements before FFT:");
+    for i in 0..5 {
+        let v = vec[i];
+        println!(
+            "{:.4} {} {:.4}i",
+            v[0],
+            if v[1] >= 0.0 { "+" } else { "-" },
+            v[1].abs()
+        );
+    }
+
+    let start = Instant::now();
+    fft_transform(&mut vec, false);
+    let time_taken = start.elapsed().as_secs_f64();
+    println!("rfft forward computation time: {:.6} seconds", time_taken);
+    println!("First 5 elements after FFT:");
+    for i in 0..5 {
+        let v = vec[i];
+        println!(
+            "{:.4} {} {:.4}i",
+            v[0],
+            if v[1] >= 0.0 { "+" } else { "-" },
+            v[1].abs()
+        );
+    }
+
+    let start = Instant::now();
+    fft_transform(&mut vec, true);
+    let time_taken = start.elapsed().as_secs_f64();
+    println!("rfft inverse computation time: {:.6} seconds", time_taken);
+    println!("First 5 elements after Inverse FFT (normalized):");
+    for i in 0..5 {
+        let v = vec[i];
+        let re = v[0] / (n as f64);
+        let im = v[1] / (n as f64);
+        println!(
+            "Normalized: {:.4} {} {:.4}i",
+            re,
+            if im >= 0.0 { "+" } else { "-" },
+            im.abs()
+        );
+    }
+}
+
+2026-11-16 13:34:11 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/build_attempt/Cargo.toml
+2026-11-16 13:34:13 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:34:13 | INFO     | sactor.verifier.idiomatic_verifier:1159 | No test commands configured; accepting idiomatic function main after the compile check (FFI harness skipped)
+2026-11-16 13:34:13 | DEBUG    | sactor.verifier.verifier:278 | Compiling Rust project: cargo build --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/build_attempt/Cargo.toml
+2026-11-16 13:34:15 | INFO     | sactor.verifier.verifier:286 | Rust code compiled successfully
+2026-11-16 13:34:15 | DEBUG    | sactor.combiner.program_combiner:234 | Running clippy fix command: cargo clippy --fix --allow-no-vcs --manifest-path /home/gabe/sactor_forklift/tmp/oxivolve_rfft/sactor/tmppzk65qae/build/program/Cargo.toml -- -A clippy::cmp_null
+2026-11-16 13:34:18 | INFO     | sactor.combiner.program_combiner:259 | Found 4 warnings in the combined code
+2026-11-16 13:34:18 | INFO     | sactor.combiner.program_combiner:260 | Found 1 errors in the combined code

@@ -1,0 +1,14 @@
+{
+    "total_warnings": 11,
+    "total_errors": 4,
+    "warnings": {
+        "clippy::missing_safety_doc": 5,
+        "clippy::manual_c_str_literals": 6
+    },
+    "errors": {
+        "clippy::not_unsafe_ptr_arg_deref": 4
+    },
+    "total_tokens": 819,
+    "unsafe_tokens": 698,
+    "unsafe_fraction": 0.8522588522588522
+}

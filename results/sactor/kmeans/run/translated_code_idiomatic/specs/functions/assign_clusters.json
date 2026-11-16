@@ -1,0 +1,66 @@
+{
+  "function_name": "assign_clusters",
+  "fields": [
+    {
+      "u_field": {
+        "name": "points",
+        "type": "*mut Point",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_from": "n",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "points",
+        "type": "&mut [Point]"
+      },
+      "ownership": "transient",
+      "compare": "by_slice"
+    },
+    {
+      "u_field": {
+        "name": "n",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "points.len",
+        "type": "usize"
+      }
+    },
+    {
+      "u_field": {
+        "name": "clusters",
+        "type": "*mut Cluster",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_from": "k",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "clusters",
+        "type": "&[Cluster]"
+      },
+      "ownership": "transient",
+      "compare": "by_slice"
+    },
+    {
+      "u_field": {
+        "name": "k",
+        "type": "libc::c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "clusters.len",
+        "type": "usize"
+      }
+    }
+  ],
+  "idiomatic_name": "assign_clusters"
+}

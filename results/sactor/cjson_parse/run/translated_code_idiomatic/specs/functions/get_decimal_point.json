@@ -1,0 +1,17 @@
+{
+  "function_name": "get_decimal_point",
+  "fields": [
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "u8",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "u8"
+      }
+    }
+  ],
+  "idiomatic_name": "get_decimal_point"
+}

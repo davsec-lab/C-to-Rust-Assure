@@ -1,0 +1,40 @@
+{
+  "function_name": "swap",
+  "fields": [
+    {
+      "u_field": {
+        "name": "a",
+        "type": "*mut i32",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "a",
+        "type": "&mut i32"
+      },
+      "ownership": "transient"
+    },
+    {
+      "u_field": {
+        "name": "b",
+        "type": "*mut i32",
+        "shape": {
+          "ptr": {
+            "kind": "ref",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "b",
+        "type": "&mut i32"
+      },
+      "ownership": "transient"
+    }
+  ],
+  "idiomatic_name": "swap"
+}

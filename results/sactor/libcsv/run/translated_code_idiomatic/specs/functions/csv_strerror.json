@@ -1,0 +1,33 @@
+{
+  "function_name": "csv_strerror",
+  "fields": [
+    {
+      "u_field": {
+        "name": "status",
+        "type": "i32",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "status",
+        "type": "i32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "ret",
+        "type": "*const c_char",
+        "shape": {
+          "ptr": {
+            "kind": "cstring",
+            "null": "forbidden"
+          }
+        }
+      },
+      "i_field": {
+        "name": "ret",
+        "type": "&'static str"
+      }
+    }
+  ],
+  "idiomatic_name": "csv_strerror"
+}

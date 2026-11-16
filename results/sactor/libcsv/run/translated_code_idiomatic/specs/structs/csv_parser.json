@@ -1,0 +1,161 @@
+{
+  "struct_name": "csv_parser",
+  "i_kind": "struct",
+  "i_type": "csv_parser",
+  "fields": [
+    {
+      "u_field": {
+        "name": "pstate",
+        "type": "c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "pstate",
+        "type": "i32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "quoted",
+        "type": "c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "quoted",
+        "type": "i32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "spaces",
+        "type": "size_t",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "spaces",
+        "type": "usize"
+      }
+    },
+    {
+      "u_field": {
+        "name": "entry_buf",
+        "type": "*mut c_uchar",
+        "shape": {
+          "ptr": {
+            "kind": "slice",
+            "len_from": "entry_size",
+            "null": "nullable"
+          }
+        }
+      },
+      "i_field": {
+        "name": "entry_buf",
+        "type": "Vec<u8>"
+      },
+      "ownership": "transient",
+      "compare": "skip",
+      "llm_note": "Buffer is an array pointer; idiomatic side owns it as Vec<u8> whose len equals entry_size."
+    },
+    {
+      "u_field": {
+        "name": "entry_size",
+        "type": "size_t",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "entry_buf.len",
+        "type": "usize"
+      }
+    },
+    {
+      "u_field": {
+        "name": "entry_pos",
+        "type": "size_t",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "entry_pos",
+        "type": "usize"
+      }
+    },
+    {
+      "u_field": {
+        "name": "status",
+        "type": "c_int",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "status",
+        "type": "i32"
+      }
+    },
+    {
+      "u_field": {
+        "name": "options",
+        "type": "c_uchar",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "options",
+        "type": "u8"
+      }
+    },
+    {
+      "u_field": {
+        "name": "quote_char",
+        "type": "c_uchar",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "quote_char",
+        "type": "u8"
+      }
+    },
+    {
+      "u_field": {
+        "name": "delim_char",
+        "type": "c_uchar",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "delim_char",
+        "type": "u8"
+      }
+    },
+    {
+      "u_field": {
+        "name": "is_space",
+        "type": "Option<unsafe extern \"C\" fn(c_uchar) -> c_int>",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "is_space",
+        "type": "Option<fn(u8) -> i32>"
+      },
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "is_term",
+        "type": "Option<unsafe extern \"C\" fn(c_uchar) -> c_int>",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "is_term",
+        "type": "Option<fn(u8) -> i32>"
+      },
+      "compare": "skip"
+    },
+    {
+      "u_field": {
+        "name": "blk_size",
+        "type": "size_t",
+        "shape": "scalar"
+      },
+      "i_field": {
+        "name": "blk_size",
+        "type": "usize"
+      }
+    }
+  ]
+}

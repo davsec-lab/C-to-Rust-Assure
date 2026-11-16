@@ -1,0 +1,224 @@
+{
+    "md5_ctx": {
+        "type": "struct",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "_bmp_pixel": {
+        "type": "struct",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "_bmp_header": {
+        "type": "struct",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "_bmp_img": {
+        "type": "struct",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "md5_left_rotate": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "md5_init": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "bmp_header_init_df": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "bmp_header_write": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "bmp_error": {
+        "type": "enum",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "bmp_header_read": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "bmp_pixel_init": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "bmp_img_alloc": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "bmp_img_free": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "bmp_row_index": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "get_now": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "md5_transform": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "s": {
+        "type": "global_var",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "k": {
+        "type": "global_var",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "bmp_img_init_df": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "bmp_img_write": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "bmp_img_read": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "md5_update": {
+        "type": "function",
+        "errors": [
+            {
+                "type": "COMPILE_ERROR",
+                "message": "    Updating crates.io index\n     Locking 1 package to latest compatible version\n   Compiling libc v0.2.191\n   Compiling build_attempt v0.1.0 (/home/gabe/sactor_forklift/tmp/sactor/tmpma6yv0n9/build/build_attempt)\nwarning: type `__uint32_t` should have an upper camel case name\n  --> src/lib.rs:11:10\n   |\n11 | pub type __uint32_t = libc::c_uint;\n   |          ^^^^^^^^^^ help: convert the identifier to upper camel case: `Uint32T`\n   |\n   = note: `#[warn(non_camel_case_types)]` on by default\n\nwarning: type `__uint64_t` should have an upper camel case name\n  --> src/lib.rs:12:10\n   |\n12 | pub type __uint64_t = libc::c_ulong;\n   |          ^^^^^^^^^^ help: convert the identifier to upper camel case: `Uint64T`\n\nwarning: use of deprecated type alias `libc::uint32_t`: Use u32 instead.\n --> src/lib.rs:3:11\n  |\n3 | use libc::uint32_t;\n  |           ^^^^^^^^\n  |\n  = note: `#[warn(deprecated)]` on by default\n\nwarning: use of deprecated type alias `libc::uint64_t`: Use u64 instead.\n --> src/lib.rs:4:11\n  |\n4 | use libc::uint64_t;\n  |           ^^^^^^^^\n\nwarning: use of deprecated type alias `libc::uint32_t`: Use u32 instead.\n  --> src/lib.rs:16:17\n   |\n16 |     pub state: [uint32_t; 4],\n   |                 ^^^^^^^^\n\nwarning: use of deprecated type alias `libc::uint64_t`: Use u64 instead.\n  --> src/lib.rs:17:18\n   |\n17 |     pub bit_len: uint64_t,\n   |                  ^^^^^^^^\n\nerror[E0282]: type annotations needed\n  --> src/lib.rs:33:36\n   |\n33 |         ctx.buffer_len += chunk as _;\n   |                                    ^ cannot infer type\n\nFor more information about this error, try `rustc --explain E0282`.\nwarning: `build_attempt` (lib) generated 8 warnings (2 duplicates)\nerror: could not compile `build_attempt` (lib) due to 1 previous error; 8 warnings emitted\n",
+                "translation": "unsafe fn md5_update(ctx: &mut md5_ctx, data: *const libc::c_uchar, len: usize) {\n    let mut data = data;\n    let mut len = len;\n    ctx.bit_len = ctx.bit_len.wrapping_add((len as u64).wrapping_mul(8u64));\n    while len > 0 {\n        let space: usize = (ctx.buffer.len() as usize) - (ctx.buffer_len as usize);\n        let chunk: usize = if len < space { len } else { space };\n        std::ptr::copy_nonoverlapping(\n            data,\n            ctx.buffer.as_mut_ptr().add(ctx.buffer_len as usize),\n            chunk,\n        );\n        ctx.buffer_len += chunk as _;\n        data = data.add(chunk);\n        len -= chunk;\n        if ctx.buffer_len as usize == ctx.buffer.len() {\n            let block: [libc::c_uchar; 64] = ctx.buffer;\n            md5_transform(ctx, &block);\n            ctx.buffer_len = 0;\n        }\n    }\n}\n"
+            }
+        ],
+        "status": "success",
+        "attempts": [
+            2
+        ]
+    },
+    "md5_final": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "zero": {
+        "type": "global_var",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "pad": {
+        "type": "global_var",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "print_file_md5": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    },
+    "main": {
+        "type": "function",
+        "errors": [],
+        "status": "success",
+        "attempts": [
+            1
+        ]
+    }
+}

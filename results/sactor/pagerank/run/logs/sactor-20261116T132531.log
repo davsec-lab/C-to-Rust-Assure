@@ -1,0 +1,28 @@
+2026-11-16 13:25:36 | INFO     | sactor.sactor:210 | -------------SACTOR Configuration-------------
+2026-11-16 13:25:36 | INFO     | sactor.sactor:211 | Input file: pagerank.c
+2026-11-16 13:25:36 | INFO     | sactor.sactor:212 | Test command: test_cmd.json
+2026-11-16 13:25:36 | INFO     | sactor.sactor:213 | Is executable: True
+2026-11-16 13:25:36 | INFO     | sactor.sactor:216 | Build directory: /home/gabe/sactor_forklift/tmp/sactor/tmp3dq98b77/build
+2026-11-16 13:25:36 | INFO     | sactor.sactor:217 | Result directory: /home/gabe/sactor_forklift/sactor-bench-oxivolve/pagerank/result_sonnet55
+2026-11-16 13:25:36 | INFO     | sactor.sactor:218 | Config file: /home/gabe/sactor_forklift/sactor/sactor.sonnet55.toml
+2026-11-16 13:25:36 | INFO     | sactor.sactor:219 | No verify: False
+2026-11-16 13:25:36 | INFO     | sactor.sactor:220 | Unidiomatic only: False
+2026-11-16 13:25:36 | INFO     | sactor.sactor:221 | LLM statistics base path: /home/gabe/sactor_forklift/sactor-bench-oxivolve/pagerank/result_sonnet55/llm_stat.json
+2026-11-16 13:25:36 | INFO     | sactor.sactor:222 | Extra compile command: None
+2026-11-16 13:25:36 | INFO     | sactor.sactor:223 | Compile commands file: 
+2026-11-16 13:25:36 | INFO     | sactor.sactor:224 | Link args: ['-lm']
+2026-11-16 13:25:36 | INFO     | sactor.sactor:225 | Idiomatic only: False
+2026-11-16 13:25:36 | INFO     | sactor.sactor:226 | Continue run when incomplete: False
+2026-11-16 13:25:36 | INFO     | sactor.sactor:227 | -------------End of Configuration-------------
+2026-11-16 13:25:36 | DEBUG    | sactor.sactor:284 | Total structs: 0; order groups: 0
+2026-11-16 13:25:36 | DEBUG    | sactor.sactor:286 | Total functions: 3; order groups: 3
+2026-11-16 13:25:36 | DEBUG    | sactor.sactor:288 | Struct order: []
+2026-11-16 13:25:36 | DEBUG    | sactor.sactor:289 | Function order: [[FunctionInfo(int detect_indexing ( const char * filename ))], [FunctionInfo(static double diff_timespec ( struct timespec * time1 , struct timespec * time0 ))], [FunctionInfo(int main ( int argc , char * argv [ ] ))]]
+2026-11-16 13:25:36 | DEBUG    | sactor.llm.llm:38 | Default model: 'claude-sonnet-5-5'
+2026-11-16 13:25:36 | DEBUG    | sactor.llm.llm:40 | Found 1 models in config
+2026-11-16 13:25:36 | DEBUG    | sactor.llm.llm:46 | Model mapping 0: 'claude-sonnet-5-5' -> 'anthropic/claude-sonnet-5-5': {'model': 'anthropic/claude-sonnet-5-5', 'api_key': '***REDACTED***', 'max_tokens': '***REDACTED***'}
+2026-11-16 13:25:36 | DEBUG    | sactor.thirdparty.c2rust:52 | Running c2rust command: ['c2rust', 'transpile', '--preserve-unused-functions', '/home/gabe/sactor_forklift/tmp/sactor/tmpbejkl78m/c2rust/unfolded_typedefs.c', '--', '-I/usr/lib/llvm-19/lib/clang/19/include', '-I/usr/local/include', '-I/usr/include/x86_64-linux-gnu', '-I/usr/include']
+2026-11-16 13:25:40 | ERROR    | sactor.thirdparty.c2rust:56 | c2rust failed: thread 'main' panicked at /home/gabe/.cargo/registry/src/index.crates.io-6f17d22bba15001f/c2rust-0.20.0/src/bin/c2rust-transpile.rs:264:14:
+Failed to remove temporary compile_commands.json: Os { code: 2, kind: NotFound, message: "No such file or directory" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
